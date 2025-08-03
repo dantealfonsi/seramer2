@@ -5,9 +5,6 @@ session_start();
 
 // Incluir el controlador y el modelo para cargar los datos de las listas
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
-require_once __DIR__ . '/../../models/Adjudicator.php';
-require_once __DIR__ . '/../../models/Stall.php';
-require_once __DIR__ . '/../../models/InfractionType.php';
 
 $infractionsController = new InfractionsController();
 
@@ -25,9 +22,6 @@ $form_data = [
 ];
 
 // Cargar las listas de selección para los campos del formulario
-$adjudicators = Adjudicator::getAll(); // Asumiendo que existe un método para obtenerlos
-$stalls = Stall::getAll(); // Asumiendo que existe un método para obtenerlos
-$infraction_types = InfractionType::getAll(); // Asumiendo que existe un método para obtenerlos
 
 // Si estamos editando, obtener los datos de la infracción
 if ($is_edit) {
