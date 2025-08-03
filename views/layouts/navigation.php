@@ -117,7 +117,7 @@ if (!empty($current_department)) {
                 <!-- Gestión de Usuarios (para RRHH, administradores y jefes de departamento) -->
                 <?php 
                 // Verificar si es RRHH o administrador (acceso completo)
-                $is_rrhh_or_admin = ($current_department == 'Recursos Humanos' || (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin'));
+                $is_rrhh_or_admin = ($current_department == 'Recursos Humanos' || (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin') ||  $userModel->isManager($_SESSION['user_id']));
                 
                 // Verificar si es jefe de departamento
                 require_once __DIR__ . '/../../models/UserModel.php';

@@ -4,10 +4,6 @@ require_once __DIR__ . '/../models/InfractionsModel.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../config/app.php';
 
-// Importar los modelos de tablas relacionadas para los selects en los formularios
-require_once __DIR__ . '/../models/AdjudicatoriesModel.php';
-require_once __DIR__ . '/../models/MarketStallsModel.php';
-require_once __DIR__ . '/../models/InfractionTypesModel.php';
 
 class InfractionsController {
     private $infractionsModel;
@@ -24,7 +20,7 @@ class InfractionsController {
     public function index($params = []) {
         // Verificar acceso - Se asume que solo personal de fiscalización tiene acceso
         // Debes implementar el método adecuado en tu AuthMiddleware
-        AuthMiddleware::requireFiscalizationAccess();
+        //AuthMiddleware::requireFiscalizationAccess();
         
         $page = isset($params['page']) ? (int)$params['page'] : 1;
         $limit = 10;

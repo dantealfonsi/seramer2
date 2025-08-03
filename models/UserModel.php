@@ -460,6 +460,11 @@ class UserModel {
                 ]
             ],
             'Fiscalizacion' => [
+                [
+                    'title' => 'Infracciones',
+                    'icon' => 'ri-file-list-3-line',
+                    'url' => 'views/infractions'
+                ],
                
                 [
                     'title' => 'Reportes de Fiscalización',
