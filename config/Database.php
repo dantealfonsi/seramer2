@@ -4,7 +4,7 @@ class Database {
     private $host = 'localhost';
     private $db_name = 'seramermvc';
     private $username = 'root';
-    private $password = '';
+    private $password = 'a10882990';
     private $charset = 'utf8mb4';
     private $conn;
 
@@ -56,6 +56,40 @@ class Database {
             'username' => $this->username,
             'charset' => $this->charset
         ];
+    }
+
+    //new method to execute a query
+    public function executeQuery($query, $params = []) {
+        if ($this->conn === null) {
+            $this->getConnection();
+        }
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $exception) {
+            echo "Error al ejecutar la consulta: " . $exception->getMessage();
+            return false;
+        }
+    }
+
+    //new method to fetch all results from a query
+    public function fetchAll($query, $params = []) {
+        $stmt = $this->executeQuery($query, $params);
+        if ($stmt) {
+            return $stmt->fetchAll();
+        }
+        return [];
+    }
+    
+    //new method to fetch a single result from a query
+    public function fetchOne($query, $params = []) {
+        $stmt = $this->executeQuery($query, $params);
+        if ($stmt) {
+            return $stmt->fetch();
+        }
+        return null;
     }
 }
 

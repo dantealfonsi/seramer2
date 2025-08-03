@@ -1,0 +1,10 @@
+[03-Aug-2025 20:32:09 UTC] getUserWithStaffDetails: Éxito para usuario 8
+[03-Aug-2025 20:32:17 UTC] getUserWithStaffDetails: Usuario 7 sin staff_id, retornando datos básicos
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "first_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 143
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "last_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 143
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "first_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 187
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "last_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 187
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "id_number" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 191
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "department_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 195
+[03-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "job_position_name" in C:\Apache24\htdocs\seramer2\views\users\edit.php on line 199
+[03-Aug-2025 20:32:26 UTC] getUserWithStaffDetails: Éxito para usuario 8
