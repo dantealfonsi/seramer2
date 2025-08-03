@@ -432,7 +432,9 @@ class UserModel {
                     'submenu' => [
                         ['title' => 'Empleados', 'url' => 'rrhh/empleados.php'],
                         ['title' => 'Contrataciones', 'url' => 'rrhh/contrataciones.php'],
-                        ['title' => 'Expedientes', 'url' => 'rrhh/expedientes.php']
+                        ['title' => 'Expedientes', 'url' => 'rrhh/expedientes.php'],
+                        ['title' => 'Posiciones', 'url' => 'views/job-positions']
+
                     ]
                 ],
                 [
