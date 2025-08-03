@@ -900,27 +900,33 @@ class UserModel {
             $basic_user = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$basic_user) {
+                error_log("getUserWithStaffDetails: Usuario $user_id no existe");
                 return false; // Usuario no existe
             }
             
             // Si el usuario no tiene staff_id, retornar solo datos del usuario
             if (!$basic_user['staff_id']) {
-                $basic_user['departments'] = $this->getUserDepartments($basic_user['id']);
-                $basic_user['activity_log'] = $this->getUserActivityLog($basic_user['id']);
+                error_log("getUserWithStaffDetails: Usuario $user_id sin staff_id, retornando datos básicos");
+                try {
+                    $basic_user['departments'] = $this->getUserDepartments($basic_user['id']);
+                    $basic_user['activity_log'] = $this->getUserActivityLog($basic_user['id']);
+                } catch (Exception $e) {
+                    error_log("getUserWithStaffDetails: Error en getUserDepartments/getUserActivityLog: " . $e->getMessage());
+                    // Continuar sin estos datos adicionales
+                }
                 return $basic_user;
             }
             
-            // Si tiene staff_id, intentar obtener datos completos
-            $query = "SELECT u.*, s.*, d.name as department_name, 
-                             jp.name as job_position_name, ad.name as academic_degree_name,
-                             asp.name as academic_specialization_name, div.name as division_name
+            // Si tiene staff_id, intentar obtener datos completos con consulta completa
+            $query = "SELECT u.*, s.first_name, s.last_name, s.id_number, s.department_id,
+                             d.name as department_name, jp.name as job_position_name,
+                             ad.name as academic_degree_name, asp.name as academic_specialization_name
                       FROM users u
                       LEFT JOIN staff s ON u.staff_id = s.id
                       LEFT JOIN departments d ON s.department_id = d.id
                       LEFT JOIN job_positions jp ON s.job_position_id = jp.id
                       LEFT JOIN academic_degrees ad ON s.academic_degree_id = ad.id
                       LEFT JOIN academic_specializations asp ON s.academic_specialization_id = asp.id
-                      LEFT JOIN divisions div ON s.division_id = div.id
                       WHERE u.id = :user_id";
             
             $stmt = $this->conn->prepare($query);
@@ -929,21 +935,31 @@ class UserModel {
             
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            // Si la consulta completa falla (staff referenciado no existe), usar datos básicos
+            // Si la consulta completa falla, usar datos básicos
             if (!$user) {
-                error_log("WARNING: Usuario ID $user_id tiene staff_id inválido: " . $basic_user['staff_id']);
-                $basic_user['departments'] = $this->getUserDepartments($basic_user['id']);
-                $basic_user['activity_log'] = $this->getUserActivityLog($basic_user['id']);
+                error_log("getUserWithStaffDetails: Consulta completa falló para usuario $user_id con staff_id " . $basic_user['staff_id']);
+                try {
+                    $basic_user['departments'] = $this->getUserDepartments($basic_user['id']);
+                    $basic_user['activity_log'] = $this->getUserActivityLog($basic_user['id']);
+                } catch (Exception $e) {
+                    error_log("getUserWithStaffDetails: Error en métodos adicionales: " . $e->getMessage());
+                }
                 return $basic_user;
             }
             
-            // Si todo está bien, agregar departamentos y actividad
-            $user['departments'] = $this->getUserDepartments($user['id']);
-            $user['activity_log'] = $this->getUserActivityLog($user['id']);
+            // Si todo está bien, agregar datos adicionales
+            error_log("getUserWithStaffDetails: Éxito para usuario $user_id");
+            try {
+                $user['departments'] = $this->getUserDepartments($user['id']);
+                $user['activity_log'] = $this->getUserActivityLog($user['id']);
+            } catch (Exception $e) {
+                error_log("getUserWithStaffDetails: Error en métodos adicionales (caso exitoso): " . $e->getMessage());
+                // Continuar sin estos datos adicionales
+            }
             
             return $user;
         } catch (PDOException $e) {
-            error_log("Error obteniendo detalles del usuario: " . $e->getMessage());
+            error_log("getUserWithStaffDetails: Error PDO para usuario $user_id: " . $e->getMessage());
             return false;
         }
     }
