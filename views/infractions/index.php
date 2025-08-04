@@ -104,10 +104,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-dark">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="table-light">
                                         <tr>
-                                            <th>ID</th>
                                             <th>Adjudicatario</th>
                                             <th>Puesto</th>
                                             <th>Tipo</th>
@@ -119,7 +118,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($infractions as $infraction): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($infraction['id']); ?></td>
                                             <td>
                                                 <strong>
                                                     <?php echo htmlspecialchars($infraction['adjudicatory_name']); ?>
@@ -137,43 +135,39 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                             <td>
                                                 <?php 
-                                                $infraction_date = new DateTime($infraction['infraction_date']);
+                                                $infraction_date = new DateTime($infraction['infraction_datetime']);
                                                 echo $infraction_date->format('d/m/Y'); 
                                                 ?>
                                             </td>
                                             <td>
-                                                <?php
-                                                $status_colors = [
-                                                    'Reported' => 'warning',
-                                                    'In Process' => 'primary',
-                                                    'Resolved' => 'success',
-                                                    'Cancelled' => 'danger'
-                                                ];
-                                                $color = $status_colors[$infraction['status']] ?? 'secondary';
-                                                ?>
-                                                <span class="badge bg-<?php echo $color; ?>">
-                                                    <?php echo htmlspecialchars($infraction['status']); ?>
-                                                </span>
+                                            <?php
+                                            $status_colors = [
+                                                'Reported' => 'warning',
+                                                'In Process' => 'primary',
+                                                'Resolved' => 'success',
+                                                'Cancelled' => 'danger'
+                                            ];
+                                            // Aquí también se corrige la clave
+                                            $color = $status_colors[$infraction['infraction_status']] ?? 'secondary';
+                                            ?>
+                                            <span class="badge bg-<?php echo $color; ?>">
+                                            <?php echo htmlspecialchars($infraction['infraction_status']); ?>
+                                            </span>
                                             </td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="view.php?id=<?php echo $infraction['id']; ?>" 
-                                                       class="btn btn-sm btn-outline-primary" 
-                                                       title="Ver detalles">
+                                                <td class="text-center">
+                                                    <a href="view.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-info" title="Ver detalles">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
-                                                    <a href="edit.php?id=<?php echo $infraction['id']; ?>" 
-                                                       class="btn btn-sm btn-outline-warning" 
-                                                       title="Editar">
+                                                    <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-warning" title="Editar">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-outline-danger" 
-                                                            onclick="confirmDelete(<?php echo $infraction['id']; ?>)"
-                                                            title="Eliminar">
+                                                            class="btn btn-sm btn-danger" 
+                                                            title="Eliminar"
+                                                            onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
-                                                </div>
+                                                </td>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>

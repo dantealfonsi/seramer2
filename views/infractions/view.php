@@ -1,5 +1,5 @@
 <?php
-// Vista de listado de infracciones
+// Vista de detalles de una infracción
 
 session_start();
 
@@ -8,27 +8,34 @@ require_once __DIR__ . '/../../controllers/InfractionsController.php';
 
 $infractionsController = new InfractionsController();
 
-// Obtener parámetros de búsqueda y paginación
-$params = [
-    'page' => $_GET['page'] ?? 1,
-    'search' => $_GET['search'] ?? ''
-];
+// Obtener el ID de la infracción
+$id = $_GET['id'] ?? null;
+
+if (!$id) {
+    $_SESSION['flash_message'] = [
+        'type' => 'error',
+        'message' => 'No se especificó una infracción para ver.'
+    ];
+    header('Location: index.php');
+    exit;
+}
 
 // Usar el controlador para obtener los datos
-$result = $infractionsController->index($params);
+$result = $infractionsController->view($id);
+
+// Si hay error o no se encuentra la infracción, redirigir
+if (!$result['success']) {
+    $_SESSION['flash_message'] = [
+        'type' => 'error',
+        'message' => $result['message']
+    ];
+    header('Location: index.php');
+    exit;
+}
 
 // Extraer variables para la vista
-$infractions = $result['infractions'];
-$currentPage = $result['current_page'];
-$totalPages = $result['total_pages'];
-$totalRecords = $result['total_records'];
-$search = $result['search'];
+$infraction = $result['infraction'];
 $page_title = $result['page_title'];
-$hasSearch = $result['has_search'];
-
-// Mensaje flash para mostrar
-$flash_message = $_SESSION['flash_message'] ?? null;
-unset($_SESSION['flash_message']);
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -40,149 +47,133 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h1 class="page-header-title">
-                        <i class="ri-alert-line me-1"></i>
-                        <?php echo htmlspecialchars($page_title); ?>
-                    </h1>
-                    <a href="create.php" class="btn btn-primary">
-                        <i class="ri-add-line"></i> Registrar Nueva Infracción
-                    </a>
-                </div>
-
-                <?php if ($flash_message): ?>
-                <div class="alert alert-<?php echo htmlspecialchars($flash_message['type']); ?> alert-dismissible fade show" role="alert">
-                    <?php echo htmlspecialchars($flash_message['message']); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php endif; ?>
-
-                <div class="card mb-4">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="index.php">Infracciones</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Detalles de Infracción</li>
+                    </ol>
+                </nav>
+                
+                <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Listado de Infracciones</h5>
-                        <form action="index.php" method="GET" class="d-flex">
-                            <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Buscar..." value="<?php echo htmlspecialchars($search); ?>">
-                            <button class="btn btn-outline-secondary btn-sm" type="submit">
-                                <i class="ri-search-line"></i>
-                            </button>
-                            <?php if ($hasSearch): ?>
-                            <a href="index.php" class="btn btn-outline-danger btn-sm ms-2" title="Limpiar búsqueda">
-                                <i class="ri-close-line"></i>
+                        <h5 class="card-title mb-0">
+                            <i class="ri-alert-line me-1"></i>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <a href="index.php" class="btn btn-secondary">
+                                <i class="ri-arrow-left-line"></i> Volver al listado
                             </a>
-                            <?php endif; ?>
-                        </form>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Adjudicatario</th>
-                                        <th>Puesto</th>
-                                        <th>Tipo de Infracción</th>
-                                        <th>Fecha</th>
-                                        <th>Estado</th>
-                                        <th class="text-center">Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php if (!empty($infractions)): ?>
-                                        <?php foreach ($infractions as $infraction): ?>
-                                            <tr>
-                                                <td><?php echo htmlspecialchars($infraction['id_infraction']); ?></td>
-                                                <td>
-                                                    <strong>
-                                                        <?php echo htmlspecialchars($infraction['adjudicatory_name']); ?>
-                                                    </strong>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-secondary">
-                                                        <?php echo htmlspecialchars($infraction['stall_name'] ?? 'N/A'); ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-info">
-                                                        <?php echo htmlspecialchars($infraction['infraction_type']); ?>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <?php 
-                                                    $infraction_date = new DateTime($infraction['infraction_date']);
-                                                    echo $infraction_date->format('d/m/Y'); 
-                                                    ?>
-                                                </td>
-                                                <td>
-                                                    <?php
-                                                    $status_colors = [
-                                                        'Reported' => 'warning',
-                                                        'In Process' => 'primary',
-                                                        'Resolved' => 'success',
-                                                        'Cancelled' => 'danger'
-                                                    ];
-                                                    $color = $status_colors[$infraction['infraction_status']] ?? 'secondary';
-                                                    ?>
-                                                    <span class="badge bg-<?php echo $color; ?>">
-                                                        <?php echo htmlspecialchars($infraction['infraction_status']); ?>
-                                                    </span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="view.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-info" title="Ver detalles">
-                                                        <i class="ri-eye-line"></i>
-                                                    </a>
-                                                    <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-warning" title="Editar">
-                                                        <i class="ri-edit-line"></i>
-                                                    </a>
-                                                    <button type="button" 
-                                                            class="btn btn-sm btn-danger" 
-                                                            title="Eliminar"
-                                                            onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
-                                                        <i class="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <tr>
-                                            <td colspan="7" class="text-center py-5">
-                                                <i class="ri-alert-line text-muted" style="font-size: 3rem;"></i>
-                                                <h5 class="text-muted mt-2">No se encontraron infracciones</h5>
-                                                <p class="text-muted">Intenta ajustar tu búsqueda o registra una nueva infracción.</p>
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                            <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-warning">
+                                <i class="ri-edit-line"></i> Editar
+                            </a>
+                            <button type="button" 
+                                class="btn btn-danger" 
+                                onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
+                                <i class="ri-delete-bin-line"></i> Eliminar
+                            </button>
                         </div>
                     </div>
                     
-                    <?php if ($totalPages > 1): ?>
-                    <div class="card-footer d-flex justify-content-between align-items-center">
-                        <p class="text-muted mb-0">Mostrando <?php echo count($infractions); ?> de <?php echo $totalRecords; ?> resultados</p>
-                        <nav aria-label="Paginación">
-                            <ul class="pagination mb-0">
-                                <li class="page-item <?php echo $currentPage == 1 ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $currentPage - 1; ?>&search=<?php echo urlencode($search); ?>" aria-label="Anterior">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                <li class="page-item <?php echo $currentPage == $i ? 'active' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>">
-                                        <?php echo $i; ?>
-                                    </a>
-                                </li>
-                                <?php endfor; ?>
-                                <li class="page-item <?php echo $currentPage == $totalPages ? 'disabled' : ''; ?>">
-                                    <a class="page-link" href="?page=<?php echo $currentPage + 1; ?>&search=<?php echo urlencode($search); ?>" aria-label="Siguiente">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </nav>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-borderless">
+                                    <tbody>
+                                        <tr>
+                                            <th width="30%">ID:</th>
+                                            <td><?php echo htmlspecialchars($infraction['id_infraction']); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Adjudicatario:</th>
+                                            <td>
+                                                <a href="adjudicataries/view.php?id=<?php echo $infraction['id_adjudicatory']; ?>">
+                                                    <strong><?php echo htmlspecialchars($infraction['adjudicatory_name']); ?></strong>
+                                                </a>
+                                                (<?php echo htmlspecialchars($infraction['adjudicatory_document']); ?>)
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Puesto:</th>
+                                            <td>
+                                                <span class="badge bg-secondary fs-6">
+                                                    <?php echo htmlspecialchars($infraction['stall_code'] ?? 'N/A'); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Tipo de Infracción:</th>
+                                            <td>
+                                                <span class="badge bg-info fs-6">
+                                                    <?php echo htmlspecialchars($infraction['infraction_type_name']); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Fecha y Hora:</th>
+                                            <td>
+                                                <?php 
+                                                $infraction_datetime = new DateTime($infraction['infraction_datetime']);
+                                                echo htmlspecialchars($infraction_datetime->format('d/m/Y H:i A')); 
+                                                ?>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Estado:</th>
+                                            <td>
+                                                <?php
+                                                $status_colors = [
+                                                    'Reported' => 'warning',
+                                                    'In Process' => 'primary',
+                                                    'Resolved' => 'success',
+                                                    'Cancelled' => 'danger'
+                                                ];
+                                                $color = $status_colors[$infraction['infraction_status']] ?? 'secondary';
+                                                ?>
+                                                <span class="badge bg-<?php echo $color; ?> fs-6">
+                                                    <?php echo htmlspecialchars($infraction['infraction_status']); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted"><i class="ri-file-text-line"></i> Descripción</h6>
+                                        <p class="card-text"><?php echo nl2br(htmlspecialchars($infraction['infraction_description'])); ?></p>
+                                    </div>
+                                </div>
+                                <div class="card bg-light border-0 mt-3">
+                                    <div class="card-body">
+                                        <h6 class="card-subtitle mb-2 text-muted"><i class="ri-file-edit-line"></i> Observaciones del Inspector</h6>
+                                        <p class="card-text"><?php echo nl2br(htmlspecialchars($infraction['inspector_observations'] ?? 'No hay observaciones.')); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5><i class="ri-image-line"></i> Evidencia</h5>
+                                    <?php if (!empty($infraction['proof'])): ?>
+                                        <a href="<?php echo htmlspecialchars(APP_URL . '/uploads/' . $infraction['proof']); ?>" target="_blank">
+                                            <img src="<?php echo htmlspecialchars(APP_URL . '/uploads/' . $infraction['proof']); ?>" 
+                                                 alt="Evidencia de la infracción" 
+                                                 class="img-fluid rounded shadow-sm" 
+                                                 style="max-height: 400px; object-fit: cover;">
+                                        </a>
+                                    <?php else: ?>
+                                        <div class="alert alert-warning text-center">
+                                            No se ha adjuntado ninguna evidencia para esta infracción.
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -197,8 +188,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro que desea eliminar lógicamente la infracción con ID: <strong id="infractionId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción marcará la infracción como eliminada, pero se mantendrá un registro en la base de datos.</small></p>
+                <p>¿Está seguro que desea eliminar la infracción con ID: <strong id="infractionId"></strong>?</p>
+                <p class="text-danger"><small>Esta acción no se puede deshacer y eliminará el registro de forma permanente.</small></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -223,28 +214,25 @@ function confirmDelete(id) {
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
     if (deleteInfractionId) {
-        // Enviar la solicitud de eliminación vía AJAX
-        fetch(`delete.php?id=${deleteInfractionId}`, {
-            method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Si la eliminación fue exitosa, recargar la página para ver el cambio
-                window.location.reload();
-            } else {
-                // Manejar el error, por ejemplo, mostrando un mensaje
-                alert('Error al eliminar la infracción: ' + data.message);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                modal.hide();
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ocurrió un error al procesar la solicitud.');
-            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-            modal.hide();
-        });
+        // Crear formulario para enviar la solicitud de eliminación
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'delete.php';
+        
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = deleteInfractionId;
+        form.appendChild(idInput);
+        
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
 });
 </script>

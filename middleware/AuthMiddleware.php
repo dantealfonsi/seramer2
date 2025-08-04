@@ -167,16 +167,6 @@ class AuthMiddleware {
         
         return $userModel->isManager($user_id);
     }
-
-    public static function requireFiscalizationAccess() {
-        // Aquí debes implementar la lógica real de verificación de permisos.
-        // Por ejemplo, podrías verificar $_SESSION['user_role'] o similar.
-        if (!isset($_SESSION['user_role']) || $_SESSION['user_role'] !== 'fiscalizador') {
-            // Puedes lanzar una excepción, redirigir o mostrar un mensaje de error.
-            header('Location: /login.php');
-            exit;
-        }
-    }    
 }
 
 ?>

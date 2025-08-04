@@ -157,7 +157,7 @@ session_start();
                          <?php echo isset($_COOKIE['remember_username']) ? 'checked' : ''; ?> />
                   <label class="form-check-label" for="remember-me"> Recordarme </label>
                 </div>
-                <a href="<?php echo url('views/auth/forgot-password.php'); ?>" class="float-end mb-1 mt-2">
+                <a href="<?php echo url('views/forgot-password/forgotPassword.php'); ?>" class="float-end mb-1 mt-2">
                   <span>¿Olvidaste tu contraseña?</span>
                 </a>
               </div>
