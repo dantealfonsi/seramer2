@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../public/libs/phpmailer/src/PHPMailer.php';
+require_once __DIR__ . '/../public/libs/phpmailer/src/SMTP.php';
+require_once __DIR__ . '/../public/libs/phpmailer/src/Exception.php';
+
 
 class UserController {
     private $userModel;
@@ -544,4 +548,258 @@ class UserController {
             'redirect' => '../dashboard/dashboard.php'
         ];
     }
+
+        /**
+     * Muestra el formulario para solicitar el restablecimiento o procesa la solicitud.
+     * @param array $params
+     */
+    public function forgotPassword($params = []) {
+        $data = [
+            'success' => false,
+            'message' => '',
+            'email' => $params['email'] ?? ''
+        ];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $email = trim($params['email'] ?? '');
+            $user = $this->userModel->getByEmail($email);
+
+            if ($user) {
+                $token = $this->userModel->generatePasswordResetToken($user['id']);
+                if ($token) {
+                    $reset_link = BASE_URL . '/views/auth/reset-password.php?token=' . $token;
+
+                    $mail = new MailService();
+                    $subject = "Restablecimiento de Contraseña para " . PROJECT_NAME;
+                    $body = "Hola " . htmlspecialchars($user['first_name']) . ",<br><br>"
+                          . "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.<br>"
+                          . "Haz clic en el siguiente enlace para crear una nueva contraseña:<br><br>"
+                          . "<a href='" . $reset_link . "'>Restablecer Contraseña</a><br><br>"
+                          . "Si no solicitaste este cambio, ignora este correo. El enlace expirará en 1 hora.";
+
+                    if ($mail->sendEmail($email, $subject, $body)) {
+                        $data['success'] = true;
+                        $data['message'] = "Si la dirección de correo existe, hemos enviado un enlace para restablecer la contraseña.";
+                    } else {
+                        $data['message'] = "Error al enviar el correo. Por favor, inténtalo de nuevo más tarde.";
+                    }
+                } else {
+                    $data['message'] = "Error al generar el token. Por favor, inténtalo de nuevo.";
+                }
+            } else {
+                // Mensaje genérico para no dar pistas sobre la existencia de un email
+                $data['success'] = true;
+                $data['message'] = "Si la dirección de correo existe, hemos enviado un enlace para restablecer la contraseña.";
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Muestra el formulario para restablecer la contraseña o procesa el restablecimiento.
+     * @param string $token
+     * @param array $params
+     */
+    public function resetPassword($token, $params = []) {
+        $data = [
+            'success' => false,
+            'message' => '',
+            'messageType' => '',
+            'token' => $token
+        ];
+
+        // Validar token y obtener user_id
+        $user_id = $this->userModel->getUserIdByResetToken($token);
+
+        if (!$user_id) {
+            $data['message'] = "El enlace de restablecimiento es inválido o ha expirado.";
+            $data['messageType'] = 'danger';
+            return $data;
+        }
+        
+        $user = $this->userModel->getUserWithStaffDetails($user_id);
+        if ($user) {
+            $data['success'] = true;
+            $data['username'] = $user['username'];
+        } else {
+            $data['message'] = "Usuario no encontrado, el token es inválido o el usuario fue eliminado.";
+            $data['messageType'] = 'danger';
+            return $data;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $password = $params['password'] ?? '';
+            $confirm_password = $params['confirm_password'] ?? '';
+
+            if (empty($password) || strlen($password) < 6) {
+                $data['message'] = "La contraseña debe tener al menos 6 caracteres.";
+                $data['messageType'] = 'danger';
+                $data['success'] = false;
+            } elseif ($password !== $confirm_password) {
+                $data['message'] = "Las contraseñas no coinciden.";
+                $data['messageType'] = 'danger';
+                $data['success'] = false;
+            } else {
+                if ($this->userModel->updatePassword($user_id, $password)) {
+                    $this->userModel->deleteResetToken($token);
+                    $data['message'] = "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión.";
+                    $data['messageType'] = 'success';
+                    $data['success'] = true;
+                    $data['redirect_to_login'] = true; // Señal para la vista
+                } else {
+                    $data['message'] = "Error al actualizar la contraseña. Por favor, inténtalo de nuevo.";
+                    $data['messageType'] = 'danger';
+                    $data['success'] = false;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+
+    private function sendPasswordResetEmail($email, $token) {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        try {
+            // Configuración del servidor SMTP
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->Username   = 'seramerseramer@gmail.com';
+            $mail->Password   = 'deor aich llpw xdvz';
+            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port       = 465;
+
+            // Configuración del remitente y destinatario
+            $mail->setFrom('seramerseramer@gmail.com', 'Mercado Municipal de Carúpano');
+            $mail->addAddress($email);
+
+            // Contenido del correo
+            $mail->isHTML(true);
+            $mail->Subject = 'Restablecimiento de Contraseña';
+            $reset_link = BASE_URL . "/views/forgot-password/ResetPassword.php?token=$token";
+            $mail->Body    = $this->generateEmailHtml($reset_link);
+            $mail->AltBody = "Para restablecer tu contraseña, copia y pega este enlace en tu navegador: $reset_link";
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("Error al enviar el correo: {$mail->ErrorInfo}");
+            return false;
+        }
+    }
+
+    // En el UserController, añade este nuevo método privado
+    private function generateEmailHtml($reset_link) {
+        // Definimos el color morado principal
+        $primaryColor = '#696cff'; // Este es el morado de la plantilla de AdminLTE
+        $textColor = '#45465e'; // Gris oscuro para el texto
+        $buttonColor = '#696cff';
+        $buttonHoverColor = '#5f61d2';
+        $footerTextColor = '#98a6ad';
+
+        $html = <<<EOT
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Restablecer Contraseña - Mercado Municipal de Carúpano</title>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                    line-height: 1.6;
+                    color: {$textColor};
+                    background-color: #f4f5fa;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
+                    max-width: 600px;
+                    margin: 40px auto;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    border-top: 5px solid {$primaryColor};
+                }
+                .header {
+                    text-align: center;
+                    padding-bottom: 20px;
+                    border-bottom: 1px solid #e0e0e0;
+                }
+                .header h1 {
+                    margin: 0;
+                    font-size: 24px;
+                    color: {$primaryColor};
+                }
+                .content {
+                    padding: 20px 0;
+                }
+                .content p {
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                }
+                .button-container {
+                    text-align: center;
+                    margin: 30px 0;
+                }
+                .button {
+                    display: inline-block;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    color: #ffffff;
+                    background-color: {$buttonColor};
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    border: none;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                }
+                .button:hover {
+                    background-color: {$buttonHoverColor};
+                }
+                .footer {
+                    text-align: center;
+                    padding-top: 20px;
+                    border-top: 1px solid #e0e0e0;
+                    font-size: 12px;
+                    color: {$footerTextColor};
+                }
+                .footer a {
+                    color: {$footerTextColor};
+                    text-decoration: none;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>Restablecimiento de Contraseña</h1>
+                </div>
+                <div class="content">
+                    <p>Hola,</p>
+                    <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Si no hiciste esta solicitud, puedes ignorar este correo.</p>
+                    <p>Para crear una nueva contraseña, haz clic en el botón de abajo. Este enlace expirará en 1 hora.</p>
+                    <div class="button-container">
+                        <a href="{$reset_link}" class="button">Restablecer Contraseña</a>
+                    </div>
+                    <p>Si tienes problemas con el botón, copia y pega la siguiente URL en tu navegador:</p>
+                    <p><a href="{$reset_link}">{$reset_link}</a></p>
+                    <p>Gracias,</p>
+                    <p>El equipo del Mercado Municipal de Carúpano.</p>
+                </div>
+                <div class="footer">
+                    <p>
+                        &copy; 2025 Mercado Municipal de Carúpano. Todos los derechos reservados.
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        EOT;
+
+        return $html;
+    }    
+
 }

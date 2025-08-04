@@ -21,6 +21,12 @@ if (!empty($current_department)) {
     $department_menus = $userModel->getMenusByDepartment($current_department);
 }
 ?>
+<style>
+    #layout-menu {
+        background-color: #ffffffff !important; /* Color de fondo del menú */
+        box-shadow: -6px -3px 18px 2px;
+    }
+</style>
         <!-- Menu -->
         <aside id="layout-menu" class="layout-menu menu-vertical menu">
             <div class="app-brand demo">

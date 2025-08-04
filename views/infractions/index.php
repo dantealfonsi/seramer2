@@ -107,7 +107,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <table class="table table-bordered table-striped">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>ID</th>
                                             <th>Adjudicatario</th>
                                             <th>Puesto</th>
                                             <th>Tipo</th>
@@ -119,7 +118,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($infractions as $infraction): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($infraction['id_infraction']); ?></td>
                                             <td>
                                                 <strong>
                                                     <?php echo htmlspecialchars($infraction['adjudicatory_name']); ?>

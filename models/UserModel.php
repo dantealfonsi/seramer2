@@ -345,36 +345,6 @@ class UserModel {
     }
 
     /**
-     * Generar token para reset de contraseña
-     * @param string $email
-     * @return string|false
-     */
-    public function generatePasswordResetToken($email) {
-        try {
-            $token = bin2hex(random_bytes(32));
-            $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
-            
-            $query = "UPDATE " . $this->table . " 
-                     SET password_reset_token = :token, password_reset_expires = :expires 
-                     WHERE email = :email AND status = 'active'";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':token', $token);
-            $stmt->bindParam(':expires', $expires);
-            $stmt->bindParam(':email', $email);
-            
-            if ($stmt->execute() && $stmt->rowCount() > 0) {
-                return $token;
-            }
-            
-            return false;
-        } catch (PDOException $e) {
-            error_log("Error generando token: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
      * Resetear contraseña usando token
      * @param string $token
      * @param string $new_password
@@ -997,6 +967,94 @@ class UserModel {
             return [];
         }
     }
+
+
+        /**
+     * Genera un token de recuperación y lo guarda en la base de datos.
+     * @param int $user_id
+     * @return string|false
+     */
+    public function generatePasswordResetToken($user_id) {
+        try {
+            $token = bin2hex(random_bytes(32)); // Genera un token aleatorio de 64 caracteres
+            $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour')); // Expira en 1 hora
+
+            $query = "INSERT INTO password_resets (user_id, token, expires_at) VALUES (:user_id, :token, :expires_at)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->bindParam(':token', $token);
+            $stmt->bindParam(':expires_at', $expires_at);
+
+            if ($stmt->execute()) {
+                return $token;
+            } else {
+                return false;
+            }
+        } catch (PDOException $e) {
+            error_log("Error generando token de recuperación: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtiene el ID de usuario a partir de un token de recuperación válido.
+     * @param string $token
+     * @return int|false
+     */
+    public function getUserIdByResetToken($token) {
+        try {
+            $query = "SELECT user_id FROM password_resets WHERE token = :token AND expires_at > NOW()";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':token', $token);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return $result ? (int) $result['user_id'] : false;
+        } catch (PDOException $e) {
+            error_log("Error obteniendo usuario por token: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un token de recuperación después de ser usado.
+     * @param string $token
+     * @return bool
+     */
+    public function deleteResetToken($token) {
+        try {
+            $query = "DELETE FROM password_resets WHERE token = :token";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':token', $token);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error eliminando token: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza la contraseña del usuario.
+     * @param int $user_id
+     * @param string $new_password
+     * @return bool
+     */
+    public function updatePassword($user_id, $new_password) {
+        try {
+            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $query = "UPDATE users SET password_hash = :password_hash, updated_at = NOW() WHERE id = :user_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':password_hash', $password_hash);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error actualizando contraseña: " . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    
 }
 
 ?>
