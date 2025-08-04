@@ -463,9 +463,19 @@ class UserModel {
                 [
                     'title' => 'Infracciones',
                     'icon' => 'ri-file-list-3-line',
-                    'url' => 'views/infractions'
+                    'submenu' => [
+                        ['title' => 'Registrar Infracción', 'url' => 'views/infractions/create.php'],
+                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
+                    ]
                 ],
-               
+                [
+                    'title' => 'Quejas',
+                    'icon' => 'ri-file-list-3-line',
+                    'submenu' => [
+                        ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
+                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
+                    ]                    
+                ],                               
                 [
                     'title' => 'Reportes de Fiscalización',
                     'icon' => 'ri-file-list-3-line',

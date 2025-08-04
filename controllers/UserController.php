@@ -486,7 +486,7 @@ class UserController {
         
         // Verificar si username ya existe (excepto para el usuario actual)
         if (!empty($username)) {
-            $existing_user = $this->userModel->getUserByUsername($username);
+            $existing_user = $this->userModel->getByUsername($username);
             if ($existing_user && $existing_user['id'] != $user_id) {
                 $errors[] = 'El nombre de usuario ya está en uso';
             }
@@ -494,7 +494,7 @@ class UserController {
         
         // Verificar si email ya existe (excepto para el usuario actual)
         if (!empty($email)) {
-            $existing_user = $this->userModel->getUserByEmail($email);
+            $existing_user = $this->userModel->getByEmail($email);
             if ($existing_user && $existing_user['id'] != $user_id) {
                 $errors[] = 'El email ya está en uso';
             }

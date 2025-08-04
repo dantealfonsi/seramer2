@@ -1,10 +1,14 @@
 <?php
 /**
- * Archivo principal del proyecto Seramer
- * Maneja la redirección basada en el estado de la sesión
+ * Controlador Frontal (Router) de la Aplicación
+ *
+ * Este archivo es el único punto de entrada a la aplicación.
+ * 1. Analiza la URL para determinar el controlador y el método.
+ * 2. Verifica la autenticación y los permisos.
+ * 3. Carga el controlador correspondiente para manejar la solicitud.
  */
 
-// Incluir configuración de la aplicación
+// Incluir configuración y funciones globales
 require_once __DIR__ . '/config/app.php';
 
 // Iniciar sesión si no está iniciada
@@ -12,112 +16,104 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+// ===================================================================
+// FUNCIONES DE AUTENTICACIÓN (Tu lógica original)
+// ===================================================================
+
 /**
- * Función para verificar si el usuario está autenticado
+ * Verifica si el usuario está autenticado.
  * @return bool
  */
 function isUserAuthenticated() {
-    // Verificar si existe la sesión y tiene los datos necesarios
-    return isset($_SESSION['user_id']) && 
-           isset($_SESSION['user_email']) && 
-           !empty($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 
 /**
- * Función para verificar si la sesión es válida (no expirada)
+ * Verifica si la sesión no ha expirado.
  * @return bool
  */
 function isSessionValid() {
-    // Verificar si existe el timestamp de la sesión
     if (!isset($_SESSION['last_activity'])) {
         return false;
     }
     
-    // Tiempo de expiración en segundos (30 minutos = 1800 segundos)
+    // Tiempo de expiración en segundos (30 minutos)
     $session_timeout = 1800;
     
-    // Verificar si la sesión no ha expirado
     if ((time() - $_SESSION['last_activity']) > $session_timeout) {
-        // Sesión expirada, destruir sesión
         session_unset();
         session_destroy();
         return false;
     }
     
-    // Actualizar timestamp de actividad
     $_SESSION['last_activity'] = time();
     return true;
 }
 
-/**
- * Función para obtener información del usuario logueado
- * @return array|null
- */
-function getCurrentUser() {
-    if (isUserAuthenticated() && isSessionValid()) {
-        return [
-            'id' => $_SESSION['user_id'] ?? null,
-            'email' => $_SESSION['user_email'] ?? null,
-            'name' => $_SESSION['user_name'] ?? null,
-            'role' => $_SESSION['user_role'] ?? 'user',
-            'last_activity' => $_SESSION['last_activity'] ?? null
-        ];
-    }
-    return null;
+
+// ===================================================================
+// LÓGICA DEL ROUTER
+// ===================================================================
+
+// 1. PARSEO DE LA URL
+$url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'home/index';
+$url = filter_var($url, FILTER_SANITIZE_URL);
+$urlParts = explode('/', $url);
+
+// 2. DETERMINAR CONTROLADOR Y MÉTODO
+$controllerName = !empty($urlParts[0]) ? ucwords($urlParts[0]) . 'Controller' : 'HomeController';
+$methodName = isset($urlParts[1]) ? $urlParts[1] : 'index';
+
+
+// 3. VERIFICACIÓN DE PERMISOS
+// Define las rutas que no requieren que el usuario esté logueado.
+$publicRoutes = [
+    'AuthController' => ['index', 'login', 'processLogin'], // Métodos públicos del AuthController
+];
+
+$isPublicRoute = false;
+if (isset($publicRoutes[$controllerName]) && in_array($methodName, $publicRoutes[$controllerName])) {
+    $isPublicRoute = true;
 }
 
-// Lógica principal de redirección
-try {
-    
-    // Verificar si el usuario está autenticado y la sesión es válida
-    if (isUserAuthenticated() && isSessionValid()) {
-        
-        // Usuario autenticado - redirigir al dashboard
-        $dashboardUrl = url('views/dashboard/dashboard.php');
-        
-        if (DEBUG_MODE) {
-            $user = getCurrentUser();
-            error_log("Usuario autenticado: " . $user['email'] . " - Redirigiendo a dashboard");
-        }
-        
-        header("Location: $dashboardUrl");
+// Si la ruta NO es pública, verificamos la sesión
+if (!$isPublicRoute) {
+    if (!isUserAuthenticated() || !isSessionValid()) {
+        // Si no está autenticado, redirigir al login
+        // Usamos la URL base de tu config/app.php
+        header('Location: ' . BASE_URL . 'auth/login');
         exit();
-        
+    }
+}
+
+
+// 4. CARGAR Y EJECUTAR EL CONTROLADOR
+$controllerFile = 'controllers/' . $controllerName . '.php';
+
+if (file_exists($controllerFile)) {
+    require_once $controllerFile;
+    
+    if (class_exists($controllerName)) {
+        $controller = new $controllerName();
+
+        if (method_exists($controller, $methodName)) {
+            // Obtener los parámetros de la URL (ej: /complaints/edit/15)
+            $params = array_slice($urlParts, 2);
+            // Llamar al método del controlador
+            call_user_func_array([$controller, $methodName], $params);
+        } else {
+            // Error 404: Método no encontrado
+            http_response_code(404);
+            echo "Error 404: Recurso no encontrado (el método '$methodName' no existe en $controllerName).";
+        }
     } else {
-        
-        // Usuario no autenticado o sesión expirada - redirigir al login
-        $loginUrl = url('views/auth/login.php');
-        
-        if (DEBUG_MODE) {
-            error_log("Usuario no autenticado - Redirigiendo a login");
-        }
-        
-        // Limpiar cualquier sesión residual
-        if (isset($_SESSION)) {
-            session_unset();
-            session_destroy();
-        }
-        
-        header("Location: $loginUrl");
-        exit();
-        
+        // Error 500: Clase del controlador no encontrada en el archivo
+        http_response_code(500);
+        echo "Error del servidor: La clase del controlador '$controllerName' no se encontró.";
     }
-    
-} catch (Exception $e) {
-    
-    // En caso de error, redirigir al login por seguridad
-    if (DEBUG_MODE) {
-        error_log("Error en index.php: " . $e->getMessage());
-    }
-    
-    $loginUrl = url('views/auth/login.php');
-    header("Location: $loginUrl");
-    exit();
-    
+} else {
+    // Error 404: Archivo del controlador no encontrado
+    http_response_code(404);
+    echo "Error 404: Recurso no encontrado (el archivo del controlador '$controllerFile' no existe).";
 }
-
-// Esta línea nunca debería ejecutarse, pero por seguridad
-$loginUrl = url('views/auth/login.php');
-header("Location: $loginUrl");
-exit();
-?>
