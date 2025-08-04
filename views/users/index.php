@@ -45,8 +45,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title">
-                            <i class="ri ri-user-line mr-1"></i>
+                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri ri-user-line mr-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="card-tools">
@@ -144,12 +144,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <i class="fas fa-users"></i>
                                     </span>
                                     <div class="info-box-content">
-                                        <span class="info-box-text">Total de Usuarios</span>
+                                        <span class="info-box-text">Total de Usuarios: </span>
                                         <span class="info-box-number"><?php echo $total_users; ?></span>
                                         <?php if ($department_filter): ?>
-                                            <span class="progress-description">
-                                                Departamento: <?php echo htmlspecialchars($department_filter); ?>
-                                            </span>
                                         <?php endif; ?>
                                     </div>
                                 </div>

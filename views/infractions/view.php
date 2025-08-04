@@ -56,8 +56,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="ri-alert-line me-1"></i>
+                        <h5 class="card-title mb-0" style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="btn-group" role="group">

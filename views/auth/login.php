@@ -74,30 +74,14 @@ session_start();
   <body>
     <!-- Content -->
 
-    <div class="authentication-wrapper authentication-cover">
+    <div class="authentication-wrapper authentication-cover" >
       <!-- Logo -->
       <a href="<?php echo url('index.php'); ?>" class="auth-cover-brand d-flex align-items-center gap-2">
-        <span class="app-brand-logo demo">
-            <img src="<?php echo img('logo.png'); ?>" width="32" height="32" alt="Logo" class="logo" />   
-        </span>
-        <span class="app-brand-text demo text-heading fw-semibold"><?php echo PROJECT_NAME; ?></span>
       </a>
       <!-- /Logo -->
       <div class="authentication-inner row m-0">
         <!-- /Left Section -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2">
-          <img
-            src="<?php echo img('illustrations/auth-login-illustration-light.png'); ?>"
-            class="auth-cover-illustration w-100"
-            alt="auth-illustration"
-            data-app-light-img="illustrations/auth-login-illustration-light.png"
-            data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
-          <img
-            alt="mask"
-            src="<?php echo img('illustrations/auth-basic-login-mask-light.png'); ?>"
-            class="authentication-image d-none d-lg-block"
-            data-app-light-img="illustrations/auth-basic-login-mask-light.png"
-            data-app-dark-img="illustrations/auth-basic-login-mask-dark.png" />
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2" style="background-image: url('<?php echo img('new_logo.png'); ?>');background-repeat: no-repeat;background-size: cover; background-position: center;">
         </div>
         <!-- /Left Section -->
 
@@ -105,6 +89,9 @@ session_start();
         <div
           class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6">
           <div class="w-px-400 mx-auto pt-12 pt-lg-0">
+            <div style="display: flex;align-items: center;justify-content: center;margin-bottom: 2rem;">
+              <img src="<?php echo img('logo.png'); ?>" style="width: 8rem;height: 7.5rem;/* padding: 1rem; */box-shadow: 1px 0px 8px 0px #818181;border-radius: 50%;padding: .4rem;" alt="Logo" class="logo" />   
+            </div>
             <h4 class="mb-1">Bienvenido a <?php echo PROJECT_NAME; ?>! 👋</h4>
             <p class="mb-5">Inicia sesión en tu cuenta</p>
 

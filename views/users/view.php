@@ -64,7 +64,7 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
     <!-- Alerta si faltan datos de personal -->
     <?php if (!$has_staff_data): ?>
         <div class="alert alert-warning alert-dismissible" role="alert">
-            <i class="ri-alert-line me-2"></i>
+            <i class="ri-alert-line me-2" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
             <strong>Información Incompleta:</strong> Este usuario no tiene datos de personal completos asociados. 
             Se muestra la información disponible del sistema de usuarios.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -192,7 +192,7 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                             </dl>
                         </div>
                         <div class="col-xl-6 col-12">
-                            <dl class="row mb-0">
+                            <dl class="row mb-0" style="gap:.1rem">
                                 <dt class="col-sm-4 fw-medium text-nowrap">Fecha de Ingreso:</dt>
                                 <dd class="col-sm-8">
                                     <?php echo !empty($user['hire_date']) ? date('d/m/Y', strtotime($user['hire_date'])) : '<em class="text-muted">No registrada</em>'; ?>
@@ -250,7 +250,7 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                             </dl>
                         </div>
                         <div class="col-xl-6 col-12">
-                            <dl class="row mb-0">
+                            <dl class="row mb-0" style="gap:.1rem">
                                 <dt class="col-sm-4 fw-medium text-nowrap">Departamentos Asignados:</dt>
                                 <dd class="col-sm-8">
                                     <?php if (!empty($user['departments'])): ?>

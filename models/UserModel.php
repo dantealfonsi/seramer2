@@ -432,7 +432,7 @@ class UserModel {
             'Fiscalizacion' => [
                 [
                     'title' => 'Infracciones',
-                    'icon' => 'ri-file-list-3-line',
+                    'icon' => 'ri-alert-line',
                     'submenu' => [
                         ['title' => 'Registrar Infracción', 'url' => 'views/infractions/create.php'],
                         ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
@@ -440,7 +440,7 @@ class UserModel {
                 ],
                 [
                     'title' => 'Quejas',
-                    'icon' => 'ri-file-list-3-line',
+                    'icon' => 'ri-chat-3-line',
                     'submenu' => [
                         ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
                         ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
@@ -448,7 +448,7 @@ class UserModel {
                 ],                               
                 [
                     'title' => 'Reportes de Fiscalización',
-                    'icon' => 'ri-file-list-3-line',
+                    'icon' => 'ri-bar-chart-box-line',
                     'url' => 'fiscalizacion/reportes.php'
                 ]
             ],
