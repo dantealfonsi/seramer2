@@ -444,12 +444,68 @@ class UserModel {
                     'submenu' => [
                         ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
                         ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
-                    ]                    
-                ],                               
+                    ]
+                ],
                 [
-                    'title' => 'Reportes de Fiscalización',
+                    'title' => 'Inspecciones',
+                    'icon' => 'ri-search-eye-line',
+                    'submenu' => [
+                        ['title' => 'Realizar Inspección', 'url' => 'views/inspections/create.php'],
+                        ['title' => 'Historial de Inspecciones', 'url' => 'views/inspections/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Actas de Fiscalización',
+                    'icon' => 'ri-file-text-line',
+                    'submenu' => [
+                        ['title' => 'Registrar Acta', 'url' => 'views/actas/create.php'],
+                        ['title' => 'Ver Actas', 'url' => 'views/actas/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Sanciones',
+                    'icon' => 'ri-hammer-line',
+                    'submenu' => [
+                        ['title' => 'Aplicar Sanción', 'url' => 'views/sanctions/create.php'],
+                        ['title' => 'Seguimiento de Sanciones', 'url' => 'views/sanctions/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Conciliación',
+                    'icon' => 'ri-discuss-line',
+                    'submenu' => [
+                        ['title' => 'Programar Citación', 'url' => 'views/conciliacion/create.php'],
+                        ['title' => 'Casos de Conciliación', 'url' => 'views/conciliacion/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Recursos Adm.',
+                    'icon' => 'ri-bank-card-2-line',
+                    'submenu' => [
+                        ['title' => 'Registrar Recurso', 'url' => 'views/recursos/create.php'],
+                        ['title' => 'Seguimiento de Recursos', 'url' => 'views/recursos/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Reportes',
                     'icon' => 'ri-bar-chart-box-line',
-                    'url' => 'fiscalizacion/reportes.php'
+                    'url' => 'views/reports/index.php'
+                ],
+                [
+                    'title' => 'Auditoría',
+                    'icon' => 'ri-shield-check-line',
+                    'submenu' => [
+                        ['title' => 'Registro de Actividad', 'url' => 'views/auditoria/activity_log.php'],
+                        ['title' => 'Informes de Auditoría', 'url' => 'views/auditoria/reports.php']
+                    ]
+                ],
+                [
+                    'title' => 'Control de Acceso',
+                    'icon' => 'ri-lock-line',
+                    'submenu' => [
+                        ['title' => 'Gestión de Roles', 'url' => 'views/access/roles.php'],
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/access/users.php']
+                    ]
                 ]
             ],
             'Cobranza' => [

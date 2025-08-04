@@ -104,8 +104,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead class="table-light">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>Adjudicatario</th>
                                             <th>Puesto</th>
@@ -155,14 +155,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </span>
                                             </td>
                                                 <td class="text-center">
-                                                    <a href="view.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-info" title="Ver detalles">
+                                                    <a href="view.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
-                                                    <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-warning" title="Editar">
+                                                    <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-danger" 
+                                                            class="btn btn-sm btn-outline-danger" 
                                                             title="Eliminar"
                                                             onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>

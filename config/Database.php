@@ -4,7 +4,7 @@ class Database {
     private $host = 'localhost';
     private $db_name = 'seramermvc';
     private $username = 'root';
-    private $password = 'a10882990';
+    private $password = '';
     private $charset = 'utf8mb4';
     private $conn;
 

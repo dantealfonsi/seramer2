@@ -167,9 +167,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </p>
                             </div>
                         <?php else: ?>
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
+                            <div>
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>Usuario</th>
                                             <th>Personal Asociado</th>
@@ -214,16 +214,16 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 <td>
                                                     
                                                         <a href="view.php?id=<?php echo $user['id']; ?>" 
-                                                           class="btn btn-text-info waves-effect btn-sm" title="Ver detalles">
+                                                           class="btn btn-sm btn-outline-primary" title="Ver detalles">
                                                             <i class="ri ri-eye-line"></i>
                                                         </a>
                                                         <a href="edit.php?id=<?php echo $user['id']; ?>" 
-                                                           class="btn btn-text-warning waves-effect btn-sm" title="Editar">
+                                                           class="btn btn-sm btn-outline-warning" title="Editar">
                                                             <i class="ri ri-edit-line"></i>
                                                         </a>
                                                         <?php if ($user['status'] === 'active'): ?>
                                                             <a href="deactivate.php?id=<?php echo $user['id']; ?>" 
-                                                               class="btn btn-text-danger waves-effect btn-sm" title="Desactivar"
+                                                               class="btn btn-sm btn-outline-danger" title="Desactivar"
                                                                onclick="return confirm('¿Está seguro de desactivar este usuario?')">
                                                                 <i class="ri ri-user-line"></i>
                                                             </a>

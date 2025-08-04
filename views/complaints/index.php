@@ -113,7 +113,6 @@ $allowed_tipo = [
                                 <table class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID</th>
                                             <th>Cliente</th>
                                             <th>Tipo</th>
                                             <th>Prioridad</th>
@@ -125,7 +124,6 @@ $allowed_tipo = [
                                     <tbody>
                                         <?php foreach ($complaints as $complaint): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($complaint['complaint_id']); ?></td>
                                             <td>
                                                 <strong><?php echo htmlspecialchars($complaint['client_name']); ?></strong>
                                                 <br>
