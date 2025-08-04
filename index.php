@@ -98,9 +98,7 @@ if (file_exists($controllerFile)) {
         $controller = new $controllerName();
 
         if (method_exists($controller, $methodName)) {
-            // Obtener los parámetros de la URL (ej: /complaints/edit/15)
             $params = array_slice($urlParts, 2);
-            // Llamar al método del controlador
             call_user_func_array([$controller, $methodName], $params);
         } else {
             // Error 404: Método no encontrado
