@@ -4,7 +4,7 @@ class Database {
     private $host = 'localhost';
     private $db_name = 'seramermvc';
     private $username = 'root';
-    private $password = '';
+    private $password = 'a10882990';
     private $charset = 'utf8mb4';
     private $conn;
 
@@ -56,6 +56,70 @@ class Database {
             'username' => $this->username,
             'charset' => $this->charset
         ];
+    }
+
+/**
+     * Ejecuta una consulta SQL preparada.
+     * @param string $query La consulta SQL.
+     * @param array $params Los parámetros para la consulta.
+     * @return PDOStatement|false Retorna la instancia de PDOStatement o false si falla.
+     */
+    public function executeQuery($query, $params = []) {
+        try {
+            // Aseguramos la conexión antes de intentar usarla
+            $this->getConnection();
+            
+            // Si la conexión no se pudo establecer, salimos
+            if (!$this->isConnected()) {
+                throw new Exception("No hay una conexión a la base de datos disponible.");
+            }
+
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute($params);
+            
+            return $stmt;
+            
+        } catch (PDOException $exception) {
+            // Registramos el error sin mostrarlo directamente al usuario
+            error_log("Error al ejecutar la consulta: " . $exception->getMessage() . " - Query: " . $query);
+            // Podrías mostrar un mensaje genérico al usuario
+            echo "executeQuery: Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo más tarde.";
+            return [];
+        } catch (Exception $e) {
+            // Manejo de errores si getConnection() falló
+            error_log($e->getMessage());
+            echo "executeQuery: Ocurrió un error al procesar tu solicitud. Por favor, intenta de nuevo más tarde.";
+            return [];
+        }
+    }
+
+    /**
+     * Ejecuta una consulta y retorna todos los resultados.
+     * @param string $query La consulta SQL.
+     * @param array $params Los parámetros para la consulta.
+     * @return array Retorna un array con todos los resultados, o un array vacío en caso de error.
+     */
+    public function fetchAll($query, $params = []) {
+        $stmt = $this->executeQuery($query, $params);
+        if ($stmt) {
+            return $stmt->fetchAll();
+        }
+        return [];
+    }
+
+    /**
+     * Ejecuta una consulta y retorna un único resultado.
+     * @param string $query La consulta SQL.
+     * @param array $params Los parámetros para la consulta.
+     * @return mixed Retorna el primer resultado, o null si no hay resultados o falla.
+     */
+    public function fetchOne($query, $params = []) {
+        $stmt = $this->executeQuery($query, $params);
+        if ($stmt) {
+            // Con FETCH_ASSOC, esto devuelve un array asociativo o false
+            return $stmt->fetch();
+        }
+        return null;
     }
 }
 
