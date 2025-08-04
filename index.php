@@ -62,7 +62,7 @@ $url = filter_var($url, FILTER_SANITIZE_URL);
 $urlParts = explode('/', $url);
 
 // 2. DETERMINAR CONTROLADOR Y MÉTODO
-$controllerName = !empty($urlParts[0]) ? ucwords($urlParts[0]) . 'Controller' : 'HomeController';
+$controllerName = !empty($urlParts[0]) ? ucwords($urlParts[0]) . 'controller' : 'HomeController';
 $methodName = isset($urlParts[1]) ? $urlParts[1] : 'index';
 
 
@@ -82,7 +82,7 @@ if (!$isPublicRoute) {
     if (!isUserAuthenticated() || !isSessionValid()) {
         // Si no está autenticado, redirigir al login
         // Usamos la URL base de tu config/app.php
-        header('Location: ' . BASE_URL . 'auth/login');
+        header('Location: ' . BASE_URL . '/views/auth/login.php');
         exit();
     }
 }

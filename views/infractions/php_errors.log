@@ -9,3 +9,7 @@
 [04-Aug-2025 01:13:14 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
 [04-Aug-2025 15:55:43 UTC] Error al obtener infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
 [04-Aug-2025 15:55:43 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 16:26:37 UTC] Error al obtener infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 16:26:37 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 16:46:49 UTC] Error al obtener infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 16:46:49 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'

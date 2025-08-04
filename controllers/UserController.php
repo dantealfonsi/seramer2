@@ -6,7 +6,6 @@ require_once __DIR__ . '/../public/libs/phpmailer/src/PHPMailer.php';
 require_once __DIR__ . '/../public/libs/phpmailer/src/SMTP.php';
 require_once __DIR__ . '/../public/libs/phpmailer/src/Exception.php';
 
-
 class UserController {
     private $userModel;
     
@@ -549,50 +548,105 @@ class UserController {
         ];
     }
 
+    /**
+     * Enviar un correo electrónico utilizando PHPMailer
+     * @param string $to
+     * @param string $subject
+     * @param string $body
+     * @return array
+     */
+
+    public function sendEmail($to, $subject, $body) {
+    // Configuración de PHPMailer
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $obj = array('status' => 0, 'message' => 'Error al enviar el correo');
+        try {
+            $mail->isSMTP();
+            $mail->Host = ''; //example: 'server121.web-hosting.com'
+            $mail->SMTPAuth = true;
+            $mail->Username = ''; //example: 'pepe@gmail.online';
+            $mail->Password = ''; //example: 'password123';
+            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+            
+            // Caracteres y codificacion
+            $mail->CharSet = 'UTF-8';    
+
+            $mail->setFrom('pepe@gmail.online', 'SERAMER');
+            $mail->addAddress($to);
+
+            $mail->isHTML(true);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+
+            if($mail->send()){
+            $obj['status'] = 1;
+            $obj['message'] = 'Codigo enviado';
+            } else {
+            $obj['message'] = $mail->ErrorInfo;
+            }
+            return $obj;
+
+        } catch (PHPMailer\PHPMailer\Exception $e) {
+            $obj['status'] = 0;
+            $obj['message'] = $mail->ErrorInfo;
+            return $obj;  
+        }
+    }    
+
         /**
      * Muestra el formulario para solicitar el restablecimiento o procesa la solicitud.
      * @param array $params
      */
     public function forgotPassword($params = []) {
+        $database = new Database();
         $data = [
             'success' => false,
             'message' => '',
             'email' => $params['email'] ?? ''
-        ];
+        ];        
+        $resetCodigo = rand(100000, 999999); // Generar un codigo de 6 digitos
+        $email = $data['email'];
+        $obj = array('status' => 0,'code' =>null, 'message' => 'Error al enviar el correo',
+                     'email' => $email, 'code' => null);        
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = trim($params['email'] ?? '');
-            $user = $this->userModel->getByEmail($email);
 
-            if ($user) {
-                $token = $this->userModel->generatePasswordResetToken($user['id']);
-                if ($token) {
-                    $reset_link = BASE_URL . '/views/auth/reset-password.php?token=' . $token;
+        $subject = "Restablecimiento de Contraseña para " . PROJECT_NAME;
+        $body = "Hola " . htmlspecialchars($data['email']) . ",<br><br>"
+                        . "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.<br>"
+                        . "Copia el siguiente codigo para crear una nueva contraseña:<br><br>"
+                        . "Codigo: <h2>" . $resetCodigo . "</h2><br><br>"
+                        . "Si no solicitaste este cambio, ignora este correo.";
 
-                    $mail = new MailService();
-                    $subject = "Restablecimiento de Contraseña para " . PROJECT_NAME;
-                    $body = "Hola " . htmlspecialchars($user['first_name']) . ",<br><br>"
-                          . "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta.<br>"
-                          . "Haz clic en el siguiente enlace para crear una nueva contraseña:<br><br>"
-                          . "<a href='" . $reset_link . "'>Restablecer Contraseña</a><br><br>"
-                          . "Si no solicitaste este cambio, ignora este correo. El enlace expirará en 1 hora.";
-
-                    if ($mail->sendEmail($email, $subject, $body)) {
-                        $data['success'] = true;
-                        $data['message'] = "Si la dirección de correo existe, hemos enviado un enlace para restablecer la contraseña.";
-                    } else {
-                        $data['message'] = "Error al enviar el correo. Por favor, inténtalo de nuevo más tarde.";
-                    }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $obj['message'] = "Formato de correo electronico invalido";
+            return $obj;
+        } else {
+            // Verificar si el usuario existe usando el modelo
+            $existing_user = $this->userModel->getByEmail($email);
+            if ($existing_user) {
+                $result = $this->sendEmail($email, $subject, $body);
+                if ($result['status'] == 1) {
+                    $obj['status'] = 1;
+                    $obj['code'] = $resetCodigo;
+                    $obj['message'] = 'Codigo enviado';
                 } else {
-                    $data['message'] = "Error al generar el token. Por favor, inténtalo de nuevo.";
+                    $obj['status'] = 1;
+                    $obj['message'] = 'Mail - Error al enviar el correo';
+                    $obj['code'] = $resetCodigo; // Mantener el código para el formulario
                 }
+                // Guardar el codigo en la base de datos
+                $query = "UPDATE users SET password_reset_token = :reset_token, password_reset_expires = DATE_ADD(NOW(), INTERVAL 15 MINUTE) WHERE email = :email";
+                $params = [
+                    ':reset_token' => $resetCodigo,
+                    ':email' => $email
+                ];
+                $database->executeQuery($query, $params);
             } else {
-                // Mensaje genérico para no dar pistas sobre la existencia de un email
-                $data['success'] = true;
-                $data['message'] = "Si la dirección de correo existe, hemos enviado un enlace para restablecer la contraseña.";
+                $obj['message'] = 'El correo no está registrado en ' . PROJECT_NAME;
             }
         }
-        return $data;
+        return $obj;
     }
 
     /**
@@ -657,37 +711,11 @@ class UserController {
         return $data;
     }
 
-
-    private function sendPasswordResetEmail($email, $token) {
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        try {
-            // Configuración del servidor SMTP
-            $mail->isSMTP();
-            $mail->Host       = 'smtp.gmail.com';
-            $mail->Username   = 'seramerseramer@gmail.com';
-            $mail->Password   = 'deor aich llpw xdvz';
-            $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
-            $mail->Port       = 465;
-
-            // Configuración del remitente y destinatario
-            $mail->setFrom('seramerseramer@gmail.com', 'Mercado Municipal de Carúpano');
-            $mail->addAddress($email);
-
-            // Contenido del correo
-            $mail->isHTML(true);
-            $mail->Subject = 'Restablecimiento de Contraseña';
-            $reset_link = BASE_URL . "/views/forgot-password/ResetPassword.php?token=$token";
-            $mail->Body    = $this->generateEmailHtml($reset_link);
-            $mail->AltBody = "Para restablecer tu contraseña, copia y pega este enlace en tu navegador: $reset_link";
-
-            $mail->send();
-            return true;
-        } catch (Exception $e) {
-            error_log("Error al enviar el correo: {$mail->ErrorInfo}");
-            return false;
-        }
-    }
-
+    /**
+     * Genera el HTML del correo electrónico para el restablecimiento de contraseña.
+     * @param string $reset_link El enlace para restablecer la contraseña.
+     * @return string El HTML del correo electrónico.
+     */
     // En el UserController, añade este nuevo método privado
     private function generateEmailHtml($reset_link) {
         // Definimos el color morado principal
