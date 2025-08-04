@@ -167,6 +167,8 @@ class AuthMiddleware {
         
         return $userModel->isManager($user_id);
     }
+    
+
 }
 
 ?>
