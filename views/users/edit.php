@@ -124,8 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = $is_manager && !$is_rrhh ? 
-    'Editar Usuario - Departamento: ' . $is_manager['name'] : 
-    'Editar Usuario';
+    'Editar Usuario' : 'Editar Usuario';
 ?>
 
 <?php include __DIR__ . '/../layouts/header.php'; ?>
@@ -138,7 +137,9 @@ $page_title = $is_manager && !$is_rrhh ?
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-0"><?php echo htmlspecialchars($page_title); ?></h5>
+                        <h5 class="mb-0" style="font-size: 2rem;font-weight: 600;">                        
+                            <i class="ri ri-user-line mr-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <?php echo htmlspecialchars($page_title); ?></h5>
                         <small class="text-muted">
                             Editando: <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>
                             (<?php echo htmlspecialchars($user['username']); ?>)

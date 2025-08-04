@@ -31,7 +31,7 @@ if (!empty($current_department)) {
         <aside id="layout-menu" class="layout-menu menu-vertical menu">
             <div class="app-brand demo" style="padding: 0rem !important;">
                 <a href="<?php echo url('views/dashboard/dashboard.php'); ?>" class="app-brand-link">
-                    <span class="app-brand-logo demo" style="box-shadow: -3px -1px 9px 0px black;">
+                    <span class="app-brand-logo demo">
                         <img src="<?php echo img('logo.png'); ?>" alt="<?php echo PROJECT_NAME; ?>" width="64" height="64">
                     </span>
                     <span class="app-brand-text demo menu-text fw-semibold ms-2"  style="text-transform: capitalize;font-family: 'Inter';font-weight: bolder !important;font-size: 1.5rem;">SERAMER</span>

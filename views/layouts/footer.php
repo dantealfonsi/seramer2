@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../config/app.php';
                                 </div>
                                 <div class="d-none d-lg-inline-block">
                                     <a
-                                        href="#"
+                                        href="../layouts/documentation.php"
                                         target="_blank"
                                         class="footer-link me-4"
                                     >Documentación</a>

@@ -47,7 +47,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
                             <i class="ri ri-user-line mr-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
+                            Gestion de Usuarios
                         </h5>
                         <div class="card-tools">
                             <a href="create.php" class="btn btn-primary btn-sm">
