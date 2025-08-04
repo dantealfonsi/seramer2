@@ -1013,13 +1013,13 @@ class UserModel {
      */
     public function getUserIdByResetToken($token) {
         try {
-            $query = "SELECT user_id FROM password_resets WHERE token = :token AND expires_at > NOW()";
+            $query = "SELECT id FROM users WHERE password_reset_token = :token";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':token', $token);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ? (int) $result['user_id'] : false;
+            return $result ? (int) $result['id'] : false;
         } catch (PDOException $e) {
             error_log("Error obteniendo usuario por token: " . $e->getMessage());
             return false;

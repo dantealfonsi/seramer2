@@ -10,8 +10,20 @@ $controller = new UserController();
 
 // Procesar la solicitud si es un POST
 $data = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = $controller->forgotPassword($_POST);
+//$data = $controller->forgotPassword($_POST);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {    
+    if(isset($_POST['code']) && ($_POST['code'] === $_POST['token'])){
+        header('Location: ResetPassword.php?email=' . $_POST['email']. '&token=' . $_POST['code']);
+        exit();
+    } else {
+        $data = $controller->forgotPassword( $_POST);
+    }
+
+    //$data = $controller->forgotPassword($_POST);
+} else {
+    // Si no es un POST, simplemente mostramos el formulario
+    $data = ['message' => 'Por favor, ingresa tu correo electrónico para recuperar tu contraseña.'];
 }
 
 // Redireccionar si la solicitud fue exitosa
@@ -64,13 +76,26 @@ if (isset($data['success']) && $data['success']) {
                             <?php echo htmlspecialchars($data['message']); ?>
                         </div>
                     <?php endif; ?>
+                    <?php if (!empty($data['code'])): ?>
+                        <div class="alert alert-<?php echo isset($data['success']) && $data['success'] ? 'success' : 'info'; ?>" role="alert">
+                            Codigo Temp: <?php echo htmlspecialchars($data['code']); ?>
+                        </div>
+                    <?php endif; ?>                    
 
                     <form id="formForgotPassword" class="mb-5" action="" method="POST">
+                        <input type="hidden" name="token" value="<?php echo htmlspecialchars($data['code'] ?? ''); ?>" />
                         <div class="form-floating form-floating-outline mb-5">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo electrónico" autofocus />
-                            <label for="email">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" name="email" <?php if(isset($data['email'])) echo  "value='".htmlspecialchars($data['email'])."' readonly "; ?>placeholder="Ingresa tu correo electrónico" autofocus />
+                            <label for="email">Correo Electrónico</label>                            
                         </div>
-                        <button class="btn btn-primary d-grid w-100" type="submit">Enviar Enlace de Recuperación</button>
+                        <?php if(isset($data['email'])){?>
+                        <div class="form-floating form-floating-outline mb-5">
+                            <input type="text" class="form-control" id="code" name="code" placeholder="Ingresa Codigo" />
+                            <label for="email">Codigo Recuperacion</label>                            
+                        </div>                            
+                        <?php
+                        } ?>                    
+                        <button class="btn btn-primary d-grid w-100" type="submit">Enviar Codigo de Recuperación</button>
                     </form>
 
                     <div class="text-center">

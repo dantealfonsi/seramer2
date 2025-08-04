@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($data['redirect_to_login']) && $data['redirect_to_login']) {
     $_SESSION['message'] = $data['message'];
     $_SESSION['message_type'] = $data['messageType'];
-    header('Location: login.php');
+    header('Location: ../auth/login.php');
     exit();
 }
 ?>
