@@ -53,8 +53,7 @@ if ($is_edit) {
 
     $stallDict = [];
     foreach ($stalls as $id => $code) {
-        $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];
-    
+        $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
     }
     
     $form_data['id_adjudicatory'] = $infraction['id_adjudicatory'];

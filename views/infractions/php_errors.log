@@ -294,3 +294,11 @@ Stack trace:
 [05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
 [05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
 [05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 00:12:16 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:139
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(70): InfractionsModel->getInfractionDetails()
+#1 C:\Apache24\htdocs\seramer2\views\infractions\view.php(24): InfractionsController->view()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 139
+[05-Aug-2025 00:14:33 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 223
+[05-Aug-2025 00:14:33 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 223

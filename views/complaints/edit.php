@@ -68,7 +68,10 @@ $allowed_status = [
 
 // Cargar la lista de puestos
 $stalls = $marketStallsModel->getAll();
-
+$stallDict = [];
+foreach ($stalls as $id => $code) {
+    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
+}
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -141,9 +144,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="position_id" class="form-label">Puesto del Mercado</label>
                                         <select class="form-select" id="position_id" name="position_id">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stalls as $stall): ?>
+                                            <?php foreach ($stallDict as $stall): ?>
                                                 <option value="<?php echo htmlspecialchars($stall['id_stall']); ?>"
-                                                        <?php echo ($data['complaint']['position_id'] == $stall['id_stall']) ? 'selected' : ''; ?>>
+                                                        <?php echo ((int)$data['complaint']['position_id'] == (int)$stall['id_stall']) ? 'selected' : ''; ?>>
                                                     <?php echo htmlspecialchars($stall['stall_code']); ?>
                                                 </option>
                                             <?php endforeach; ?>

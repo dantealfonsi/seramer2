@@ -145,3 +145,31 @@ Stack trace:
 [04-Aug-2025 15:28:29 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 97
 [04-Aug-2025 15:28:29 UTC] PHP Warning:  Undefined array key "complaint" in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 103
 [04-Aug-2025 15:28:29 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 103
+[05-Aug-2025 00:13:30 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\create.php:173
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\create.php on line 173
+[05-Aug-2025 00:13:57 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\create.php:173
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\create.php on line 173
+[05-Aug-2025 00:14:37 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\create.php:173
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\create.php on line 173
+[05-Aug-2025 00:14:49 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\edit.php:145
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 145
+[05-Aug-2025 00:15:00 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\edit.php:145
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 145
+[05-Aug-2025 00:24:25 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\edit.php:145
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 145
+[05-Aug-2025 00:26:07 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\complaints\edit.php:145
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\complaints\edit.php on line 145

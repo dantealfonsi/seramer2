@@ -44,6 +44,10 @@ $allowed_status = [
 // Cargar la lista de puestos
 $stalls = $marketStallsModel->getAll();
 
+$stallDict = [];
+foreach ($stalls as $id => $code) {
+    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
+}
 // Procesar envío del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_data = [
@@ -169,9 +173,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </label>
                                         <select class="form-select" id="position_id" name="position_id">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stalls as $stall): ?>
+                                            <?php foreach ($stallDict as $stall): ?>
                                                 <option value="<?php echo htmlspecialchars($stall['id_stall']); ?>"
-                                                        <?php echo ($form_data['position_id'] == $stall['id_stall']) ? 'selected' : ''; ?>>
+                                                        <?php echo ((int)$form_data['position_id'] == (int)$stall['id_stall']) ? 'selected' : ''; ?>>
                                                     <?php echo htmlspecialchars($stall['stall_code']); ?>
                                                 </option>
                                             <?php endforeach; ?>
