@@ -17,22 +17,17 @@ class MarketStallsModel {
             $offset = ($page - 1) * $limit;
             $searchParam = "%$search%";
             
-            $query = "SELECT ms.*, 
-                             COUNT(i.id_infraction) as infractions_count 
-                      FROM " . $this->table . " ms 
-                      LEFT JOIN infractions i ON ms.id_stall = i.id_stall
-                      WHERE ms.stall_code LIKE :search
-                      GROUP BY ms.id_stall
-                      ORDER BY ms.stall_code ASC 
-                      LIMIT :limit OFFSET :offset";
+            $query = "SELECT id_stall, stall_code FROM market_stalls";
             
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':search', $searchParam);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $dat =  $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stallDict = [];
+            foreach ($dat as $stall) {
+                $stallDict[$stall['id_stall']] = $stall['stall_code'];
+            }
+            return $stallDict;
         } catch(PDOException $exception) {
             error_log("Error al obtener puestos del mercado: " . $exception->getMessage());
             return [];

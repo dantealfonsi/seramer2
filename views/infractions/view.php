@@ -159,8 +159,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="col-12">
                                     <h5><i class="ri-image-line"></i> Evidencia</h5>
                                     <?php if (!empty($infraction['proof'])): ?>
-                                        <a href="<?php echo htmlspecialchars(APP_URL . '/uploads/' . $infraction['proof']); ?>" target="_blank">
-                                            <img src="<?php echo htmlspecialchars(APP_URL . '/uploads/' . $infraction['proof']); ?>" 
+                                        <a href="<?php echo htmlspecialchars('../../public/uploads/infractions/' . $infraction['proof']); ?>" target="_blank">
+                                            <img src="<?php echo htmlspecialchars('../../public/uploads/infractions/' . $infraction['proof']); ?>" 
                                                  alt="Evidencia de la infracción" 
                                                  class="img-fluid rounded shadow-sm" 
                                                  style="max-height: 400px; object-fit: cover;">

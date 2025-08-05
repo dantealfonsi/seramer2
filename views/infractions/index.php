@@ -5,8 +5,10 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
+require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
+$marketStallsModel = new MarketStallsModel();
 
 // Preparar parámetros desde la petición
 $params = [
@@ -25,6 +27,7 @@ $total_records = $result['total_records'];
 $search = $result['search'];
 $page_title = $result['page_title'];
 $has_search = $result['has_search'];
+$stalls = $marketStallsModel->getAll();
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -125,7 +128,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                             <td>
                                                 <span class="badge bg-secondary">
-                                                    <?php echo htmlspecialchars($infraction['stall_name'] ?? 'N/A'); ?>
+                                                    <?php echo htmlspecialchars($stalls[$infraction['id_stall']] ?? 'N/A'); ?>
                                                 </span>
                                             </td>
                                             <td>
