@@ -6,7 +6,6 @@ session_start();
 // Incluir el controlador y los modelos para cargar los datos de las listas
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
 require_once __DIR__ . '/../../models/AdjudicatoriesModel.php';
-require_once __DIR__ . '/../../models/MarketStallsModel.php';
 require_once __DIR__ . '/../../models/InfractionTypesModel.php';
 
 $infractionsController = new InfractionsController();
@@ -21,19 +20,18 @@ $form_data = [
     'id_stall' => '',
     'id_infraction_type' => '',
     'infraction_datetime' => date('Y-m-d H:i:s'),
-    'infraction_description' => '', 
-    'infraction_status' => 'Reported', 
-    'inspector_observations' => '', // Campo nuevo: Observaciones del inspector
-    'proof' => '', 
+    'infraction_description' => '',
+    'infraction_status' => 'Reported',
+    'inspector_observations' => '',
+    'proof' => '',
 ];
 
 // --- Cargar las listas de selección para los campos del formulario ---
 $adjudicatoriesModel = new AdjudicatoriesModel();
-$marketStallsModel = new MarketStallsModel();
 $infractionTypesModel = new InfractionTypesModel();
 
 $adjudicators = $adjudicatoriesModel->getAll();
-$stalls = $marketStallsModel->getAll();
+
 $infraction_types = $infractionTypesModel->getAll();
 
 // Si estamos editando, obtener los datos de la infracción
@@ -51,46 +49,100 @@ if ($is_edit) {
     
     $infraction = $result['infraction'];
     $page_title = $result['page_title'];
+    $stalls = $result['stalls'];
+
+    $stallDict = [];
+    foreach ($stalls as $id => $code) {
+        $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];
     
-    // Asignar los valores a form_data usando los nombres de columna correctos
+    }
+    
     $form_data['id_adjudicatory'] = $infraction['id_adjudicatory'];
     $form_data['id_stall'] = $infraction['id_stall'];
     $form_data['id_infraction_type'] = $infraction['id_infraction_type'];
-    $form_data['infraction_datetime'] = date('Y-m-d', strtotime($infraction['infraction_datetime'])); // Formato Y-m-d para input date
+    // Solo la fecha para el input type="date"
+    $form_data['infraction_datetime'] = date('Y-m-d', strtotime($infraction['infraction_datetime']));
     $form_data['infraction_status'] = $infraction['infraction_status'];
-    $form_data['infraction_description'] = $infraction['infraction_description']; 
-    $form_data['inspector_observations'] = $infraction['inspector_observations']; // Cargar observaciones
+    $form_data['infraction_description'] = $infraction['infraction_description'];
+    $form_data['inspector_observations'] = $infraction['inspector_observations'];
     $form_data['proof'] = $infraction['proof'] ?? '';
 }
 
 // Procesar envío del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $fileImagen = '';
+
+    if (isset($_FILES['proof']) && $_FILES['proof']['error'] == UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../../public/uploads/infractions/';
+        
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $fileName = $_FILES['proof']['name'];
+        $fileTmpName = $_FILES['proof']['tmp_name'];
+        $fileSize = $_FILES['proof']['size'];
+        $fileType = $_FILES['proof']['type'];
+        $fileError = $_FILES['proof']['error'];
+
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'JPG', 'jpeg', 'png', 'mp4', 'mov'];
+        if (in_array($fileExt, $allowedExtensions)) {
+            // Verificar el tamaño del archivo (5MB en este caso)
+            if ($fileSize < 5000000) {
+                // Generar un nombre único para evitar colisiones
+                $newFileName = uniqid() . '.' . $fileExt;
+                $fileDestination = $uploadDir . $newFileName;
+                            
+                // Mover el archivo subido al directorio de destino
+                if (move_uploaded_file($fileTmpName, $fileDestination)) {
+                    $fileImagen = $newFileName;
+                } else {                    
+                    $errors[] = 'Error al mover el archivo subido.';
+                }
+            } else {
+                $errors[] = 'El archivo es demasiado grande (máximo 5MB).';
+            }
+        } else {
+            $errors[] = 'Tipo de archivo no permitido.';
+        }
+    }
+
+    // Si no se subió un nuevo archivo y estamos editando, mantenemos el anterior
+    if ($is_edit && empty($fileImagen) && isset($infraction['proof'])) {
+        $fileImagen = $infraction['proof'];
+    }            
+
     $form_data = [
         'id_adjudicatory' => trim($_POST['id_adjudicatory'] ?? ''),
         'id_stall' => trim($_POST['id_stall'] ?? ''),
         'id_infraction_type' => trim($_POST['id_infraction_type'] ?? ''),
-        'infraction_datetime' => trim($_POST['infraction_datetime'] ?? ''),
-        'infraction_description' => trim($_POST['infraction_description'] ?? ''), 
-        'infraction_status' => trim($_POST['infraction_status'] ?? ''),
-        'inspector_observations' => trim($_POST['inspector_observations'] ?? ''), // Se recibe el campo de observaciones
+        // Combina la fecha y una hora predeterminada si el campo de hora no existe
+        'infraction_datetime' => trim($_POST['infraction_datetime'] ?? '') . ' 00:00:00',
+        'infraction_description' => trim($_POST['infraction_description'] ?? ''),
+        'infraction_status' => trim($_POST['infraction_status'] ?? 'Reported'),
+        'inspector_observations' => trim($_POST['inspector_observations'] ?? ''),
+        'proof' => $fileImagen,
     ];
 
     // Usar el ID de la infracción en la actualización
-    if ($is_edit) {
-        $result = $infractionsController->update($id, $form_data);
-    } else {
-        $result = $infractionsController->store($form_data);
-    }
-    
-    if ($result['success']) {
-        $_SESSION['flash_message'] = [
-            'type' => 'success',
-            'message' => $result['message']
-        ];
-        header('Location: ' . $result['redirect']);
-        exit;
-    } else {
-        $errors = $result['errors'] ?? [$result['message']];
+    if (empty($errors)) {
+        if ($is_edit) {
+            $result = $infractionsController->update($id, $form_data);
+        } else {
+            $result = $infractionsController->store($form_data);
+        }
+
+        if ($result['success']) {
+            $_SESSION['flash_message'] = [
+                'type' => 'success',
+                'message' => $result['message']
+            ];
+            header('Location: ' . $result['redirect']);
+            exit;
+        } else {            
+            $errors = $result['errors'] ?? [$result['message']];
+        }
     }
 }
 
@@ -168,11 +220,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </label>
                                         <select class="form-select" id="stall_id" name="id_stall">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stalls as $stall): ?>
-                                            <option value="<?php echo htmlspecialchars($stall['id_stall']); ?>"
-                                                     <?php echo ($form_data['id_stall'] == $stall['id_stall']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($stall['stall_code']); ?>
-                                            </option>
+                                            <?php foreach ($stallDict as $item): ?>
+                                                <option value="<?php echo htmlspecialchars($item['id_stall']); ?>"
+                                                    <?php echo ((int)$form_data['id_stall'] == (int)$item['id_stall']) ? ' selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($item['stall_code']); ?>
+                                                </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -235,7 +287,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </label>
                                         <?php if ($is_edit && $form_data['proof']): ?>
                                             <div class="alert alert-info">
-                                                Archivo actual: <a href="/uploads/infractions/<?php echo htmlspecialchars($form_data['proof']); ?>" target="_blank"><?php echo htmlspecialchars($form_data['proof']); ?></a>.
+                                                Archivo actual: <a href="../../public/uploads/infractions/<?php echo htmlspecialchars($form_data['proof']); ?>" target="_blank"><?php echo htmlspecialchars($form_data['proof']); ?></a>.
                                                 <br>
                                                 Puedes subir uno nuevo para reemplazarlo.
                                             </div>
@@ -243,6 +295,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <input type="file"
                                                class="form-control"
                                                id="proof"
+                                               accept=".jpg, .jpeg, .png, .mp4, .mov"
                                                name="proof">
                                         <div class="form-text">
                                             Formatos permitidos: jpg, jpeg, png, mp4, mov.

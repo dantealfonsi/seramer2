@@ -248,7 +248,7 @@ class InfractionsModel {
             $this->infraction_status = htmlspecialchars(strip_tags($data['infraction_status']));
             $this->inspector_observations = htmlspecialchars(strip_tags($data['inspector_observations']));
             $this->proof = $data['proof'];
-
+            
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->bindParam(':id_adjudicatory', $this->id_adjudicatory);
             $stmt->bindParam(':id_stall', $this->id_stall);
@@ -257,20 +257,13 @@ class InfractionsModel {
             $stmt->bindParam(':infraction_status', $this->infraction_status);
             $stmt->bindParam(':inspector_observations', $this->inspector_observations);
             $stmt->bindParam(':proof', $this->proof);
-
+            
             if ($stmt->execute()) {
-                if ($stmt->rowCount() > 0) {
-                    return [
-                        'success' => true,
-                        'message' => 'Infracción actualizada exitosamente.'
-                    ];
-                } else {
-                    return [
-                        'success' => false,
-                        'message' => 'No se encontró la infracción o no se realizaron cambios.'
-                    ];
-                }
-            }
+                return [
+                    'success' => true,
+                    'message' => 'Infracción actualizada exitosamente.'
+                ];               
+            } 
             
             return [
                 'success' => false,

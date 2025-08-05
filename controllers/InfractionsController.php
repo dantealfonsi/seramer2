@@ -14,9 +14,11 @@ require_once __DIR__ . '/../public/utils/FileUpload.php';
 
 class InfractionsController {
     private $infractionsModel;
+    public $marketStallsModel;
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
+        $this->marketStallsModel = new MarketStallsModel();
     }
 
     /**
@@ -115,18 +117,6 @@ class InfractionsController {
         if (!$validation['success']) {
             return $validation;
         }
-
-        $proof_path = null;
-        if (!empty($_FILES['proof']) && $_FILES['proof']['error'] === UPLOAD_ERR_OK) {
-            $uploadResult = FileUpload::upload($_FILES['proof'], 'infractions');
-            if ($uploadResult['success']) {
-                $proof_path = $uploadResult['file_name'];
-            } else {
-                return ['success' => false, 'message' => $uploadResult['message'], 'errors' => [$uploadResult['message']]];
-            }
-        }
-        
-        $data['proof'] = $proof_path;
         
         $result = $this->infractionsModel->create($data);
         
@@ -141,10 +131,6 @@ class InfractionsController {
                 'redirect' =>  'index.php'
             ];
         } else {
-            // Si falla la creación, eliminamos el archivo subido
-            if ($proof_path) {
-                FileUpload::delete('infractions', $proof_path);
-            }
             return $result;
         }
     }
@@ -156,6 +142,7 @@ class InfractionsController {
      */
     public function edit($id) {
         //AuthMiddleware::requireFiscalizationAccess();
+        $stalls = $this->marketStallsModel->getAll();
         
         if (!$id || !is_numeric($id)) {
             return [
@@ -181,6 +168,7 @@ class InfractionsController {
         return [
             'success' => true,
             'infraction' => $infraction,
+            'stalls' => $stalls,
             'page_title' => 'Editar Infracción #' . $infraction['id_infraction'],
             'action' => 'edit',
             'adjudicatories' => $adjudicatoriesModel->getAll(),
@@ -208,29 +196,10 @@ class InfractionsController {
             return ['success' => false, 'message' => 'Infracción no encontrada.'];
         }
         
-        $old_proof = $existing_infraction['proof'] ?? null;
-        $new_proof_path = $old_proof;
-        
-        $validation = $this->validateInfractionData($data, $_FILES['proof'] ?? null, true);
+        $validation = $this->validateInfractionData($data, true);
         if (!$validation['success']) {
             return $validation;
         }
-        
-        // Manejar la carga del nuevo archivo
-        if (!empty($_FILES['proof']) && $_FILES['proof']['error'] === UPLOAD_ERR_OK) {
-            $uploadResult = FileUpload::upload($_FILES['proof'], 'infractions');
-            if ($uploadResult['success']) {
-                $new_proof_path = $uploadResult['file_name'];
-                // Eliminar el archivo antiguo si se sube uno nuevo
-                if ($old_proof) {
-                    FileUpload::delete('infractions', $old_proof);
-                }
-            } else {
-                return ['success' => false, 'message' => 'Error al subir el archivo: ' . $uploadResult['message'], 'errors' => [$uploadResult['message']]];
-            }
-        }
-        
-        $data['proof'] = $new_proof_path;
         
         $result = $this->infractionsModel->update($id, $data);
         

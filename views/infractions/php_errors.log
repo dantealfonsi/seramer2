@@ -15,3 +15,282 @@
 [04-Aug-2025 16:46:49 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
 [04-Aug-2025 19:58:37 UTC] Error al obtener infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
 [04-Aug-2025 19:58:37 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 20:08:45 UTC] Error al obtener infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 20:08:45 UTC] Error al contar infracciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.status_logical' in 'WHERE'
+[04-Aug-2025 20:31:54 UTC] PHP Warning:  Undefined array key "archivo" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:31:54 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:32:17 UTC] PHP Warning:  Undefined array key "archivo" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:32:17 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:32:17 UTC] Error al crear infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'proof' in 'INSERT INTO'
+[04-Aug-2025 20:40:33 UTC] PHP Warning:  Undefined array key "archivo" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:40:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:40:33 UTC] Error al crear infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status_logical' in 'INSERT INTO'
+[04-Aug-2025 20:43:52 UTC] PHP Warning:  Undefined array key "archivo" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:43:52 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 73
+[04-Aug-2025 20:43:52 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 116
+[04-Aug-2025 20:52:09 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 137
+[04-Aug-2025 20:52:27 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "APP_URL" in C:\Apache24\htdocs\seramer2\views\infractions\view.php:162
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 162
+[04-Aug-2025 20:52:55 UTC] PHP Fatal error:  Uncaught Error: Undefined constant "APP_URL" in C:\Apache24\htdocs\seramer2\views\infractions\view.php:162
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 162
+[04-Aug-2025 20:59:43 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpF9A0.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:00:10 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php61A2.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:00:24 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php9843.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:03:40 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php9875.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:04:12 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php1556.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:14:30 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php8106.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:15:26 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php5CF0.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:15:56 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 137
+[04-Aug-2025 21:16:30 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php552C.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:17:41 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php6BEC.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:17:55 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpA3A7.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:19:35 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 135
+[04-Aug-2025 21:19:49 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php5EA6.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:27:44 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpA11D.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:31:46 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 135
+[04-Aug-2025 21:32:07 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpA14A.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:34:46 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php1057.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:55:56 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php6F54.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 21:56:30 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpF6C5.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:06:57 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php8873.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:07:35 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php19E7.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:13:49 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpD1D9.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:15:53 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpB3F8.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:15:56 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpBF05.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:16:01 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpD260.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:17:02 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpC210.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:18:31 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php1CCF.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:18:34 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php28C6.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:18:59 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\php8C44.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:19:29 UTC] PHP Warning:  mime_content_type(C:\Windows\Temp\phpFF23.tmp): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\public\utils\FileUpload.php on line 23
+[04-Aug-2025 22:24:55 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 283
+[04-Aug-2025 22:24:55 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 134
+[04-Aug-2025 22:25:26 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 283
+[04-Aug-2025 22:25:26 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 134
+[04-Aug-2025 22:25:39 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 283
+[04-Aug-2025 22:25:40 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 134
+[04-Aug-2025 22:26:15 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 283
+[04-Aug-2025 22:26:15 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 134
+[04-Aug-2025 22:42:26 UTC] PHP Warning:  Undefined variable $marketStallsModel in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 28
+[04-Aug-2025 22:42:26 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getAll() on null in C:\Apache24\htdocs\seramer2\views\infractions\index.php:28
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 28
+[04-Aug-2025 22:42:28 UTC] PHP Warning:  Undefined variable $marketStallsModel in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 28
+[04-Aug-2025 22:42:28 UTC] PHP Fatal error:  Uncaught Error: Call to a member function getAll() on null in C:\Apache24\htdocs\seramer2\views\infractions\index.php:28
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 28
+[04-Aug-2025 22:43:04 UTC] Error al obtener puestos del mercado: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens
+[04-Aug-2025 22:43:22 UTC] Error al obtener puestos del mercado: SQLSTATE[HY093]: Invalid parameter number: number of bound variables does not match number of tokens
+[04-Aug-2025 22:50:48 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:51:45 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:51:50 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:51:53 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:52:34 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:53:40 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:57:26 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:57:46 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:59:10 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:59:55 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 22:59:57 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:00:53 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:01:37 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:02:15 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:02:17 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:03:10 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:03:57 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:05:30 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:221
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 221
+[04-Aug-2025 23:07:26 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:12:56 UTC] PHP Warning:  Undefined variable $stalls in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 216
+[04-Aug-2025 23:12:56 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 216
+[04-Aug-2025 23:14:16 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:218
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 218
+[04-Aug-2025 23:15:33 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:218
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 218
+[04-Aug-2025 23:15:54 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:218
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 218
+[04-Aug-2025 23:16:36 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:218
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 218
+[04-Aug-2025 23:16:50 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:218
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 218
+[04-Aug-2025 23:17:42 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:219
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 219
+[04-Aug-2025 23:20:26 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:56
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:22:02 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:56
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:22:27 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:56
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Undefined variable $stall in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:32:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 56
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:33:59 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:08 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:34:37 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:54:55 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[04-Aug-2025 23:54:56 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[04-Aug-2025 23:54:57 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in C:\Apache24\htdocs\seramer2\views\layouts\footer.php on line 3
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "stall_code" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 226
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 00:01:09 UTC] PHP Warning:  Undefined array key "id_stall" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
