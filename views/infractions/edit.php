@@ -7,6 +7,7 @@ session_start();
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
 require_once __DIR__ . '/../../models/AdjudicatoriesModel.php';
 require_once __DIR__ . '/../../models/InfractionTypesModel.php';
+require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
 
@@ -29,10 +30,17 @@ $form_data = [
 // --- Cargar las listas de selección para los campos del formulario ---
 $adjudicatoriesModel = new AdjudicatoriesModel();
 $infractionTypesModel = new InfractionTypesModel();
+$marketStallsModel = new MarketStallsModel();
 
 $adjudicators = $adjudicatoriesModel->getAll();
 
 $infraction_types = $infractionTypesModel->getAll();
+
+$stalls =  $marketStallsModel->getAll();
+$stallDict = [];
+foreach ($stalls as $id => $code) {
+    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
+}
 
 // Si estamos editando, obtener los datos de la infracción
 if ($is_edit) {
@@ -49,12 +57,6 @@ if ($is_edit) {
     
     $infraction = $result['infraction'];
     $page_title = $result['page_title'];
-    $stalls = $result['stalls'];
-
-    $stallDict = [];
-    foreach ($stalls as $id => $code) {
-        $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
-    }
     
     $form_data['id_adjudicatory'] = $infraction['id_adjudicatory'];
     $form_data['id_stall'] = $infraction['id_stall'];

@@ -302,3 +302,55 @@ Stack trace:
   thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 139
 [05-Aug-2025 00:14:33 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 223
 [05-Aug-2025 00:14:33 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 223
+[05-Aug-2025 02:33:24 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:33:24 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:35:51 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:35:51 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:41 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:41 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:47 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:47 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:53 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:38:53 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:40:49 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:40:49 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:40:52 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:40:52 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 222
+[05-Aug-2025 02:41:30 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:41:30 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:41:36 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:41:36 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:42:05 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:42:05 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 224
+[05-Aug-2025 02:42:37 UTC] PHP Warning:  Undefined variable $stallDict in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 02:42:37 UTC] PHP Warning:  foreach() argument must be of type array|object, null given in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 225
+[05-Aug-2025 02:49:51 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions/../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:49:51 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions/../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:49:53 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions/../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:49:53 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions/../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:15 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions..//../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:15 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions..//../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:16 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions..//../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:16 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions..//../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:26 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions../../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:26 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions../../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:27 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\infractions../../models/MarketStallsModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10
+[05-Aug-2025 02:50:27 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\infractions../../models/MarketStallsModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\infractions\edit.php:10
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 10

@@ -92,14 +92,14 @@ class InfractionsController {
         
         // Cargar datos necesarios para los selects en el formulario
         $adjudicatoriesModel = new AdjudicatoriesModel();
-        $marketStallsModel = new MarketStallsModel();
         $infractionTypesModel = new InfractionTypesModel();
+        $stalls = $this->marketStallsModel->getAll();
 
         return [
             'page_title' => 'Registrar Nueva Infracción',
             'action' => 'create',
+            'stalls' => $stalls,
             'adjudicatories' => $adjudicatoriesModel->getAll(),
-            'stalls' => $marketStallsModel->getAll(),
             'infraction_types' => $infractionTypesModel->getAll()
         ];
     }
@@ -162,7 +162,6 @@ class InfractionsController {
         
         // Cargar datos para los selects
         $adjudicatoriesModel = new AdjudicatoriesModel();
-        $marketStallsModel = new MarketStallsModel();
         $infractionTypesModel = new InfractionTypesModel();
 
         return [
@@ -172,7 +171,6 @@ class InfractionsController {
             'page_title' => 'Editar Infracción #' . $infraction['id_infraction'],
             'action' => 'edit',
             'adjudicatories' => $adjudicatoriesModel->getAll(),
-            'stalls' => $marketStallsModel->getAll(),
             'infraction_types' => $infractionTypesModel->getAll()
         ];
     }
