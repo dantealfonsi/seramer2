@@ -1,0 +1,13 @@
+{
+    "name": "danie/seramer2",
+    "type": "project",
+    "authors": [
+        {
+            "name": "kakolukiyan",
+            "email": "daniel.alfonsibusiness@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "smeghead/php-class-diagram": "^1.5"
+    }
+}
