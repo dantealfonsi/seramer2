@@ -3,10 +3,8 @@
 
 // Incluir el controlador y los modelos necesarios
 require_once __DIR__ . '/../../controllers/ComplaintsController.php';
-require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $complaintsController = new ComplaintsController();
-$marketStallsModel = new MarketStallsModel();
 
 // Manejar la solicitud POST para actualizar la queja
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -67,11 +65,8 @@ $allowed_status = [
 ];
 
 // Cargar la lista de puestos
-$stalls = $marketStallsModel->getAll();
-$stallDict = [];
-foreach ($stalls as $id => $code) {
-    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
-}
+$stalls = $complaintsController->getStallsList();
+
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -144,10 +139,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="position_id" class="form-label">Puesto del Mercado</label>
                                         <select class="form-select" id="position_id" name="position_id">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stallDict as $stall): ?>
-                                                <option value="<?php echo htmlspecialchars($stall['id_stall']); ?>"
-                                                        <?php echo ((int)$data['complaint']['position_id'] == (int)$stall['id_stall']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($stall['stall_code']); ?>
+                                            <?php foreach ($stalls as $stall): ?>
+                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
+                                                        <?php echo ((int)$data['complaint']['stall_id'] == (int)$stall['id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>

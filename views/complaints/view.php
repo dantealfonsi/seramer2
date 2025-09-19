@@ -37,6 +37,24 @@ if (!$result['success']) {
 $complaint = $result['complaint'];
 $page_title = $result['page_title'];
 
+$allowed_priority = [
+    'Low' => 'Baja',
+    'Medium' => 'Media',
+    'High' => 'Alta',
+    'Urgent' => 'Urgente'
+];
+$allowed_status = [
+    'Received' => 'Recibido',
+    'In Process' => 'En Proceso',
+    'Resolved' => 'Resuelto',
+    'Closed' => 'Cerrado'
+];
+$allowed_tipes = [
+    'Suggestion' => 'Sugerencia',
+    'Claim' => 'Reclamo',
+    'Question' => 'Pregunta'
+];
+
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -102,7 +120,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Tipo de Queja:</th>
                                             <td>
                                                 <span class="badge bg-info fs-6">
-                                                    <?php echo htmlspecialchars($complaint['complaint_type']); ?>
+                                                    <?php echo htmlspecialchars($allowed_tipes[$complaint['complaint_type']]); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -118,7 +136,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $color = $priority_colors[$complaint['complaint_priority']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($complaint['complaint_priority']); ?>
+                                                    <?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']]); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -135,7 +153,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $color = $status_colors[$complaint['complaint_status']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($complaint['complaint_status']); ?>
+                                                    <?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']]); ?>
                                                 </span>
                                             </td>
                                         </tr>

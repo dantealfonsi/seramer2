@@ -435,7 +435,9 @@ class UserModel {
                     'icon' => 'ri-alert-line',
                     'submenu' => [
                         ['title' => 'Registrar Infracción', 'url' => 'views/infractions/create.php'],
+                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
                         ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
+
                     ]
                 ],
                 [
@@ -451,7 +453,8 @@ class UserModel {
                     'icon' => 'ri-search-eye-line',
                     'submenu' => [
                         ['title' => 'Realizar Inspección', 'url' => 'views/inspections/create.php'],
-                        ['title' => 'Historial de Inspecciones', 'url' => 'views/inspections/index.php']
+                        ['title' => 'Historial de Inspecciones', 'url' => 'views/inspections/index.php'],
+                        ['title' => 'Incluir Inspectores', 'url' => 'views/inspectors/index.php']
                     ]
                 ],
                 [

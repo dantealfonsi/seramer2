@@ -4,9 +4,24 @@ require_once __DIR__ . '/../config/Database.php';
 
 class ComplaintsModel {
     private $db;
+    private $conn;
 
     public function __construct() {
         $this->db = new Database();
+        $this->conn = $this->db->getConnection();
+    }
+
+
+    public function getStallsList() {
+        try {
+            $query = "SELECT id, sector_id, stall_number, location_description FROM market_stalls ORDER BY stall_number";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener puestos de mercado: " . $exception->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -18,19 +33,19 @@ class ComplaintsModel {
      */
     public function getAll($page, $limit, $search) {
         $offset = ($page - 1) * $limit;
-        $sql = "SELECT c.*, p.stall_code AS position_name, contr.full_name_or_company_name AS contractor_name
+        $sql = "SELECT c.*, p.stall_number AS position_name, contr.first_name AS contractor_name
                 FROM complaints c
-                LEFT JOIN market_stalls p ON c.position_id = p.id_stall
-                LEFT JOIN adjudicatories contr ON c.contractor_id = contr.id_adjudicatory";
+                LEFT JOIN market_stalls p ON c.stall_id = p.id
+                LEFT JOIN awardees contr ON c.awardee_id = contr.id";
         
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_code LIKE ? OR contr.full_name_or_company_name LIKE ?";
+            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ?";
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         }
 
-        $sql .= " ORDER BY c.complaint_timestamp DESC LIMIT " . $limit . " OFFSET " . $offset;
+        $sql .= " ORDER BY c.complaint_datetime DESC LIMIT " . $limit . " OFFSET " . $offset;
 
         return $this->db->fetchAll($sql, $params);
     }
@@ -43,12 +58,12 @@ class ComplaintsModel {
     public function countAll($search) {
         $sql = "SELECT COUNT(c.complaint_id)
                 FROM complaints c
-                LEFT JOIN market_stalls p ON c.position_id = p.id_stall
-                LEFT JOIN adjudicatories contr ON c.contractor_id = id_adjudicatory";
+                LEFT JOIN market_stalls p ON c.stall_id = p.id
+                LEFT JOIN awardees contr ON c.awardee_id = contr.id";
 
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_code LIKE ? OR contr.full_name_or_company_name LIKE ?";
+            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ?";
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         }
@@ -72,7 +87,7 @@ class ComplaintsModel {
      * @return array
      */
     public function create($data) {
-        $sql = "INSERT INTO complaints (client_user_id, client_name, client_phone, client_email, complaint_description, position_id, contractor_id, complaint_type, complaint_status, complaint_priority, internal_observations) 
+        $sql = "INSERT INTO complaints (client_user_id, client_name, client_phone, client_email, complaint_description, stall_id, awardee_id, complaint_type, complaint_status, complaint_priority, internal_observations) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $params = [
@@ -102,7 +117,7 @@ class ComplaintsModel {
      * @return array
      */    
     public function getMarketStall() {
-        $sql = "SELECT id_stall, stall_code FROM market_stalls";
+        $sql = "SELECT id, stall_number FROM market_stalls";
         return $this->db->fetchAll($sql);
     }
 

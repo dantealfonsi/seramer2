@@ -64,12 +64,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <a href="index.php" class="btn btn-secondary">
                                 <i class="ri-arrow-left-line"></i> Volver al listado
                             </a>
-                            <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-warning">
+                            <a href="edit.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-warning">
                                 <i class="ri-edit-line"></i> Editar
                             </a>
                             <button type="button" 
                                 class="btn btn-danger" 
-                                onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
+                                onclick="confirmDelete(<?php echo $infraction['infraction_id']; ?>)">
                                 <i class="ri-delete-bin-line"></i> Eliminar
                             </button>
                         </div>
@@ -82,7 +82,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <tr>
                                             <th width="30%">ID:</th>
-                                            <td><?php echo htmlspecialchars($infraction['id_infraction']); ?></td>
+                                            <td><?php echo htmlspecialchars($infraction['infraction_id']); ?></td>
                                         </tr>
                                         <tr>
                                             <th>Adjudicatario:</th>
@@ -97,7 +97,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Puesto:</th>
                                             <td>
                                                 <span class="badge bg-secondary fs-6">
-                                                    <?php echo htmlspecialchars($infraction['stall_code'] ?? 'N/A'); ?>
+                                                    <?php echo htmlspecialchars($infraction['stall_number'] ?? 'N/A'); ?>
                                                 </span>
                                             </td>
                                         </tr>
