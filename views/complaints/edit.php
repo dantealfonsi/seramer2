@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'client_email' => trim($_POST['client_email'] ?? ''),
         'complaint_description' => trim($_POST['complaint_description'] ?? ''),
         'position_id' => trim($_POST['position_id'] ?? ''),
+        'awardee_id' => trim($_POST['awardee_id'] ?? ''),
         'complaint_type' => trim($_POST['complaint_type'] ?? ''),
         'complaint_status' => trim($_POST['complaint_status'] ?? 'Received'),
         'complaint_priority' => trim($_POST['complaint_priority'] ?? 'Medium'),
@@ -48,6 +49,7 @@ if (!$complaintId) {
 }
 
 $data = $complaintsController->edit($complaintId);
+
 $page_title = 'Editar Queja #' . htmlspecialchars($complaintId);
 
 // Opciones para los select de estado y prioridad
@@ -135,6 +137,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <option value="Question" <?php echo ($data['complaint']['complaint_type'] == 'Question') ? 'selected' : ''; ?>>Pregunta</option>
                                         </select>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="awardee_id" class="form-label">
+                                            Adjudicatario
+                                        </label>
+                                        <select class="form-select" id="awardee_id" name="awardee_id">
+                                            <option value="">Seleccione Adjudicatario (opcional)</option>
+                                            <?php foreach ($data['awardees'] as $awardee): ?>
+                                                <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
+                                                        <?php echo ((int)$data['complaint']['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($awardee['first_name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>                                    
                                     <div class="mb-3">
                                         <label for="position_id" class="form-label">Puesto del Mercado</label>
                                         <select class="form-select" id="position_id" name="position_id">

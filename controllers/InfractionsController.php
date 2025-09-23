@@ -106,7 +106,7 @@ class InfractionsController {
             'action' => 'create',
             'stalls' => $stalls,
             'awardees' => $this->infractionsModel->getAwardeesList(),
-            'infraction_types' => $infractionTypesModel->getAll()
+            'infraction_types' => $infractionTypesModel->getAll(null, null, null)
         ];
     }
 
@@ -176,7 +176,7 @@ class InfractionsController {
             'page_title' => 'Editar Infracción #' . $infraction['infraction_id'],
             'action' => 'edit',
             'awardees' => $this->infractionsModel->getAwardeesList(),
-            'infraction_types' => $infractionTypesModel->getAll()
+            'infraction_types' => $infractionTypesModel->getAll(null, null, null)
         ];
     }
 

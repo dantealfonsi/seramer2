@@ -62,11 +62,10 @@ class ComplaintsController {
      * Show form to create a new complaint.
      */
     public function create() {
-        $marketStalls = $this->complaintsModel->getMarketStall(); 
-            
         return [
             'page_title' => 'Registrar Nueva Queja',
-            'market_stalls' => $marketStalls,
+            'market_stalls' => $this->complaintsModel->getMarketStall(),
+            'awardees' => $this->complaintsModel->getAwardeesList(),            
             'action' => 'create'
             // 'positions' => $positions
         ];
@@ -111,6 +110,7 @@ class ComplaintsController {
         return [
             'success' => true,
             'complaint' => $complaint,
+            'awardees' => $this->complaintsModel->getAwardeesList(),  
             'page_title' => 'Editar Queja #' . $id,
             'action' => 'edit'
         ];

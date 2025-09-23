@@ -126,3 +126,5 @@
 [18-Sep-2025 23:18:18 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
 [18-Sep-2025 23:18:20 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
 [18-Sep-2025 23:46:32 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[19-Sep-2025 13:01:29 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[20-Sep-2025 01:52:41 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number

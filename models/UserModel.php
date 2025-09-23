@@ -470,15 +470,17 @@ class UserModel {
                     'icon' => 'ri-hammer-line',
                     'submenu' => [
                         ['title' => 'Aplicar Sanción', 'url' => 'views/sanctions/create.php'],
-                        ['title' => 'Seguimiento de Sanciones', 'url' => 'views/sanctions/index.php']
+                        ['title' => 'Seguimiento de Sanciones', 'url' => 'views/sanctions/index.php'],
+                        ['title' => 'Tipos de Sanciones', 'url' => 'views/sanctionsType/index.php']
                     ]
                 ],
                 [
                     'title' => 'Conciliación',
                     'icon' => 'ri-discuss-line',
                     'submenu' => [
-                        ['title' => 'Programar Citación', 'url' => 'views/conciliacion/create.php'],
-                        ['title' => 'Casos de Conciliación', 'url' => 'views/conciliacion/index.php']
+                        ['title' => 'Programar Citación', 'url' => 'views/citations/create.php'],
+                        ['title' => 'Reportes', 'url' => 'views/conciliation-reports/index.php'],
+                        ['title' => 'Casos de Conciliación', 'url' => 'views/citations/index.php']
                     ]
                 ],
                 [

@@ -11,6 +11,17 @@ class ComplaintsModel {
         $this->conn = $this->db->getConnection();
     }
 
+    public function getAwardeesList() {
+        try {
+            $query = "SELECT id, first_name, last_name, id_number,phone FROM awardees ORDER BY first_name";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener adjudicatarios: " . $exception->getMessage());
+            return [];
+        }
+    }
 
     public function getStallsList() {
         try {
@@ -97,7 +108,7 @@ class ComplaintsModel {
             $data['client_email'],
             $data['complaint_description'],
             $data['position_id'] ?? null,
-            $data['contractor_id'] ?? null,
+            $data['awardee_id'] ?? null,
             $data['complaint_type'],
             $data['complaint_status'] ?? 'Received',
             $data['complaint_priority'] ?? 'Medium',
@@ -133,6 +144,8 @@ class ComplaintsModel {
                     client_phone = ?,
                     client_email = ?,
                     complaint_description = ?,
+                    stall_id = ?,
+                    awardee_id = ?,
                     complaint_type = ?,
                     complaint_status = ?,
                     complaint_priority = ?,
@@ -144,6 +157,8 @@ class ComplaintsModel {
             $data['client_phone'] ?? null,
             $data['client_email'],
             $data['complaint_description'],
+            $data['position_id'] ?? null,
+            $data['awardee_id'] ?? null,
             $data['complaint_type'],
             $data['complaint_status'],
             $data['complaint_priority'],

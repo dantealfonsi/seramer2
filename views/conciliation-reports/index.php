@@ -1,21 +1,21 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../controllers/ComplaintsController.php';
+require_once __DIR__ . '/../../controllers/ConciliationReportsController.php';
 
-$complaintsController = new ComplaintsController();
+$reportsController = new ConciliationReportsController();
 
 $params = [
     'page' => $_GET['page'] ?? 1,
     'search' => $_GET['search'] ?? ''
 ];
 
-$result = $complaintsController->index($params);
+$result = $reportsController->index($params);
 
-extract($result); // Extrae $complaints, $current_page, $total_pages, etc.
+extract($result); // Extrae $reports, $current_page, $total_pages, etc.
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
     $deleteId = $_GET['delete_id'];
-    $deleteResult = $complaintsController->delete($deleteId);
+    $deleteResult = $reportsController->delete($deleteId);
 
     $_SESSION['flash_message'] = [
         'type' => $deleteResult['success'] ? 'success' : 'danger',
@@ -30,25 +30,13 @@ require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 
-// Opciones en español para los select de estado y prioridad
-$allowed_priority = [
-    'Low' => 'Baja',
-    'Medium' => 'Media',
-    'High' => 'Alta',
-    'Urgent' => 'Urgente'
+// Opciones para el select de resultados de conciliación
+$allowed_results = [
+    'Agreement Reached' => 'Acuerdo alcanzado',
+    'No Agreement' => 'Sin acuerdo',
+    'Case Postponed' => 'Caso pospuesto',
+    'Absent Party' => 'Parte ausente'
 ];
-$allowed_status = [
-    'Received' => 'Recibido',
-    'In Process' => 'En Proceso',
-    'Resolved' => 'Resuelto',
-    'Closed' => 'Cerrado'
-];
-
-$allowed_tipo = [
-     'Suggestion' => 'Sugerencia',
-     'Claim' => 'Reclamo',
-     'Question' => 'Pregunta'    
-]
 
 ?>
 <?php if (isset($_SESSION['flash_message'])): ?>
@@ -65,11 +53,11 @@ $allowed_tipo = [
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-chat-voice-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <i class="ri-file-text-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">
-                            <i class="ri-add-line"></i> Nueva Queja
+                            <i class="ri-add-line"></i> Nuevo Informe
                         </a>
                     </div>
                     
@@ -77,7 +65,7 @@ $allowed_tipo = [
                         <form method="GET" class="row g-3">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="search" placeholder="Buscar por cliente, descripción, puesto..." value="<?php echo htmlspecialchars($search); ?>">
+                                    <input type="text" class="form-control" name="search" placeholder="Buscar por resultado de conciliación..." value="<?php echo htmlspecialchars($search); ?>">
                                     <button class="btn btn-outline-secondary" type="submit"><i class="ri-search-line"></i></button>
                                 </div>
                             </div>
@@ -97,15 +85,15 @@ $allowed_tipo = [
                     <?php endif; ?>
 
                     <div class="card-body">
-                        <?php if (empty($complaints)): ?>
+                        <?php if (empty($reports)): ?>
                             <div class="text-center py-4">
-                                <i class="ri-chat-off-line text-muted" style="font-size: 3rem;"></i>
+                                <i class="ri-file-forbid-line text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="text-muted mt-2">
-                                    <?php echo $has_search ? 'No se encontraron quejas con ese criterio' : 'No hay quejas registradas'; ?>
+                                    <?php echo $has_search ? 'No se encontraron informes con ese criterio' : 'No hay informes de conciliación registrados'; ?>
                                 </h5>
                                 <?php if (!$has_search): ?>
                                     <a href="create.php" class="btn btn-primary mt-2">
-                                        <i class="ri-add-line"></i> Registrar Primera Queja
+                                        <i class="ri-add-line"></i> Registrar Primer Informe
                                     </a>
                                 <?php endif; ?>
                             </div>
@@ -114,50 +102,40 @@ $allowed_tipo = [
                                 <table class="table table-striped table-hover">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>Cliente</th>
-                                            <th>Tipo</th>
-                                            <th>Prioridad</th>
-                                            <th>Estado</th>
-                                            <th>Fecha</th>
+                                            <th>Citación ID</th>
+                                            <th>Asistencia</th>
+                                            <th>Resultado</th>
+                                            <th>Fecha del Informe</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($complaints as $complaint): ?>
+                                        <?php foreach ($reports as $report): ?>
                                         <tr>
                                             <td>
-                                                <strong><?php echo htmlspecialchars($complaint['client_name']); ?></strong>
-                                                <br>
-                                                <small class="text-muted"><?php echo htmlspecialchars($complaint['client_email']); ?></small>
+                                                <a href="view.php?id=<?php echo $report['citation_id']; ?>">#<?php echo htmlspecialchars($report['citation_id']); ?></a>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary"><?php echo htmlspecialchars($allowed_tipo[$complaint['complaint_type']]); ?></span>
+                                                <?php if ($report['awardee_attendance'] == 1): ?>
+                                                    <span class="badge bg-success">Presente</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-danger">Ausente</span>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php
-                                                $priority_colors = ['Low' => 'secondary', 'Medium' => 'info', 'High' => 'warning', 'Urgent' => 'danger'];
-                                                $p_color = $priority_colors[$complaint['complaint_priority']] ?? 'light';
-                                                ?>
-                                                <span class="badge bg-<?php echo $p_color; ?>"><?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']]); ?></span>
-                                            </td>
-                                            <td>
-                                                <?php
-                                                $status_colors = ['Received' => 'primary', 'In Process' => 'warning', 'Resolved' => 'success', 'Closed' => 'dark'];
-                                                $s_color = $status_colors[$complaint['complaint_status']] ?? 'light';
-                                                ?>
-                                                <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']]); ?></span>
+                                                <?php echo htmlspecialchars($allowed_results[$report['result']] ?? $report['result']); ?>
                                             </td>
                                             <td>
                                                 <?php 
-                                                $date = new DateTime($complaint['complaint_datetime']);
+                                                $date = new DateTime($report['report_date']);
                                                 echo $date->format('d/m/Y H:i'); 
                                                 ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="view.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
-                                                    <a href="edit.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $complaint['complaint_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+                                                    <a href="view.php?id=<?php echo $report['report_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
+                                                    <a href="edit.php?id=<?php echo $report['report_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $report['report_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -168,7 +146,17 @@ $allowed_tipo = [
 
                             <?php if ($total_pages > 1): ?>
                             <div class="d-flex justify-content-between align-items-center mt-3">
-                                </div>
+                                <nav>
+                                    <ul class="pagination mb-0">
+                                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                            <li class="page-item <?php echo ($i == $current_page) ? 'active' : ''; ?>">
+                                                <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo htmlspecialchars($search); ?>"><?php echo $i; ?></a>
+                                            </li>
+                                        <?php endfor; ?>
+                                    </ul>
+                                </nav>
+                                <small class="text-muted">Mostrando página <?php echo $current_page; ?> de <?php echo $total_pages; ?> (<?php echo $total_records; ?> registros)</small>
+                            </div>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
@@ -186,7 +174,7 @@ $allowed_tipo = [
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro que desea eliminar la queja con ID: <strong id="complaintId"></strong>?</p>
+                <p>¿Está seguro que desea eliminar el informe con ID: <strong id="reportId"></strong>?</p>
                 <p class="text-danger"><small>Esta acción es permanente.</small></p>
             </div>
             <div class="modal-footer">
@@ -200,18 +188,18 @@ $allowed_tipo = [
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
 <script>
-let deleteComplaintId = null;
+let deleteReportId = null;
 
 function confirmDelete(id) {
-    deleteComplaintId = id;
-    document.getElementById('complaintId').textContent = id;
+    deleteReportId = id;
+    document.getElementById('reportId').textContent = id;
     const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
     modal.show();
 }
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteComplaintId) {
-        window.location.href = 'index.php?delete_id=' + deleteComplaintId; 
+    if (deleteReportId) {
+        window.location.href = 'index.php?delete_id=' + deleteReportId; 
     }
 });
 </script>
