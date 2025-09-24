@@ -1,0 +1,42 @@
+[22-Sep-2025 01:28:36 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(21): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:18:10 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(21): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:18:20 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(21): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:19:25 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(21): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:22:27 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(20): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:23:47 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(20): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32
+[22-Sep-2025 02:24:00 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\ConciliationReportsController.php(20): ConciliationReportsModel->getAll()
+#1 C:\Apache24\htdocs\seramer2\views\conciliation-reports\index.php(12): ConciliationReportsController->index()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\ConciliationReportsModel.php on line 32

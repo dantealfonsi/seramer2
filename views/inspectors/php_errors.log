@@ -1,0 +1,157 @@
+[16-Sep-2025 02:18:00 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:18:00 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php:3
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(7): require_once()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:21:58 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:21:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php:3
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(7): require_once()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:22:04 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:22:04 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\controllers/../models/UsersModel.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php:3
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(7): require_once()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php on line 3
+[16-Sep-2025 02:23:30 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:23:35 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:27:56 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:30:24 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:33:10 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:34:40 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:34:41 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\Apache24\htdocs\seramer2\config\Database.php:128
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(15): Database->query()
+#1 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(16): InspectorsModel->getAll()
+#2 C:\Apache24\htdocs\seramer2\views\inspectors\index.php(10): InspectorsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 128
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 02:45:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:52:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:53:23 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 61
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 11:58:01 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 62
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:45 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:04:50 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:16 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\Apache24\htdocs\seramer2\views\layouts\navigation.php:35) in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 46
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 12:05:43 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 93
+[16-Sep-2025 16:40:48 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\Apache24\htdocs\seramer2\views\layouts\navigation.php:35) in C:\Apache24\htdocs\seramer2\views\inspectors\create.php on line 38
+[16-Sep-2025 16:41:14 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
+[16-Sep-2025 16:53:47 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'C-01' for key 'inspector_code' in C:\Apache24\htdocs\seramer2\config\Database.php:169
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\config\Database.php(169): PDOStatement->execute()
+#1 C:\Apache24\htdocs\seramer2\models\InspectorsModel.php(36): Database->execute()
+#2 C:\Apache24\htdocs\seramer2\controllers\InspectorsController.php(55): InspectorsModel->create()
+#3 C:\Apache24\htdocs\seramer2\views\inspectors\create.php(22): InspectorsController->store()
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\config\Database.php on line 169
+[16-Sep-2025 16:55:39 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
+[16-Sep-2025 17:10:54 UTC] PHP Warning:  Undefined variable $complaintsController in C:\Apache24\htdocs\seramer2\views\inspectors\index.php on line 14
+[16-Sep-2025 17:10:54 UTC] PHP Fatal error:  Uncaught Error: Call to a member function delete() on null in C:\Apache24\htdocs\seramer2\views\inspectors\index.php:14
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\inspectors\index.php on line 14
+[17-Sep-2025 02:00:55 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
+[19-Sep-2025 13:01:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
+[19-Sep-2025 13:07:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101

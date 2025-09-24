@@ -8,7 +8,9 @@ $params = [
     'page' => $_GET['page'] ?? 1,
     'search' => $_GET['search'] ?? ''
 ];
+
 $result = $complaintsController->index($params);
+
 extract($result); // Extrae $complaints, $current_page, $total_pages, etc.
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
@@ -23,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
     header("Location: index.php");
     exit;
 }
-
 
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -148,7 +149,7 @@ $allowed_tipo = [
                                             </td>
                                             <td>
                                                 <?php 
-                                                $date = new DateTime($complaint['complaint_timestamp']);
+                                                $date = new DateTime($complaint['complaint_datetime']);
                                                 echo $date->format('d/m/Y H:i'); 
                                                 ?>
                                             </td>

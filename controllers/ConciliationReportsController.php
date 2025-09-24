@@ -1,0 +1,220 @@
+<?php
+
+require_once __DIR__ . '/../models/ConciliationReportsModel.php';
+require_once __DIR__ . '/../models/CitationsModel.php';
+require_once __DIR__ . '/../config/app.php';
+
+class ConciliationReportsController {
+    private $reportsModel;
+    private $citationsModel;
+    
+    public function __construct() {
+        $this->reportsModel = new ConciliationReportsModel();
+        $this->citationsModel = new CitationsModel();
+    }
+
+    /**
+     * Muestra una lista de informes de conciliación con filtros y paginación.
+     */
+    public function index($params = []) {
+        $page = isset($params['page']) ? (int)$params['page'] : 1;
+        $limit = 10;
+        $search = isset($params['search']) ? trim($params['search']) : '';
+        $reports = $this->reportsModel->getAll($page, $limit, $search);
+        $total = (int)$this->reportsModel->countAll($search);
+        $totalPages = (int)ceil($total / $limit);
+        
+        return [
+            'reports' => $reports,
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'total_records' => $total,
+            'search' => $search,
+            'page_title' => 'Gestión de Informes de Conciliación',
+            'has_search' => !empty($search)
+        ];
+    }
+
+    /**
+     * Muestra un informe de conciliación específico.
+     */
+    public function view($id) {
+        if (!$id || !is_numeric($id)) {
+            // Manejar error de ID inválido
+            return ['success' => false, 'message' => 'ID de reporte inválido.'];
+        }
+        
+        $report = $this->reportsModel->getById($id);
+        
+        if (!$report) {
+            // Manejar error de "no encontrado"
+            return ['success' => false, 'message' => 'Reporte no encontrado.'];
+        }
+        
+        return [
+            'success' => true,
+            'report' => $report,
+            'page_title' => 'Detalle de Reporte #' . $report['report_id']
+        ];
+    }
+
+    /**
+     * Muestra el formulario para crear un nuevo informe.
+     */
+    public function create() {
+        $citations = $this->reportsModel->getCitationsList();
+        
+        return [
+            'page_title' => 'Registrar Nuevo Informe de Conciliación',
+            'citations' => $citations,
+            'action' => 'create'
+        ];
+    }
+
+    /**
+     * Procesa la creación de un nuevo informe.
+     */
+    public function store($data) {
+        $validation = $this->validateConciliationReportData($data);
+        if (!$validation['success']) {
+            return $validation;
+        }
+        
+        $result = $this->reportsModel->create($data);
+        $this->updateCitationStatus($data);
+
+        $_SESSION['flash_message'] = [
+            'type' => $result['success'] ? 'success' : 'error',
+            'message' => $result['message']
+        ];
+        
+        if ($result['success']) {
+            return ['success' => true, 'redirect' => 'index.php'];
+        }
+        return $result;
+    }
+
+    /**
+     * Muestra el formulario para editar un informe.
+     */
+    public function edit($id) {
+        $report = $this->reportsModel->getById($id);
+        $citations = $this->reportsModel->getCitationsList();
+        
+        if (!$report) {
+            return [
+                'success' => false,
+                'page_title' => 'Error al Editar Reporte #' . $id,
+                'action' => 'edit'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'report' => $report,
+            'page_title' => 'Editar Reporte #' . $id,
+            'action' => 'edit',
+            'citations' => $citations
+        ];
+    }
+
+    /**
+     * Procesa la actualización de un informe.
+     */
+    public function update($id, $data) {
+        $validation = $this->validateConciliationReportData($data);
+        if (!$validation['success']) {
+            return $validation;
+        }
+        
+        $result = $this->reportsModel->update($id, $data);
+        $this->updateCitationStatus($data);
+        $_SESSION['flash_message'] = [
+            'type' => $result['success'] ? 'success' : 'error',
+            'message' => $result['message']
+        ];
+        
+        if ($result['success']) {
+            return ['success' => true, 'redirect' => 'index.php'];
+        }
+        return $result;
+    }
+
+    /**
+     * Elimina un informe.
+     */
+    public function delete($id) {
+        if (!$id || !is_numeric($id)) {
+            return ['success' => false, 'message' => 'ID de reporte inválido'];
+        }
+        
+        $result = $this->reportsModel->delete($id);
+        
+        $_SESSION['flash_message'] = [
+            'type' => $result['success'] ? 'success' : 'error',
+            'message' => $result['message']
+        ];
+        
+        return $result;
+    }
+
+    // Método privado para manejar la lógica de actualización del estado de la citación
+    private function updateCitationStatus($data) {
+        $citation_id = $data['citation_id'];
+        $new_status = null;
+        $new_datetime = null;
+        
+        if ($data['result'] === 'Agreement Reached') {
+            $new_status = 'Resuelta';
+        } elseif ($data['result'] === 'Case Postponed') {
+            $new_status = 'Reprogramada';
+            $new_datetime = $data['reprogramming_datetime'];
+        }
+        
+        if ($new_status) {
+            $citationUpdateResult = $this->citationsModel->updateStatusAndDate($citation_id, $new_status, $new_datetime);
+            if (!$citationUpdateResult['success']) {
+                 $_SESSION['flash_message'] = ['type' => 'danger', 'message' => 'Informe de conciliación actualizado, pero la citación no pudo ser actualizada.'];
+            }
+        }
+    }
+
+    /**
+     * Valida los datos del informe.
+     * @param array $data
+     * @return array
+     */
+    private function validateConciliationReportData($data) {
+        $errors = [];
+        
+        if (empty($data['citation_id'])) {
+            $errors[] = 'Debe seleccionar una citación.';
+        }
+        
+        // awardee_attendance es TINYINT(1), lo validamos como un booleano (0 o 1)
+        if (!isset($data['awardee_attendance']) || !in_array($data['awardee_attendance'], [0, 1])) {
+            $errors[] = 'El campo de asistencia es obligatorio.';
+        }
+
+        if (empty(trim($data['result']))) {
+            $errors[] = 'El resultado de la conciliación es obligatorio.';
+        }
+        
+        if (!empty($errors)) {
+            return ['success' => false, 'message' => 'Errores de validación', 'errors' => $errors];
+        }
+        
+        return ['success' => true];
+    }
+
+   // Muestra los detalles de un solo informe de conciliación
+    public function show($id) {
+        $report = $this->reportsModel->getById($id);
+        
+        if (!$report) {
+            return ['success' => false, 'message' => 'Informe no encontrado.'];
+        }
+
+        return ['success' => true, 'report' => $report];
+    }    
+}

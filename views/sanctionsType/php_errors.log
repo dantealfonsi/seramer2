@@ -1,0 +1,60 @@
+[20-Sep-2025 01:27:40 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:135
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 135
+[20-Sep-2025 01:31:02 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:135
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 135
+[20-Sep-2025 01:33:13 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:135
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 135
+[20-Sep-2025 01:33:40 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:135
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 135
+[20-Sep-2025 01:33:47 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:135
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 135
+[20-Sep-2025 01:34:42 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:136
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 136
+[20-Sep-2025 01:36:36 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:136
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 136
+[20-Sep-2025 01:37:20 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:136
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 136
+[20-Sep-2025 01:39:07 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:136
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 136
+[20-Sep-2025 01:39:13 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php:136
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php(101): SanctionTypesController->validateSanctionTypeData()
+#1 C:\Apache24\htdocs\seramer2\views\sanctionsType\edit.php(12): SanctionTypesController->update()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\SanctionTypesController.php on line 136

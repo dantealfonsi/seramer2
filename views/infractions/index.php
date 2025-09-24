@@ -5,10 +5,9 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
-require_once __DIR__ . '/../../models/MarketStallsModel.php';
+//require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
-$marketStallsModel = new MarketStallsModel();
 
 // Preparar parámetros desde la petición
 $params = [
@@ -27,7 +26,7 @@ $total_records = $result['total_records'];
 $search = $result['search'];
 $page_title = $result['page_title'];
 $has_search = $result['has_search'];
-$stalls = $marketStallsModel->getAll();
+$stalls = $infractionsController->getStallsList();
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -128,7 +127,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                             <td>
                                                 <span class="badge bg-secondary">
-                                                    <?php echo htmlspecialchars($stalls[$infraction['id_stall']] ?? 'N/A'); ?>
+                                                    <?php echo htmlspecialchars($infraction['stall_number'] ?? 'N/A'); ?>
                                                 </span>
                                             </td>
                                             <td>
@@ -158,16 +157,16 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </span>
                                             </td>
                                                 <td class="text-center">
-                                                    <a href="view.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles">
+                                                    <a href="view.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
-                                                    <a href="edit.php?id=<?php echo $infraction['id_infraction']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <a href="edit.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
                                                     <button type="button" 
                                                             class="btn btn-sm btn-outline-danger" 
                                                             title="Eliminar"
-                                                            onclick="confirmDelete(<?php echo $infraction['id_infraction']; ?>)">
+                                                            onclick="confirmDelete(<?php echo $infraction['infraction_id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
                                                 </td>

@@ -7,11 +7,11 @@ class InfractionsModel {
     private $table = 'infractions';
     
     // Propiedades de la infracción
-    public $id_infraction;
-    public $id_adjudicatory;
-    public $id_stall;
+    public $infraction_id;
+    public $awardee_id;
+    public $stall_id;
     public $infraction_datetime;
-    public $id_infraction_type;
+    public $infraction_type_id;
     public $infraction_description;
     public $infraction_status;
     public $inspector_observations;
@@ -21,6 +21,42 @@ class InfractionsModel {
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
+    }
+
+    public function getAwardeesList() {
+        try {
+            $query = "SELECT id, first_name, last_name, id_number,phone FROM awardees ORDER BY first_name";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener adjudicatarios: " . $exception->getMessage());
+            return [];
+        }
+    }
+
+    public function getStallsList() {
+        try {
+            $query = "SELECT id, sector_id, stall_number, location_description FROM market_stalls ORDER BY stall_number";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener puestos de mercado: " . $exception->getMessage());
+            return [];
+        }
+    }
+
+    public function getInfractionTypesList() {
+        try {
+            $query = "SELECT infraction_type_id, infraction_type_name FROM infraction_types ORDER BY infraction_type_name";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener tipos de infracción: " . $exception->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -36,25 +72,28 @@ class InfractionsModel {
             $searchParam = "%$search%";
 
             $query = "SELECT i.*, 
-                             a.full_name_or_company_name as adjudicatory_name,
-                             a.document_number as adjudicatory_document,
-                             s.stall_code,
-                             it.infraction_type_name
-                     FROM " . $this->table . " i
-                     LEFT JOIN adjudicatories a ON i.id_adjudicatory = a.id_adjudicatory
-                     LEFT JOIN market_stalls s ON i.id_stall = s.id_stall
-                     LEFT JOIN infraction_types it ON i.id_infraction_type = it.id_infraction_type
-                     WHERE (a.full_name_or_company_name LIKE :search 
-                             OR s.stall_code LIKE :search 
-                             OR it.infraction_type_name LIKE :search)
-                     AND i.status_logical = 'active'
-                     ORDER BY i.infraction_datetime DESC
-                     LIMIT :limit OFFSET :offset";
+                            a.first_name as adjudicatory_name,
+                            a.id_number as adjudicatory_document,
+                            s.stall_number,
+                            it.infraction_type_name
+                    FROM " . $this->table . " i
+                    LEFT JOIN awardees a ON i.awardee_id = a.id
+                    LEFT JOIN market_stalls s ON i.stall_id = s.id
+                    LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                    WHERE (a.first_name LIKE :search1 
+                            OR s.stall_number LIKE :search2 
+                            OR it.infraction_type_name LIKE :search3)
+                    AND i.status_logical = 'active'
+                    ORDER BY i.infraction_datetime DESC
+                    LIMIT :limit OFFSET :offset";
 
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':search', $searchParam);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt = $this->conn->prepare($query); 
+            
+            $stmt->bindValue(':search1', $searchParam, PDO::PARAM_STR);
+            $stmt->bindValue(':search2', $searchParam, PDO::PARAM_STR);
+            $stmt->bindValue(':search3', $searchParam, PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -63,7 +102,6 @@ class InfractionsModel {
             return [];
         }
     }
-
     /**
      * Contar el total de infracciones (solo activas)
      * @param string $search
@@ -71,24 +109,29 @@ class InfractionsModel {
      */
     public function countAll($search = '') {
         try {
-            $searchParam = "%$search%";
-            
-            $query = "SELECT COUNT(i.id_infraction) as total 
-                     FROM " . $this->table . " i
-                     LEFT JOIN adjudicatories a ON i.id_adjudicatory = a.id_adjudicatory
-                     LEFT JOIN market_stalls s ON i.id_stall = s.id_stall
-                     LEFT JOIN infraction_types it ON i.id_infraction_type = it.id_infraction_type
-                     WHERE (a.full_name_or_company_name LIKE :search 
-                             OR s.stall_code LIKE :search 
-                             OR it.infraction_type_name LIKE :search)
-                     AND i.status_logical = 'active'";
-            
+            $query = "SELECT COUNT(*) AS total FROM " . $this->table . " i
+                    LEFT JOIN awardees a ON i.awardee_id = a.id
+                    LEFT JOIN market_stalls s ON i.stall_id = s.id
+                    LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                    WHERE (a.first_name LIKE :search 
+                            OR s.stall_number LIKE :search 
+                            OR it.infraction_type_name LIKE :search)
+                    AND i.status_logical = 'active'";
+
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':search', $searchParam);
+            $searchParam = "%$search%";
+
+            // It's better to explicitly bind with bindValue for clarity
+            $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
+
+            // This line will execute the query and capture any errors
             $stmt->execute();
             
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                        
+            // Return the count
             return (int)$result['total'];
+            
         } catch(PDOException $exception) {
             error_log("Error al contar infracciones: " . $exception->getMessage());
             return 0;
@@ -102,7 +145,7 @@ class InfractionsModel {
      */
     public function getById($id) {
         try {
-            $query = "SELECT i.* FROM " . $this->table . " i WHERE i.id_infraction = :id AND i.status_logical = 'active'";
+            $query = "SELECT i.* FROM " . $this->table . " i WHERE i.infraction_id = :id AND i.status_logical = 'active'";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -123,18 +166,18 @@ class InfractionsModel {
     public function getInfractionDetails($id) {
         try {
             $query = "SELECT i.*, 
-                             a.full_name_or_company_name as adjudicatory_name,
-                             a.document_number as adjudicatory_document,
-                             s.stall_code,
-                             s.stall_type,
+                             a.first_name as adjudicatory_name,
+                             a.id_number as adjudicatory_document,
+                             s.stall_number,
+                             s.location_description,
                              it.infraction_type_name,
                              it.description as infraction_type_description,
                              it.base_fine
                      FROM " . $this->table . " i
-                     LEFT JOIN adjudicatories a ON i.id_adjudicatory = a.id_adjudicatory
-                     LEFT JOIN market_stalls s ON i.id_stall = s.id_stall
-                     LEFT JOIN infraction_types it ON i.id_infraction_type = it.id_infraction_type
-                     WHERE i.id_infraction = :id AND i.status_logical = 'active'";
+                     LEFT JOIN awardees a ON i.awardee_id = a.id
+                     LEFT JOIN market_stalls s ON i.stall_id = s.id
+                     LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                     WHERE i.infraction_id = :id AND i.status_logical = 'active'";
 
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -155,9 +198,9 @@ class InfractionsModel {
     public function create($data) {
         try {
             $query = "INSERT INTO " . $this->table . " (
-                         id_adjudicatory,
-                         id_stall,
-                         id_infraction_type,
+                         awardee_id,
+                         stall_id,
+                         infraction_type_id,
                          infraction_description,
                          infraction_status,
                          inspector_observations,
@@ -165,9 +208,9 @@ class InfractionsModel {
                          proof,
                          status_logical
                      ) VALUES (
-                         :id_adjudicatory,
-                         :id_stall,
-                         :id_infraction_type,
+                         :awardee_id,
+                         :stall_id,
+                         :infraction_type_id,
                          :infraction_description,
                          :infraction_status,
                          :inspector_observations,
@@ -179,18 +222,18 @@ class InfractionsModel {
             $stmt = $this->conn->prepare($query);
             
             // Sanitizar y enlazar parámetros
-            $this->id_adjudicatory = htmlspecialchars(strip_tags($data['id_adjudicatory']));
-            $this->id_stall = htmlspecialchars(strip_tags($data['id_stall']));
-            $this->id_infraction_type = htmlspecialchars(strip_tags($data['id_infraction_type']));
+            $this->awardee_id = htmlspecialchars(strip_tags($data['awardee_id']));
+            $this->stall_id = htmlspecialchars(strip_tags($data['stall_id']));
+            $this->infraction_type_id = htmlspecialchars(strip_tags($data['infraction_type_id']));
             $this->infraction_description = htmlspecialchars(strip_tags($data['infraction_description']));
             $this->infraction_status = htmlspecialchars(strip_tags($data['infraction_status']));
             $this->inspector_observations = htmlspecialchars(strip_tags($data['inspector_observations']));
             $this->infraction_datetime = date('Y-m-d H:i:s');
             $this->proof = $data['proof']; // No sanitizar, ya que es el nombre de archivo
 
-            $stmt->bindParam(':id_adjudicatory', $this->id_adjudicatory);
-            $stmt->bindParam(':id_stall', $this->id_stall);
-            $stmt->bindParam(':id_infraction_type', $this->id_infraction_type);
+            $stmt->bindParam(':awardee_id', $this->awardee_id);
+            $stmt->bindParam(':stall_id', $this->stall_id);
+            $stmt->bindParam(':infraction_type_id', $this->infraction_type_id);
             $stmt->bindParam(':infraction_description', $this->infraction_description);
             $stmt->bindParam(':infraction_status', $this->infraction_status);
             $stmt->bindParam(':inspector_observations', $this->inspector_observations);
@@ -228,31 +271,31 @@ class InfractionsModel {
     public function update($id, $data) {
         try {
             $query = "UPDATE " . $this->table . " 
-                     SET id_adjudicatory = :id_adjudicatory,
-                         id_stall = :id_stall,
-                         id_infraction_type = :id_infraction_type,
+                     SET awardee_id = :awardee_id,
+                         stall_id = :stall_id,
+                         infraction_type_id = :infraction_type_id,
                          infraction_description = :infraction_description,
                          infraction_status = :infraction_status,
                          inspector_observations = :inspector_observations,
                          proof = :proof
-                     WHERE id_infraction = :id
+                     WHERE infraction_id = :id
                      AND status_logical = 'active'";
             
             $stmt = $this->conn->prepare($query);
 
             // Sanitizar y enlazar parámetros
-            $this->id_adjudicatory = htmlspecialchars(strip_tags($data['id_adjudicatory']));
-            $this->id_stall = htmlspecialchars(strip_tags($data['id_stall']));
-            $this->id_infraction_type = htmlspecialchars(strip_tags($data['id_infraction_type']));
+            $this->awardee_id = htmlspecialchars(strip_tags($data['awardee_id']));
+            $this->stall_id = htmlspecialchars(strip_tags($data['stall_id']));
+            $this->infraction_type_id = htmlspecialchars(strip_tags($data['infraction_type_id']));
             $this->infraction_description = htmlspecialchars(strip_tags($data['infraction_description']));
             $this->infraction_status = htmlspecialchars(strip_tags($data['infraction_status']));
             $this->inspector_observations = htmlspecialchars(strip_tags($data['inspector_observations']));
             $this->proof = $data['proof'];
             
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':id_adjudicatory', $this->id_adjudicatory);
-            $stmt->bindParam(':id_stall', $this->id_stall);
-            $stmt->bindParam(':id_infraction_type', $this->id_infraction_type);
+            $stmt->bindParam(':awardee_id', $this->awardee_id);
+            $stmt->bindParam(':stall_id', $this->stall_id);
+            $stmt->bindParam(':infraction_type_id', $this->infraction_type_id);
             $stmt->bindParam(':infraction_description', $this->infraction_description);
             $stmt->bindParam(':infraction_status', $this->infraction_status);
             $stmt->bindParam(':inspector_observations', $this->inspector_observations);
@@ -287,7 +330,7 @@ class InfractionsModel {
     public function logicalDelete($id) {
         try {
             // Verificar si la infracción existe y no está ya eliminada
-            $checkQuery = "SELECT id_infraction FROM " . $this->table . " WHERE id_infraction = :id AND status_logical = 'active'";
+            $checkQuery = "SELECT infraction_id FROM " . $this->table . " WHERE infraction_id = :id AND status_logical = 'active'";
             $checkStmt = $this->conn->prepare($checkQuery);
             $checkStmt->bindParam(':id', $id, PDO::PARAM_INT);
             $checkStmt->execute();
@@ -299,7 +342,7 @@ class InfractionsModel {
                 ];
             }
 
-            $query = "UPDATE " . $this->table . " SET status_logical = 'deleted' WHERE id_infraction = :id";
+            $query = "UPDATE " . $this->table . " SET status_logical = 'deleted' WHERE infraction_id = :id";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);

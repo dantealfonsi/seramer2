@@ -27,6 +27,18 @@ SET time_zone = "+00:00";
 -- Estructura de tabla para la tabla `academic_degrees`
 --
 
+CREATE TABLE inspectors (
+    inspector_id INT AUTO_INCREMENT PRIMARY KEY,
+    inspector_code VARCHAR(50) UNIQUE NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20),
+    email VARCHAR(255),
+    hire_date DATE,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE `academic_degrees` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL

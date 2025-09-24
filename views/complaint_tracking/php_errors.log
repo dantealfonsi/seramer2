@@ -1,0 +1,38 @@
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 95
+[24-Sep-2025 12:16:21 UTC] PHP Warning:  Undefined array key "name" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\create.php on line 96
+[24-Sep-2025 12:16:27 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:35:56 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:36:30 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:50:17 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:50:19 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:51:20 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:57:15 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 12:57:32 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'

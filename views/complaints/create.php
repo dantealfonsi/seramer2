@@ -5,12 +5,11 @@ session_start();
 
 // Incluir el controlador y los modelos para cargar los datos de las listas
 require_once __DIR__ . '/../../controllers/ComplaintsController.php';
-require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $complaintsController = new ComplaintsController();
-$marketStallsModel = new MarketStallsModel();
 
 $data = $complaintsController->create();
+
 $page_title = 'Registrar Nueva Queja';
 $errors = [];
 $form_data = [
@@ -21,6 +20,7 @@ $form_data = [
     'client_email' => '',
     'complaint_description' => '',
     'position_id' => '',
+    'awardee_id' => '',
     'complaint_type' => '',
     'complaint_status' => 'Received',
     'complaint_priority' => 'Medium',
@@ -42,12 +42,8 @@ $allowed_status = [
 ];
 
 // Cargar la lista de puestos
-$stalls = $marketStallsModel->getAll();
+$stalls = $complaintsController->getStallsList();
 
-$stallDict = [];
-foreach ($stalls as $id => $code) {
-    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
-}
 // Procesar envío del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_data = [
@@ -58,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'client_email' => trim($_POST['client_email'] ?? ''),
         'complaint_description' => trim($_POST['complaint_description'] ?? ''),
         'position_id' => trim($_POST['position_id'] ?? ''),
+        'awardee_id' => trim($_POST['awardee_id'] ?? ''),
         'complaint_type' => trim($_POST['complaint_type'] ?? ''),
         'complaint_status' => trim($_POST['complaint_status'] ?? 'Received'),
         'complaint_priority' => trim($_POST['complaint_priority'] ?? 'Medium'),
@@ -168,15 +165,29 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </select>
                                     </div>
                                     <div class="mb-3">
+                                        <label for="awardee_id" class="form-label">
+                                            Adjudicatario
+                                        </label>
+                                        <select class="form-select" id="awardee_id" name="awardee_id">
+                                            <option value="">Seleccione un Adjudicatario (opcional)</option>
+                                            <?php foreach ($data['awardees'] as $awardee): ?>
+                                                <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
+                                                        <?php echo ((int)$form_data['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($awardee['first_name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>                                    
+                                    <div class="mb-3">
                                         <label for="position_id" class="form-label">
                                             Puesto del Mercado
                                         </label>
                                         <select class="form-select" id="position_id" name="position_id">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stallDict as $stall): ?>
-                                                <option value="<?php echo htmlspecialchars($stall['id_stall']); ?>"
-                                                        <?php echo ((int)$form_data['position_id'] == (int)$stall['id_stall']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($stall['stall_code']); ?>
+                                            <?php foreach ($stalls as $stall): ?>
+                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
+                                                        <?php echo ((int)$form_data['position_id'] == (int)$stall['id']) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>

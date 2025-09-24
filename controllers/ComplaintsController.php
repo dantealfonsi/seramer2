@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../models/ComplaintsModel.php';
-require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../config/app.php';
 
 class ComplaintsController {
@@ -14,9 +13,12 @@ class ComplaintsController {
     /**
      * Display a list of complaints with filters and pagination.
      */
-    public function index($params = []) {
-        AuthMiddleware::requireUserManagementAccess(); // O el permiso que necesites        
-        
+
+    public function getStallsList() {
+        return $this->complaintsModel->getStallsList();
+    }
+
+    public function index($params = []) {        
         $page = isset($params['page']) ? (int)$params['page'] : 1;        
         $limit = 10;        
         $search = isset($params['search']) ? trim($params['search']) : '';                        
@@ -38,9 +40,7 @@ class ComplaintsController {
     /**
      * Display a specific complaint.
      */
-    public function view($id) {
-        AuthMiddleware::requireUserManagementAccess();
-        
+    public function view($id) {        
         if (!$id || !is_numeric($id)) {
             // Manejar error
         }
@@ -62,13 +62,10 @@ class ComplaintsController {
      * Show form to create a new complaint.
      */
     public function create() {
-        AuthMiddleware::requireUserManagementAccess();
-
-        $marketStalls = $this->complaintsModel->getMarketStall(); 
-            
         return [
             'page_title' => 'Registrar Nueva Queja',
-            'market_stalls' => $marketStalls,
+            'market_stalls' => $this->complaintsModel->getMarketStall(),
+            'awardees' => $this->complaintsModel->getAwardeesList(),            
             'action' => 'create'
             // 'positions' => $positions
         ];
@@ -77,9 +74,7 @@ class ComplaintsController {
     /**
      * Process the creation of a new complaint.
      */
-    public function store($data) {
-        AuthMiddleware::requireUserManagementAccess();
-        
+    public function store($data) {        
         $validation = $this->validateComplaintData($data);
         if (!$validation['success']) {
             return $validation; // Devuelve errores para mostrar en el formulario
@@ -101,9 +96,7 @@ class ComplaintsController {
     /**
      * Show form to edit a complaint.
      */
-    public function edit($id) {
-        AuthMiddleware::requireUserManagementAccess();
-        
+    public function edit($id) {        
         $complaint = $this->complaintsModel->getById($id);
         
         if (!$complaint) {
@@ -117,6 +110,7 @@ class ComplaintsController {
         return [
             'success' => true,
             'complaint' => $complaint,
+            'awardees' => $this->complaintsModel->getAwardeesList(),  
             'page_title' => 'Editar Queja #' . $id,
             'action' => 'edit'
         ];
@@ -125,9 +119,7 @@ class ComplaintsController {
     /**
      * Process the update of a complaint.
      */
-    public function update($id, $data) {
-        AuthMiddleware::requireUserManagementAccess();
-        
+    public function update($id, $data) {        
         $validation = $this->validateComplaintData($data);
         if (!$validation['success']) {
             return $validation;
@@ -150,8 +142,6 @@ class ComplaintsController {
      * Delete a complaint.
      */
     public function delete($id) {
-        AuthMiddleware::requireUserManagementAccess();
-        
         if (!$id || !is_numeric($id)) {
             return ['success' => false, 'message' => 'ID de queja inválido'];
         }

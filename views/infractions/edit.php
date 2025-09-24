@@ -5,21 +5,22 @@ session_start();
 
 // Incluir el controlador y los modelos para cargar los datos de las listas
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
-require_once __DIR__ . '/../../models/AdjudicatoriesModel.php';
-require_once __DIR__ . '/../../models/InfractionTypesModel.php';
-require_once __DIR__ . '/../../models/MarketStallsModel.php';
+//require_once __DIR__ . '/../../models/AdjudicatoriesModel.php';
+//require_once __DIR__ . '/../../models/InfractionTypesModel.php';
+require_once __DIR__ . '/../../models/InfractionsModel.php';
+//require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
 
-$id = $_GET['id'] ?? null;
-$is_edit = !empty($id);
+$idEdit = $_GET['id'] ?? null;
+$is_edit = !empty($idEdit);
 $infraction = null;
 $page_title = 'Registrar Nueva Infracción';
 $errors = [];
 $form_data = [
-    'id_adjudicatory' => '',
-    'id_stall' => '',
-    'id_infraction_type' => '',
+    'awardee_id' => '',
+    'stall_id' => '',
+    'infraction_type_id' => '',
     'infraction_datetime' => date('Y-m-d H:i:s'),
     'infraction_description' => '',
     'infraction_status' => 'Reported',
@@ -28,23 +29,24 @@ $form_data = [
 ];
 
 // --- Cargar las listas de selección para los campos del formulario ---
-$adjudicatoriesModel = new AdjudicatoriesModel();
+//$adjudicatoriesModel = new AdjudicatoriesModel();
 $infractionTypesModel = new InfractionTypesModel();
-$marketStallsModel = new MarketStallsModel();
+$infractionsModel = new InfractionsModel();
+//$marketStallsModel = new MarketStallsModel();
 
-$adjudicators = $adjudicatoriesModel->getAll();
+$awardees = $infractionsModel->getAwardeesList();
 
-$infraction_types = $infractionTypesModel->getAll();
+$infraction_types = $infractionsModel->getInfractionTypesList();
 
-$stalls =  $marketStallsModel->getAll();
+$stalls =  $infractionsModel->getStallsList();
 $stallDict = [];
-foreach ($stalls as $id => $code) {
-    $stallDict[] = ['id_stall' => $id, 'stall_code' => $code];     
+foreach ($stalls as $id => $stall_number) {
+    $stallDict[] = ['id' => $id, 'stall_number' => $stall_number];     
 }
 
 // Si estamos editando, obtener los datos de la infracción
 if ($is_edit) {
-    $result = $infractionsController->edit($id);
+    $result = $infractionsController->edit($idEdit);
     
     if (!$result['success']) {
         $_SESSION['flash_message'] = [
@@ -58,9 +60,9 @@ if ($is_edit) {
     $infraction = $result['infraction'];
     $page_title = $result['page_title'];
     
-    $form_data['id_adjudicatory'] = $infraction['id_adjudicatory'];
-    $form_data['id_stall'] = $infraction['id_stall'];
-    $form_data['id_infraction_type'] = $infraction['id_infraction_type'];
+    $form_data['awardee_id'] = $infraction['awardee_id'];
+    $form_data['stall_id'] = $infraction['stall_id'];
+    $form_data['infraction_type_id'] = $infraction['infraction_type_id'];
     // Solo la fecha para el input type="date"
     $form_data['infraction_datetime'] = date('Y-m-d', strtotime($infraction['infraction_datetime']));
     $form_data['infraction_status'] = $infraction['infraction_status'];
@@ -115,9 +117,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }            
 
     $form_data = [
-        'id_adjudicatory' => trim($_POST['id_adjudicatory'] ?? ''),
-        'id_stall' => trim($_POST['id_stall'] ?? ''),
-        'id_infraction_type' => trim($_POST['id_infraction_type'] ?? ''),
+        'awardee_id' => trim($_POST['awardee_id'] ?? ''),
+        'stall_id' => trim($_POST['stall_id'] ?? ''),
+        'infraction_type_id' => trim($_POST['infraction_type_id'] ?? ''),
         // Combina la fecha y una hora predeterminada si el campo de hora no existe
         'infraction_datetime' => trim($_POST['infraction_datetime'] ?? '') . ' 00:00:00',
         'infraction_description' => trim($_POST['infraction_description'] ?? ''),
@@ -129,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Usar el ID de la infracción en la actualización
     if (empty($errors)) {
         if ($is_edit) {
-            $result = $infractionsController->update($id, $form_data);
+            $result = $infractionsController->update($idEdit, $form_data);
         } else {
             $result = $infractionsController->store($form_data);
         }
@@ -162,7 +164,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <li class="breadcrumb-item"><a href="index.php">Infracciones</a></li>
                         <?php if ($is_edit): ?>
                         <li class="breadcrumb-item">
-                            <a href="view.php?id=<?php echo htmlspecialchars($id); ?>">Infracción #<?php echo htmlspecialchars($id); ?></a>
+                            <a href="view.php?id=<?php echo htmlspecialchars($idEdit); ?>">Infracción #<?php echo htmlspecialchars($idEdit); ?></a>
                         </li>
                         <li class="breadcrumb-item active" aria-current="page">Editar</li>
                         <?php else: ?>
@@ -177,7 +179,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($id) : 'index.php'; ?>" class="btn btn-secondary">
+                        <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" class="btn btn-secondary">
                             <i class="ri-arrow-left-line"></i> 
                             <?php echo $is_edit ? 'Volver a detalles' : 'Volver al listado'; ?>
                         </a>
@@ -202,15 +204,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="adjudicatory_id" class="form-label">
+                                        <label for="awardee_id" class="form-label">
                                             Adjudicatario <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="adjudicatory_id" name="id_adjudicatory" required>
+                                        <select class="form-select" id="awardee_id" name="awardee_id" required>
                                             <option value="">Seleccione un adjudicatario</option>
-                                            <?php foreach ($adjudicators as $adj): ?>
-                                            <option value="<?php echo htmlspecialchars($adj['id_adjudicatory']); ?>" 
-                                                     <?php echo ($form_data['id_adjudicatory'] == $adj['id_adjudicatory']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($adj['full_name_or_company_name']); ?>
+                                            <?php foreach ($awardees as $adj): ?>
+                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
+                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($adj['first_name']); ?>
                                             </option>
                                             <?php endforeach; ?>
                                         </select>
@@ -219,12 +221,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="stall_id" class="form-label">
                                             Puesto
                                         </label>
-                                        <select class="form-select" id="stall_id" name="id_stall">
+                                        <select class="form-select" id="stall_id" name="stall_id">
                                             <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stallDict as $item): ?>
-                                                <option value="<?php echo htmlspecialchars($item['id_stall']); ?>"
-                                                    <?php echo ((int)$form_data['id_stall'] == (int)$item['id_stall']) ? ' selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($item['stall_code']); ?>
+                                            <?php foreach ($stalls as $item): ?>
+                                                <option value="<?php echo htmlspecialchars($item['id']); ?>"
+                                                    <?php echo ((int)$form_data['stall_id'] == (int)$item['id']) ? ' selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($item['stall_number']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
@@ -233,11 +235,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="infraction_type_id" class="form-label">
                                             Tipo de Infracción <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="infraction_type_id" name="id_infraction_type" required>
+                                        <select class="form-select" id="infraction_type_id" name="infraction_type_id" required>
                                             <option value="">Seleccione un tipo de infracción</option>
                                             <?php foreach ($infraction_types as $type): ?>
-                                            <option value="<?php echo htmlspecialchars($type['id_infraction_type']); ?>"
-                                                     <?php echo ($form_data['id_infraction_type'] == $type['id_infraction_type']) ? 'selected' : ''; ?>>
+                                            <option value="<?php echo htmlspecialchars($type['infraction_type_id']); ?>"
+                                                     <?php echo ($form_data['infraction_type_id'] == $type['infraction_type_id']) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars($type['infraction_type_name']); ?>
                                             </option>
                                             <?php endforeach; ?>
@@ -325,7 +327,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
 
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($id) : 'index.php'; ?>" 
+                                <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" 
                                    class="btn btn-outline-secondary">
                                     <i class="ri-close-line"></i> Cancelar
                                 </a>

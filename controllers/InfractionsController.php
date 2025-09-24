@@ -5,8 +5,8 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../config/app.php';
 
 // Importar los modelos de tablas relacionadas para los selects en los formularios
-require_once __DIR__ . '/../models/AdjudicatoriesModel.php';
-require_once __DIR__ . '/../models/MarketStallsModel.php';
+//require_once __DIR__ . '/../models/AdjudicatoriesModel.php';
+//require_once __DIR__ . '/../models/MarketStallsModel.php';
 require_once __DIR__ . '/../models/InfractionTypesModel.php';
 
 // Nuevo archivo para la clase de carga de archivos.
@@ -14,11 +14,15 @@ require_once __DIR__ . '/../public/utils/FileUpload.php';
 
 class InfractionsController {
     private $infractionsModel;
-    public $marketStallsModel;
+    //public $marketStallsModel;
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
-        $this->marketStallsModel = new MarketStallsModel();
+        //$this->marketStallsModel = new MarketStallsModel();
+    }
+
+    public function getStallsList() {
+        return $this->infractionsModel->getStallsList();
     }
 
     /**
@@ -30,17 +34,19 @@ class InfractionsController {
         // Verificar acceso - Se asume que solo personal de fiscalización tiene acceso
         // Debes implementar el método adecuado en tu AuthMiddleware
         //AuthMiddleware::requireFiscalizationAccess();
-        
+                
         $page = isset($params['page']) ? (int)$params['page'] : 1;
         $limit = 10;
         $search = isset($params['search']) ? trim($params['search']) : '';
         
-        $infractions = $this->infractionsModel->getAll($page, $limit, $search);
+        $infractions = $this->infractionsModel->getAll($page, $limit, $search);        
+        $awardees = $this->infractionsModel->getAwardeesList();
         $total = $this->infractionsModel->countAll($search);
         $totalPages = ceil($total / $limit);
         
         $result = [
             'infractions' => $infractions,
+            'awardees' => $awardees,
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $total,
@@ -79,7 +85,7 @@ class InfractionsController {
         return [
             'success' => true,
             'infraction' => $infraction,
-            'page_title' => 'Detalles de Infracción #' . $infraction['id_infraction']
+            'page_title' => 'Detalles de Infracción #' . $infraction['infraction_id']
         ];
     }
 
@@ -91,16 +97,16 @@ class InfractionsController {
         //AuthMiddleware::requireFiscalizationAccess();
         
         // Cargar datos necesarios para los selects en el formulario
-        $adjudicatoriesModel = new AdjudicatoriesModel();
+        //$adjudicatoriesModel = new AdjudicatoriesModel();
         $infractionTypesModel = new InfractionTypesModel();
-        $stalls = $this->marketStallsModel->getAll();
+        $stalls = $this->infractionsModel->getStallsList();
 
         return [
             'page_title' => 'Registrar Nueva Infracción',
             'action' => 'create',
             'stalls' => $stalls,
-            'adjudicatories' => $adjudicatoriesModel->getAll(),
-            'infraction_types' => $infractionTypesModel->getAll()
+            'awardees' => $this->infractionsModel->getAwardeesList(),
+            'infraction_types' => $infractionTypesModel->getAll(null, null, null)
         ];
     }
 
@@ -140,9 +146,8 @@ class InfractionsController {
      * @param int $id
      * @return array
      */
-    public function edit($id) {
-        //AuthMiddleware::requireFiscalizationAccess();
-        $stalls = $this->marketStallsModel->getAll();
+    public function edit($id) {        
+        $stalls = $this->infractionsModel->getStallsList();
         
         if (!$id || !is_numeric($id)) {
             return [
@@ -161,17 +166,17 @@ class InfractionsController {
         }
         
         // Cargar datos para los selects
-        $adjudicatoriesModel = new AdjudicatoriesModel();
+        //$adjudicatoriesModel = new AdjudicatoriesModel();
         $infractionTypesModel = new InfractionTypesModel();
 
         return [
             'success' => true,
             'infraction' => $infraction,
             'stalls' => $stalls,
-            'page_title' => 'Editar Infracción #' . $infraction['id_infraction'],
+            'page_title' => 'Editar Infracción #' . $infraction['infraction_id'],
             'action' => 'edit',
-            'adjudicatories' => $adjudicatoriesModel->getAll(),
-            'infraction_types' => $infractionTypesModel->getAll()
+            'awardees' => $this->infractionsModel->getAwardeesList(),
+            'infraction_types' => $infractionTypesModel->getAll(null, null, null)
         ];
     }
 
@@ -253,17 +258,17 @@ class InfractionsController {
         $errors = [];
         
         // Validación de id_adjudicatory
-        if (empty($data['id_adjudicatory']) || !is_numeric($data['id_adjudicatory'])) {
+        if (empty($data['awardee_id']) || !is_numeric($data['awardee_id'])) {
             $errors[] = 'El adjudicatario es obligatorio.';
         }
         
         // Validación de id_stall (puede ser NULL)
-        if (!empty($data['id_stall']) && !is_numeric($data['id_stall'])) {
+        if (!empty($data['stall_id']) && !is_numeric($data['stall_id'])) {
             $errors[] = 'El puesto de mercado debe ser un número válido.';
         }
 
-        // Validación de id_infraction_type
-        if (empty($data['id_infraction_type']) || !is_numeric($data['id_infraction_type'])) {
+        // Validación de infraction_id_type
+        if (empty($data['infraction_type_id']) || !is_numeric($data['infraction_type_id'])) {
             $errors[] = 'El tipo de infracción es obligatorio.';
         }
 
