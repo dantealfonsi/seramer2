@@ -97,6 +97,35 @@ class CitationsModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+     /**
+     * Obtiene las citaciones programadas para la fecha actual.
+     * @return array Un arreglo de citaciones o un arreglo vacío si no hay ninguna.
+     */
+    public function getTodayCitations()
+    {
+        $sql = "SELECT
+                    c.citation_id,
+                    c.citation_datetime,
+                    c.location,
+                    i.infraction_description,
+                    u.username AS mediator_name
+                FROM
+                    citations AS c
+                JOIN
+                    infractions AS i ON c.infraction_id = i.infraction_id
+                JOIN
+                    users AS u ON c.mediator_user_id = u.id
+                WHERE
+                    DATE(c.citation_datetime) = CURDATE()
+                ORDER BY
+                    c.citation_datetime ASC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * Crea una nueva citación en la base de datos.
      * @param array $data Los datos de la citación a crear.
