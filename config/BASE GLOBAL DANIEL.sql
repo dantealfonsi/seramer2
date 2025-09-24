@@ -16,6 +16,7 @@
 
 
 -- Volcando estructura de base de datos para seramermvc
+DROP DATABASE IF EXISTS `seramermvc`;
 CREATE DATABASE IF NOT EXISTS `seramermvc` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
 USE `seramermvc`;
 
@@ -246,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `citations` (
   PRIMARY KEY (`citation_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.citations: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.citations: ~1 rows (aproximadamente)
 DELETE FROM `citations`;
 INSERT INTO `citations` (`citation_id`, `infraction_id`, `citation_datetime`, `location`, `mediator_user_id`, `citation_status`) VALUES
 	(1, 4, '2025-09-23 16:13:00', 'dsdsds dsds', 5, 'Resuelta');
@@ -303,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `complaint_tracking` (
   PRIMARY KEY (`tracking_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.complaint_tracking: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.complaint_tracking: ~2 rows (aproximadamente)
 DELETE FROM `complaint_tracking`;
 INSERT INTO `complaint_tracking` (`tracking_id`, `complaint_id`, `action_datetime`, `admin_user_id`, `action_type`, `action_description`, `action_result`) VALUES
 	(1, 9, '2025-09-24 12:57:32', 1, 'Assignment', 'wsdsdsds sdsd', 'dsds dsds '),
@@ -348,7 +349,7 @@ CREATE TABLE IF NOT EXISTS `conciliation_reports` (
   PRIMARY KEY (`report_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.conciliation_reports: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.conciliation_reports: ~1 rows (aproximadamente)
 DELETE FROM `conciliation_reports`;
 INSERT INTO `conciliation_reports` (`report_id`, `citation_id`, `awardee_attendance`, `result`, `agreement_details`, `report_date`) VALUES
 	(1, 1, 1, 'Agreement Reached', 'dsddsdsd dsdsd dsdsd dsd ', '2025-09-22 02:27:18');
@@ -693,7 +694,7 @@ CREATE TABLE IF NOT EXISTS `infractions` (
   CONSTRAINT `fk_infractions_market_stalls` FOREIGN KEY (`stall_id`) REFERENCES `market_stalls` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.infractions: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.infractions: ~1 rows (aproximadamente)
 DELETE FROM `infractions`;
 INSERT INTO `infractions` (`infraction_id`, `awardee_id`, `stall_id`, `infraction_datetime`, `infraction_type_id`, `infraction_description`, `infraction_status`, `inspector_observations`, `proof`, `status_logical`) VALUES
 	(4, 2, 1, '2025-09-18 20:19:43', 1, 'sssssssss fgfgfgf ffgfg', 'In Process', 'sssssssssss', '68cc695fbe614.jpg', 'active');
@@ -709,7 +710,7 @@ CREATE TABLE IF NOT EXISTS `infraction_types` (
   UNIQUE KEY `infraction_type_name` (`infraction_type_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.infraction_types: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.infraction_types: ~1 rows (aproximadamente)
 DELETE FROM `infraction_types`;
 INSERT INTO `infraction_types` (`infraction_type_id`, `infraction_type_name`, `description`, `violated_article`, `base_fine`) VALUES
 	(1, 'Falta de Documentos', 'No tiene el Rif y otros documentos', '175', 156.00);
@@ -729,7 +730,7 @@ CREATE TABLE IF NOT EXISTS `inspection_reports` (
   PRIMARY KEY (`report_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.inspection_reports: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.inspection_reports: ~4 rows (aproximadamente)
 DELETE FROM `inspection_reports`;
 INSERT INTO `inspection_reports` (`report_id`, `scheduled_inspection_id`, `main_inspector_id`, `assistant_inspector_id`, `stall_id`, `awardee_id`, `creation_date`, `general_observations`, `inspector_signature_url`, `assistant_signature_url`) VALUES
 	(2, 1, 5, 1, 1, 2, '2025-09-17 01:32:49', 'swadsd', '', ''),
@@ -752,7 +753,7 @@ CREATE TABLE IF NOT EXISTS `inspectors` (
   UNIQUE KEY `inspector_code` (`inspector_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.inspectors: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.inspectors: ~4 rows (aproximadamente)
 DELETE FROM `inspectors`;
 INSERT INTO `inspectors` (`inspector_id`, `inspector_code`, `full_name`, `phone_number`, `email`, `hire_date`, `is_active`, `created_at`, `updated_at`) VALUES
 	(1, 'A-01', 'Daniel Alfonsi', '04264804748', 'alfonsi.acosta@gmail.com', '2025-09-16', 1, '2025-09-16 16:40:48', '2025-09-16 16:40:48'),
@@ -1024,7 +1025,7 @@ CREATE TABLE IF NOT EXISTS `scheduled_inspections` (
   CONSTRAINT `fk_scheduled_inspections_users` FOREIGN KEY (`assigned_responsible_id`) REFERENCES `users` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla seramermvc.scheduled_inspections: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla seramermvc.scheduled_inspections: ~4 rows (aproximadamente)
 DELETE FROM `scheduled_inspections`;
 INSERT INTO `scheduled_inspections` (`inspection_id`, `scheduled_date`, `inspection_type`, `assigned_responsible_id`, `inspection_status`, `observations`, `created_at`) VALUES
 	(1, '2025-09-19', 'dsdsds', 8, 'Pending', 'dsdsds', '2025-09-17 01:32:48'),
