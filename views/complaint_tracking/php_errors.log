@@ -36,3 +36,116 @@
 [24-Sep-2025 12:51:20 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
 [24-Sep-2025 12:57:15 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
 [24-Sep-2025 12:57:32 UTC] Error al obtener registros de seguimiento: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT'
+[24-Sep-2025 14:29:08 UTC] PHP Warning:  Undefined array key "record" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:29:09 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Undefined array key "record" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:34:33 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Undefined array key "record" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:48 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Undefined array key "record" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:36:50 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Undefined array key "tracking_records" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:14 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Undefined array key "tracking_records" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 86
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 104
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 111
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 123
+[24-Sep-2025 14:37:16 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 130
+[24-Sep-2025 14:38:27 UTC] PHP Warning:  Undefined array key "tracking_records" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:38:50 UTC] PHP Warning:  Undefined array key "tracking_records" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:39:09 UTC] PHP Warning:  Undefined array key "tracking_records" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 24
+[24-Sep-2025 14:45:48 UTC] PHP Warning:  Undefined array key "tracking_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 52
+[24-Sep-2025 14:45:51 UTC] PHP Warning:  Undefined array key "tracking_id" in C:\Apache24\htdocs\seramer2\views\complaint_tracking\edit.php on line 52
