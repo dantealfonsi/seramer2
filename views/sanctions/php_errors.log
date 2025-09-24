@@ -503,3 +503,4 @@ Stack trace:
 [22-Sep-2025 00:42:48 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
 [23-Sep-2025 18:44:26 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
 [23-Sep-2025 20:19:09 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[24-Sep-2025 02:34:20 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number

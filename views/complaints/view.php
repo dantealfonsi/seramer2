@@ -3,10 +3,12 @@
 
 session_start();
 
-// Incluir el controlador
+// Incluir los controladores necesarios
 require_once __DIR__ . '/../../controllers/ComplaintsController.php';
+require_once __DIR__ . '/../../controllers/ComplaintTrackingController.php';
 
 $complaintsController = new ComplaintsController();
+$trackingController = new ComplaintTrackingController();
 
 // Obtener el ID de la queja
 $id = $_GET['id'] ?? null;
@@ -20,7 +22,7 @@ if (!$id) {
     exit;
 }
 
-// Usar el controlador para obtener los datos
+// Usar el controlador para obtener los datos de la queja principal
 $result = $complaintsController->view($id);
 
 // Si hay error o no se encuentra la queja, redirigir
@@ -36,6 +38,10 @@ if (!$result['success']) {
 // Extraer variables para la vista
 $complaint = $result['complaint'];
 $page_title = $result['page_title'];
+
+// Obtener los registros de seguimiento para esta queja
+$trackingResult = $trackingController->index($id);
+$tracking_records = $trackingResult['tracking_records'] ?? [];
 
 $allowed_priority = [
     'Low' => 'Baja',
@@ -54,6 +60,19 @@ $allowed_tipes = [
     'Claim' => 'Reclamo',
     'Question' => 'Pregunta'
 ];
+
+// Manejar la solicitud de eliminación si se recibe (para registros de seguimiento)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_tracking') {
+    $delete_id = $_POST['id'];
+    $deleteResult = $trackingController->delete($delete_id);
+    if ($deleteResult['success']) {
+        $_SESSION['flash_message'] = ['type' => 'success', 'message' => $deleteResult['message']];
+    } else {
+        $_SESSION['flash_message'] = ['type' => 'danger', 'message' => $deleteResult['message']];
+    }
+    header("Location: view.php?id=" . $id);
+    exit;
+}
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -74,8 +93,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0"  style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-feedback-line me-1"  style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                        <h5 class="card-title mb-0"  style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri-feedback-line me-1"  style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="btn-group" role="group">
@@ -87,7 +106,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </a>
                             <button type="button" 
                                     class="btn btn-danger" 
-                                    onclick="confirmDelete(<?php echo $complaint['complaint_id']; ?>)">
+                                    onclick="confirmDeleteComplaint(<?php echo $complaint['complaint_id']; ?>)">
                                 <i class="ri-delete-bin-line"></i> Eliminar
                             </button>
                         </div>
@@ -148,6 +167,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     'Received' => 'secondary',
                                                     'In Process' => 'primary',
                                                     'Resolved' => 'success',
+                                                    'Closed' => 'dark',
                                                     'Cancelled' => 'danger'
                                                 ];
                                                 $color = $status_colors[$complaint['complaint_status']] ?? 'secondary';
@@ -175,6 +195,51 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                             </div>
                         </div>
+
+                        <hr class="my-4">
+
+                        <!-- Historial de Seguimiento -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Historial de Seguimiento</h6>
+                            <a href="../complaint_tracking/create.php?complaint_id=<?php echo htmlspecialchars($complaint['complaint_id']); ?>" class="btn btn-primary">
+                                <i class="ri-add-line"></i> Añadir Registro
+                            </a>
+                        </div>
+                        
+                        <?php if (empty($tracking_records)): ?>
+                            <div class="alert alert-info">No hay registros de seguimiento para esta queja.</div>
+                        <?php else: ?>
+                            <ul class="timeline">
+                                <?php foreach ($tracking_records as $record): ?>
+                                    <li>
+                                        <div class="timeline-badge">
+                                            <i class="ri-check-line"></i>
+                                        </div>
+                                        <div class="timeline-panel card">
+                                            <div class="card-body">
+                                                <div class="timeline-heading d-flex justify-content-between align-items-start">
+                                                    <h6 class="timeline-title mb-1"><?php echo htmlspecialchars($record['action_type']); ?></h6>
+                                                    <div class="btn-group">
+                                                        <a href="../complaint_tracking/edit.php?id=<?php echo htmlspecialchars($record['tracking_id']); ?>" class="btn btn-sm btn-outline-primary" title="Editar"><i class="ri-pencil-line"></i></a>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDeleteTrackingRecord(<?php echo htmlspecialchars($record['tracking_id']); ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+                                                    </div>
+                                                </div>
+                                                <div class="timeline-body">
+                                                    <p class="mb-1"><strong>Realizado por:</strong> <?php echo htmlspecialchars($record['admin_name']); ?></p>
+                                                    <p class="mb-1"><strong>Descripción:</strong> <?php echo nl2br(htmlspecialchars($record['action_description'])); ?></p>
+                                                    <?php if (!empty($record['action_result'])): ?>
+                                                        <p class="mb-1"><strong>Resultado:</strong> <?php echo nl2br(htmlspecialchars($record['action_result'])); ?></p>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="timeline-footer mt-2">
+                                                    <small class="text-muted"><i class="ri-time-line"></i> <?php echo htmlspecialchars($record['action_datetime']); ?></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -201,12 +266,100 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
+<!-- Modal de Confirmación para eliminar registro de seguimiento -->
+<div class="modal fade" id="deleteTrackingModal" tabindex="-1" aria-labelledby="deleteTrackingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteTrackingModalLabel">Confirmar Eliminación de Registro de Seguimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar este registro de seguimiento? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <form id="deleteTrackingForm" method="POST">
+                    <input type="hidden" name="action" value="delete_tracking">
+                    <input type="hidden" name="id" id="deleteTrackingId">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .timeline {
+        list-style: none;
+        padding: 20px 0 20px;
+        position: relative;
+    }
+
+    .timeline:before {
+        top: 0;
+        bottom: 0;
+        position: absolute;
+        content: " ";
+        width: 3px;
+        background-color: #e5e5e5;
+        left: 25px;
+        margin-left: -1.5px;
+    }
+
+    .timeline > li {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .timeline > li:before,
+    .timeline > li:after {
+        content: " ";
+        display: table;
+    }
+
+    .timeline > li:after {
+        clear: both;
+    }
+
+    .timeline > li > .timeline-panel {
+        float: left;
+        width: calc(100% - 70px);
+        margin-left: 70px;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .timeline-badge {
+        color: #fff;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        font-size: 1.2em;
+        text-align: center;
+        position: absolute;
+        top: 16px;
+        left: 0;
+        margin-left: -25px;
+        background-color: #837aff;
+        border-radius: 50%;
+        border: 3px solid #fff;
+        z-index: 100;
+    }
+
+    .timeline-badge i {
+        font-size: 1.5rem;
+    }
+</style>
+
+
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
 <script>
 let deleteComplaintId = null;
 
-function confirmDelete(id) {
+function confirmDeleteComplaint(id) {
     deleteComplaintId = id;
     document.getElementById('complaintId').textContent = id;
     
@@ -237,4 +390,10 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function()
         form.submit();
     }
 });
+
+function confirmDeleteTrackingRecord(id) {
+    const modal = new bootstrap.Modal(document.getElementById('deleteTrackingModal'));
+    document.getElementById('deleteTrackingId').value = id;
+    modal.show();
+}
 </script>
