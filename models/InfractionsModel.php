@@ -59,79 +59,150 @@ class InfractionsModel {
         }
     }
 
+    public function getInfractionTypeById($id)
+    {
+        // Asumiendo que tienes una conexión PDO en $this->db
+        $stmt = $this->conn->prepare("SELECT * FROM infraction_types WHERE infraction_type_id = :id LIMIT 1");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     /**
-     * Obtener todas las infracciones
-     * @param int $page
-     * @param int $limit
-     * @param string $search
-     * @return array
+     * Helper para construir dinámicamente las cláusulas WHERE y los parámetros bind.
+     * Esto asegura que getAll() y countAll() usen exactamente los mismos filtros.
+     * @param array $filters Array de filtros recibidos del controlador (incluye 'search', 'infraction_date', etc.)
+     * @return array ['whereSQL' => 'WHERE ...', 'bindParams' => [':param' => value]]
      */
-    public function getAll($page = 1, $limit = 10, $search = '') {
+    private function buildFilterConditions(array $filters): array {
+        $whereClauses = ["i.status_logical = 'active'"];
+        $bindParams = [];
+
+        // 1. Filtrado de búsqueda general (por nombre, puesto, tipo)
+        if (!empty($filters['search'])) {
+            $searchParam = "%{$filters['search']}%";
+            // Utilizamos un solo placeholder (:search) en la query, pero se bindeará 3 veces.
+            // Para simplificar el bind, vamos a usar placeholders únicos:
+            $whereClauses[] = "(a.first_name LIKE :search_name 
+                                OR s.stall_number LIKE :search_stall 
+                                OR it.infraction_type_name LIKE :search_type)";
+            
+            $bindParams[':search_name'] = $searchParam;
+            $bindParams[':search_stall'] = $searchParam;
+            $bindParams[':search_type'] = $searchParam;
+        }
+
+        // 2. Filtrado por fecha de infracción (infraction_date)
+        if (!empty($filters['infraction_date'])) {
+            $whereClauses[] = "DATE(i.infraction_datetime) = :infraction_date";
+            $bindParams[':infraction_date'] = $filters['infraction_date'];
+        }
+
+        // 3. Filtrado por estado (infraction_status)
+        if (!empty($filters['infraction_status'])) {
+            $whereClauses[] = "i.infraction_status = :infraction_status";
+            $bindParams[':infraction_status'] = $filters['infraction_status'];
+        }
+
+        // 4. Filtrado por ID de tipo de infracción (infraction_type_id)
+        if (!empty($filters['infraction_type_id'])) {
+            $whereClauses[] = "i.infraction_type_id = :infraction_type_id";
+            $bindParams[':infraction_type_id'] = (int)$filters['infraction_type_id'];
+        }
+
+        // 5. Filtrado por ID de puesto (stall_id)
+        if (!empty($filters['stall_id'])) {
+            $whereClauses[] = "i.stall_id = :stall_id";
+            $bindParams[':stall_id'] = (int)$filters['stall_id'];
+        }
+
+        // 6. Filtrado por ID de adjudicatario (awardee_id)
+        if (!empty($filters['awardee_id'])) {
+            $whereClauses[] = "i.awardee_id = :awardee_id";
+            $bindParams[':awardee_id'] = (int)$filters['awardee_id'];
+        }
+        
+        // Construir la cláusula WHERE final
+        $whereSQL = "WHERE " . implode(" AND ", $whereClauses);
+
+        return ['whereSQL' => $whereSQL, 'bindParams' => $bindParams];
+    }
+
+    public function getAll($page = 1, $limit = 10, $filters = []) {
         try {
             $offset = ($page - 1) * $limit;
-            $searchParam = "%$search%";
+            
+            // Usamos el helper para obtener los filtros y parámetros
+            $conditions = $this->buildFilterConditions($filters);
+            $bindParams = $conditions['bindParams'];
+            $whereSQL = $conditions['whereSQL'];            
 
             $query = "SELECT i.*, 
-                            a.first_name as adjudicatory_name,
-                            a.id_number as adjudicatory_document,
-                            s.stall_number,
-                            it.infraction_type_name
-                    FROM " . $this->table . " i
-                    LEFT JOIN awardees a ON i.awardee_id = a.id
-                    LEFT JOIN market_stalls s ON i.stall_id = s.id
-                    LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
-                    WHERE (a.first_name LIKE :search1 
-                            OR s.stall_number LIKE :search2 
-                            OR it.infraction_type_name LIKE :search3)
-                    AND i.status_logical = 'active'
-                    ORDER BY i.infraction_datetime DESC
-                    LIMIT :limit OFFSET :offset";
+                             a.first_name as adjudicatory_name,
+                             a.id_number as adjudicatory_document,
+                             s.stall_number,
+                             it.infraction_type_name
+                      FROM " . $this->table . " i
+                      LEFT JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls s ON i.stall_id = s.id
+                      LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      {$whereSQL}
+                      ORDER BY i.infraction_datetime DESC
+                      LIMIT :limit OFFSET :offset";
 
-            $stmt = $this->conn->prepare($query); 
             
-            $stmt->bindValue(':search1', $searchParam, PDO::PARAM_STR);
-            $stmt->bindValue(':search2', $searchParam, PDO::PARAM_STR);
-            $stmt->bindValue(':search3', $searchParam, PDO::PARAM_STR);
+            $stmt = $this->conn->prepare($query); 
+           
+            // Bindear los parámetros de los filtros
+            foreach ($bindParams as $key => $value) {
+                // Determine el tipo de parámetro, asumiendo que los IDs son INT y el resto STR
+                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $stmt->bindValue($key, $value, $paramType);
+            }
+ 
+            // Bindear los parámetros de paginación
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            
             $stmt->execute();
-
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         } catch(PDOException $exception) {
             error_log("Error al obtener infracciones: " . $exception->getMessage());
             return [];
         }
     }
+
     /**
-     * Contar el total de infracciones (solo activas)
-     * @param string $search
-     * @return int
+     * Obtiene el total de registros de infracciones, aplicando los mismos filtros.
      */
-    public function countAll($search = '') {
+    public function countAll($filters = []) {
         try {
-            $query = "SELECT COUNT(*) AS total FROM " . $this->table . " i
-                    LEFT JOIN awardees a ON i.awardee_id = a.id
-                    LEFT JOIN market_stalls s ON i.stall_id = s.id
-                    LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
-                    WHERE (a.first_name LIKE :search 
-                            OR s.stall_number LIKE :search 
-                            OR it.infraction_type_name LIKE :search)
-                    AND i.status_logical = 'active'";
+            // Usamos el helper para obtener los filtros y parámetros
+            $conditions = $this->buildFilterConditions($filters);
+            $bindParams = $conditions['bindParams'];
+            $whereSQL = $conditions['whereSQL'];
 
-            $stmt = $this->conn->prepare($query);
-            $searchParam = "%$search%";
-
-            // It's better to explicitly bind with bindValue for clarity
-            $stmt->bindValue(':search', $searchParam, PDO::PARAM_STR);
-
-            // This line will execute the query and capture any errors
+            // Consulta de conteo, utiliza los mismos JOINS y WHERE
+            $query = "SELECT COUNT(*) as total_records
+                      FROM " . $this->table . " i
+                      LEFT JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls s ON i.stall_id = s.id
+                      LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      {$whereSQL}";
+            
+            $stmt = $this->conn->prepare($query); 
+            
+            // Bindear los parámetros de los filtros
+            foreach ($bindParams as $key => $value) {
+                $paramType = is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR;
+                $stmt->bindValue($key, $value, $paramType);
+            }
+            
             $stmt->execute();
             
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                        
-            // Return the count
-            return (int)$result['total'];
-            
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            return (int)$row['total_records'];
+
         } catch(PDOException $exception) {
             error_log("Error al contar infracciones: " . $exception->getMessage());
             return 0;
@@ -172,11 +243,16 @@ class InfractionsModel {
                              s.location_description,
                              it.infraction_type_name,
                              it.description as infraction_type_description,
-                             it.base_fine
+                             it.base_fine,
+                             sc.sanction_id,
+                             sc.fine_amount,
+                             sc.sanction_status,
+                             sc.fine_currency
                      FROM " . $this->table . " i
                      LEFT JOIN awardees a ON i.awardee_id = a.id
                      LEFT JOIN market_stalls s ON i.stall_id = s.id
-                     LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                     LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id 
+                     LEFT JOIN sanctions sc ON i.infraction_id = sc.infraction_id
                      WHERE i.infraction_id = :id AND i.status_logical = 'active'";
 
             $stmt = $this->conn->prepare($query);
