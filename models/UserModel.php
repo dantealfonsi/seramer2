@@ -493,7 +493,10 @@ class UserModel {
                 [
                     'title' => 'Reportes',
                     'icon' => 'ri-bar-chart-box-line',
-                    'url' => 'views/reports/index.php'
+                    'submenu' => [
+                        ['title' => 'Editor de Reportes', 'url' => 'views/reports/index.php'],
+                        ['title' => 'Sanciones por Cobrar', 'url' => 'views/reports/porCobrar.php']
+                    ]
                 ],
                 [
                     'title' => 'Auditoría',
