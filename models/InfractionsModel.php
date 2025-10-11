@@ -68,8 +68,6 @@ class InfractionsModel {
     }
 
     /**
-     * Helper para construir dinámicamente las cláusulas WHERE y los parámetros bind.
-     * Esto asegura que getAll() y countAll() usen exactamente los mismos filtros.
      * @param array $filters Array de filtros recibidos del controlador (incluye 'search', 'infraction_date', etc.)
      * @return array ['whereSQL' => 'WHERE ...', 'bindParams' => [':param' => value]]
      */
@@ -248,7 +246,7 @@ class InfractionsModel {
                              sc.fine_amount,
                              sc.sanction_status,
                              sc.fine_currency
-                     FROM " . $this->table . " i
+                     FROM infractions i
                      LEFT JOIN awardees a ON i.awardee_id = a.id
                      LEFT JOIN market_stalls s ON i.stall_id = s.id
                      LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id 

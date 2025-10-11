@@ -131,6 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // Usar el ID de la infracción en la actualización
+
     if (empty($errors)) {
         if ($is_edit) {
             $result = $infractionsController->update($idEdit, $form_data);
@@ -143,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'type' => 'success',
                 'message' => $result['message']
             ];
-            header('Location: ' . $result['redirect']);
+            header('Location: ' . $result['redirect']);            
             exit;
         } else {            
             $errors = $result['errors'] ?? [$result['message']];

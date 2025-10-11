@@ -152,24 +152,24 @@ class InfractionsController {
             $sanctionResult = $sanctionsController->create($sanctionData);
             if(!$sanctionResult['success']){
                 // Si la creación de la sanción falla, eliminamos la infracción creada para mantener la integridad.
-                $this->infractionsModel->logicalDelete($result['infraction_id']);
+                $this->infractionsModel->logicalDelete($result['id']);
                 return [
                     'success' => false,
                     'message' => 'Error al crear la sanción asociada: ' . $sanctionResult['message']
                 ];
             }
-        }
-        
-        if ($result['success']) {
+
             $_SESSION['flash_message'] = [
                 'type' => 'success',
                 'message' => $result['message']
             ];
             
             return [
-                'success' => true,
-                'redirect' =>  'index.php'
-            ];
+                'message' => $result['message'],
+                'success' => true,                
+                'redirect' =>  '../reports/index.php?report=print_infraction.rep&action=view&id=' . $result['id']
+            ];   
+
         } else {
             return $result;
         }

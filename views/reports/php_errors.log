@@ -1,0 +1,8 @@
+[02-Oct-2025 01:48:48 UTC] PHP Warning:  require(C:\Apache24\htdocs\seramer2\controllers/..views/reports/view.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\controllers\ReportController.php on line 83
+[02-Oct-2025 01:48:48 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\controllers/..views/reports/view.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\controllers\ReportController.php:83
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\reports\index.php(20): ReportController->viewAction()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\controllers\ReportController.php on line 83
+[02-Oct-2025 13:55:13 UTC] Archivo de configuración no encontrado: reports/test.sys
+[02-Oct-2025 14:07:43 UTC] Archivo de configuración no encontrado: reports/test.sys
