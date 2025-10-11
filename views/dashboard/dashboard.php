@@ -5,6 +5,7 @@
 
 // Incluir configuración
 require_once __DIR__ . '/../../config/app.php';
+include __DIR__ . '/notifications.php';
 
 // Iniciar sesión
 if (session_status() === PHP_SESSION_NONE) {

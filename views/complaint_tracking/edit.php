@@ -21,7 +21,7 @@ if (!$tracking_id) {
 // Cargar los datos del registro si existe un ID válido
 $result = $trackingController->edit($tracking_id);
 if ($result['success']) {
-    $record = $result['record'];
+    $record = $result['tracking_record'];
 } else {
     $_SESSION['flash_message'] = ['type' => 'danger', 'message' => $result['message']];
     header("Location: view.php?id=" . $record['complaint_id']);
@@ -43,13 +43,14 @@ $admin_user_id = 1;
 // Manejar la solicitud POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = [
+        'complaint_id' => $_POST['complaint_id'] ?? $record['complaint_id'],
         'admin_user_id' => $_POST['admin_user_id'] ?? $admin_user_id, // Usar el ID de la sesión en un entorno real
         'action_type' => $_POST['action_type'] ?? '',
         'action_description' => $_POST['action_description'] ?? '',
         'action_result' => $_POST['action_result'] ?? ''
     ];
 
-    $result = $trackingController->update($tracking_id, $data);
+    $result = $trackingController->update($_POST['tracking_id'], $data);
 
     if (isset($result['redirect'])) {
         header("Location: " . $result['redirect']);
@@ -61,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         // Recargar el registro con los nuevos datos después de la actualización exitosa
         $result = $trackingController->edit($tracking_id);
-        $record = $result['record'];
+        $record = $result['tracking_record'];
     }
 }
 
@@ -102,6 +103,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form method="POST">
                             <!-- El complaint_id se pasa como campo oculto -->
                             <input type="hidden" name="complaint_id" value="<?php echo htmlspecialchars($record['complaint_id']); ?>">
+                            <input type="hidden" name="tracking_id" value="<?php echo htmlspecialchars($record['tracking_id']); ?>">
                             
                             <div class="mb-3">
                                 <label for="admin_user_id" class="form-label">Usuario Administrador</label>

@@ -40,3 +40,139 @@ Stack trace:
 #1 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(48): include('...')
 #2 {main}
   thrown in C:\Apache24\htdocs\seramer2\models\UserModel.php on line 535
+[24-Sep-2025 15:57:23 UTC] PHP Warning:  include_once(C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:23 UTC] PHP Warning:  include_once(): Failed opening 'C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php' for inclusion (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:23 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:57:23 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(9): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:57:24 UTC] PHP Warning:  include_once(C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:24 UTC] PHP Warning:  include_once(): Failed opening 'C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php' for inclusion (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:24 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:57:24 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(9): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:57:25 UTC] PHP Warning:  include_once(C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:25 UTC] PHP Warning:  include_once(): Failed opening 'C:\Apache24\htdocs\seramer2\views\dashboard/../../config/script_notif.php' for inclusion (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php on line 8
+[24-Sep-2025 15:57:25 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:57:25 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(9): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:58:13 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:58:13 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:58:14 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:58:14 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:59:48 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 15:59:48 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:6
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 6
+[24-Sep-2025 16:00:12 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:00:12 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:7
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:00:32 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:00:32 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:7
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:01:05 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:01:05 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../config/database.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:7
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 7
+[24-Sep-2025 16:01:47 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard/../controllers/CitationsController.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 8
+[24-Sep-2025 16:01:47 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard/../controllers/CitationsController.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:8
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 8
+[24-Sep-2025 16:02:08 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:03:39 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:08:14 UTC] PHP Warning:  require_once(C:\Apache24\htdocs\seramer2\views\dashboard../../controllers/CitationsController.php): Failed to open stream: No such file or directory in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 8
+[24-Sep-2025 16:08:14 UTC] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Apache24\htdocs\seramer2\views\dashboard../../controllers/CitationsController.php' (include_path='.;C:\php\pear') in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php:8
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include()
+#1 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php on line 8
+[24-Sep-2025 16:10:10 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:10:36 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:11:16 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:11:17 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:12:14 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123
+[24-Sep-2025 16:12:15 UTC] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'u.name' in 'SELECT' in C:\Apache24\htdocs\seramer2\models\CitationsModel.php:123
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\CitationsModel.php(123): PDO->prepare()
+#1 C:\Apache24\htdocs\seramer2\controllers\CitationsController.php(96): CitationsModel->getTodayCitations()
+#2 C:\Apache24\htdocs\seramer2\views\dashboard\notifications.php(18): CitationsController->getTodayCitations()
+#3 C:\Apache24\htdocs\seramer2\views\dashboard\dashboard.php(8): include('...')
+#4 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\CitationsModel.php on line 123

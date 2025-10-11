@@ -69,7 +69,7 @@ class CitationsController {
             'action' => 'create'
         ];
     }
-    
+
     /**
      * Procesa la creación de una nueva citación.
      */
@@ -90,6 +90,10 @@ class CitationsController {
             return ['success' => true, 'redirect' => 'index.php', 'message' => $result['message']];
         }
         return $result;
+    }
+
+    public function getTodayCitations() {
+        return $this->citationsModel->getTodayCitations();
     }
     
     /**
