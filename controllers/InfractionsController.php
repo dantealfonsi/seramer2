@@ -5,9 +5,9 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../config/app.php';
 
 // Importar los modelos de tablas relacionadas para los selects en los formularios
-//require_once __DIR__ . '/../models/AdjudicatoriesModel.php';
-//require_once __DIR__ . '/../models/MarketStallsModel.php';
 require_once __DIR__ . '/../models/InfractionTypesModel.php';
+require_once __DIR__ . '/../controllers/SanctionTypesController.php';
+require_once __DIR__ . '/../controllers/SanctionsController.php';
 
 // Nuevo archivo para la clase de carga de archivos.
 require_once __DIR__ . '/../public/utils/FileUpload.php';
@@ -25,6 +25,11 @@ class InfractionsController {
         return $this->infractionsModel->getStallsList();
     }
 
+    public function getInfractionTypesList()
+    {
+        return $this->infractionsModel->getInfractionTypesList(); // Ajusta el método según tu modelo
+    }    
+
     /**
      * Muestra la lista de infracciones con filtros y paginación.
      * @param array $params
@@ -38,10 +43,12 @@ class InfractionsController {
         $page = isset($params['page']) ? (int)$params['page'] : 1;
         $limit = 10;
         $search = isset($params['search']) ? trim($params['search']) : '';
+
+        $filters = $params['filters'] ?? [];
         
-        $infractions = $this->infractionsModel->getAll($page, $limit, $search);        
-        $awardees = $this->infractionsModel->getAwardeesList();
-        $total = $this->infractionsModel->countAll($search);
+        $infractions = $this->infractionsModel->getAll($page, $limit, $filters);        
+        $awardees = $this->infractionsModel->getAwardeesList();        
+        $total = $this->infractionsModel->countAll($filters);        
         $totalPages = ceil($total / $limit);
         
         $result = [
@@ -100,13 +107,15 @@ class InfractionsController {
         //$adjudicatoriesModel = new AdjudicatoriesModel();
         $infractionTypesModel = new InfractionTypesModel();
         $stalls = $this->infractionsModel->getStallsList();
+        $sanctionTypesController = new SanctionTypesController();
 
         return [
             'page_title' => 'Registrar Nueva Infracción',
             'action' => 'create',
             'stalls' => $stalls,
             'awardees' => $this->infractionsModel->getAwardeesList(),
-            'infraction_types' => $infractionTypesModel->getAll(null, null, null)
+            'infraction_types' => $infractionTypesModel->getAll(null, null, null),
+            'sanction_types' => $sanctionTypesController->index()['sanction_types']
         ];
     }
 
@@ -125,6 +134,31 @@ class InfractionsController {
         }
         
         $result = $this->infractionsModel->create($data);
+        //preparamos los datos nevesarios para crear la sancion
+        if($result['success']){
+            $sanctionsController = new SanctionsController();
+            $sanctionData = [
+                'infraction_id'         => $result['id'],
+                'sanction_type_id'      => $data['sanction_type_id'] ?? null,
+                'fine_amount'           => $data['fine_amount'] ?? 0,
+                'fine_currency'         => $data['fine_currency'] ?? 'USD',
+                'effect_start_date'     => $data['infraction_datetime'] ?? date('Y-m-d'),
+                'effect_end_date'       => $data['effect_end_date'] ?? null,
+                'sanction_status'       => 'Imposed',
+                'sanction_observations' => $data['inspector_observations'] ?? '',
+                'is_repeat_offense'     => $data['is_repeat_offense'] ?? 0,
+                'imposed_by_user_id'    => 1 // Asumiendo un ID de usuario por defecto
+            ];
+            $sanctionResult = $sanctionsController->create($sanctionData);
+            if(!$sanctionResult['success']){
+                // Si la creación de la sanción falla, eliminamos la infracción creada para mantener la integridad.
+                $this->infractionsModel->logicalDelete($result['infraction_id']);
+                return [
+                    'success' => false,
+                    'message' => 'Error al crear la sanción asociada: ' . $sanctionResult['message']
+                ];
+            }
+        }
         
         if ($result['success']) {
             $_SESSION['flash_message'] = [

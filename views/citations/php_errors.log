@@ -124,3 +124,5 @@ Stack trace:
 [22-Sep-2025 16:13:27 UTC] PHP Warning:  Undefined array key "Reprogramada" in C:\Apache24\htdocs\seramer2\views\citations\index.php on line 150
 [23-Sep-2025 02:49:18 UTC] PHP Warning:  Undefined array key "Resuelta" in C:\Apache24\htdocs\seramer2\views\citations\index.php on line 150
 [23-Sep-2025 02:49:21 UTC] PHP Warning:  Undefined array key "Resuelta" in C:\Apache24\htdocs\seramer2\views\citations\view.php on line 118
+[30-Sep-2025 15:05:02 UTC] PHP Warning:  Undefined array key "Resuelta" in C:\Apache24\htdocs\seramer2\views\citations\index.php on line 150
+[30-Sep-2025 15:05:11 UTC] PHP Warning:  Undefined array key "Resuelta" in C:\Apache24\htdocs\seramer2\views\citations\index.php on line 150

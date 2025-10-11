@@ -469,7 +469,6 @@ class UserModel {
                     'title' => 'Sanciones',
                     'icon' => 'ri-hammer-line',
                     'submenu' => [
-                        ['title' => 'Aplicar Sanción', 'url' => 'views/sanctions/create.php'],
                         ['title' => 'Seguimiento de Sanciones', 'url' => 'views/sanctions/index.php'],
                         ['title' => 'Tipos de Sanciones', 'url' => 'views/sanctionsType/index.php']
                     ]

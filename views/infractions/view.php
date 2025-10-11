@@ -37,6 +37,20 @@ if (!$result['success']) {
 $infraction = $result['infraction'];
 $page_title = $result['page_title'];
 
+$allowed_sanction_status = [
+    'Imposed' => 'Impuesta',
+    'Paid' => 'Pagada',
+    'Pending' => 'Pendiente',
+    'Canceled' => 'Cancelada'
+];
+
+$status_translations = [
+    'Reported' => 'Reportada',
+    'In Process' => 'En Proceso',
+    'Resolved' => 'Resuelta',
+    'Cancelled' => 'Cancelada'
+];
+
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -131,9 +145,27 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $color = $status_colors[$infraction['infraction_status']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($infraction['infraction_status']); ?>
+                                                    <?php echo htmlspecialchars($status_translations[$infraction['infraction_status']]); ?>
                                                 </span>
                                             </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Sancion:</th>                                        
+                                            <td>
+                                                <?php                                             
+                                                $sancion_colors = [
+                                                    'Imposed' => 'warning',
+                                                    'Pending' => 'primary',
+                                                    'Paid' => 'success',
+                                                    'Cancelled' => 'danger'
+                                                ];
+                                                $color = $santion_colors[$infraction['sanction_status']] ?? 'secondary';
+                                                ?>
+                                                <span class="badge bg-<?php echo $color; ?> fs-6" style="cursor:pointer;" onclick="window.location.href='../sanctions/view.php?id=<?php echo $infraction['sanction_id']; ?>'">
+                                                    <?php echo htmlspecialchars($allowed_sanction_status[$infraction['sanction_status']] . " ". $infraction['fine_amount'].$infraction['fine_currency'] ); ?>
+                                                </span>
+                                            </td>
+                                        </tr>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -1,130 +1,139 @@
-[18-Sep-2025 21:28:23 UTC] Error al obtener infracciones: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET0' at line 2
-[18-Sep-2025 21:28:23 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:29:50 UTC] Error al obtener infracciones: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET0' at line 2
-[18-Sep-2025 21:30:50 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:30:50 UTC] PHP Warning:  Undefined array key "adjudicatory_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 125
-[18-Sep-2025 21:30:50 UTC] PHP Warning:  Undefined array key "infraction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 135
-[18-Sep-2025 21:30:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:30:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:30:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:31:49 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined
-[18-Sep-2025 21:31:49 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:15 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined
-[18-Sep-2025 21:32:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:27 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:27 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:49 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:49 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:59 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:32:59 UTC] PHP Warning:  Undefined array key "adjudicatory_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 125
-[18-Sep-2025 21:32:59 UTC] PHP Warning:  Undefined array key "infraction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 135
-[18-Sep-2025 21:32:59 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:32:59 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:32:59 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:33:16 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:33:16 UTC] PHP Warning:  Undefined array key "adjudicatory_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 125
-[18-Sep-2025 21:33:16 UTC] PHP Warning:  Undefined array key "infraction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 135
-[18-Sep-2025 21:33:16 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:33:16 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:33:16 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:34:38 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:34:38 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:35:07 UTC] Error al obtener infracciones: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined
-[18-Sep-2025 21:35:07 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:35:20 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:35:21 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:35:21 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:35:21 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:39:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:39:15 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:39:15 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:39:15 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:39:18 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:39:18 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:39:18 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:39:18 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:39:41 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:39:41 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:39:41 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:39:41 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:40:38 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:40:38 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:40:38 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:40:38 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:40:50 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:40:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:40:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:40:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:42:51 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:48:50 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:48:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 160
-[18-Sep-2025 21:48:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 163
-[18-Sep-2025 21:48:50 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\index.php on line 169
-[18-Sep-2025 21:50:04 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:50:08 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:50:16 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's.stall_location_description' in 'SELECT'
-[18-Sep-2025 21:50:16 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:54:11 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:54:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:54:18 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:58:21 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:58:34 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:58:51 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 21:59:17 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:08:43 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:08:46 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:09:10 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:09:10 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 290
-[18-Sep-2025 22:09:10 UTC] Error al actualizar infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'id_infraction' in 'WHERE'
-[18-Sep-2025 22:10:01 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:10:01 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 290
-[18-Sep-2025 22:10:01 UTC] Error al actualizar infracción: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined
-[18-Sep-2025 22:10:15 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's.stall_location_description' in 'SELECT'
-[18-Sep-2025 22:10:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:10:24 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:10:29 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:10:33 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:10:33 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 290
-[18-Sep-2025 22:10:33 UTC] Error al actualizar infracción: SQLSTATE[HY093]: Invalid parameter number: parameter was not defined
-[18-Sep-2025 22:12:16 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:12:18 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:12:20 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:12:20 UTC] PHP Warning:  Trying to access array offset on true in C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php on line 290
-[18-Sep-2025 22:12:20 UTC] PHP Warning:  Undefined array key "message" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 142
-[18-Sep-2025 22:12:20 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:12:27 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's.stall_location_description' in 'SELECT'
-[18-Sep-2025 22:12:27 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:12:32 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's.stall_location_description' in 'SELECT'
-[18-Sep-2025 22:12:32 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:23:50 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 's.stall_location_description' in 'SELECT'
-[18-Sep-2025 22:23:50 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:29:01 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 67
-[18-Sep-2025 22:29:01 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 72
-[18-Sep-2025 22:29:01 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 85
-[18-Sep-2025 22:29:01 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:29:49 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 67
-[18-Sep-2025 22:29:49 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 72
-[18-Sep-2025 22:29:49 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 85
-[18-Sep-2025 22:29:49 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:30:01 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:30:03 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:30:07 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 67
-[18-Sep-2025 22:30:07 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 72
-[18-Sep-2025 22:30:07 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 85
-[18-Sep-2025 22:30:07 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:30:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:30:34 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 67
-[18-Sep-2025 22:30:34 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 72
-[18-Sep-2025 22:30:34 UTC] PHP Warning:  Undefined array key "id_infraction" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 85
-[18-Sep-2025 22:30:34 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:31:10 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 22:31:11 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:31:14 UTC] Error al obtener tipos de infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'i.id_infraction' in 'SELECT'
-[18-Sep-2025 22:31:17 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 22:33:53 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 23:18:13 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 23:18:18 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[18-Sep-2025 23:18:20 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
-[18-Sep-2025 23:46:32 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[19-Sep-2025 13:01:29 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
-[20-Sep-2025 01:52:41 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:31:28 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:31:33 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
+[01-Oct-2025 02:31:37 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 02:31:50 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:42:03 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:42:06 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:43:47 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:44:10 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:44:14 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:44:16 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:48:33 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:49:07 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:49:07 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:49:13 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:49:13 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 02:49:15 UTC] Error al contar infracciones: SQLSTATE[HY093]: Invalid parameter number
+[01-Oct-2025 03:05:23 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:24 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:25 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:26 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:27 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:28 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:29 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:29 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:30 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:05:30 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 03:05:39 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 180 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(180): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:11:30 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 181 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(181): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:11:58 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 181 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(181): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:12:53 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 181 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(181): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:14:06 UTC] PHP Fatal error:  Uncaught TypeError: InfractionsModel::buildFilterConditions(): Argument #1 ($filters) must be of type array, string given, called in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 181 and defined in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:76
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\models\InfractionsModel.php(181): InfractionsModel->buildFilterConditions()
+#1 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(51): InfractionsModel->countAll()
+#2 C:\Apache24\htdocs\seramer2\views\infractions\index.php(33): InfractionsController->index()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 76
+[01-Oct-2025 03:15:53 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
+[01-Oct-2025 03:16:07 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:00:39 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
+[01-Oct-2025 12:00:46 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:07:34 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:16:12 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:19:44 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:29:08 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:30:36 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:36:34 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
+[01-Oct-2025 12:36:40 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 90
+[01-Oct-2025 12:41:47 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:41:47 UTC] PHP Warning:  Array to string conversion in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 156
+[01-Oct-2025 12:41:47 UTC] PHP Warning:  Undefined variable $Array in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 156
+[01-Oct-2025 12:41:47 UTC] PHP Warning:  Trying to access array offset on null in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 156
+[01-Oct-2025 12:42:51 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:43:21 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:45:16 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:45:16 UTC] PHP Warning:  Undefined array key "fine_currenci" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 158
+[01-Oct-2025 12:45:34 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:47:29 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 97
+[01-Oct-2025 12:49:08 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 104
+[01-Oct-2025 12:50:11 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 104
+[01-Oct-2025 12:50:28 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 104

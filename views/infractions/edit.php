@@ -5,12 +5,11 @@ session_start();
 
 // Incluir el controlador y los modelos para cargar los datos de las listas
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
-//require_once __DIR__ . '/../../models/AdjudicatoriesModel.php';
-//require_once __DIR__ . '/../../models/InfractionTypesModel.php';
+require_once __DIR__ . '/../../controllers/SanctionTypesController.php';
 require_once __DIR__ . '/../../models/InfractionsModel.php';
-//require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
+$sanctionTypesController = new SanctionTypesController();
 
 $idEdit = $_GET['id'] ?? null;
 $is_edit = !empty($idEdit);
@@ -29,10 +28,7 @@ $form_data = [
 ];
 
 // --- Cargar las listas de selección para los campos del formulario ---
-//$adjudicatoriesModel = new AdjudicatoriesModel();
-$infractionTypesModel = new InfractionTypesModel();
 $infractionsModel = new InfractionsModel();
-//$marketStallsModel = new MarketStallsModel();
 
 $awardees = $infractionsModel->getAwardeesList();
 
@@ -43,6 +39,8 @@ $stallDict = [];
 foreach ($stalls as $id => $stall_number) {
     $stallDict[] = ['id' => $id, 'stall_number' => $stall_number];     
 }
+
+$sanction_types = $sanctionTypesController->index()['sanction_types'];
 
 // Si estamos editando, obtener los datos de la infracción
 if ($is_edit) {
@@ -116,14 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fileImagen = $infraction['proof'];
     }            
 
+    $infractionType = $infractionsModel->getInfractionTypeById($_POST['infraction_type_id'] ?? 0);
+    // Validaciones básicas
     $form_data = [
         'awardee_id' => trim($_POST['awardee_id'] ?? ''),
         'stall_id' => trim($_POST['stall_id'] ?? ''),
         'infraction_type_id' => trim($_POST['infraction_type_id'] ?? ''),
-        // Combina la fecha y una hora predeterminada si el campo de hora no existe
         'infraction_datetime' => trim($_POST['infraction_datetime'] ?? '') . ' 00:00:00',
         'infraction_description' => trim($_POST['infraction_description'] ?? ''),
         'infraction_status' => trim($_POST['infraction_status'] ?? 'Reported'),
+        'sanction_type_id' => filter_input(INPUT_POST, 'sanction_type_id', FILTER_SANITIZE_NUMBER_INT),
+        'effect_end_date' => trim($_POST['effect_end_date'] ?? '00:00:00'),
+        'fine_amount' => $infractionType ? $infractionType['base_fine'] : 0,        
         'inspector_observations' => trim($_POST['inspector_observations'] ?? ''),
         'proof' => $fileImagen,
     ];
@@ -245,6 +247,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="sanction_type_id" class="form-label">Sanción Aplicada</label>
+                                        <select class="form-select" id="sanction_type_id" name="sanction_type_id" required>
+                                            <option value="" selected disabled>Seleccionar Tipo de Sanción</option>
+                                            <?php foreach ($sanction_types as $type) : ?>
+                                                <option value="<?php echo htmlspecialchars($type['sanction_type_id']); ?>">
+                                                    <?php echo htmlspecialchars($type['sanction_type_name']); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>  
+                                    <div class="col-md-6 mb-3">
+                                        <label for="effect_end_date" class="form-label">Fecha limite del Efecto de la Sancion</label>
+                                        <input type="date" class="form-control" id="effect_end_date" name="effect_end_date">
+                                    </div>                                                                      
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">

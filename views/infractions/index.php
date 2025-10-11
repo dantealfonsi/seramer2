@@ -10,7 +10,21 @@ require_once __DIR__ . '/../../controllers/InfractionsController.php';
 $infractionsController = new InfractionsController();
 
 // Preparar parámetros desde la petición
+$filters = [
+    'search' => $_GET['search'] ?? '',
+    'infraction_date' => $_GET['infraction_date'] ?? null,
+    'infraction_status' => $_GET['infraction_status'] ?? null,
+    'infraction_type_id' => $_GET['infraction_type_id'] ?? null,
+    'stall_id' => $_GET['stall_id'] ?? null,
+    'awardee_id' => $_GET['awardee_id'] ?? null,
+];
+
+// Limpiar el arreglo eliminando valores nulos o vacíos
+$activeFilters = array_filter($filters);
+
 $params = [
+    'filters' => $activeFilters,
+    'limit' => 10,
     'page' => $_GET['page'] ?? 1,
     'search' => $_GET['search'] ?? ''
 ];
@@ -27,11 +41,13 @@ $search = $result['search'];
 $page_title = $result['page_title'];
 $has_search = $result['has_search'];
 $stalls = $infractionsController->getStallsList();
+$infraction_types = $infractionsController->getInfractionTypesList();
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
+
 ?>
 
 <div class="main-content">
@@ -50,26 +66,99 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form method="GET" class="row g-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="search" 
-                                           placeholder="Buscar por adjudicatario o puesto..."
-                                           value="<?php echo htmlspecialchars($search); ?>">
-                                    <button class="btn btn-outline-secondary" type="submit">
-                                        <i class="ri-search-line"></i>
+                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
+                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado</h6>
+                            <div class="row g-3">
+                                
+                                <!-- Filtro General de Búsqueda (por nombre, puesto, tipo) -->
+                                <div class="col-md-3">
+                                    <label for="search" class="form-label small">Búsqueda General</label>
+                                    <!-- Mantener el valor actual del filtro después de la búsqueda -->
+                                    <input type="text" class="form-control" id="search" name="search" 
+                                        placeholder="Nombre, Puesto, Tipo..." 
+                                        value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                </div>
+
+                                <!-- 1. Filtro por Estado (infraction_status) -->
+                                <div class="col-md-3">
+                                    <label for="infraction_status" class="form-label small">Estado</label>
+                                    <select class="form-select" id="infraction_status" name="infraction_status">
+                                        <option value="">-- Todos los Estados --</option>
+                                        <?php 
+                                        $allowed_status = [
+                                            'Reported' => 'Reportada',
+                                            'In Process' => 'En Proceso',
+                                            'Resolved' => 'Resuelta',
+                                            'Cancelled' => 'Cancelada',
+                                            // 'Pending' => 'Pendiente',
+                                            // 'Sanctioned' => 'Sancionada',
+                                            // 'Archived' => 'Archivada'
+                                        ];                                        
+                                        $current_status = $_GET['infraction_status'] ?? '';
+                                        foreach ($allowed_status as $key => $value): ?>
+                                            <option value="<?php echo $key; ?>" 
+                                                    <?php echo ($current_status === $key) ? 'selected' : ''; ?>>
+                                                <?php echo $value; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <!-- 2. Filtro por Tipo de Infracción (infraction_type_id) -->
+                                <div class="col-md-3">
+                                    <label for="infraction_type_id" class="form-label small">Tipo de Infracción</label>
+                                    <select class="form-select" id="infraction_type_id" name="infraction_type_id">
+                                        <option value="">-- Todos los Tipos --</option>
+                                        <?php 
+                                        // Supongamos que tienes la variable $infraction_types cargada
+                                        // con los IDs y nombres desde la base de datos.
+                                        // Ejemplo de estructura: [['infraction_type_id' => 1, 'name' => 'Ruido Excesivo']]
+                                        $current_type = $_GET['infraction_type_id'] ?? '';
+                                        // Aquí deberías iterar sobre $infraction_types
+                                        if (isset($infraction_types) && is_array($infraction_types)) {
+                                            foreach ($infraction_types as $type) {
+                                                $id = $type['infraction_type_id'];
+                                                $name = $type['infraction_type_name'];
+                                                echo "<option value=\"$id\" " . (($current_type == $id) ? 'selected' : '') . ">$name</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+
+                                <!-- 3. Filtro por Fecha (infraction_date) -->
+                                <div class="col-md-3">
+                                    <label for="infraction_date" class="form-label small">Fecha Específica</label>
+                                    <input type="date" class="form-control" id="infraction_date" name="infraction_date" 
+                                        value="<?php echo htmlspecialchars($_GET['infraction_date'] ?? ''); ?>">
+                                </div>
+
+                                <!-- 4. Filtro por Puesto (stall_id) -->
+                                <!-- NOTA: Los filtros por IDs (Stall y Awardee) requieren cargar listas grandes, 
+                                    por lo que se suelen implementar como selects o campos de autocompletado. -->
+                                <div class="col-md-3">
+                                    <label for="stall_id" class="form-label small">Puesto (ID/Nro)</label>
+                                    <input type="number" class="form-control" id="stall_id" name="stall_id" 
+                                        placeholder="Ej: 15" 
+                                        value="<?php echo htmlspecialchars($_GET['stall_id'] ?? ''); ?>">
+                                </div>
+
+                                <!-- 5. Filtro por Adjudicatario (awardee_id) -->
+                                <div class="col-md-3">
+                                    <label for="awardee_id" class="form-label small">Adjudicatario (ID)</label>
+                                    <input type="number" class="form-control" id="awardee_id" name="awardee_id" 
+                                        placeholder="Ej: 42" 
+                                        value="<?php echo htmlspecialchars($_GET['awardee_id'] ?? ''); ?>">
+                                </div>
+
+                                <!-- Botones de Acción -->
+                                <div class="col-12 d-flex justify-content-end align-items-end">
+                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
+                                    <button type="submit" class="btn btn-info">
+                                        <i class="ri-search-line"></i> Buscar / Filtrar
                                     </button>
                                 </div>
                             </div>
-                            <?php if ($has_search): ?>
-                            <div class="col-md-3">
-                                <a href="index.php" class="btn btn-outline-info">
-                                    <i class="ri-close-line"></i> Limpiar filtros
-                                </a>
-                            </div>
-                            <?php endif; ?>
                         </form>
                         
                         <?php if ($has_search): ?>
