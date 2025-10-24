@@ -106,7 +106,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </form>
 
                         <div style="margin-top: 20px;">
-                            <p><strong>Para probar:</strong> Guarda tu plantilla y luego visita <a href="index.php?report=<?php echo $currentReport ?>&action=view&id=4" >este enlace para ver el reporte de la infracción con ID 1</a>.</p>
+                            <p><strong>Para probar:</strong> Guarda tu plantilla y luego visita <a href="index.php?report=<?php echo $currentReport ?>&action=view&id=4" >este enlace para ver el reporte con ID 1</a>.</p>
                         </div>
                     </div>
                 </div>

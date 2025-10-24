@@ -1,6 +1,11 @@
 REPORTE DE INFRACCION
+-------------------------------------------
 Fecha: {{infraction_datetime}}
 
 HOLA ESTA ES UNA PRUEBA {{location_description}} 
 DE ESTA PLANTILLA {{adjudicatory_name}}
 smmndjasd, {{base_fine}}
+
+firma___________________________
+
+firma ___________________________
