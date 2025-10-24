@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Notificaciones Estilo Facebook</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        
+        /* === Estilos de la Campana (Estilo Facebook) === */
+        #notification-wrapper { 
+            position: relative; 
+            display: flex; /* Para centrar la campana */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; 
+            margin-left: 20px;
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background-color: #e4e6eb; /* Fondo gris claro */
+            color: #050505; /* Campana negra */
+            transition: background-color 0.2s;
+        }
+        #notification-wrapper:hover {
+            background-color: #d8dadf;
+        }
+        
+        #notification-bell {
+            font-size: 1.25em; 
+        }
+
+        #notification-count { 
+            position: absolute; 
+            top: -5px; 
+            right: -5px; 
+            background: #fa383e; /* Rojo de Facebook */
+            color: white; 
+            border-radius: 50%; 
+            padding: 2px 7px; 
+            font-size: 11px; 
+            line-height: 1.4;
+            display: none; 
+            font-weight: bold;
+            border: 1px solid white; /* Borde blanco para resaltar */
+        }
+        
+        #notification-dropdown { 
+            position: absolute; 
+            top: 50px; /* Separación de la campana */
+            right: 0; 
+            background: white; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; /* Bordes redondeados */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 360px; /* Ancho similar al de Facebook */
+            max-height: 500px; 
+            overflow-y: auto; 
+            z-index: 1000; 
+            display: none; 
+            color: #050505;
+            padding-bottom: 5px;
+        }
+
+        /* === Encabezados del Desplegable === */
+        .notif-header {
+            padding: 15px 15px 5px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .notif-options {
+            padding: 0 15px 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .notif-options span {
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .notif-options .active {
+        }
+        
+        /* Estilos de los ítems de la lista */
+        .notif-list-container {
+             /* El scrollbar se aplica a #notification-dropdown, esto es solo contenedor de ítems */
+        }
+
+        .notif-item { 
+            display: flex;
+            align-items: center;
+            padding: 10px 15px; 
+            color: #050505;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+        .notif-item:hover { 
+            background-color: #f0f2f5; /* Gris suave al pasar el ratón */
+        }
+
+        .notif-content {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .notif-icon-container {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #1877f2; /* Color de ejemplo, podrías usar una imagen de avatar */
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .notif-unread { 
+            background: #e7f3ff; /* Fondo azul claro para las no leídas */
+        }
+        
+        .notif-subject { 
+            margin: 0; 
+            font-size: 0.9em; 
+            line-height: 1.3;
+        }
+        .notif-message { 
+            margin: 0; 
+            font-size: 0.9em; 
+            color: #606770; 
+            font-weight: normal; 
+        }
+        .notif-date { 
+            display: block; 
+            font-size: 0.75em; 
+            color: #606770; 
+            margin-top: 5px; 
+        }
+
+        .no-notifications { 
+            padding: 20px; 
+            text-align: center; 
+            color: #606770; 
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div id="notification-wrapper">
+        <i id="notification-bell" class="fas fa-bell"></i>
+        <span id="notification-count">0</span>
+        <div id="notification-dropdown">
+            <div class="notif-header">Notificaciones</div>
+            <div class="notif-options">
+                <span class="active">Todas</span>
+                <span>No leídas</span>
+            </div>
+            <div id="notif-list-container">
+                <p class="no-notifications">No hay notificaciones nuevas</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    const API_URL = '/seramer2/public/notifications/notifications.php';
+    const BELL_COUNT = $('#notification-count');
+    const DROPDOWN = $('#notification-dropdown');
+    const LIST_CONTAINER = $('#notif-list-container');
+    
+    function fetchNotificationCount() {
+        $.getJSON(API_URL + '?action=count', function(data) {
+            let count = parseInt(data.count);
+            if (count > 0) {
+                BELL_COUNT.text(count).show();
+            } else {
+                BELL_COUNT.hide();
+            }
+        }).fail(function() {
+             console.error("Error al obtener el contador.");
+        });
+    }
+
+    function fetchNotificationList() {
+        LIST_CONTAINER.html('<p class="no-notifications">Cargando...</p>'); 
+
+        // Marcamos como leídas al cargar la lista
+        $.getJSON(API_URL + '?action=fetch_and_mark', function(data) {
+            LIST_CONTAINER.empty();
+
+            if (data.notifications.length === 0) {
+                // Mensaje solicitado para cuando no hay notificaciones
+                LIST_CONTAINER.append('<p class="no-notifications">Sin notificaciones disponibles</p>');
+            } else {
+                $.each(data.notifications, function(i, notif) {
+                    let item = $('<a>').attr('href', notif.link)
+                                       .addClass('notif-item')
+                                       .html(
+                                            '<div class="notif-icon-container"><i class="fas fa-user-circle"></i></div>' + // Icono placeholder
+                                            '<div class="notif-content">' + 
+                                                '<p class="notif-subject"><strong>' + notif.notification_subject + '</strong></p>' +
+                                                '<p class="notif-message">' + notif.notification_message + '</p>' +
+                                                '<span class="notif-date">' + notif.date_friendly + '</span>' +
+                                            '</div>'
+                                        );
+                    
+                    // Si el estado de lectura era 0, lo resaltamos
+                    if (notif.read_status == 0) {
+                        item.addClass('notif-unread');
+                    }
+                    LIST_CONTAINER.append(item);
+                });
+            }
+            
+            // Forzamos la actualización del contador a cero después de cargar la lista
+            fetchNotificationCount(); 
+
+        }).fail(function() {
+             LIST_CONTAINER.html('<p class="no-notifications" style="color: red;">Error al cargar notificaciones.</p>');
+             console.error("Error al obtener la lista de notificaciones.");
+        });
+    }
+
+    $('#notification-wrapper').on('click', function(e) {
+        e.stopPropagation();
+        
+        if (DROPDOWN.is(':visible')) {
+            DROPDOWN.hide();
+        } else {
+            fetchNotificationList();
+            DROPDOWN.show();
+        }
+    });
+
+    $(document).on('click', function(e) {
+        // Oculta el desplegable si se hace clic fuera de él o de la campana
+        if (!$(e.target).closest('#notification-wrapper').length) {
+            DROPDOWN.hide();
+        }
+    });
+    
+
+    fetchNotificationCount();
+
+    // Polling cada 10 segundos para actualizar el contador
+    setInterval(fetchNotificationCount, 10000);
+});
+</script>
+
+</body>
+</html>

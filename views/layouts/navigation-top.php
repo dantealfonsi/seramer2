@@ -27,7 +27,11 @@ $current_user = $authController->getCurrentUser();
                 
             </div>
 
-            <ul class="navbar-nav flex-row align-items-center ms-md-auto">
+            <ul class="navbar-nav flex-row align-items-center ms-md-auto" style="gap: 1rem;">
+                <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                    <?php  require_once __DIR__ . '/../../public/utils/notifications/notifications.html'; ?>
+                </li>
+
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">
                         <a
