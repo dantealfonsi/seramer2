@@ -22,12 +22,14 @@ class InfractionTypesModel {
         
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE infraction_type_name LIKE ? OR description LIKE ? OR violated_article LIKE ?";
+            $sql .= " WHERE infraction_type_name LIKE ? 
+                      OR description LIKE ? 
+                      OR violated_article LIKE ?";
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm);
         }
 
-        $sql .= " ORDER BY infraction_type_name ASC LIMIT " . $limit . " OFFSET " . $offset;
+        $sql .= " ORDER BY infraction_type_name ASC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
 
         return $this->db->fetchAll($sql, $params);
     }
@@ -38,16 +40,19 @@ class InfractionTypesModel {
      * @return int
      */
     public function countAll($search) {
-        $sql = "SELECT COUNT(infraction_type_id) FROM infraction_types";
+        $sql = "SELECT COUNT(infraction_type_id) as total FROM infraction_types";
         
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE infraction_type_name LIKE ? OR description LIKE ? OR violated_article LIKE ?";
+            $sql .= " WHERE infraction_type_name LIKE ? 
+                      OR description LIKE ? 
+                      OR violated_article LIKE ?";
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm);
         }
 
-        return $this->db->fetchOne($sql, $params);
+        $row = $this->db->fetchOne($sql, $params);
+        return (int)$row['total']; // 👈 aseguramos que devuelva un entero
     }
 
     /**
@@ -66,14 +71,13 @@ class InfractionTypesModel {
      * @return array
      */
     public function create($data) {
-        $sql = "INSERT INTO infraction_types (infraction_type_name, description, violated_article, base_fine) 
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO infraction_types (infraction_type_name, description, violated_article) 
+                VALUES (?, ?, ?)";
         
         $params = [
             $data['infraction_type_name'],
             $data['description'] ?? null,
             $data['violated_article'] ?? null,
-            $data['base_fine'] ?? null
         ];
 
         try {
@@ -94,15 +98,13 @@ class InfractionTypesModel {
         $sql = "UPDATE infraction_types SET
                     infraction_type_name = ?,
                     description = ?,
-                    violated_article = ?,
-                    base_fine = ?
+                    violated_article = ?
                 WHERE infraction_type_id = ?";
 
         $params = [
             $data['infraction_type_name'],
             $data['description'] ?? null,
             $data['violated_article'] ?? null,
-            $data['base_fine'] ?? null,
             $id
         ];
 

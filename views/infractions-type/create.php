@@ -57,10 +57,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <label for="violated_article" class="form-label">Artículo Violado</label>
                                 <input type="text" class="form-control" id="violated_article" name="violated_article">
                             </div>
-                            <div class="mb-3">
-                                <label for="base_fine" class="form-label">Multa Base ($)</label>
-                                <input type="number" step="0.01" class="form-control" id="base_fine" name="base_fine">
-                            </div>
                             <button type="submit" class="btn btn-primary">
                                 <i class="ri-save-line"></i> Guardar
                             </button>

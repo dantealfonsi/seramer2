@@ -125,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'infraction_status' => trim($_POST['infraction_status'] ?? 'Reported'),
         'sanction_type_id' => filter_input(INPUT_POST, 'sanction_type_id', FILTER_SANITIZE_NUMBER_INT),
         'effect_end_date' => trim($_POST['effect_end_date'] ?? '00:00:00'),
-        'fine_amount' => $infractionType ? $infractionType['base_fine'] : 0,        
         'inspector_observations' => trim($_POST['inspector_observations'] ?? ''),
         'proof' => $fileImagen,
     ];

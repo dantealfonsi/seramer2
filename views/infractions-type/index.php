@@ -91,7 +91,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Tipo de Infracción</th>
                                             <th>Descripción</th>
                                             <th>Artículo Violado</th>
-                                            <th>Multa Base</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -103,7 +102,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                             <td><?php echo htmlspecialchars($infractionType['description']); ?></td>
                                             <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
-                                            <td><?php echo '$' . number_format($infractionType['base_fine'], 2); ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <a href="view.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
@@ -119,7 +117,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <?php if ($total_pages > 1): ?>
                             <nav aria-label="Paginación de tipos de infracción">
-                                <ul class="pagination justify-content-center">
+                                <ul class="pagination justify-content-center" style="margin-top: 1rem;">
                                     <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
                                         <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>">Anterior</a>
                                     </li>

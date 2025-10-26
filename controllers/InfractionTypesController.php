@@ -163,12 +163,6 @@ class InfractionTypesController {
         
         // El campo 'description' puede ser nulo, por lo que no es necesario validarlo como obligatorio.
 
-        if (isset($data['base_fine']) && !empty($data['base_fine'])) {
-            if (!is_numeric($data['base_fine']) || $data['base_fine'] < 0) {
-                $errors[] = 'El valor de la multa base debe ser un número no negativo.';
-            }
-        }
-
         if (!empty($errors)) {
             return ['success' => false, 'message' => 'Errores de validación', 'errors' => $errors];
         }

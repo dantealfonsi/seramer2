@@ -241,7 +241,6 @@ class InfractionsModel {
                              s.location_description,
                              it.infraction_type_name,
                              it.description as infraction_type_description,
-                             it.base_fine,
                              sc.sanction_id,
                              sc.fine_amount,
                              sc.sanction_status,

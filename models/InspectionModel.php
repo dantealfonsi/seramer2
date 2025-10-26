@@ -9,26 +9,123 @@ class InspectionModel {
         $this->db = new Database();
     }
 
+    // =======================================================================
+    // NUEVO MÉTODO PARA FILTROS AVANZADOS (USADO POR DATATABLES/VISTA)
+    // =======================================================================
+
     /**
-     * Get all inspection reports with pagination and search.
-     * @param int $page
-     * @param int $limit
-     * @param string $search
+     * Get a list of inspection reports based on advanced filters.
+     * This method retrieves the complete dataset filtered by server-side criteria.
+     * @param array $filters Associative array of filters (e.g., 'search', 'inspection_status').
      * @return array
      */
+    public function getFilteredReports(array $filters) {
+        $sql = "SELECT 
+                    ir.report_id, 
+                    s.stall_number, 
+                    si.inspection_type AS inspection_type_name, 
+                    si.scheduled_date AS scheduled_datetime, 
+                    mi.full_name AS inspector_name, 
+                    si.inspection_status,
+                    ir.scheduled_inspection_id,
+                    ir.stall_id
+                FROM 
+                    inspection_reports ir
+                LEFT JOIN 
+                    scheduled_inspections si ON ir.scheduled_inspection_id = si.inspection_id
+                LEFT JOIN 
+                    inspectors mi ON ir.main_inspector_id = mi.inspector_id
+                LEFT JOIN 
+                    market_stalls s ON ir.stall_id = s.id
+                LEFT JOIN 
+                    awardees a ON ir.awardee_id = a.id";
+
+        $whereClauses = [];
+        $params = [];
+
+        // 1. FILTRO DE BÚSQUEDA GENERAL (Search Input)
+        if (!empty($filters['search'])) {
+            $searchTerm = "%{$filters['search']}%";
+            $whereClauses[] = " (mi.full_name LIKE ? OR s.stall_number LIKE ? OR si.inspection_type LIKE ? OR si.inspection_status LIKE ?) ";
+            array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+        }
+
+        // 2. FILTRO POR ESTADO (inspection_status)
+        if (!empty($filters['inspection_status'])) {
+            $whereClauses[] = " si.inspection_status = ? ";
+            $params[] = $filters['inspection_status'];
+        }
+
+        // 3. FILTRO POR TIPO DE INSPECCIÓN (inspection_type_id)
+        // Nota: Asumo que 'inspection_type_id' es el nombre que usaste en la vista para el filtro, 
+        // pero la columna en 'scheduled_inspections' se llama 'inspection_type' y es un string. 
+        // Si es un ID, ajusta el LEFT JOIN y la columna. 
+        // Si es un string (como 'Inicial', 'Rutina'), la lógica es:
+        if (!empty($filters['inspection_type_id'])) {
+             // Si el tipo es un ID: 
+             // $whereClauses[] = " si.inspection_type_id = ? "; 
+             // $params[] = $filters['inspection_type_id'];
+             
+             // Asumiendo que $filters['inspection_type_id'] contiene el nombre del tipo (string):
+             $whereClauses[] = " si.inspection_type = ? "; 
+             $params[] = $filters['inspection_type_id']; 
+        }
+
+        // 4. FILTRO POR FECHA (inspection_date)
+        if (!empty($filters['inspection_date'])) {
+            // Utilizamos DATE() para comparar solo la parte de la fecha
+            $whereClauses[] = " DATE(si.scheduled_date) = ? ";
+            $params[] = $filters['inspection_date'];
+        }
+        
+        // 5. FILTRO POR PUESTO (stall_id)
+        if (!empty($filters['stall_id'])) {
+            $whereClauses[] = " ir.stall_id = ? ";
+            $params[] = $filters['stall_id'];
+        }
+
+        // 6. FILTRO POR INSPECTOR (inspector_id)
+        // Esto asume que el ID de inspector en el filtro es para el 'main_inspector'
+        if (!empty($filters['inspector_id'])) {
+            $whereClauses[] = " ir.main_inspector_id = ? ";
+            $params[] = $filters['inspector_id'];
+        }
+        
+        // APLICAR LAS CLÁUSULAS WHERE
+        if (!empty($whereClauses)) {
+            $sql .= " WHERE " . implode(" AND ", $whereClauses);
+        }
+
+        // ORDENAMIENTO (Importante para DataTables inicial)
+        $sql .= " ORDER BY ir.report_id DESC";
+
+        // Devolvemos todos los resultados filtrados
+        return $this->db->fetchAll($sql, $params);
+    }
+    
+    // =======================================================================
+    // MÉTODOS EXISTENTES (Modificados/Optimizados)
+    // =======================================================================
+
+    /**
+     * Get all inspection reports with pagination and search.
+     * **Nota:** Este método ya no se utiliza en el Controlador para DataTables. 
+     * Se mantiene por si se requiere en otro contexto.
+     */
     public function getAll($page, $limit, $search) {
+        // ... Lógica original ...
         $offset = ($page - 1) * $limit;
         $sql = "SELECT ir.*, si.scheduled_date, mi.full_name AS main_inspector_name, ai.full_name AS assistant_inspector_name, s.stall_number AS stall_name, a.first_name AS awardee_name
-                FROM inspection_reports ir
-                LEFT JOIN scheduled_inspections si ON ir.scheduled_inspection_id = si.inspection_id
-                LEFT JOIN inspectors mi ON ir.main_inspector_id = mi.inspector_id
-                LEFT JOIN inspectors ai ON ir.assistant_inspector_id = ai.inspector_id
-                LEFT JOIN market_stalls s ON ir.stall_id = s.id
-                LEFT JOIN awardees a ON ir.awardee_id = a.id";
+                 FROM inspection_reports ir
+                 LEFT JOIN scheduled_inspections si ON ir.scheduled_inspection_id = si.inspection_id
+                 LEFT JOIN inspectors mi ON ir.main_inspector_id = mi.inspector_id
+                 LEFT JOIN inspectors ai ON ir.assistant_inspector_id = ai.inspector_id
+                 LEFT JOIN market_stalls s ON ir.stall_id = s.id
+                 LEFT JOIN awardees a ON ir.awardee_id = a.id";
 
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE mi.full_name LIKE ? OR ai.full_name LIKE ? OR s.stall_number LIKE ? OR a.full_name_or_company_name LIKE ?";
+            $sql .= " WHERE mi.full_name LIKE ? OR ai.full_name LIKE ? OR s.stall_number LIKE ? OR a.first_name LIKE ?"; // Ajusté el campo de búsqueda del adjudicatario
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         }
@@ -40,20 +137,19 @@ class InspectionModel {
 
     /**
      * Count all inspection reports with an optional search filter.
-     * @param string $search
-     * @return int
+     * **Nota:** Este método ya no se utiliza en el Controlador para DataTables.
      */
     public function countAll($search) {
         $sql = "SELECT COUNT(ir.report_id)
-                FROM inspection_reports ir
-                LEFT JOIN inspectors mi ON ir.main_inspector_id = mi.inspector_id
-                LEFT JOIN inspectors ai ON ir.assistant_inspector_id = ai.inspector_id
-                LEFT JOIN market_stalls s ON ir.stall_id = s.id
-                LEFT JOIN awardees a ON ir.awardee_id = a.id";
+                 FROM inspection_reports ir
+                 LEFT JOIN inspectors mi ON ir.main_inspector_id = mi.inspector_id
+                 LEFT JOIN inspectors ai ON ir.assistant_inspector_id = ai.inspector_id
+                 LEFT JOIN market_stalls s ON ir.stall_id = s.id
+                 LEFT JOIN awardees a ON ir.awardee_id = a.id";
 
         $params = [];
         if (!empty($search)) {
-            $sql .= " WHERE mi.full_name LIKE ? OR ai.full_name LIKE ? OR s.stall_number LIKE ? OR a.full_name_or_company_name LIKE ?";
+            $sql .= " WHERE mi.full_name LIKE ? OR ai.full_name LIKE ? OR s.stall_number LIKE ? OR a.first_name LIKE ?"; // Ajusté el campo de búsqueda del adjudicatario
             $searchTerm = "%{$search}%";
             array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         }
@@ -63,45 +159,40 @@ class InspectionModel {
 
     /**
      * Get a single inspection report by its ID.
-     * @param int $id
-     * @return array|false
      */
     public function getById($id) {
+        // ... (Lógica original, se mantiene) ...
         $sql = "SELECT 
-                    ir.*, 
-                    si.scheduled_date, 
-                    si.inspection_type, 
-                    si.inspection_status, 
-                    si.observations,
-                    mi.stall_number AS stall_code,
-                    aw.first_name AS awardee_name,
-                    ip.full_name AS main_inspector_name,
-                    au.full_name AS assistant_inspector_name
-                FROM 
-                    inspection_reports ir
-                INNER JOIN 
-                    scheduled_inspections si ON ir.scheduled_inspection_id = si.inspection_id
-                INNER JOIN 
-                    market_stalls mi ON ir.stall_id = mi.id   
-                INNER JOIN 
-                    awardees aw ON ir.awardee_id = aw.id  
-                INNER JOIN 
-                    inspectors ip ON ir.main_inspector_id = ip.inspector_id  
-                INNER JOIN 
-                    inspectors au ON ir.assistant_inspector_id = au.inspector_id                      
-                WHERE 
-                    ir.report_id = ?";
+                        ir.*, 
+                        si.scheduled_date, 
+                        si.inspection_type, 
+                        si.inspection_status, 
+                        si.observations,
+                        mi.stall_number AS stall_code,
+                        aw.first_name AS awardee_name,
+                        ip.full_name AS main_inspector_name,
+                        au.full_name AS assistant_inspector_name
+                    FROM 
+                        inspection_reports ir
+                    INNER JOIN 
+                        scheduled_inspections si ON ir.scheduled_inspection_id = si.inspection_id
+                    INNER JOIN 
+                        market_stalls mi ON ir.stall_id = mi.id  
+                    INNER JOIN 
+                        awardees aw ON ir.awardee_id = aw.id  
+                    INNER JOIN 
+                        inspectors ip ON ir.main_inspector_id = ip.inspector_id  
+                    INNER JOIN 
+                        inspectors au ON ir.assistant_inspector_id = au.inspector_id        
+                    WHERE 
+                        ir.report_id = ?";
         
         return $this->db->fetchOne($sql, [$id]);
     }
     
-    /**
-     * Create a new inspection report.
-     * @param array $data
-     * @return array
-     */
+    // ... (create, update, delete se mantienen iguales) ...
     public function create($data) {
-        // 1. Array for 'scheduled_inspections' table
+        // ... Lógica original ...
         $scheduled_inspection_data = [
             'scheduled_date' => $data['scheduled_date'],
             'inspection_type' => $data['inspection_type'],
@@ -109,12 +200,8 @@ class InspectionModel {
             'inspection_status' => $data['inspection_status'] ?? 'Pending',
             'observations' => $data['observations'] ?? null,
         ];
-
-        // SQL to insert into scheduled_inspections
         $sql_scheduled = "INSERT INTO scheduled_inspections (scheduled_date, inspection_type, assigned_responsible_id, inspection_status, observations) 
-                        VALUES (?, ?, ?, ?, ?)";
-        
-        // Parameters for the scheduled_inspections insertion
+                         VALUES (?, ?, ?, ?, ?)";
         $params_scheduled = [
             $scheduled_inspection_data['scheduled_date'],
             $scheduled_inspection_data['inspection_type'],
@@ -124,13 +211,9 @@ class InspectionModel {
         ];
 
         try {
-            // Execute the first query
             $this->db->executeQuery($sql_scheduled, $params_scheduled);
-
-            // Get the ID of the new scheduled inspection
             $scheduled_inspection_id = $this->db->getConnection()->lastInsertId();
-
-            // 2. Array for 'inspection_reports' table
+            
             $inspection_report_data = [
                 'scheduled_inspection_id' => $scheduled_inspection_id,
                 'main_inspector_id' => $data['main_inspector_id'],
@@ -141,12 +224,8 @@ class InspectionModel {
                 'inspector_signature_url' => $data['inspector_signature_url'] ?? null,
                 'assistant_signature_url' => $data['assistant_signature_url'] ?? null,
             ];
-
-            // SQL to insert into inspection_reports
             $sql_report = "INSERT INTO inspection_reports (scheduled_inspection_id, main_inspector_id, assistant_inspector_id, stall_id, awardee_id, general_observations, inspector_signature_url, assistant_signature_url) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            
-            // Parameters for the inspection_reports insertion
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             $params_report = [
                 $inspection_report_data['scheduled_inspection_id'],
                 $inspection_report_data['main_inspector_id'],
@@ -158,35 +237,24 @@ class InspectionModel {
                 $inspection_report_data['assistant_signature_url'],
             ];
 
-            // Execute the second query
             $this->db->executeQuery($sql_report, $params_report);
-
             return ['success' => true, 'message' => 'Reporte e inspección registrados exitosamente.'];
-
         } catch (Exception $e) {
-            // If any insertion fails, return a general error
             return ['success' => false, 'message' => 'Error al registrar los datos: ' . $e->getMessage()];
         }
     }
-
-    /**
-     * Update an existing inspection report.
-     * @param int $id
-     * @param array $data
-     * @return array
-     */
     public function update($id, $data) {
+        // ... Lógica original ...
         $sql = "UPDATE inspection_reports SET
-                    scheduled_inspection_id = ?,
-                    main_inspector_id = ?,
-                    assistant_inspector_id = ?,
-                    stall_id = ?,
-                    awardee_id = ?,
-                    general_observations = ?,
-                    inspector_signature_url = ?,
-                    assistant_signature_url = ?
-                WHERE report_id = ?";
-
+                     scheduled_inspection_id = ?,
+                     main_inspector_id = ?,
+                     assistant_inspector_id = ?,
+                     stall_id = ?,
+                     awardee_id = ?,
+                     general_observations = ?,
+                     inspector_signature_url = ?,
+                     assistant_signature_url = ?
+                 WHERE report_id = ?";
         $params = [
             $data['scheduled_inspection_id'] ?? null,
             $data['main_inspector_id'],
@@ -200,9 +268,9 @@ class InspectionModel {
         ];
 
         $sql_scheduled = "UPDATE scheduled_inspections SET
-                    scheduled_date = ?,
-                    inspection_status = ?
-                WHERE inspection_id = ?";
+                     scheduled_date = ?,
+                     inspection_status = ?
+                 WHERE inspection_id = ?";
         $params_scheduled = [
             $data['scheduled_date'],
             $data['inspection_status'],
@@ -217,17 +285,23 @@ class InspectionModel {
             return ['success' => false, 'message' => 'Error al actualizar el reporte: ' . $e->getMessage()];
         }
     }
-
-    /**
-     * Delete an inspection report.
-     * @param int $id
-     * @return array
-     */
     public function delete($id) {
-        $sql = "DELETE FROM inspection_reports WHERE report_id = ?";
+        $sql_report = "SELECT scheduled_inspection_id FROM inspection_reports WHERE report_id = ?";
+        $scheduled_id = $this->db->fetchOne($sql_report, [$id]);
+        
+        $sql_delete_report = "DELETE FROM inspection_reports WHERE report_id = ?";
+        $sql_delete_scheduled = "DELETE FROM scheduled_inspections WHERE inspection_id = ?";
+
         try {
-            $this->db->executeQuery($sql, [$id]);
-            return ['success' => true, 'message' => 'Reporte de inspección eliminado permanentemente.'];
+            // Eliminar el reporte
+            $this->db->executeQuery($sql_delete_report, [$id]);
+            
+            // Eliminar la inspección programada asociada (si existe)
+            if ($scheduled_id) {
+                $this->db->executeQuery($sql_delete_scheduled, [$scheduled_id]);
+            }
+            
+            return ['success' => true, 'message' => 'Reporte de inspección y registro programado asociado eliminados permanentemente.'];
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Error al eliminar el reporte. Es posible que esté asociado a otros registros.'];
         }

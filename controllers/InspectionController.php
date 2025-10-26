@@ -8,43 +8,81 @@ class InspectionController {
     private $inspectionModel;
     
     public function __construct() {
+        // AuthMiddleware::requireLogin(); // Ejemplo de uso de middleware si es necesario
         $this->inspectionModel = new InspectionModel();
     }
 
     /**
-     * Display a list of inspection reports with filters and pagination.
+     * Display a list of inspection reports with filters.
+     * * @param array $params Contains filters, search, page, and limit.
      */
     public function index($params = []) {
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
-        $search = isset($params['search']) ? trim($params['search']) : '';
-        $reports = $this->inspectionModel->getAll($page, $limit, $search);
-        $total = (int)$this->inspectionModel->countAll($search);
-        $totalPages = (int)ceil($total / $limit);
+        // --- Parámetros de Paginación/Búsqueda/Filtros ---
+        // Para DataTables del lado del cliente, solo necesitamos aplicar los filtros avanzados (no paginación)
+        // El 'search' principal se pasa en 'filters' y lo usaremos para filtrar el resultado del servidor.
+        $filters = $params['filters'] ?? [];
+        $search = $params['search'] ?? '';
         
+        // El listado para DataTables no debe tener límite ni paginación en el controlador,
+        // ya que DataTables maneja eso en el cliente.
+        $reports = $this->inspectionModel->getFilteredReports($filters); 
+        
+        // Simular las variables de paginación para evitar errores en la vista, aunque DataTables lo maneje
+        $total = count($reports);
+        $page = 1;
+        $limit = $total > 0 ? $total : 1;
+        $totalPages = 1;
+
+        // Se retorna la lista completa filtrada por GET, y DataTables la procesará
         return [
-            'reports' => $reports,
+            'inspections' => $reports, // Cambié 'reports' a 'inspections' para la vista
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $total,
             'search' => $search,
             'page_title' => 'Gestión de Reportes de Inspección',
-            'has_search' => !empty($search)
+            'has_filters' => !empty($filters), // Indica si se aplicó algún filtro
         ];
     }
+
+    // --- MÉTODOS AUXILIARES PARA LOS SELECTS DE FILTRADO ---
+
+    /**
+     * Get a list of all inspection types for filters.
+     */
+    public function getInspectionTypesList() {
+        // Implementar la llamada al modelo. Ejemplo:
+        // return $this->inspectionModel->getInspectionTypes(); 
+        // Retorno de ejemplo si el modelo no existe:
+        return [
+            ['inspection_type_id' => 1, 'name' => 'Inicial'],
+            ['inspection_type_id' => 2, 'name' => 'Rutina'],
+            ['inspection_type_id' => 3, 'name' => 'Queja']
+        ];
+    }
+
+    /**
+     * Get a list of all stalls for filters (if needed).
+     */
+    public function getStallsList() {
+        // return $this->inspectionModel->getStalls();
+        return []; 
+    }
+
+    // --- MÉTODOS EXISTENTES (Mantienen su lógica original) ---
 
     /**
      * Display a specific inspection report.
      */
     public function view($id) {
         if (!$id || !is_numeric($id)) {
-            // Manejar error de ID inválido
+             // Manejar error de ID inválido
         }
         
         $report = $this->inspectionModel->getById($id);
         
         if (!$report) {
-            // Manejar error de "no encontrado"
+             // Manejar error de "no encontrado"
         }
         
         return [

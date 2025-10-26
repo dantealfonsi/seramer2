@@ -431,38 +431,20 @@ class UserModel {
             ],
             'Fiscalizacion' => [
                 [
-                    'title' => 'Infracciones',
-                    'icon' => 'ri-alert-line',
-                    'submenu' => [
-                        ['title' => 'Registrar Infracción', 'url' => 'views/infractions/create.php'],
-                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
-                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
-
-                    ]
-                ],
-                [
-                    'title' => 'Quejas',
-                    'icon' => 'ri-chat-3-line',
-                    'submenu' => [
-                        ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
-                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
-                    ]
-                ],
-                [
                     'title' => 'Inspecciones',
                     'icon' => 'ri-search-eye-line',
                     'submenu' => [
-                        ['title' => 'Realizar Inspección', 'url' => 'views/inspections/create.php'],
-                        ['title' => 'Historial de Inspecciones', 'url' => 'views/inspections/index.php'],
-                        ['title' => 'Incluir Inspectores', 'url' => 'views/inspectors/index.php']
+                        ['title' => ' Ver Inspecciones', 'url' => 'views/inspections/index.php'],
+                        ['title' => 'Añadir Inspectores', 'url' => 'views/inspectors/index.php']
                     ]
                 ],
                 [
-                    'title' => 'Actas de Fiscalización',
-                    'icon' => 'ri-file-text-line',
+                    'title' => 'Infracciones',
+                    'icon' => 'ri-alert-line',
                     'submenu' => [
-                        ['title' => 'Registrar Acta', 'url' => 'views/actas/create.php'],
-                        ['title' => 'Ver Actas', 'url' => 'views/actas/index.php']
+                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
+                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
+
                     ]
                 ],
                 [
@@ -477,17 +459,17 @@ class UserModel {
                     'title' => 'Conciliación',
                     'icon' => 'ri-discuss-line',
                     'submenu' => [
-                        ['title' => 'Programar Citación', 'url' => 'views/citations/create.php'],
-                        ['title' => 'Reportes', 'url' => 'views/conciliation-reports/index.php'],
-                        ['title' => 'Casos de Conciliación', 'url' => 'views/citations/index.php']
+                        ['title' => 'Casos de Conciliación', 'url' => 'views/citations/index.php'],
+                        ['title' => 'Actas de Conciliación', 'url' => 'views/actas/index.php']
+
                     ]
                 ],
                 [
-                    'title' => 'Recursos Adm.',
-                    'icon' => 'ri-bank-card-2-line',
+                    'title' => 'Quejas',
+                    'icon' => 'ri-chat-3-line',
                     'submenu' => [
-                        ['title' => 'Registrar Recurso', 'url' => 'views/recursos/create.php'],
-                        ['title' => 'Seguimiento de Recursos', 'url' => 'views/recursos/index.php']
+                        ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
+                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
                     ]
                 ],
                 [
@@ -496,14 +478,6 @@ class UserModel {
                     'submenu' => [
                         ['title' => 'Editor de Reportes', 'url' => 'views/reports/index.php'],
                         ['title' => 'Sanciones por Cobrar', 'url' => 'views/reports/porCobrar.php']
-                    ]
-                ],
-                [
-                    'title' => 'Auditoría',
-                    'icon' => 'ri-shield-check-line',
-                    'submenu' => [
-                        ['title' => 'Registro de Actividad', 'url' => 'views/auditoria/activity_log.php'],
-                        ['title' => 'Informes de Auditoría', 'url' => 'views/auditoria/reports.php']
                     ]
                 ],
                 [

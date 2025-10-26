@@ -34,6 +34,10 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
+<!-- DataTables CSS desde CDN -->
+<link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
@@ -46,9 +50,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 </nav>
                 
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-file-list-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="ri-file-list-line me-1"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="btn-group" role="group">
@@ -67,35 +71,33 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <table class="table table-borderless">
-                                    <tbody>
-                                        <tr>
-                                            <th width="30%">ID:</th>
-                                            <td><?php echo htmlspecialchars($infractionType['infraction_type_id']); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Nombre:</th>
-                                            <td>
-                                                <strong><?php echo htmlspecialchars($infractionType['infraction_type_name']); ?></strong>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Descripción:</th>
-                                            <td><?php echo nl2br(htmlspecialchars($infractionType['description'])); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Artículo Violado:</th>
-                                            <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Multa Base ($):</th>
-                                            <td><?php echo htmlspecialchars(number_format($infractionType['base_fine'], 2)); ?></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table id="infractionDetailsTable" class="table table-bordered table-striped dt-responsive nowrap" style="width:100%">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Campo</th>
+                                        <th>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td><?php echo htmlspecialchars($infractionType['infraction_type_id']); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nombre</td>
+                                        <td><strong><?php echo htmlspecialchars($infractionType['infraction_type_name']); ?></strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Descripción</td>
+                                        <td><?php echo nl2br(htmlspecialchars($infractionType['description'])); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Artículo Violado</td>
+                                        <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -104,6 +106,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
+<!-- Modal de eliminación -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -124,6 +127,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
 </div>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<!-- Scripts desde CDN -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
 <script>
 let deleteInfractionTypeId = null;
@@ -157,5 +167,19 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function()
         document.body.appendChild(form);
         form.submit();
     }
+});
+
+// Inicializar DataTables
+$(document).ready(function() {
+    $('#infractionDetailsTable').DataTable({
+        responsive: true,
+        paging: true,
+        searching: true,
+        info: true,
+        ordering: true,
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+        }
+    });
 });
 </script>
