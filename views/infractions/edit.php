@@ -209,7 +209,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="awardee_id" class="form-label">
                                             Adjudicatario <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="awardee_id" name="awardee_id" required>
+                                        <select class="form-select" id="awardee_id" name="awardee_id" onchange="loadSanctions()" required>
                                             <option value="">Seleccione un adjudicatario</option>
                                             <?php foreach ($awardees as $adj): ?>
                                             <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
@@ -253,7 +253,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <option value="" selected disabled>Seleccionar Tipo de Sanción</option>
                                             <?php foreach ($sanction_types as $type) : ?>
                                                 <option value="<?php echo htmlspecialchars($type['sanction_type_id']); ?>">
-                                                    <?php echo htmlspecialchars($type['sanction_type_name']); ?>
+                                                    <?php echo htmlspecialchars($type['severity_name']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
@@ -361,4 +361,16 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
+<script>
+function loadSanctions() {
+    const awardeeId = document.getElementById('awardee_id').value;
+
+    // Limpiar opciones actuales
+    sanctionSelect.innerHTML = '<option value="" selected disabled>Seleccionar Tipo de Sanción</option>';
+
+    if (awardeeId) {
+
+    }
+}
+</script>
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

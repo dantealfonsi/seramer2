@@ -97,7 +97,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <?php foreach ($sanction_types as $sanctionType): ?>
                                         <tr>
                                             <td>
-                                                <strong><?php echo htmlspecialchars($sanctionType['sanction_type_name']); ?></strong>
+                                                <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
                                             </td>
                                             <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
                                             <td>

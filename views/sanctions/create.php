@@ -101,7 +101,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <option value="" selected disabled>Seleccionar Tipo de Sanción</option>
                                         <?php foreach ($sanction_types as $type) : ?>
                                             <option value="<?php echo htmlspecialchars($type['sanction_type_id']); ?>">
-                                                <?php echo htmlspecialchars($type['sanction_type_name']); ?>
+                                                <?php echo htmlspecialchars($type['severity_name']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

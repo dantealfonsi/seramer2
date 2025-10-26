@@ -6,3 +6,7 @@ Stack trace:
   thrown in C:\Apache24\htdocs\seramer2\controllers\ReportController.php on line 83
 [02-Oct-2025 13:55:13 UTC] Archivo de configuración no encontrado: reports/test.sys
 [02-Oct-2025 14:07:43 UTC] Archivo de configuración no encontrado: reports/test.sys
+[26-Oct-2025 18:40:56 UTC] Archivo de configuración no encontrado: reports/test.sys
+[26-Oct-2025 18:43:28 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'it.base_fine' in 'SELECT'
+[26-Oct-2025 18:43:40 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'it.base_fine' in 'SELECT'
+[26-Oct-2025 18:44:29 UTC] Error al obtener detalles de la infracción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'it.base_fine' in 'SELECT'

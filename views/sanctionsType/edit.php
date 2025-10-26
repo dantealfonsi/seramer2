@@ -86,7 +86,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label for="sanction_type_name" class="form-label">Nombre del Tipo de Sanción</label>
-                                    <input type="text" class="form-control" id="sanction_type_name" name="sanction_type_name" value="<?php echo htmlspecialchars($form_data['sanction_type_name'] ?? ''); ?>" required>
+                                    <input type="text" class="form-control" id="sanction_type_name" name="sanction_type_name" value="<?php echo htmlspecialchars($form_data['severity_name'] ?? ''); ?>" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="description" class="form-label">Descripción</label>

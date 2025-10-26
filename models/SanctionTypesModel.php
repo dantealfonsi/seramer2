@@ -23,10 +23,10 @@ class SanctionTypesModel {
         $query = "SELECT * FROM " . $this->table;
 
         if (!empty($search)) {
-            $query .= " WHERE sanction_type_name LIKE :search OR description LIKE :search";
+            $query .= " WHERE severity_name LIKE :search OR description LIKE :search";
         }
         
-        $query .= " ORDER BY sanction_type_name ASC LIMIT :limit OFFSET :offset";
+        $query .= " ORDER BY severity_name ASC LIMIT :limit OFFSET :offset";
 
         try {
             $stmt = $this->conn->prepare($query);
@@ -55,7 +55,7 @@ class SanctionTypesModel {
         $query = "SELECT COUNT(*) FROM " . $this->table;
 
         if (!empty($search)) {
-            $query .= " WHERE sanction_type_name LIKE :search OR description LIKE :search";
+            $query .= " WHERE severity_name LIKE :search OR description LIKE :search";
         }
 
         try {
@@ -99,7 +99,7 @@ class SanctionTypesModel {
      * @return array
      */
     public function create($data) {
-        $query = "INSERT INTO " . $this->table . " (sanction_type_name, description) VALUES (:sanction_type_name, :description)";
+        $query = "INSERT INTO " . $this->table . " (severity_name, description) VALUES (:sanction_type_name, :description)";
         
         try {
             $stmt = $this->conn->prepare($query);
@@ -123,7 +123,7 @@ class SanctionTypesModel {
      * @return array
      */
     public function update($id, $data) {
-        $query = "UPDATE " . $this->table . " SET sanction_type_name = :sanction_type_name, description = :description WHERE sanction_type_id = :id";
+        $query = "UPDATE " . $this->table . " SET severity_name = :sanction_type_name, description = :description WHERE sanction_type_id = :id";
         
         try {
             $stmt = $this->conn->prepare($query);

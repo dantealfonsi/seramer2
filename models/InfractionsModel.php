@@ -171,6 +171,83 @@ class InfractionsModel {
     }
 
     /**
+     * Cuenta el número de sanciones por nivel de severidad ('leve', 'moderada', 'grave') 
+     * para un adjudicatario (awardee) dado.
+     *
+     * @param int $awardeeId El ID del adjudicatario cuyas sanciones se van a contar.
+     * @return array Un array asociativo con los conteos, ejemplo: ['leve' => 3, 'moderada' => 1, 'grave' => 0].
+     */
+    function contarSancionesPorSeveridad(int $awardeeId): array 
+    {
+        // La consulta SQL une las tres tablas necesarias:
+        // 1. 'infractions' para obtener el 'awardee_id'.
+        // 2. 'sanctions' para enlazar la infracción con el tipo de sanción.
+        // 3. 'sanction_types' para obtener el 'severity_name'.
+        $sql = "
+            SELECT
+                st.severity_name,
+                COUNT(s.sanction_id) AS total_sanciones
+            FROM
+                sanctions s
+            JOIN
+                infractions i ON s.infraction_id = i.infraction_id
+            JOIN
+                sanction_types st ON s.sanction_type_id = st.sanction_type_id
+            WHERE
+                i.awardee_id = :awardee_id
+            GROUP BY
+                st.severity_name
+            ORDER BY
+                FIELD(st.severity_name, 'leve', 'moderada', 'grave');
+        ";
+
+        try {
+            // 1. Preparar la consulta para evitar inyección SQL
+            $stmt = $this->conn->prepare($sql);
+            
+            // 2. Ejecutar la consulta, vinculando el parámetro
+            $stmt->execute([':awardee_id' => $awardeeId]);
+
+            // 3. Obtener los resultados
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 4. Transformar los resultados en el formato deseado
+            $counts = [];
+            $totalSanciones = 0; // Para el conteo total
+
+            foreach ($results as $row) {
+                $severity = $row['severity_name'];
+                $count = (int) $row['total_sanciones'];
+                $counts[$severity] = $count;
+                $totalSanciones += $count;
+            }
+
+            // 5. Asegurar que las tres categorías ('leve', 'moderada', 'grave') existan en el array,
+            //    incluso si el conteo es 0, para tener un array consistente.
+            $finalCounts = [
+                'leve'     => $counts['leve'] ?? 0,
+                'moderada' => $counts['moderada'] ?? 0,
+                'grave'    => $counts['grave'] ?? 0,
+                // Opcional: Incluir el conteo total
+                'total'    => $totalSanciones
+            ];
+
+            return $finalCounts;
+
+        } catch (PDOException $e) {
+            // Manejo básico de errores de la base de datos
+            // En un entorno de producción, es mejor registrar el error y devolver un array vacío o lanzar una excepción.
+            error_log("Error al contar sanciones: " . $e->getMessage());
+            return [
+                'leve'     => 0,
+                'moderada' => 0,
+                'grave'    => 0,
+                'total'    => 0
+            ];
+        }
+    }
+
+    /**
      * Obtiene el total de registros de infracciones, aplicando los mismos filtros.
      */
     public function countAll($filters = []) {
@@ -206,6 +283,8 @@ class InfractionsModel {
             return 0;
         }
     }
+
+
     
     /**
      * Obtener una infracción por ID

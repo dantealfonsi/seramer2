@@ -103,7 +103,7 @@ $allowed_sanction_status = [
                                             <th>Tipo de Sanción:</th>
                                             <td>
                                                 <span class="badge bg-info fs-6">
-                                                    <?php echo htmlspecialchars($sanction['sanction_type_name']); ?>
+                                                    <?php echo htmlspecialchars($sanction['severity_name']); ?>
                                                 </span>
                                             </td>
                                         </tr>

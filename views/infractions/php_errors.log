@@ -17,3 +17,10 @@
 [02-Oct-2025 15:50:50 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
 [02-Oct-2025 15:50:53 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
 [02-Oct-2025 15:50:53 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
+[26-Oct-2025 18:42:27 UTC] Error en getAll: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sanction_type_name' in 'ORDER BY'
+[26-Oct-2025 18:43:19 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[26-Oct-2025 18:44:26 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[26-Oct-2025 21:08:02 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
+[26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
+[26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
