@@ -8,17 +8,18 @@ require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../models/InfractionTypesModel.php';
 require_once __DIR__ . '/../controllers/SanctionTypesController.php';
 require_once __DIR__ . '/../controllers/SanctionsController.php';
+require_once __DIR__ . '/../controllers/NotificationController.php';
 
 // Nuevo archivo para la clase de carga de archivos.
 require_once __DIR__ . '/../public/utils/FileUpload.php';
 
 class InfractionsController {
     private $infractionsModel;
-    //public $marketStallsModel;
+    private $NotificationController;
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
-        //$this->marketStallsModel = new MarketStallsModel();
+        $this->NotificationController = new NotificationController();
     }
 
     public function getStallsList() {
@@ -158,6 +159,15 @@ class InfractionsController {
                     'message' => 'Error al crear la sanción asociada: ' . $sanctionResult['message']
                 ];
             }
+
+            $this->NotificationController->createNotification(
+                null, // remitente el que la creo
+                1, // ID Usuario al que va dirigido
+                'infraction_new',
+                'Nueva Infracción Registrada',
+                'Se ha registrado una nueva infracción con ID #' . $result['id'] . '. Por favor, revise los detalles.',
+                $result['id']
+            );
 
             $_SESSION['flash_message'] = [
                 'type' => 'success',
