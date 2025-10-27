@@ -34,4 +34,9 @@ if (isset($_GET['contarInfraccionAnual']) && isset($_GET['awardeeId']) && isset(
     exit;
 }  
 
+if (isset($_GET['getLatestEconomicIndicators'])) {
+    echo json_encode($infractionsController->getLatestEconomicIndicators());
+    exit;
+}
+
 ?>

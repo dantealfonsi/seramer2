@@ -18,7 +18,7 @@ class InfractionsController {
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
-        //$this->marketStallsModel = new MarketStallsModel();
+        $this->infractionsModel->createEconomicIndicatorsTable();
     }
 
     public function getStallsList() {
@@ -30,6 +30,15 @@ class InfractionsController {
         return $this->infractionsModel->getInfractionTypesList(); // Ajusta el método según tu modelo
     }    
 
+    public function getLatestEconomicIndicators()
+    {
+        return $this->infractionsModel->getLatestEconomicIndicators();
+    }
+
+    public function saveOrUpdateEconomicIndicators($ut_value, $euro_bcv_rate)
+    {
+        return $this->infractionsModel->saveOrUpdateEconomicIndicators($ut_value, $euro_bcv_rate);
+    }
     /**
      * Muestra la lista de infracciones con filtros y paginación.
      * @param array $params

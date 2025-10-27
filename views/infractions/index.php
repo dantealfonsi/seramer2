@@ -1,13 +1,42 @@
 <?php
 // Vista de listado de infracciones
-
 session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
-//require_once __DIR__ . '/../../models/MarketStallsModel.php';
 
 $infractionsController = new InfractionsController();
+
+// 1. Obtener la tasa actual (Asume que el controlador tiene un método para esto)
+$economicIndicators = $infractionsController->getLatestEconomicIndicators();
+
+// 2. Verificar si no existen indicadores (o si la función devuelve null/false)
+if (is_null($economicIndicators) || empty($economicIndicators)) {
+    // Si la solicitud actual NO es para la página de listado (index.php) y es para crear (create.php),
+    // o si el usuario intenta crear, lo redirigimos con un error.
+    
+    // NOTA: Para ser estrictos, esta verificación DEBERÍA estar en 'create.php' (la vista del formulario)
+    // o en el controlador/ruta que maneja la creación.
+    
+    // Si queremos verificar antes de que el usuario vea la tabla (para que vea el error)
+    if (basename($_SERVER['PHP_SELF']) == 'index.php') {
+        // Almacenar el mensaje de error para mostrarlo en esta misma página
+        $_SESSION['flash_message'] = [
+            'type' => 'danger',
+            'message' => '🚨 **ATENCIÓN:** No existen indicadores económicos (UT/Euro) registrados. **No puede crear nuevas infracciones** hasta que se establezcan las tasas vigentes. Por favor, regístrelas primero.'
+        ];
+        
+        // Creamos una variable para bloquear el botón de "Nueva Infracción" si es necesario
+        $can_create_infraction = false;
+        
+    } else {
+        // Si esta lógica estuviera en un archivo de ruta central y detectara un intento de acceso a 'create.php'
+        // Dejaremos la variable para controlar el botón.
+        $can_create_infraction = false; 
+    }
+} else {
+    $can_create_infraction = true; // Todo bien, puede crear infracciones
+}
 
 // Preparar parámetros desde la petición
 $filters = [
@@ -47,9 +76,7 @@ $infraction_types = $infractionsController->getInfractionTypesList();
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
-
 ?>
-
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
@@ -60,9 +87,16 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
+                        <?php if ($can_create_infraction): ?>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nueva Infracción
                         </a>
+                        <?php else: ?>
+                        <a href="#" class="btn btn-secondary disabled" 
+                        title="Debe registrar tasas económicas antes de crear una infracción">
+                            <i class="ri-alert-line"></i> Nueva Infracción
+                        </a>
+                        <?php endif; ?>                        
                     </div>
                     
                     <div class="card-body border-bottom">
@@ -89,10 +123,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             'Reported' => 'Reportada',
                                             'In Process' => 'En Proceso',
                                             'Resolved' => 'Resuelta',
-                                            'Cancelled' => 'Cancelada',
-                                            // 'Pending' => 'Pendiente',
-                                            // 'Sanctioned' => 'Sancionada',
-                                            // 'Archived' => 'Archivada'
+                                            'Cancelled' => 'Cancelada'
                                         ];                                        
                                         $current_status = $_GET['infraction_status'] ?? '';
                                         foreach ($allowed_status as $key => $value): ?>
@@ -110,9 +141,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <select class="form-select" id="infraction_type_id" name="infraction_type_id">
                                         <option value="">-- Todos los Tipos --</option>
                                         <?php 
-                                        // Supongamos que tienes la variable $infraction_types cargada
-                                        // con los IDs y nombres desde la base de datos.
-                                        // Ejemplo de estructura: [['infraction_type_id' => 1, 'name' => 'Ruido Excesivo']]
                                         $current_type = $_GET['infraction_type_id'] ?? '';
                                         // Aquí deberías iterar sobre $infraction_types
                                         if (isset($infraction_types) && is_array($infraction_types)) {
@@ -134,8 +162,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
 
                                 <!-- 4. Filtro por Puesto (stall_id) -->
-                                <!-- NOTA: Los filtros por IDs (Stall y Awardee) requieren cargar listas grandes, 
-                                    por lo que se suelen implementar como selects o campos de autocompletado. -->
                                 <div class="col-md-3">
                                     <label for="stall_id" class="form-label small">Puesto (ID/Nro)</label>
                                     <input type="number" class="form-control" id="stall_id" name="stall_id" 

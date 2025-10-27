@@ -23,6 +23,98 @@ class InfractionsModel {
         $this->conn = $database->getConnection();
     }
 
+    public function createEconomicIndicatorsTable(): void {        
+        $sql = "
+            CREATE TABLE IF NOT EXISTS `economic_indicators` (
+                `indicator_id` INT(11) NOT NULL AUTO_INCREMENT,
+                `ut_value` DECIMAL(18, 6) NOT NULL COMMENT 'Valor de la Unidad Tributaria (UT)',
+                `euro_bcv_rate` DECIMAL(18, 6) NOT NULL COMMENT 'Tasa del Euro según BCV (Moneda de Mayor Valor - Art. 105)',
+                `effective_date` DATE NOT NULL COMMENT 'Fecha desde la que son vigentes estos valores',
+                `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (`indicator_id`) USING BTREE,
+                -- Aseguramos que solo haya una UT y Tasa por día de vigencia
+                UNIQUE INDEX `idx_effective_date` (`effective_date`) USING BTREE
+            )
+            COLLATE='utf8mb4_general_ci'
+            ENGINE=InnoDB;
+        ";
+
+        try {            
+            $this->conn->exec($sql);
+        } catch (PDOException $e) {
+            error_log("FATAL ERROR: No se pudo crear la tabla : " . $e->getMessage());
+            die("Error crítico al inicializar la base de datos.");
+        }
+    }    
+
+    /**
+     * Devuelve la tasa de la Unidad Tributaria (UT) y del Euro (BCV) más reciente 
+     * basándose en la fecha efectiva (effective_date).
+     * * @return array|null Un array asociativo con 'ut_value' y 'euro_bcv_rate', o null si no hay registros.
+     */
+    public function getLatestEconomicIndicators(): ?array {
+        // La consulta busca el registro con la fecha efectiva más reciente
+        $sql = "
+            SELECT 
+                ut_value, 
+                euro_bcv_rate
+            FROM 
+                economic_indicators
+            ORDER BY 
+                effective_date DESC
+            LIMIT 1;
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->execute();
+            
+            // Obtener la fila como array asociativo
+            $indicator = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Si se encontró una fila, devolverla; de lo contrario, devolver null
+            return $indicator ?: null;
+
+        } catch (PDOException $e) {
+            // Registrar el error pero no detener la aplicación
+            error_log("Error al obtener el indicador económico más reciente: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Inserta o actualiza la UT y la Tasa del Euro para la fecha actual.
+     * Si el effective_date ya existe, actualiza los valores.
+     * @param float $utValue
+     * @param float $euroRate
+     * @return bool True si la operación fue exitosa, false en caso contrario.
+     */
+    public function saveOrUpdateEconomicIndicators(float $utValue, float $euroRate): bool {
+        // Usamos la fecha actual como la fecha de vigencia (effective_date)
+        $today = date('Y-m-d'); 
+        
+        $sql = "
+            INSERT INTO economic_indicators (ut_value, euro_bcv_rate, effective_date)
+            VALUES (:ut_value, :euro_rate, :effective_date)
+            ON DUPLICATE KEY UPDATE
+                ut_value = VALUES(ut_value),
+                euro_bcv_rate = VALUES(euro_bcv_rate),
+                created_at = CURRENT_TIMESTAMP; -- Actualizar el timestamp de modificación
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($sql);
+            return $stmt->execute([
+                ':ut_value' => $utValue,
+                ':euro_rate' => $euroRate,
+                ':effective_date' => $today
+            ]);
+        } catch (PDOException $e) {
+            error_log("Error al guardar/actualizar indicadores económicos: " . $e->getMessage());
+            return false;
+        }
+    }    
+
     public function getAwardeesList() {
         try {
             $query = "SELECT id, first_name, last_name, id_number,phone FROM awardees ORDER BY first_name";
