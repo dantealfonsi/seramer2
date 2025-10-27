@@ -146,11 +146,13 @@ class InfractionsController {
         //preparamos los datos nevesarios para crear la sancion
         if($result['success']){
             $sanctionsController = new SanctionsController();
+            $tasas = $this->infractionsModel->getLatestEconomicIndicators();
+            $fineAmount = $this->infractionsModel->calcularMultaMunicipal($data['infraction_type_id'], $tasas['euro_bcv_rate'],$tasas['ut_value']); 
             $sanctionData = [
                 'infraction_id'         => $result['id'],
                 'sanction_type_id'      => $data['sanction_type_id'] ?? null,
-                'fine_amount'           => $data['fine_amount'] ?? 0,
-                'fine_currency'         => $data['fine_currency'] ?? 'USD',
+                'fine_amount'           => $fineAmount ?? 0,
+                'fine_currency'         => $data['fine_currency'] ?? 'VES',
                 'effect_start_date'     => $data['infraction_datetime'] ?? date('Y-m-d'),
                 'effect_end_date'       => $data['effect_end_date'] ?? null,
                 'sanction_status'       => 'Imposed',

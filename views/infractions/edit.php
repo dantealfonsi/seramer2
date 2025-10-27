@@ -128,11 +128,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'awardee_id' => trim($_POST['awardee_id'] ?? ''),
         'stall_id' => trim($_POST['stall_id'] ?? ''),
         'infraction_type_id' => trim($_POST['infraction_type_id'] ?? ''),
-        'infraction_datetime' => trim($_POST['infraction_datetime'] ?? '') . ' 00:00:00',
+        'infraction_datetime' => trim($_POST['infraction_datetime']. ' 00:00:00' ?? 'NULL'),
         'infraction_description' => trim($_POST['infraction_description'] ?? ''),
         'infraction_status' => trim($_POST['infraction_status'] ?? 'Reported'),
         'sanction_type_id' => filter_input(INPUT_POST, 'sanction_type_id', FILTER_SANITIZE_NUMBER_INT),
-        'effect_end_date' => trim($_POST['effect_end_date'] ?? '00:00:00'),
+        'effect_end_date' => trim($_POST['effect_end_date'] .'00:00:00' ?? 'NULL'),
         'inspector_observations' => trim($_POST['inspector_observations'] ?? ''),
         'proof' => $fileImagen,
     ];

@@ -74,11 +74,11 @@ $allowed_sanction_status = [
                             <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-warning">
                                 <i class="ri-edit-line"></i> Editar
                             </a>
-                            <button type="button" 
+                            <!-- <button type="button" 
                                     class="btn btn-danger" 
                                     onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
                                 <i class="ri-delete-bin-line"></i> Eliminar
-                            </button>
+                            </button> -->
                         </div>
                     </div>
                     

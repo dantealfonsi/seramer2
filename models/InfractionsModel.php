@@ -323,10 +323,11 @@ class InfractionsModel {
      * @return float El monto final de la multa en Bolívares.
      */
     function calcularMultaMunicipal(
-        string $gravedad, 
+        int $nivel_gravedad, 
         float $tasa_euro_bcv_venta, 
         float $ut_seniat
     ): float {
+
         // 1. Definición de Parámetros de la Sanción (Según Ordenanza de referencia)
         $sanciones = [
             'leve' => [
@@ -343,7 +344,8 @@ class InfractionsModel {
             ]
         ];
 
-        $gravedad = strtolower($gravedad);
+        $enumGravedad = ['leve', 'moderada', 'grave'];
+        $gravedad = strtolower($enumGravedad[$nivel_gravedad - 1] ?? 'leve');
 
         if (!isset($sanciones[$gravedad])) {
             // En caso de que se pase una gravedad no válida
