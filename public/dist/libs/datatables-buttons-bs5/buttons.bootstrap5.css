@@ -33,7 +33,7 @@ div.dataTables_wrapper {
 }
 
 div.dt-buttons {
-  position: initial;
+  position: absolute;
 }
 
 div.dt-buttons .dt-button {
@@ -184,7 +184,7 @@ html.dark div.dt-button-info {
 }
 
 div.dt-buttons div.btn-group {
-  position: initial;
+  position: absolute;
 }
 
 div.dt-buttons div.dropdown-menu {

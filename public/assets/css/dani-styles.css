@@ -1,0 +1,13 @@
+.dani-icon {
+    font-size: 2rem !important;
+    background: #837aff !important;
+    color: white !important;
+    font-weight: 100 !important;
+    padding: .24rem !important;
+    border-radius: .7rem !important;
+}
+
+.dani-title {
+    font-size: 2rem !important;
+    font-weight: 600 !important;
+}

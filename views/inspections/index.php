@@ -30,6 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['_method'] ?? '') === 'DELE
 }
 // ----------------------------------------------------------
 
+// Mapa de traducción para los estados
+$status_translations = [
+    'Pending' => 'Pendiente', 
+    'In Progress' => 'En Curso', 
+    'Completed' => 'Completado', 
+    'Cancelled' => 'Cancelado'
+];
+
 // Preparar parámetros de filtrado
 $filters = [
     'search' => $_GET['search'] ?? '',
@@ -64,9 +72,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-search-eye-line me-1" style="font-size: 2rem;background: #39a67a;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
+                        <h5 class="card-title dani-title">
+                            <i class="ri-search-eye-line me-1 dani-icon"></i>
+                            <?php echo htmlspecialchars("Gestion de Inspecciones") ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nuevo Reporte
@@ -75,7 +83,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body border-bottom">
                         <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado Avanzado</h6>
+                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
                             <div class="row g-3">
                                 <div class="col-md-3">
                                     <label for="search" class="form-label small">Búsqueda General</label>
@@ -88,9 +96,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <select class="form-select" id="inspection_status" name="inspection_status">
                                         <option value="">-- Todos los Estados --</option>
                                         <?php 
-                                        $allowed_status = ['Pending' => 'Pendiente', 'In Progress' => 'En Curso', 'Completed' => 'Completado', 'Cancelled' => 'Cancelado']; 
+                                        // Usamos el mapa de traducción para llenar las opciones del filtro
+                                        $allowed_status = $status_translations; 
                                         $current_status = $_GET['inspection_status'] ?? '';
-                                        foreach ($allowed_status as $key => $value): ?>
+                                        foreach ($allowed_status as $key => $value): // $key es 'Pending', $value es 'Pendiente'
+                                        ?>
                                             <option value="<?php echo $key; ?>" <?php echo ($current_status === $key) ? 'selected' : ''; ?>>
                                                 <?php echo $value; ?>
                                             </option>
@@ -105,6 +115,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         $current_type = $_GET['inspection_type_id'] ?? '';
                                         if (isset($inspection_types) && is_array($inspection_types)) {
                                             foreach ($inspection_types as $type) {
+                                                // Nota: Asumo que el valor del filtro debe ser el ID/nombre que entiende el backend.
+                                                // Aquí se deja como estaba, usando el nombre o el ID.
                                                 $value = htmlspecialchars($type['name'] ?? $type['inspection_type_id']);
                                                 $display = htmlspecialchars($type['name'] ?? 'N/A'); 
                                                 echo "<option value=\"$value\" " . (($current_type == $value) ? 'selected' : '') . ">$display</option>";
@@ -193,20 +205,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td>
                                             <?php
                                             $status_colors = ['Pending' => 'warning', 'In Progress' => 'primary', 'Completed' => 'success', 'Cancelled' => 'danger'];
-                                            $status = $inspection['inspection_status'];
-                                            $color = $status_colors[$status] ?? 'secondary';
+                                            $status_key = $inspection['inspection_status']; // Clave en inglés
+                                            $status_display = $status_translations[$status_key] ?? $status_key; // Obtener la traducción o usar la clave si no existe
+                                            $color = $status_colors[$status_key] ?? 'secondary'; // Color basado en la clave en inglés
                                             ?>
-                                            <span class="badge bg-<?php echo $color; ?>"><?php echo htmlspecialchars($status); ?></span>
+                                            <span class="badge bg-<?php echo $color; ?>"><?php echo htmlspecialchars($status_display); ?></span>
                                             </td>
                                             <td class="text-center">
                                                 <a href="view.php?id=<?php echo $inspection['report_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
                                                 <a href="edit.php?id=<?php echo $inspection['report_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
                                                 <button type="button" 
-                                                        class="btn btn-sm btn-outline-danger" 
-                                                        title="Eliminar"
-                                                        onclick="confirmDelete(<?php echo $inspection['report_id']; ?>)">
-                                                    <i class="ri-delete-bin-line"></i>
-                                                </button>
+                                                            class="btn btn-sm btn-outline-danger" 
+                                                            title="Eliminar"
+                                                            onclick="confirmDelete(<?php echo $inspection['report_id']; ?>)">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -241,13 +254,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
 </div>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script> 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/b-2.4.1/b-html5-2.4.1/b-print-2.4.1/datatables.min.js"></script> 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/dt-1.13.6/r-2.5.0/datatables.min.css"/> 
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap5.min.css"/>
-
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 <script>
 let deleteInspectionId = null;
 
@@ -285,22 +298,22 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', function()
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {
-    // ⚠️ Se usa '#inspectionsTable' (el ID de tu tabla) en lugar de '#inspectionTable'
+    
+    // Contenido del encabezado personalizado para la vista de Impresión (se inyecta en messageTop)
+    const customHeader = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
+            <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Reportes de Inspección</h2>
+        </div>
+    `;
+    
+    // Columnas a exportar (excluyendo la Columna 0: ID Reporte y Columna 6: Acciones)
+    // Columnas: ID Reporte (0), Puesto (1), Tipo (2), Fecha Programada (3), Inspector (4), Estado (5)
+    // **Nota:** Se incluye el ID Reporte (columna 0) para exportación en los ajustes del DataTables.
+    const exportColumns = [0, 1, 2, 3, 4, 5]; 
+    
     if ($.fn.DataTable) {
-        
-        // Contenido del encabezado personalizado para la vista de Impresión (se inyecta en messageTop)
-        const customHeader = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
-                <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Reportes de Inspección</h2>
-            </div>
-        `;
-        
-        // Columnas a exportar (excluyendo la Columna 0: ID Reporte y Columna 6: Acciones)
-        // Columnas: Puesto (1), Tipo (2), Fecha Programada (3), Inspector (4), Estado (5)
-        const exportColumns = [1, 2, 3, 4, 5]; 
-        
-        $('#inspectionsTable').DataTable({ // <-- ID CORREGIDO: inspectionsTable
+        $('#inspectionsTable').DataTable({ 
             // Habilita la extensión Responsive
             responsive: true,
             
@@ -312,7 +325,7 @@ $(document).ready(function() {
                     text: '<i class="ri-file-pdf-line"></i> PDF',
                     className: 'btn btn-danger btn-sm me-1',
                     orientation: 'portrait', // Vertical
-                    pageSize: 'LETTER', // Cambiado a LETTER por ser un estándar más común
+                    pageSize: 'LETTER', 
                     exportOptions: {
                         columns: exportColumns 
                     },
@@ -342,7 +355,7 @@ $(document).ready(function() {
                             const headerRow = table.table.body[0];
                             headerRow.forEach(cell => {
                                 cell.fillColor = '#343a40'; 
-                                cell.color = '#ffffff';      
+                                cell.color = '#ffffff';      
                                 cell.bold = true;
                                 cell.alignment = 'left'; // Alineación a la IZQUIERDA
                             });
@@ -378,10 +391,10 @@ $(document).ready(function() {
                         $(win.document.body).find('head').append(
                             '<style>' +
                                 'table thead th { ' + 
-                                '   background-color: #343a40 !important; ' + 
-                                '   color: white !important; ' + 
-                                '   -webkit-print-color-adjust: exact; ' + 
-                                '   text-align: left !important;' + 
+                                '   background-color: #343a40 !important; ' + 
+                                '   color: white !important; ' + 
+                                '   -webkit-print-color-adjust: exact; ' + 
+                                '   text-align: left !important;' + 
                                 '}' +
                             '</style>'
                         );
@@ -409,6 +422,7 @@ $(document).ready(function() {
     // 2. Mover el valor del filtro 'search' (si existe) a la caja de búsqueda de DataTables
     const initialSearchValue = '<?php echo addslashes($_GET['search'] ?? ''); ?>';
     if (initialSearchValue) {
+        // Solo aplicar si hay una búsqueda inicial, si no, se deja la búsqueda del DataTables en blanco
         $('#inspectionsTable').DataTable().search(initialSearchValue).draw();
     }
 });

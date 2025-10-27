@@ -327,4 +327,60 @@ class InspectionModel {
         $sql = "SELECT id, username FROM users WHERE status = 'active' ORDER BY username";
         return $this->db->fetchAll($sql);
     }
+
+    /**
+     * Registra un cambio de estado en la línea de tiempo del reporte.
+     * Este método se llama desde el método update() del controlador.
+     */
+    public function logStatusUpdate(
+        $reportId, 
+        $oldStatus, 
+        $newStatus, 
+        $description = null, 
+        $userId = null
+    ) {
+        $sql = "INSERT INTO inspection_updates 
+                    (report_id, status_old, status_new, update_description, updated_by_user_id)
+                VALUES (?, ?, ?, ?, ?)";
+        
+        $params = [
+            $reportId, 
+            $oldStatus, 
+            $newStatus, 
+            $description, 
+            $userId
+        ];
+        
+        try {
+            $this->db->executeQuery($sql, $params);
+            return ['success' => true];
+        } catch (Exception $e) {
+            // Manejo de errores
+            return ['success' => false, 'message' => 'Error al registrar el log: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Obtiene todos los eventos de la línea de tiempo para un reporte específico.
+     * Incluye el nombre del usuario que realizó la actualización.
+     * @param int $reportId
+     * @return array
+     */
+    public function getReportTimeline($reportId) {
+        $sql = "SELECT 
+                    iu.*,
+                    u.username AS updated_by_username,
+                    u.full_name AS updated_by_name -- Asumiendo que la tabla users tiene un campo full_name
+                FROM 
+                    inspection_updates iu
+                LEFT JOIN 
+                    users u ON iu.updated_by_user_id = u.id
+                WHERE 
+                    iu.report_id = ?
+                ORDER BY 
+                    iu.update_date ASC"; // Orden cronológico ascendente
+        
+        return $this->db->fetchAll($sql, [$reportId]);
+    }
+    
 }
