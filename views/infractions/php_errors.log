@@ -24,3 +24,6 @@
 [26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
 [26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
 [26-Oct-2025 21:09:21 UTC] PHP Warning:  Undefined array key "sanction_type_name" in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 256
+[27-Oct-2025 00:15:49 UTC] PHP Warning:  Undefined variable $awardees_js in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 369
+[27-Oct-2025 00:16:03 UTC] PHP Warning:  Undefined variable $awardees_js in C:\Apache24\htdocs\seramer2\views\infractions\edit.php on line 369
+[27-Oct-2025 14:16:03 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107

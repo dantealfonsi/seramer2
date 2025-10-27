@@ -356,4 +356,20 @@ class InfractionsController {
                 return ['success' => false, 'message' => 'Acción no válida'];
         }
     }
+
+    public function contarSancionesPorSeveridad(int $awardeeId): array 
+    {
+        return $this->infractionsModel->contarSancionesPorSeveridad($awardeeId);
+    }
+
+    public function contarInfraccionesPorTipoAnual(int $awardeeId): array 
+    {
+        return $this->infractionsModel->contarInfraccionesPorTipoAnual($awardeeId);
+    }
+
+    public function contarTipoInfraccionEspecificoAnual(int $awardeeId, int $infractionTypeId): int
+    {
+        return $this->infractionsModel->contarTipoInfraccionEspecificoAnual($awardeeId,$infractionTypeId);
+    }
+
 }

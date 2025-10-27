@@ -49,7 +49,7 @@ class InfractionsModel {
 
     public function getInfractionTypesList() {
         try {
-            $query = "SELECT infraction_type_id, infraction_type_name FROM infraction_types ORDER BY infraction_type_name";
+            $query = "SELECT * FROM infraction_types ORDER BY infraction_type_name";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -167,6 +167,173 @@ class InfractionsModel {
         } catch(PDOException $exception) {
             error_log("Error al obtener infracciones: " . $exception->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Cuenta el número de infracciones de un tipo específico (infraction_type_id) 
+     * para un adjudicatario dado, limitándose al año actual.
+     *
+     * @param PDO $pdo La conexión PDO a la base de datos.
+     * @param int $awardeeId El ID del adjudicatario.
+     * @param int $infractionTypeId El ID del tipo de infracción a contar.
+     * @return int El total de infracciones de ese tipo en el año actual.
+     */
+    function contarTipoInfraccionEspecificoAnual(
+        int $awardeeId, 
+        int $infractionTypeId
+    ): int 
+    {
+        // Obtener el año actual en formato 'YYYY'
+        $currentYear = date('Y');
+
+        // Consulta SQL optimizada para obtener solo el conteo
+        $sql = "
+            SELECT
+                COUNT(infraction_id) AS total_count
+            FROM
+                infractions
+            WHERE
+                awardee_id = :awardee_id
+                AND infraction_type_id = :infraction_type_id
+                -- Filtrar por el año actual
+                AND YEAR(infraction_datetime) = :current_year;
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($sql);
+            
+            // Ejecutar la consulta, vinculando todos los parámetros
+            $stmt->execute([
+                ':awardee_id' => $awardeeId,
+                ':infraction_type_id' => $infractionTypeId,
+                ':current_year' => $currentYear
+            ]);
+
+            // Obtener el resultado (será una única columna con el conteo)
+            $totalCount = $stmt->fetchColumn();
+
+            return (int) $totalCount;
+
+        } catch (PDOException $e) {
+            error_log("Error al contar infracción específica: " . $e->getMessage());
+            return 0; // Devolver 0 en caso de error
+        }
+    }
+
+    /**
+     * Calcula el monto de una multa en Bolívares (Bs.) basada en la gravedad
+     * y en la legislación que compara la UT y la Moneda de Mayor Valor (Euro BCV.M).
+     *
+     * @param string $gravedad 'leve', 'moderada' o 'grave'.
+     * @param float $tasa_euro_bcv_venta Tasa de venta del Euro publicada por el BCV.
+     * @param float $ut_seniat Valor actual de la Unidad Tributaria (SENIAT).
+     * @return float El monto final de la multa en Bolívares.
+     */
+    function calcularMultaMunicipal(
+        string $gravedad, 
+        float $tasa_euro_bcv_venta, 
+        float $ut_seniat
+    ): float {
+        // 1. Definición de Parámetros de la Sanción (Según Ordenanza de referencia)
+        $sanciones = [
+            'leve' => [
+                'rango_ut' => 10,  // Usamos el máximo del rango típico (5-10 UT)
+                'multiplicador_bcvm' => 0.55 // Ejemplo: 0.55 * BCV.M
+            ],
+            'moderada' => [
+                'rango_ut' => 50,  // Usamos el máximo del rango típico (10-50 UT)
+                'multiplicador_bcvm' => 2.78 // Ejemplo: 2.78 * BCV.M
+            ],
+            'grave' => [
+                'rango_ut' => 500, // Usamos el máximo de tu ejemplo
+                'multiplicador_bcvm' => 27.89 // El multiplicador (27,89)
+            ]
+        ];
+
+        $gravedad = strtolower($gravedad);
+
+        if (!isset($sanciones[$gravedad])) {
+            // En caso de que se pase una gravedad no válida
+            throw new InvalidArgumentException("Gravedad de sanción no válida. Use 'leve', 'moderada' o 'grave'.");
+        }
+
+        $sancion = $sanciones[$gravedad];
+
+        // --- CÁLCULO 1: Basado en la Unidad Tributaria (UT) ---
+        $monto_ut = $sancion['rango_ut'] * $ut_seniat;
+
+        // --- CÁLCULO 2: Basado en la Moneda de Mayor Valor (BCV.M) ---
+        // En este caso, el Euro (€) es la Moneda de Mayor Valor.
+        $monto_bcvm = $sancion['multiplicador_bcvm'] * $tasa_euro_bcv_venta;
+
+        // --- CÁLCULO FINAL: Se aplica el monto mayor de los dos ---
+        $multa_final_bs = max($monto_ut, $monto_bcvm);
+
+        // Redondear el monto a dos decimales para el pago en Bolívares
+        return round($multa_final_bs, 2);
+    }   
+    
+    
+    /**
+     * Cuenta el número de infracciones de cada tipo (infraction_type_id) 
+     * para un adjudicatario (awardee) dado, limitándose al año actual.
+     *
+     * @param PDO $pdo La conexión PDO a la base de datos.
+     * @param int $awardeeId El ID del adjudicatario cuyas infracciones se van a contar.
+     * @return array Un array asociativo con el conteo por tipo de infracción, 
+     * ejemplo: [5 => 3, 8 => 1].
+     */
+    function contarInfraccionesPorTipoAnual(int $awardeeId): array 
+    {
+        // Obtener el año actual en formato 'YYYY'
+        $currentYear = date('Y');
+
+        // La consulta SQL
+        $sql = "
+            SELECT
+                infraction_type_id,
+                COUNT(infraction_id) AS total_infracciones
+            FROM
+                infractions
+            WHERE
+                awardee_id = :awardee_id
+                -- Filtrar por el año actual de la columna infraction_datetime
+                AND YEAR(infraction_datetime) = :current_year 
+                -- Opcional: Solo contar las infracciones que han sido sancionadas/confirmadas
+                -- AND infraction_status = 'Sanctioned' 
+            GROUP BY
+                infraction_type_id
+            ORDER BY
+                total_infracciones DESC;
+        ";
+
+        try {
+            // 1. Preparar la consulta
+            $stmt = $this->conn->prepare($sql);
+            
+            // 2. Ejecutar la consulta, vinculando los parámetros
+            $stmt->execute([
+                ':awardee_id' => $awardeeId,
+                ':current_year' => $currentYear
+            ]);
+
+            // 3. Obtener los resultados
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 4. Transformar los resultados en el formato deseado (infraction_type_id => count)
+            $counts = [];
+            foreach ($results as $row) {
+                // Usamos el ID del tipo de infracción como clave
+                $counts[(int) $row['infraction_type_id']] = (int) $row['total_infracciones'];
+            }
+
+            return $counts;
+
+        } catch (PDOException $e) {
+            // Manejo de errores
+            error_log("Error al contar infracciones anuales: " . $e->getMessage());
+            return []; // Devuelve un array vacío en caso de error
         }
     }
 

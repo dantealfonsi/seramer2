@@ -443,8 +443,8 @@ class UserModel {
                     'icon' => 'ri-alert-line',
                     'submenu' => [
                         ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
-                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php']
-
+                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php'],
+                        ['title' => 'Gestinar Tasas UT/EURO', 'url' => 'views/infractions/index.php']
                     ]
                 ],
                 [
