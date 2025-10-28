@@ -1,6 +1,10 @@
 <?php
+//session_start() debe ser llamado antes de cualquier salida al navegador
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 // Incluye tu clase Database
-require_once __DIR__ . '/../../config/Database.php';
+require_once __DIR__ . '/../../../config/Database.php';
 
 // === Inicialización ===
 // Instancia la clase Database
@@ -9,7 +13,7 @@ $db = new Database();
 // **IMPORTANTE**: Obtén la ID del usuario logueado. ¡AJUSTA ESTO A TU SESIÓN!
 // EJEMPLO REAL: $current_user_id = $_SESSION['user_id'] ?? null;
 // Para la demo, mantenemos el ID 1.
-$current_user_id = 1; 
+$current_user_id = $_SESSION['user_id'] ?? 1;
 
 // Comprobación básica de autenticación
 if (!$current_user_id) {
@@ -70,7 +74,7 @@ switch ($action) {
             $query_select = "
                 SELECT 
                     notification_id, 
-                    notification_date, 
+                    notification_datetime, 
                     notification_subject,
                     notification_message,
                     read_status,
@@ -78,7 +82,7 @@ switch ($action) {
                     COALESCE(complaint_id, alert_id, infraction_id) as related_id 
                 FROM notifications 
                 WHERE recipient_user_id = ? 
-                ORDER BY notification_date DESC 
+                ORDER BY notification_datetime DESC 
                 LIMIT 15
             ";
             $notifications = $db->fetchAll($query_select, [$current_user_id]);
@@ -88,12 +92,12 @@ switch ($action) {
             // 3. Formatear y generar enlaces (lógica de presentación)
             $formatted_notifications = array_map(function($n) {
                 $type = strtolower($n['notification_type']);
-                $n['link'] = '/details.php?id=' . $n['related_id'] . '&type=' . $type;
-                $n['date_friendly'] = (new DateTime($n['notification_date']))->format('d M H:i');
+                $n['link'] = '/seramer2/public/utils/notifications/details.php?id=' . $n['related_id'] . '&type=' . $type;
+                $n['date_friendly'] = (new DateTime($n['notification_datetime']))->format('d M H:i');
                 return $n;
             }, $notifications);
 
-            echo json_encode(['notifications' => $formatted_notifications]);
+            echo json_encode(['notifications' => $formatted_notifications,'current_user_id' => $current_user_id]);
 
         } catch (\PDOException $e) {
             if (isset($pdo) && $pdo->inTransaction()) {

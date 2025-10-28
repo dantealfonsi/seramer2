@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sistema de Notificaciones Estilo Facebook</title>
+    <title>Sistema de Notificaciones Seramer</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -171,7 +171,8 @@
 
 <script>
 $(document).ready(function() {
-    const API_URL = '/seramer2/public/notifications/notifications.php';
+    /* Dedes configurar la ruta completa del server*/
+    const API_URL = 'http://www.localhost/seramer2/public/utils/notifications/notifications.php';
     const BELL_COUNT = $('#notification-count');
     const DROPDOWN = $('#notification-dropdown');
     const LIST_CONTAINER = $('#notif-list-container');
@@ -192,13 +193,13 @@ $(document).ready(function() {
     function fetchNotificationList() {
         LIST_CONTAINER.html('<p class="no-notifications">Cargando...</p>'); 
 
-        // Marcamos como leídas al cargar la lista
+        // Marcamos como leídas al cargar la lista        
         $.getJSON(API_URL + '?action=fetch_and_mark', function(data) {
             LIST_CONTAINER.empty();
 
             if (data.notifications.length === 0) {
                 // Mensaje solicitado para cuando no hay notificaciones
-                LIST_CONTAINER.append('<p class="no-notifications">Sin notificaciones disponibles</p>');
+                LIST_CONTAINER.append(`<p class="no-notifications">Sin notificaciones disponibles</p>`);
             } else {
                 $.each(data.notifications, function(i, notif) {
                     let item = $('<a>').attr('href', notif.link)
