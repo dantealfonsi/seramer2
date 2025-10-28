@@ -44,7 +44,10 @@ class UsersFiscController {
         }        
 
         $success = $this->model->updateRolePermissions($roleId, $newPermissionsMask);
-        $_SESSION['user_permissions_mask'] = $newPermissionsMask;
+        // Actualizar la máscara de permisos en la sesión si el rol modificado es el del usuario actual
+        if (isset($_SESSION['user_nivel']) && $_SESSION['user_nivel'] === $roleId) {
+            $_SESSION['user_permissions_mask'] = $newPermissionsMask;
+        }
 
         if ($success) {            
             echo json_encode(['success' => true, 'message' => 'Permisos actualizados correctamente.']);
