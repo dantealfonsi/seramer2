@@ -55,6 +55,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <a href="index.php" class="btn btn-secondary">
                             <i class="ri-arrow-left-line"></i> Volver
                         </a>
+                        <a href="../reports/index.php?report=acta_conciliacion.rep&action=view&id=<?php echo $report['report_id']; ?>" class="btn btn-info">
+                            <i class="ri-printer-line"></i> Generar Reporte
+                        </a>
+
                     </div>
                     
                     <div class="card-body">
