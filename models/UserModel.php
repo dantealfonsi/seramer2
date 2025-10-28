@@ -527,7 +527,7 @@ class UserModel {
                     'icon' => 'ri-discuss-line',
                     'submenu' => [
                         ['title' => 'Casos de Conciliación', 'url' => 'views/citations/index.php'],
-                        ['title' => 'Actas de Conciliación', 'url' => 'views/actas/index.php']
+                        ['title' => 'Actas de Conciliación', 'url' => 'views/conciliation-reports/index.php']
 
                     ]
                 ],

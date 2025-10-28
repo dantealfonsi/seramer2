@@ -83,7 +83,7 @@ class ReportController {
         }
 
         // 3. Obtener la plantilla del reporte
-        $reportTemplate = $this->reportModel->getReportContent('print_infraction.rep');
+        $reportTemplate = $this->reportModel->getReportContent($_GET['report']);
 
         // 4. Reemplazar los placeholders en la plantilla con los datos reales
         $finalReport = $reportTemplate;

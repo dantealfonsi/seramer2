@@ -1,0 +1,21 @@
+GOBIERNO BOLIVARIANO DE VENEZUELA
+SERVICIO AUTONOMO DE MERCADO
+MUNICIPIO BERMUDEZ - ESTADO SUCRE
+DIRECCION DE ADMINISTRACION "SERAMER"
+DIVISION DE FISCALIZACION
+
+
+ACTA DEL PROCESO CONCILIATORIO Y ADMINISTRATIVO
+__________________________________________________________________
+
+Hoy {{report_date_only}}; siendo las {{report_time_only}} el ciudadano Victor Hernandez portador de la cedula de identidad numero V-000000 jefe de la division de Fiscalizacion adcrito a la direccion de Administracion del Servicio Autonomo de Mercados del Municipio Bermudez "SERAMER" en reunión con el ciudadano(a): {{first_name}} {{last_name}} con la cedula de identidad numero V-{{cedula}}, quien es adjucatario(a) del puesto de venta 
+numero: {{puesto}} que funciona en el mercado municipal de  Carupano. el proposito de la presente reunion: {{infraction_description}} a continuacion se describen las siguientes observaciones: {{agreement_details}}
+
+Esto se lee y se firma conforme:
+
+
+_______________________________________                                   ____________________________
+T.S.U Victor Hernandez                                                                adjudicatario
+Jefe Division de Fiscalizacion SERAMER
+Segun Resolucion N. 8
+fecha 25/03/2025
