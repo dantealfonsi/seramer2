@@ -1,0 +1,26 @@
+[28-Oct-2025 04:04:46 UTC] AUDIT: User 8 performed login on users (record: 8)
+[28-Oct-2025 04:10:24 UTC] PHP Fatal error:  Uncaught TypeError: UserModel::getUserPermissionsMask(): Argument #1 ($userId) must be of type int, null given, called in C:\Apache24\htdocs\seramer2\controllers\AuthController.php on line 55 and defined in C:\Apache24\htdocs\seramer2\models\UserModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(55): UserModel->getUserPermissionsMask()
+#1 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(129): AuthController->login()
+#2 C:\Apache24\htdocs\seramer2\controllers\process-login.php(13): AuthController->processLogin()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\UserModel.php on line 32
+[28-Oct-2025 04:10:33 UTC] PHP Fatal error:  Uncaught TypeError: UserModel::getUserPermissionsMask(): Argument #1 ($userId) must be of type int, null given, called in C:\Apache24\htdocs\seramer2\controllers\AuthController.php on line 55 and defined in C:\Apache24\htdocs\seramer2\models\UserModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(55): UserModel->getUserPermissionsMask()
+#1 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(129): AuthController->login()
+#2 C:\Apache24\htdocs\seramer2\controllers\process-login.php(13): AuthController->processLogin()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\UserModel.php on line 32
+[28-Oct-2025 04:11:04 UTC] PHP Fatal error:  Uncaught TypeError: UserModel::getUserPermissionsMask(): Argument #1 ($userId) must be of type int, null given, called in C:\Apache24\htdocs\seramer2\controllers\AuthController.php on line 55 and defined in C:\Apache24\htdocs\seramer2\models\UserModel.php:32
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(55): UserModel->getUserPermissionsMask()
+#1 C:\Apache24\htdocs\seramer2\controllers\AuthController.php(129): AuthController->login()
+#2 C:\Apache24\htdocs\seramer2\controllers\process-login.php(13): AuthController->processLogin()
+#3 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\UserModel.php on line 32
+[28-Oct-2025 04:12:17 UTC] AUDIT: User 8 performed login on users (record: 8)
+[28-Oct-2025 04:35:55 UTC] AUDIT: User 8 performed login on users (record: 8)
+[28-Oct-2025 04:39:17 UTC] AUDIT: User 8 performed login on users (record: 8)
+[28-Oct-2025 04:39:36 UTC] AUDIT: User 8 performed login on users (record: 8)

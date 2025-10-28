@@ -76,6 +76,41 @@ $infraction_types = $infractionsController->getInfractionTypesList();
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
+
+function hasPermission(string $area, string $type): bool {
+    // 1. Obtener la máscara de la sesión
+    $mask = $_SESSION['user_permissions_mask'] ?? '---------'; 
+    // 2. Determinar la posición del carácter de permiso
+    $position = -1;
+    switch (strtoupper($area)) {
+        case 'INFRACTIONS':
+            $offset = 0; // r:0, w:1, x:2
+            break;
+        case 'CONFIG_RATES':
+            $offset = 3; // r:3, w:4, x:5
+            break;
+        case 'USERS_AUDIT':
+            $offset = 6; // r:6, w:7, x:8
+            break;
+        default:
+            return false; // Área no definida
+    }
+
+    switch (strtolower($type)) {
+        case 'r': $position = $offset + 0; break;
+        case 'w': $position = $offset + 1; break;
+        case 'x': $position = $offset + 2; break;
+        default: return false;
+    }
+    
+    // 3. Verificar el carácter en la máscara
+    // Si la máscara es 'rwx-rwx-rwx' y buscamos INFRACTIONS ('r'):
+    // substr(mask, 0, 1) -> 'r'. Es igual al tipo buscado ('r'). -> TRUE
+    $permission_char = substr($mask, $position, 1);
+
+    return ($permission_char === strtolower($type));
+}
+
 ?>
 <div class="main-content">
     <div class="container-fluid">
@@ -87,7 +122,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <?php if ($can_create_infraction): ?>
+                        <?php if ($can_create_infraction && hasPermission('INFRACTIONS', 'w')): ?>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nueva Infracción
                         </a>
