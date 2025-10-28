@@ -484,8 +484,8 @@ class UserModel {
                     'title' => 'Control de Acceso',
                     'icon' => 'ri-lock-line',
                     'submenu' => [
-                        ['title' => 'Gestión de Roles', 'url' => 'views/access/roles.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/access/users.php']
+                        ['title' => 'Gestión de Roles', 'url' => 'views/users-fisc/indexRoles.php'],
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users-fisc/index.php']
                     ]
                 ]
             ],

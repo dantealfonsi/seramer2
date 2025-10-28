@@ -15,6 +15,7 @@ require_once __DIR__ . '/../public/utils/FileUpload.php';
 
 class InfractionsController {
     private $infractionsModel;
+
     private $NotificationController;
     
     public function __construct() {
