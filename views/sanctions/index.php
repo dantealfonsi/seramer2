@@ -94,9 +94,9 @@ $allowed_sanction_status = [
                                                     <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-warning">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
+                                                    <!-- <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
-                                                    </button>
+                                                    </button> -->
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

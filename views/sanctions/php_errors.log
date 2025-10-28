@@ -1,1 +1,2 @@
 [26-Oct-2025 21:05:48 UTC] Error al obtener sanciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'st.sanction_type_name' in 'SELECT'
+[27-Oct-2025 17:22:31 UTC] Error al eliminar sanción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status_logical' in 'SET'

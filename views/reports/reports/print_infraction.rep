@@ -3,4 +3,4 @@ Fecha: {{infraction_datetime}}
 
 HOLA ESTA ES UNA PRUEBA {{location_description}} 
 DE ESTA PLANTILLA {{adjudicatory_name}}
-smmndjasd, {{base_fine}}
+Estatus, {{sanction_status}}
