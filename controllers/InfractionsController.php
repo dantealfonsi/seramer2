@@ -174,8 +174,8 @@ class InfractionsController {
             }
 
             $this->NotificationController->createNotification(
-                null, // remitente el que la creo
-                1, // ID Usuario al que va dirigido
+                $_SESSION['user_id'], // remitente el que la creo
+                $_SESSION['user_id'], // ID Usuario al que va dirigido
                 'infraction_new',
                 'Nueva Infracción Registrada',
                 'Se ha registrado una nueva infracción con ID #' . $result['id'] . '. Por favor, revise los detalles.',
