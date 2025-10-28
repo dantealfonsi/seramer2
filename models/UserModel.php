@@ -468,16 +468,16 @@ class UserModel {
                     'icon' => 'ri-search-eye-line',
                     'submenu' => [
                         ['title' => ' Ver Inspecciones', 'url' => 'views/inspections/index.php'],
-                        ['title' => 'Añadir Inspectores', 'url' => 'views/inspectors/index.php']
+                        ['title' => ' Listado de Inspectores', 'url' => 'views/inspectors/index.php']
                     ]
                 ],
                 [
                     'title' => 'Infracciones',
                     'icon' => 'ri-alert-line',
                     'submenu' => [
-                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
                         ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php'],
-                        ['title' => 'Gestinar Tasas UT/EURO', 'url' => 'views/infractions/tasas.php']
+                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
+                        ['title' => 'Gestinar Tasas UT/EURO', 'url' => 'views/infractions/tasas.php'],
                     ]
                 ],
                 [

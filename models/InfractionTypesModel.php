@@ -52,7 +52,7 @@ class InfractionTypesModel {
         }
 
         $row = $this->db->fetchOne($sql, $params);
-        return (int)$row['total']; // 👈 aseguramos que devuelva un entero
+        return (int)$row['total'];
     }
 
     /**
@@ -72,7 +72,7 @@ class InfractionTypesModel {
      */
     public function create($data) {
         $sql = "INSERT INTO infraction_types (infraction_type_name, description, violated_article) 
-                VALUES (?, ?, ?)";
+                 VALUES (?, ?, ?)";
         
         $params = [
             $data['infraction_type_name'],
