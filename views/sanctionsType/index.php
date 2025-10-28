@@ -99,28 +99,33 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <?php                                        
-                                        foreach ($sanction_types as $sanctionType): ?>
-                                        <tr>
-                                            <td>
-                                                <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
-                                                    <a href="view.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
-                                                    <?php endif; ?>
-                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
-                                                    <a href="edit.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $sanctionType['sanction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
+                                        <tbody>
+                                            <?php foreach ($sanction_types as $sanctionType): ?>
+                                            <tr>
+                                                <td>
+                                                    <?php echo htmlspecialchars($sanctionType['sanction_type_id']); ?>
+                                                </td>
+                                                
+                                                <td>
+                                                    <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
+                                                </td>
+                                                
+                                                <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
+                                                
+                                                <td class="text-center">
+                                                    <div class="btn-group" role="group">
+                                                        <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
+                                                        <a href="view.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
+                                                        <?php endif; ?>
+                                                        <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
+                                                        <a href="edit.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $sanctionType['sanction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
                                 </table>
                             </div>
                             <?php endif; ?>

@@ -36,52 +36,117 @@ class ComplaintsModel {
     }
 
     /**
-     * Get all complaints with pagination and search.
-     * @param int $page
-     * @param int $limit
+     * Get all complaints (without pagination) with an optional search.
      * @param string $search
      * @return array
      */
-    public function getAll($page, $limit, $search) {
-        $offset = ($page - 1) * $limit;
-        $sql = "SELECT c.*, p.stall_number AS position_name, contr.first_name AS contractor_name
-                FROM complaints c
-                LEFT JOIN market_stalls p ON c.stall_id = p.id
-                LEFT JOIN awardees contr ON c.awardee_id = contr.id";
+    // --- MODIFICADO: Se eliminan $page y $limit de la firma y el cuerpo ---
+/**
+     * Get all complaints (without pagination) with filters.
+     * @param array $filters ['search' => '', 'type' => '', 'status' => '', 'priority' => '']
+     * @return array
+     */
+    public function getAll($filters = []) {
+        
+        $search = $filters['search'] ?? '';
+        $type_filter = $filters['type'] ?? ''; // <--- NUEVO FILTRO
+        $status_filter = $filters['status'] ?? '';
+        $priority_filter = $filters['priority'] ?? '';
+
+        $sql = "SELECT c.*, p.stall_number AS position_name, contr.first_name AS contractor_name, contr.last_name AS contractor_lastname
+                 FROM complaints c
+                 LEFT JOIN market_stalls p ON c.stall_id = p.id
+                 LEFT JOIN awardees contr ON c.awardee_id = contr.id";
         
         $params = [];
+        $where_clauses = [];
+        
+        // 1. FILTRO DE BÚSQUEDA GENERAL
         if (!empty($search)) {
-            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ?";
+            $where_clauses[] = " (c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ? OR contr.last_name LIKE ?) ";
             $searchTerm = "%{$search}%";
-            array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+            array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
         }
 
-        $sql .= " ORDER BY c.complaint_datetime DESC LIMIT " . $limit . " OFFSET " . $offset;
+        // 2. FILTRO POR TIPO (Type) <--- NUEVO
+        if (!empty($type_filter)) {
+            $where_clauses[] = " c.complaint_type = ? ";
+            $params[] = $type_filter;
+        }
+
+        // 3. FILTRO POR ESTADO (Status)
+        if (!empty($status_filter)) {
+            $where_clauses[] = " c.complaint_status = ? ";
+            $params[] = $status_filter;
+        }
+
+        // 4. FILTRO POR PRIORIDAD (Priority)
+        if (!empty($priority_filter)) {
+            $where_clauses[] = " c.complaint_priority = ? ";
+            $params[] = $priority_filter;
+        }
+
+        // COMBINAR CLÁUSULAS WHERE
+        if (!empty($where_clauses)) {
+            $sql .= " WHERE " . implode(' AND ', $where_clauses);
+        }
+
+        $sql .= " ORDER BY c.complaint_datetime DESC";
 
         return $this->db->fetchAll($sql, $params);
     }
-
+    
     /**
-     * Count all complaints with an optional search filter.
-     * @param string $search
+     * Count all complaints with filters.
+     * @param array $filters ['search' => '', 'type' => '', 'status' => '', 'priority' => '']
      * @return int
      */
-    public function countAll($search) {
+    public function countAll($filters = []) {
+        $search = $filters['search'] ?? '';
+        $type_filter = $filters['type'] ?? ''; // <--- NUEVO FILTRO
+        $status_filter = $filters['status'] ?? '';
+        $priority_filter = $filters['priority'] ?? '';
+
         $sql = "SELECT COUNT(c.complaint_id)
-                FROM complaints c
-                LEFT JOIN market_stalls p ON c.stall_id = p.id
-                LEFT JOIN awardees contr ON c.awardee_id = contr.id";
+                 FROM complaints c
+                 LEFT JOIN market_stalls p ON c.stall_id = p.id
+                 LEFT JOIN awardees contr ON c.awardee_id = contr.id";
 
         $params = [];
+        $where_clauses = [];
+        
+        // 1. FILTRO DE BÚSQUEDA GENERAL
         if (!empty($search)) {
-            $sql .= " WHERE c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ?";
+            $where_clauses[] = " (c.client_name LIKE ? OR c.complaint_description LIKE ? OR p.stall_number LIKE ? OR contr.first_name LIKE ? OR contr.last_name LIKE ?) ";
             $searchTerm = "%{$search}%";
-            array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+            array_push($params, $searchTerm, $searchTerm, $searchTerm, $searchTerm, $searchTerm);
+        }
+
+        // 2. FILTRO POR TIPO (Type) <--- NUEVO
+        if (!empty($type_filter)) {
+            $where_clauses[] = " c.complaint_type = ? ";
+            $params[] = $type_filter;
+        }
+
+        // 3. FILTRO POR ESTADO (Status)
+        if (!empty($status_filter)) {
+            $where_clauses[] = " c.complaint_status = ? ";
+            $params[] = $status_filter;
+        }
+
+        // 4. FILTRO POR PRIORIDAD (Priority)
+        if (!empty($priority_filter)) {
+            $where_clauses[] = " c.complaint_priority = ? ";
+            $params[] = $priority_filter;
+        }
+
+        // COMBINAR CLÁUSULAS WHERE
+        if (!empty($where_clauses)) {
+            $sql .= " WHERE " . implode(' AND ', $where_clauses);
         }
 
         return $this->db->fetchOne($sql, $params);
     }
-
     /**
      * Get a single complaint by its ID.
      * @param int $id
@@ -99,7 +164,7 @@ class ComplaintsModel {
      */
     public function create($data) {
         $sql = "INSERT INTO complaints (client_user_id, client_name, client_phone, client_email, complaint_description, stall_id, awardee_id, complaint_type, complaint_status, complaint_priority, internal_observations) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $params = [
             $data['client_user_id'] ?? null,
@@ -126,7 +191,7 @@ class ComplaintsModel {
     /**
      * Obtiene todos los puestos de mercado.
      * @return array
-     */    
+     */     
     public function getMarketStall() {
         $sql = "SELECT id, stall_number FROM market_stalls";
         return $this->db->fetchAll($sql);
@@ -140,17 +205,17 @@ class ComplaintsModel {
      */
     public function update($id, $data) {
         $sql = "UPDATE complaints SET
-                    client_name = ?,
-                    client_phone = ?,
-                    client_email = ?,
-                    complaint_description = ?,
-                    stall_id = ?,
-                    awardee_id = ?,
-                    complaint_type = ?,
-                    complaint_status = ?,
-                    complaint_priority = ?,
-                    internal_observations = ?
-                WHERE complaint_id = ?";
+                     client_name = ?,
+                     client_phone = ?,
+                     client_email = ?,
+                     complaint_description = ?,
+                     stall_id = ?,
+                     awardee_id = ?,
+                     complaint_type = ?,
+                     complaint_status = ?,
+                     complaint_priority = ?,
+                     internal_observations = ?
+                 WHERE complaint_id = ?";
 
         $params = [
             $data['client_name'],
