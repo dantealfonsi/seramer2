@@ -72,7 +72,7 @@ $allowed_sanction_status = [
                                             <tr>
                                                 <td><?php echo htmlspecialchars($sanction['sanction_id']); ?></td>
                                                 <td><?php echo htmlspecialchars($sanction['infraction_description']); ?></td>
-                                                <td><?php echo htmlspecialchars($sanction['sanction_type_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($sanction['severity_name']); ?></td>
                                                 <td><?php echo htmlspecialchars($sanction['fine_amount'] ?? 'N/A') . ' ' . htmlspecialchars($sanction['fine_currency'] ?? ''); ?></td>
                                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($sanction['imposition_date']))); ?></td>
                                                 <td>
@@ -94,9 +94,9 @@ $allowed_sanction_status = [
                                                     <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-warning">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
+                                                    <!-- <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
-                                                    </button>
+                                                    </button> -->
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

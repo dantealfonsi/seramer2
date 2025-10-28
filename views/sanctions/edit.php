@@ -136,7 +136,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <?php foreach ($sanction_types as $type) : ?>
                                             <option value="<?php echo htmlspecialchars($type['sanction_type_id']); ?>" 
                                                     <?php echo ($type['sanction_type_id'] == $sanction['sanction_type_id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($type['sanction_type_name']); ?>
+                                                <?php echo htmlspecialchars($type['severity_name']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

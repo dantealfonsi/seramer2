@@ -1,19 +1,16 @@
-[02-Oct-2025 15:28:13 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 104
-[02-Oct-2025 15:28:13 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 165
-[02-Oct-2025 15:44:30 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:44:30 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:45:33 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:45:33 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:46:41 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:46:41 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:46:48 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:46:48 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:47:49 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:47:49 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:49:01 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:49:01 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:50:41 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:50:41 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
-[02-Oct-2025 15:50:50 UTC] Error al ejecutar la consulta: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'OFFSET 0' at line 1 - Query: SELECT * FROM infraction_types ORDER BY infraction_type_name ASC LIMIT  OFFSET 0
-[02-Oct-2025 15:50:53 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
-[02-Oct-2025 15:50:53 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
+[27-Oct-2025 17:09:01 UTC] PHP Fatal error:  Uncaught InvalidArgumentException: Gravedad de sanción no válida. Use 'leve', 'moderada' o 'grave'. in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php:350
+Stack trace:
+#0 C:\Apache24\htdocs\seramer2\controllers\InfractionsController.php(150): InfractionsModel->calcularMultaMunicipal()
+#1 C:\Apache24\htdocs\seramer2\views\infractions\edit.php(146): InfractionsController->store()
+#2 {main}
+  thrown in C:\Apache24\htdocs\seramer2\models\InfractionsModel.php on line 350
+[27-Oct-2025 17:12:53 UTC] Error al crear sanción: SQLSTATE[22007]: Invalid datetime format: 1292 Incorrect date value: '' for column `seramermvc`.`sanctions`.`effect_end_date` at row 1
+[27-Oct-2025 17:13:09 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[27-Oct-2025 17:13:09 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
+[27-Oct-2025 17:14:07 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[27-Oct-2025 17:20:40 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[27-Oct-2025 17:21:36 UTC] Error al crear sanción: SQLSTATE[22007]: Invalid datetime format: 1292 Incorrect date value: '' for column `seramermvc`.`sanctions`.`effect_end_date` at row 1
+[27-Oct-2025 17:22:21 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[27-Oct-2025 17:22:21 UTC] PHP Warning:  Undefined array key "" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 168
+[27-Oct-2025 17:30:07 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107
+[27-Oct-2025 17:30:25 UTC] PHP Warning:  Undefined array key "id_adjudicatory" in C:\Apache24\htdocs\seramer2\views\infractions\view.php on line 107

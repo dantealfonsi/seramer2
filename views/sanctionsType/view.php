@@ -48,7 +48,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-md-6">
                                     <p class="form-label"><strong>Nombre del Tipo de Sanción:</strong></p>
-                                    <p><?php echo htmlspecialchars($sanction_type['sanction_type_name']); ?></p>
+                                    <p><?php echo htmlspecialchars($sanction_type['severity_name']); ?></p>
                                 </div>
                                 <div class="col-12">
                                     <p class="form-label"><strong>Descripción:</strong></p>

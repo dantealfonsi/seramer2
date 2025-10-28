@@ -155,3 +155,4 @@ Stack trace:
 [17-Sep-2025 02:00:55 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
 [19-Sep-2025 13:01:53 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
 [19-Sep-2025 13:07:57 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101
+[26-Oct-2025 18:41:08 UTC] PHP Warning:  Undefined array key "user_id" in C:\Apache24\htdocs\seramer2\views\inspectors\view.php on line 101

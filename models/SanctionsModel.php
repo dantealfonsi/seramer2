@@ -26,7 +26,7 @@ class SanctionsModel {
             $offset = ($page - 1) * $limit;
             $query = "SELECT s.*, 
                              i.infraction_description AS infraction_description, 
-                             st.sanction_type_name AS sanction_type_name
+                             st.severity_name AS severity_name
                       FROM " . $this->table . " s
                       JOIN infractions i ON s.infraction_id = i.infraction_id
                       JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
@@ -34,7 +34,7 @@ class SanctionsModel {
             
             $params = [];
             if (!empty($search)) {
-                $query .= " AND (i.infraction_description LIKE :search OR st.sanction_type_name LIKE :search)";
+                $query .= " AND (i.infraction_description LIKE :search OR st.severity_name LIKE :search)";
                 $params[':search'] = '%' . $search . '%';
             }
             
@@ -166,7 +166,7 @@ public function create($data) {
     }
 
     public function getById($id) {
-        $query = "SELECT s.*, i.infraction_description as infraction_description, st.sanction_type_name as sanction_type_name
+        $query = "SELECT s.*, i.infraction_description as infraction_description, st.severity_name as severity_name
                   FROM " . $this->table . " s
                   JOIN infractions i ON s.infraction_id = i.infraction_id
                   JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
@@ -179,14 +179,14 @@ public function create($data) {
 
     public function getAll($page, $limit, $search) {
         $offset = ($page - 1) * $limit;
-        $query = "SELECT s.*, i.infraction_description as infraction_name, st.sanction_type_name as sanction_type_name
+        $query = "SELECT s.*, i.infraction_description as infraction_name, st.severity_name as severity_name
                   FROM " . $this->table . " s
                   JOIN infractions i ON s.infraction_id = i.infraction_id
                   JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id";
         
         $params = [];
         if (!empty($search)) {
-            $query .= " WHERE i.infraction_description LIKE :search OR st.sanction_type_name LIKE :search";
+            $query .= " WHERE i.infraction_description LIKE :search OR st.severity_name LIKE :search";
             $params[':search'] = '%' . $search . '%';
         }
     
@@ -231,7 +231,7 @@ public function create($data) {
         if (!empty($search)) {
             $query .= " JOIN infractions i ON " . $this->table . ".infraction_id = i.infraction_id";
             $query .= " JOIN sanction_types st ON " . $this->table . ".sanction_type_id = st.sanction_type_id";
-            $query .= " WHERE i.infraction_description LIKE :search OR st.sanction_type_name LIKE :search";
+            $query .= " WHERE i.infraction_description LIKE :search OR st.severity_name LIKE :search";
             $params[':search'] = '%' . $search . '%';
         }
         $stmt = $this->conn->prepare($query);
@@ -251,7 +251,7 @@ public function create($data) {
     }
     
     public function getSanctionTypeDropdown() {
-        $query = "SELECT sanction_type_id, sanction_type_name FROM sanction_types ORDER BY sanction_type_name ASC";
+        $query = "SELECT sanction_type_id, severity_name FROM sanction_types ORDER BY severity_name ASC";
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
