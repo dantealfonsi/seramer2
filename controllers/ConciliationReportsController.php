@@ -16,25 +16,40 @@ class ConciliationReportsController {
     /**
      * Muestra una lista de informes de conciliación con filtros y paginación.
      */
-    public function index($params = []) {
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
-        $search = isset($params['search']) ? trim($params['search']) : '';
-        $reports = $this->reportsModel->getAll($page, $limit, $search);
-        $total = (int)$this->reportsModel->countAll($search);
-        $totalPages = (int)ceil($total / $limit);
-        
-        return [
-            'reports' => $reports,
-            'current_page' => $page,
-            'total_pages' => $totalPages,
-            'total_records' => $total,
-            'search' => $search,
-            'page_title' => 'Gestión de Informes de Conciliación',
-            'has_search' => !empty($search)
-        ];
-    }
+public function index($params = []) {
+    $page = isset($params['page']) ? (int)$params['page'] : 1;
+    $limit = 10;
+    
+    // --- PARÁMETROS DE FILTRADO AVANZADO (CORREGIDO) ---
+    // La vista ya procesó los filtros y los pasó en $params['filters'].
+    // Extraemos solo los filtros activos para pasarlos al Modelo.
+    $activeFilters = $params['filters'] ?? [];
+    
+    // Opcional: Re-filtrar por seguridad, aunque la vista ya lo hizo.
+    $activeFilters = array_filter($activeFilters, function($value) {
+        return $value !== null && $value !== '';
+    });
+    
+    // Se pasa la paginación y los filtros
+    $reports = $this->reportsModel->getAll($page, $limit, $activeFilters);
+    $total = (int)$this->reportsModel->countAll($activeFilters);
+    $totalPages = (int)ceil($total / $limit);
+    
+    // Obtenemos la lista de citaciones para el select del formulario (si es necesario)
+    $citationsList = $this->reportsModel->getCitationsList();
 
+    return [
+        'reports' => $reports,
+        'current_page' => $page,
+        'total_pages' => $totalPages,
+        'total_records' => $total,
+        // Devolvemos todos los filtros activos para rellenar el formulario (como ya vienen de la vista)
+        'filters' => $activeFilters, 
+        'page_title' => 'Gestión de Informes de Conciliación',
+        'citations_list' => $citationsList, // Para el select de citaciones
+        'has_filters' => !empty($activeFilters)
+    ];
+}
     /**
      * Muestra un informe de conciliación específico.
      */

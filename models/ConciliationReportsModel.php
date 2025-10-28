@@ -17,45 +17,118 @@ class ConciliationReportsModel {
      * @param string $search Término de búsqueda para filtrar los resultados.
      * @return array
      */
-    public function getAll($page, $limit, $search) {
-        $offset = ($page - 1) * $limit;
-        $sql = "SELECT * FROM conciliation_reports";
-        $params = [];
-        
-        if (!empty($search)) {
-            $sql .= " WHERE result LIKE ?";
-            $params[] = '%' . $search . '%';
-        }
-        
-        $sql .= " ORDER BY report_date DESC LIMIT ? OFFSET ?";
-        $params[] = $limit;
-        $params[] = $offset;
+// CONCILIATIONREPORTSMODEL.PHP
+// Método getAll()
 
-        $stmt = $this->db->prepare($sql);
-   
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+public function getAll($page, $limit, $filters = []) {
+    $offset = ($page - 1) * $limit;
+    
+    // Unimos las tablas para poder filtrar por datos de la citación, si es necesario.
+    $sql = "SELECT cr.*, c.citation_datetime 
+            FROM conciliation_reports cr
+            LEFT JOIN citations c ON cr.citation_id = c.citation_id";
+    
+    $params = [];
+    $where = [];
+    
+    // --- Lógica de Filtros Avanzados (CORREGIDO) ---
+    
+    // 1. Filtrar por ID de Citación
+    if (!empty($filters['citation_id'])) {
+        $where[] = "cr.citation_id = ?";
+        $params[] = $filters['citation_id'];
+    }
+
+    // 2. Filtrar por el Resultado del Informe
+    if (!empty($filters['result'])) {
+        $where[] = "cr.result = ?";
+        $params[] = $filters['result'];
     }
     
+    // 3. Filtrar por Asistencia (si lo necesitas en el futuro)
+    if (isset($filters['awardee_attendance']) && $filters['awardee_attendance'] !== '') {
+         $where[] = "cr.awardee_attendance = ?";
+         $params[] = $filters['awardee_attendance'];
+    }
+    
+    // 4. Filtrar por Rango de Fechas (¡NUEVO!)
+    if (!empty($filters['start_date'])) {
+        // Usamos DATE() para comparar solo la parte de la fecha
+        $where[] = "DATE(cr.report_date) >= ?"; 
+        $params[] = $filters['start_date'];
+    }
+
+    if (!empty($filters['end_date'])) {
+        // Usamos DATE() para comparar solo la parte de la fecha
+        $where[] = "DATE(cr.report_date) <= ?"; 
+        $params[] = $filters['end_date'];
+    }
+    
+    // Si hay condiciones WHERE, las aplicamos
+    if (!empty($where)) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+    
+    // Paginación
+    $sql .= " ORDER BY cr.report_date DESC LIMIT ? OFFSET ?";
+    $params[] = $limit;
+    $params[] = $offset;
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
     /**
-     * Cuenta el total de informes de conciliación, con filtro opcional.
-     * @param string $search Término de búsqueda para filtrar los resultados.
+     * Cuenta el total de informes con filtros.
+     * @param array $filters Un array asociativo de filtros.
      * @return int
      */
-    public function countAll($search) {
-        $sql = "SELECT COUNT(*) FROM conciliation_reports";
-        $params = [];
-        
-        if (!empty($search)) {
-            $sql .= " WHERE result LIKE ?";
-            $params[] = '%' . $search . '%';
-        }
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchColumn();
+// CONCILIATIONREPORTSMODEL.PHP
+// Método countAll()
+
+public function countAll($filters = []) {
+    $sql = "SELECT COUNT(cr.report_id) 
+            FROM conciliation_reports cr
+            LEFT JOIN citations c ON cr.citation_id = c.citation_id";
+    
+    $params = [];
+    $where = [];
+    
+    // Los mismos filtros que en getAll()
+    if (!empty($filters['citation_id'])) {
+        $where[] = "cr.citation_id = ?";
+        $params[] = $filters['citation_id'];
+    }
+
+    if (!empty($filters['result'])) {
+        $where[] = "cr.result = ?";
+        $params[] = $filters['result'];
     }
     
+    if (isset($filters['awardee_attendance']) && $filters['awardee_attendance'] !== '') {
+         $where[] = "cr.awardee_attendance = ?";
+         $params[] = $filters['awardee_attendance'];
+    }
+    
+    // 4. Filtrar por Rango de Fechas (¡NUEVO!)
+    if (!empty($filters['start_date'])) {
+        $where[] = "DATE(cr.report_date) >= ?";
+        $params[] = $filters['start_date'];
+    }
+
+    if (!empty($filters['end_date'])) {
+        $where[] = "DATE(cr.report_date) <= ?";
+        $params[] = $filters['end_date'];
+    }
+    
+    if (!empty($where)) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+    
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchColumn();
+}
     /**
      * Obtiene un solo informe de conciliación por su ID.
      * @param int $id El ID del informe.
