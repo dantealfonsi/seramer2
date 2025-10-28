@@ -25,6 +25,39 @@ class UserModel {
     }
 
     /**
+     * Obtiene la máscara de permisos del usuario dado su ID.
+     * @param int $userId ID del usuario activo.
+     * @return string|null La máscara de permisos (ej: 'rwx-rwx-rwx') o null si no se encuentra.
+     */
+    public function getUserPermissionsMask(int $userId): ?string {        
+        $query = "
+            SELECT 
+                fr.permissions_mask
+            FROM 
+                fiscalization_user_level fule
+            INNER JOIN 
+                fiscalization_roles fr ON fule.role_id = fr.role_id
+            WHERE 
+                fule.user_id = :user_id;
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Retorna la máscara o null
+            return $result['permissions_mask'] ?? null;
+            
+        } catch (PDOException $e) {
+            error_log("Error al obtener máscara de permisos para el usuario ID {$userId}: " . $e->getMessage());
+            return null;
+        }
+    }    
+
+    /**
      * Autenticar usuario por username y password
      * @param string $username
      * @param string $password

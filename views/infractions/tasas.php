@@ -3,8 +3,10 @@
 session_start();
 
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
 
 $infractionsController = new InfractionsController();
+$rol = new RolesController();
 
 // 1. Obtener la tasa actual para mostrarla
 $economicIndicators = $infractionsController->getLatestEconomicIndicators();
@@ -51,6 +53,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form action="save_rates.php" method="POST">
                             <h6 class="mb-3">Actualizar Tasas para la Fecha de Hoy (<?php echo date('d/m/Y'); ?>)</h6>
 
+                            <?php if ($rol->hasPermission('CONFIG_RATES', 'r')): ?>
                             <div class="mb-3">
                                 <label for="ut_value" class="form-label">Valor de la Unidad Tributaria (UT)</label>
                                 <input type="number" step="0.000001" class="form-control" id="ut_value" name="ut_value" 
@@ -64,10 +67,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                        placeholder="Ej: 38.543210" required>
                                 <div class="form-text">Este valor se usará para el cálculo de multas.</div>
                             </div>
-
+                            <?php endif; ?>
+                            <?php if ($rol->hasPermission('CONFIG_RATES', 'w')): ?>
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="ri-refresh-line"></i> Actualizar / Registrar Tasas de Hoy
                             </button>
+                            <?php endif;?>
                         </form>
                     </div>
                 </div>

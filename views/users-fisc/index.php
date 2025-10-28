@@ -5,8 +5,10 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/UsersFiscController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
 
 $usersController = new UsersFiscController();
+$rol = new RolesController();
 $result = $usersController->indexFiscalizationUsers();
 
 // Extraer variables para la vista
@@ -55,6 +57,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($users as $user): ?>
                                             <tr>
+                                                <?php if ($rol->hasPermission('USERS_AUDIT', 'r')): ?>
                                                 <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                                                 <td>
                                                     <strong><?php echo htmlspecialchars($user['last_name'] . ' ' . $user['first_name']); ?></strong>
@@ -71,6 +74,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <?php echo htmlspecialchars(ucfirst($status)); ?>
                                                     </span>
                                                 </td>
+                                                <?php if ($rol->hasPermission('USERS_AUDIT', 'w')): ?>
                                                 <td class="text-center">
                                                     <?php foreach ($roles as $role): ?>
                                                         <div class="form-check form-check-inline">
@@ -89,7 +93,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                             </label>
                                                         </div>
                                                     <?php endforeach; ?>
-                                                </td>                                                
+                                                </td> 
+                                                <?php endif; ?>
+                                                <?php endif; ?> 
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
