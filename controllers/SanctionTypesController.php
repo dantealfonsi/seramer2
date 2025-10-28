@@ -13,25 +13,35 @@ class SanctionTypesController {
     /**
      * Muestra una lista de tipos de sanción con filtros y paginación.
      */
-    public function index($params = []) {
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
-        $search = isset($params['search']) ? trim($params['search']) : '';
-        
-        $sanctionTypes = $this->sanctionTypesModel->getAll($page, $limit, $search);
-        $total = (int)$this->sanctionTypesModel->countAll($search);
-        $totalPages = (int)ceil($total / $limit);
+// En SanctionTypesController.php
 
-        return [
-            'sanction_types' => $sanctionTypes,
-            'current_page' => $page,
-            'total_pages' => $totalPages,
-            'total_records' => $total,
-            'search' => $search,
-            'page_title' => 'Gestión de Tipos de Sanción',
-            'has_search' => !empty($search)
-        ];
-    }
+/**
+ * Muestra una lista de tipos de sanción con filtros y paginación.
+ */
+public function index($params = []) {
+    $page = isset($params['page']) ? (int)$params['page'] : 1;
+    $limit = 10;
+    $search = isset($params['search']) ? trim($params['search']) : '';
+    
+    // El modelo devuelve un array o un array vacío [] si falla la BD, pero no estandarizado.
+    $sanctionTypes = $this->sanctionTypesModel->getAll($page, $limit, $search);
+    $total = (int)$this->sanctionTypesModel->countAll($search);
+    $totalPages = (int)ceil($total / $limit);
+
+    // **********************************************
+    //  CLAVE: Añadir 'success' al array de retorno
+    // **********************************************
+    return [
+        'success' => true, // <--- Añadir esta línea
+        'sanction_types' => $sanctionTypes,
+        'current_page' => $page,
+        'total_pages' => $totalPages,
+        'total_records' => $total,
+        'search' => $search,
+        'page_title' => 'Gestión de Tipos de Sanción',
+        'has_search' => !empty($search)
+    ];
+}
 
     /**
      * Muestra un tipo de sanción específico.

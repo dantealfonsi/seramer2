@@ -19,10 +19,24 @@ class SanctionsController {
      * Muestra la lista de sanciones
      * @return array
      */
-    public function index() {
-        return $this->model->index();
-    }
+public function index($params = []) {
+        // Extraer los filtros (si existen) y pasarlos al modelo
+        $filters = $params['filters'] ?? [];
 
+        // El modelo ahora devuelve un array estandarizado, que es lo que espera la vista.
+        $result = $this->model->index($filters);
+
+        // Aseguramos que el resultado siempre contenga las claves esperadas.
+        if (isset($result['success']) && $result['success']) {
+            return [
+                'success' => true,
+                'sanctions' => $result['sanctions']
+            ];
+        }
+        
+        // Retorno en caso de error o si el modelo retorna un array no estandarizado (ahora manejado en el modelo modificado)
+        return $result; 
+    }
     /**
      * Procesa la creación de una nueva sanción
      * @param array $data

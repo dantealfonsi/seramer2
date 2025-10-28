@@ -4,16 +4,36 @@ require_once __DIR__ . '/../../controllers/SanctionTypesController.php';
 
 $sanctionTypesController = new SanctionTypesController();
 
-$params = [
-    'page' => $_GET['page'] ?? 1,
-    'search' => $_GET['search'] ?? ''
-];
+// --- Lógica del Controlador para DataTables ---
+// DataTables no necesita 'page' ni 'limit' si no usas Server-Side Processing.
+// Solo necesitamos obtener TODOS los datos (o la colección completa filtrada) al inicio.
 
+// Si usabas paginación, el método index() del controlador debe ser modificado 
+// para devolver todos los resultados sin paginar por defecto.
+$params = [
+    'search' => $_GET['search'] ?? '' // Mantener el filtro de búsqueda si lo usas en el controlador/modelo
+];
 $result = $sanctionTypesController->index($params);
 
-// Extrae $sanction_types, $current_page, $total_pages, etc.
-extract($result);
+// Verifica y extrae el resultado de forma segura
+if (isset($result['success']) && $result['success']) {
+    $sanction_types = $result['sanction_types'] ?? [];
+    $page_title = $result['page_title'] ?? 'Listado de Tipos de Sanción';
+    $search = $params['search']; // Para el input search si lo mantienes
+    $has_search = !empty($search);
+} else {
+    // Manejo de error si la carga falla
+    $_SESSION['flash_message'] = [
+        'type' => 'danger',
+        'message' => 'Error al cargar los tipos de sanción: ' . ($result['message'] ?? 'Error desconocido.')
+    ];
+    $sanction_types = [];
+    $page_title = 'Error de Carga';
+    $search = '';
+    $has_search = false;
+}
 
+// Lógica de eliminación (manteniendo tu método actual con GET)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
     $deleteId = $_GET['delete_id'];
     $deleteResult = $sanctionTypesController->delete($deleteId);
@@ -32,21 +52,23 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 
 ?>
-<?php if (isset($_SESSION['flash_message'])): ?>
-    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> mt-2" role="alert">
-        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-    </div>
-    <?php unset($_SESSION['flash_message']); ?>
-<?php endif; ?>
 
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
+                <?php if (isset($_SESSION['flash_message'])): ?>
+                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show" role="alert">
+                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php unset($_SESSION['flash_message']); ?>
+                <?php endif; ?>
+                
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                        <h5 class="card-title dani-title"  style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri-alert-line me-1 dani-icon-lg dani-bg-purple" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">
@@ -54,83 +76,48 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </a>
                     </div>
                     
-                    <div class="card-body border-bottom">
-                        <form method="GET" class="row g-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="search" placeholder="Buscar por tipo de sanción o descripción..." value="<?php echo htmlspecialchars($search); ?>">
-                                    <button class="btn btn-outline-secondary" type="submit"><i class="ri-search-line"></i></button>
-                                </div>
-                            </div>
-                            <?php if ($has_search): ?>
-                            <div class="col-md-3">
-                                <a href="index.php" class="btn btn-outline-info"><i class="ri-close-line"></i> Limpiar búsqueda</a>
-                            </div>
-                            <?php endif; ?>
-                        </form>
-                    </div>
-
                     <div class="card-body">
                         <?php if (empty($sanction_types)): ?>
                             <div class="text-center py-4">
                                 <i class="ri-file-search-line text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="text-muted mt-2">
-                                    <?php echo $has_search ? 'No se encontraron tipos de sanción con ese criterio' : 'No hay tipos de sanción registrados'; ?>
+                                    No hay tipos de sanción registrados.
                                 </h5>
-                                <?php if (!$has_search): ?>
-                                    <a href="create.php" class="btn btn-primary mt-2">
-                                        <i class="ri-add-line"></i> Registrar Primer Tipo de Sanción
-                                    </a>
-                                <?php endif; ?>
+                                <a href="create.php" class="btn btn-primary mt-2">
+                                    <i class="ri-add-line"></i> Registrar Primer Tipo de Sanción
+                                </a>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table id="sanctionTypesTable" class="table table-striped table-hover w-100">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>Tipo de Sanción</th>
+                                            <th>ID</th> <th>Tipo de Sanción</th>
                                             <th>Descripción</th>
-                                            <th>Acciones</th>
+                                            <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php foreach ($sanction_types as $sanctionType): ?>
-                                        <tr>
-                                            <td>
-                                                <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a href="view.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
-                                                    <a href="edit.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $sanctionType['sanction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($sanctionType['sanction_type_id']); ?></td>
+                                                <td>
+                                                    <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
+                                                <td class="text-center">
+                                                    <div class="btn-group" role="group">
+                                                        <a href="view.php?id=<?php echo htmlspecialchars($sanctionType['sanction_type_id']); ?>" class="btn btn-sm btn-outline-info" title="Ver detalles"><i class="ri-eye-line"></i></a>
+                                                        <a href="edit.php?id=<?php echo htmlspecialchars($sanctionType['sanction_type_id']); ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo htmlspecialchars($sanctionType['sanction_type_id']); ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
-
-                            <?php if ($total_pages > 1): ?>
-                            <nav aria-label="Paginación de tipos de sanción">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>">Anterior</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                    <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
-                                    </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>">Siguiente</a>
-                                    </li>
-                                </ul>
-                            </nav>
                             <?php endif; ?>
-                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -159,6 +146,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
+
 <script>
 let deleteSanctionTypeId = null;
 
@@ -171,7 +165,122 @@ function confirmDelete(id) {
 
 document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
     if (deleteSanctionTypeId) {
+        // Mantenemos la eliminación por GET/redirección para simplicidad, como ya estaba
         window.location.href = 'index.php?delete_id=' + deleteSanctionTypeId; 
+    }
+});
+
+// Inicialización de DataTables 🚀
+$(document).ready(function() {
+    
+    // Contenido del encabezado personalizado para la vista de Impresión
+    const customHeader = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
+            <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Listado de Tipos de Sanción</h2>
+        </div>
+    `;
+    
+    // Columnas a exportar: ID (0), Tipo (1), Descripción (2). Se excluye Acciones (3).
+    const exportColumns = [0, 1, 2]; 
+    
+    if ($.fn.DataTable) {
+        $('#sanctionTypesTable').DataTable({ 
+            responsive: true,
+            
+            // Configuración de los botones de exportación
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    orientation: 'portrait', 
+                    pageSize: 'LETTER', 
+                    exportOptions: {
+                        columns: exportColumns 
+                    },
+                    customize: function (doc) {
+                        doc.content.splice(0, 0, {
+                            text: 'Servicio Autonómo de Mercados de Bermúdez', 
+                            alignment: 'center', 
+                            style: 'header1'
+                        }, {
+                            text: 'Listado de Tipos de Sanción', 
+                            alignment: 'center', 
+                            style: 'header2'
+                        }, {
+                            text: '', // Espaciador
+                            margin: [0, 0, 0, 10]
+                        });
+
+                        doc.styles.header1 = { fontSize: 14, bold: true, margin: [0, 10, 0, 0] };
+                        doc.styles.header2 = { fontSize: 12, bold: true, margin: [0, 0, 0, 5] };
+
+                        const table = doc.content.find(content => content.table);
+                        if (table && table.table.body.length > 0) {
+                            const headerRow = table.table.body[0];
+                            headerRow.forEach(cell => {
+                                cell.fillColor = '#343a40'; 
+                                cell.color = '#ffffff';      
+                                cell.bold = true;
+                                cell.alignment = 'left'; 
+                            });
+                        }
+                        
+                        table.table.widths = Array(table.table.body[0].length).fill('*');
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                        columns: exportColumns 
+                    },
+                    title: 'Listado_TiposSancion_Seramer' 
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                        columns: exportColumns 
+                    },
+                    messageTop: customHeader, 
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('w-100').css('width', '100%');
+                        
+                        // Aplicar estilos para que el encabezado se imprima correctamente
+                        $(win.document.body).find('head').append(
+                            '<style>' +
+                                'table thead th { ' + 
+                                '   background-color: #343a40 !important; ' + 
+                                '   color: white !important; ' + 
+                                '   -webkit-print-color-adjust: exact; ' + 
+                                '   text-align: left !important;' + 
+                                '}' +
+                            '</style>'
+                        );
+                    }
+                },
+                'colvis' 
+            ],
+            // Configuración de idioma a español
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' 
+            },
+            // Orden por defecto
+            order: [[0, 'desc']], 
+            // Deshabilitar el ordenamiento en la columna de Acciones
+            "columnDefs": [
+                { "orderable": false, "targets": 3 },
+                // Ocultar la columna ID por defecto, pero permitir exportarla
+                { "visible": false, "targets": 0 }
+            ]
+        });
+    } else {
+        console.error("DataTables no está cargado.");
     }
 });
 </script>
