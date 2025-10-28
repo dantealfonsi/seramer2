@@ -18,7 +18,7 @@ class InfractionsController {
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
-        //$this->marketStallsModel = new MarketStallsModel();
+        $this->infractionsModel->createEconomicIndicatorsTable();
     }
 
     public function getStallsList() {
@@ -30,6 +30,15 @@ class InfractionsController {
         return $this->infractionsModel->getInfractionTypesList(); // Ajusta el método según tu modelo
     }    
 
+    public function getLatestEconomicIndicators()
+    {
+        return $this->infractionsModel->getLatestEconomicIndicators();
+    }
+
+    public function saveOrUpdateEconomicIndicators($ut_value, $euro_bcv_rate)
+    {
+        return $this->infractionsModel->saveOrUpdateEconomicIndicators($ut_value, $euro_bcv_rate);
+    }
     /**
      * Muestra la lista de infracciones con filtros y paginación.
      * @param array $params
@@ -137,11 +146,13 @@ class InfractionsController {
         //preparamos los datos nevesarios para crear la sancion
         if($result['success']){
             $sanctionsController = new SanctionsController();
+            $tasas = $this->infractionsModel->getLatestEconomicIndicators();
+            $fineAmount = $this->infractionsModel->calcularMultaMunicipal($data['infraction_type_id'], $tasas['euro_bcv_rate'],$tasas['ut_value']); 
             $sanctionData = [
                 'infraction_id'         => $result['id'],
                 'sanction_type_id'      => $data['sanction_type_id'] ?? null,
-                'fine_amount'           => $data['fine_amount'] ?? 0,
-                'fine_currency'         => $data['fine_currency'] ?? 'USD',
+                'fine_amount'           => $fineAmount ?? 0,
+                'fine_currency'         => $data['fine_currency'] ?? 'VES',
                 'effect_start_date'     => $data['infraction_datetime'] ?? date('Y-m-d'),
                 'effect_end_date'       => $data['effect_end_date'] ?? null,
                 'sanction_status'       => 'Imposed',
@@ -356,4 +367,20 @@ class InfractionsController {
                 return ['success' => false, 'message' => 'Acción no válida'];
         }
     }
+
+    public function contarSancionesPorSeveridad(int $awardeeId): array 
+    {
+        return $this->infractionsModel->contarSancionesPorSeveridad($awardeeId);
+    }
+
+    public function contarInfraccionesPorTipoAnual(int $awardeeId): array 
+    {
+        return $this->infractionsModel->contarInfraccionesPorTipoAnual($awardeeId);
+    }
+
+    public function contarTipoInfraccionEspecificoAnual(int $awardeeId, int $infractionTypeId): int
+    {
+        return $this->infractionsModel->contarTipoInfraccionEspecificoAnual($awardeeId,$infractionTypeId);
+    }
+
 }
