@@ -23,6 +23,7 @@ class InfractionsController {
         $this->NotificationController = new NotificationController();
         $this->infractionsModel->createEconomicIndicatorsTable();
 
+    }
     public function getStallsList() {
         return $this->infractionsModel->getStallsList();
     }
