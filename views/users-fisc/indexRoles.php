@@ -88,6 +88,12 @@ $permission_types = [
                                                     $char = substr($mask, $i, 1);
                                                     $isChecked = ($char !== '-');
                                                     $permission = $permission_types[$i];
+                                                    if($role['role_name'] == "administrador" && $_SESSION['user_nivel']=='1') {
+                                                        $isDisabled = "disabled";
+                                                    } else {
+                                                        $isDisabled = "";
+                                                    }                                                    
+
                                             ?>
                                                 <td class="text-center p-0">
                                                     <div class="form-check form-check-inline m-0">
@@ -97,7 +103,8 @@ $permission_types = [
                                                                data-role-id="<?php echo $role['role_id']; ?>"
                                                                data-index="<?php echo $i; ?>"
                                                                data-permission-char="<?php echo $permission; ?>"
-                                                               <?php echo $isChecked ? 'checked' : ''; ?>>
+                                                               <?php echo $isChecked ? 'checked' : ''; ?>
+                                                               <?php echo ' '. $isDisabled; ?>>
                                                     </div>
                                                 </td>
                                             <?php endfor; endif;?>
@@ -115,6 +122,8 @@ $permission_types = [
 </div>
 
 <script>
+/*inyectamos el nivel del usuario*/
+
 document.addEventListener('DOMContentLoaded', function() {
     const checkboxes = document.querySelectorAll('.permission-checkbox');
 

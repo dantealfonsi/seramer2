@@ -24,12 +24,13 @@ class UserModel {
         $this->conn = $database->getConnection();
     }
 
+
     /**
      * Obtiene la máscara de permisos del usuario dado su ID.
      * @param int $userId ID del usuario activo.
      * @return string|null La máscara de permisos (ej: 'rwx-rwx-rwx') o null si no se encuentra.
      */
-    public function getUserPermissionsMask(int $userId): ?string {        
+    public function getUserPermissionsMask(int $userId): ?string {
         $query = "
             SELECT 
                 fr.permissions_mask
@@ -53,6 +54,39 @@ class UserModel {
             
         } catch (PDOException $e) {
             error_log("Error al obtener máscara de permisos para el usuario ID {$userId}: " . $e->getMessage());
+            return null;
+        }
+    }    
+
+    /**
+     * Obtiene el ID único de la asignación de nivel del usuario (role_id).
+     *
+     * @param int $userId ID del usuario activo de la tabla 'users'.
+     * @return int|null El role_id o null si el usuario no tiene una asignación en la tabla.
+     */
+    public function getUserLevelId(int $userId): ?int {
+        $query = "
+            SELECT 
+                user_level_id,
+                role_id 
+            FROM 
+                fiscalization_user_level
+            WHERE 
+                user_id = :user_id;
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Retorna el ID como entero, o null si no se encuentra
+            return $result['role_id'] ? (int)$result['role_id'] : null;
+            
+        } catch (PDOException $e) {
+            error_log("Error al obtener role_id para el usuario ID {$userId}: " . $e->getMessage());
             return null;
         }
     }    

@@ -52,10 +52,12 @@ class AuthController {
             }
             }
             
-            $mask = $this->userModel->getUserPermissionsMask($user_data['id'] ?? null);
+            $mask = $this->userModel->getUserPermissionsMask($user_data['id'] ?? '---------');
+            $nivel = $this->userModel->getUserLevelId($user_data['id'] ?? 3); // Nivel por defecto 3 (usuario básico)
 
             if ($mask) {         
                 $_SESSION['user_permissions_mask'] = $mask;
+                $_SESSION['user_nivel'] = $nivel;
             }
 
             // Guardar datos del usuario en sesión
