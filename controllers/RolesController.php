@@ -10,7 +10,6 @@ class RolesController {
     function hasPermission(string $area, string $type): bool {
         // 1. Obtener la máscara de la sesión
         $mask = $_SESSION['user_permissions_mask'] ?? '---------'; 
-        
         // 2. Determinar la posición del carácter de permiso
         $position = -1;
         switch (strtoupper($area)) {

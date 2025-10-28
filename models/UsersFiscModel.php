@@ -55,7 +55,7 @@ class UsersFiscModel {
     }
 
     /**
-     * Actualiza la máscara de permisos de un rol.
+     * Actualiza la máscara de permisos de un rol. 
      */
     public function updateRolePermissions(int $roleId, string $newPermissionsMask): bool {
         $sql = "
