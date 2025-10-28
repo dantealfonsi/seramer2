@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/InspectorsModel.php';
 require_once __DIR__ . '/../models/UserModel.php';
+// Asegúrate de incluir cualquier otro modelo necesario (e.g., para listas desplegables)
 
 class InspectorsController {
     private $inspectorsModel;
@@ -11,10 +12,15 @@ class InspectorsController {
         $this->usersModel = new UserModel();
     }
 
-    // Muestra la lista de todos los inspectores
-    public function index() {
-        $inspectors = $this->inspectorsModel->getAll();
+    // Muestra la lista de todos los inspectores, acepta parámetros de filtrado
+    public function index($params = []) {
+        $filters = $params['filters'] ?? [];
+        
+        // La lista de inspectores se obtiene usando los filtros
+        $inspectors = $this->inspectorsModel->getAll($filters); 
+        
         $page_title = "Listado de Inspectores";
+        
         return [
             'success' => true,
             'inspectors' => $inspectors,
@@ -35,6 +41,7 @@ class InspectorsController {
 
     // Procesa el formulario de creación y guarda el nuevo inspector
     public function store($data) {
+        // ... (Tu código de store permanece igual) ...
         // Validación de datos
         $errors = [];
         if (empty(trim($data['inspector_code']))) {
@@ -104,6 +111,7 @@ class InspectorsController {
 
     // Procesa el formulario de edición y actualiza un inspector
     public function update($id, $data) {
+        // ... (Tu código de update permanece igual) ...
         // Validación de datos
         $errors = [];
         if (empty(trim($data['inspector_code']))) {
@@ -140,13 +148,13 @@ class InspectorsController {
         if ($this->inspectorsModel->delete($id)) {
             return [
                 'success' => true,
-                'message' => 'Inspector eliminado con éxito.',
+                'message' => 'Inspector desactivado con éxito.', // Se cambia a 'desactivado' para reflejar el modelo
                 'redirect' => 'index.php'
             ];
         } else {
             return [
                 'success' => false,
-                'message' => 'Ocurrió un error al eliminar el inspector.'
+                'message' => 'Ocurrió un error al desactivar el inspector.'
             ];
         }
     }

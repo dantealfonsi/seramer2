@@ -96,11 +96,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Nombre Completo:</th>
                                             <td><strong><?php echo htmlspecialchars($inspector['full_name']); ?></strong></td>
                                         </tr>
-                                        <tr>
-                                            <th>Usuario ID:</th>
-                                            <td><?php echo htmlspecialchars($inspector['user_id']); ?></td>
-                                        </tr>
-                                        <tr>
                                             <th>Teléfono:</th>
                                             <td><?php echo htmlspecialchars($inspector['phone_number'] ?? 'N/A'); ?></td>
                                         </tr>
