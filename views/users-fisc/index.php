@@ -11,6 +11,7 @@ $result = $usersController->indexFiscalizationUsers();
 
 // Extraer variables para la vista
 $users = $result['users'];
+$roles = $result['roles']; // ⬅️ Nuevo: roles disponibles
 $page_title = $result['page_title'];
 
 // Incluir header y layouts
@@ -48,6 +49,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Usuario (Login)</th>
                                             <th>Email</th>
                                             <th>Estado</th>
+                                            <th class="text-center" style="min-width: 300px;">Nivel de Fiscalización</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -69,6 +71,25 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <?php echo htmlspecialchars(ucfirst($status)); ?>
                                                     </span>
                                                 </td>
+                                                <td class="text-center">
+                                                    <?php foreach ($roles as $role): ?>
+                                                        <div class="form-check form-check-inline">
+                                                            <input class="form-check-input role-radio" 
+                                                                type="radio" 
+                                                                name="role_<?php echo htmlspecialchars($user['user_id']); ?>" 
+                                                                id="role_<?php echo htmlspecialchars($user['user_id'] . '_' . $role['role_id']); ?>" 
+                                                                value="<?php echo htmlspecialchars($role['role_id']); ?>"
+                                                                data-user-id="<?php echo htmlspecialchars($user['user_id']); ?>"
+                                                                data-role-name="<?php echo htmlspecialchars($role['role_name']); ?>"
+                                                                <?php echo ($user['role_id'] == $role['role_id']) ? 'checked' : ''; ?>
+                                                                <?php echo ($user['role_id'] == null && $role['role_name'] == 'oficina') ? 'checked' : ''; ?> 
+                                                                >
+                                                            <label class="form-check-label" for="role_<?php echo htmlspecialchars($user['user_id'] . '_' . $role['role_id']); ?>">
+                                                                <?php echo htmlspecialchars(ucfirst($role['role_name'])); ?>
+                                                            </label>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </td>                                                
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
@@ -81,5 +102,51 @@ include __DIR__ . '/../layouts/navigation-top.php';
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('.role-radio');
+
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const userId = this.getAttribute('data-user-id');
+            const roleId = this.value;
+            const roleName = this.getAttribute('data-role-name');
+
+            if (!confirm(`¿Estás seguro de que quieres asignar el rol '${roleName.toUpperCase()}' al usuario ID ${userId}?`)) {
+                // Si cancela, revertir la selección (es complejo, pero se puede simplificar)
+                // Por simplicidad, alertamos, pero en un entorno real deberías guardar la selección anterior.
+                // Revertir a un estado conocido para evitar que la interfaz mienta:
+                location.reload(); 
+                return;
+            }
+
+            // Realizar la petición AJAX
+            fetch('ajax_update_role.php', { // Tendrás que crear este archivo de endpoint
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `action=update_role&user_id=${userId}&role_id=${roleId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message);
+                } else {
+                    alert('❌ Error: ' + data.message);
+                    location.reload(); // Recargar si hay error para resetear la interfaz
+                }
+            })
+            .catch(error => {
+                console.error('Error en la conexión AJAX:', error);
+                alert('❌ Error de conexión al servidor.');
+                location.reload();
+            });
+        });
+    });
+});
+</script>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
