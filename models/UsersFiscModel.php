@@ -1,18 +1,87 @@
 <?php
 require_once __DIR__ . '/../config/Database.php';
-
 class UsersFiscModel {
     private $conn;
-    private $table = 'users';
 
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
     }
-    
+        
+    public function getAllRolesWithPermissions(): array {        
+        $query = "SELECT role_id, role_name, description, permissions_mask FROM fiscalization_roles ORDER BY role_id";
+        
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener roles: " . $e->getMessage());
+            return [];
+        }
+    }
 
+    /**
+     * Obtiene la máscara de permisos del usuario dado su ID.
+     * @param int $userId ID del usuario activo.
+     * @return string|null La máscara de permisos (ej: 'rwx-rwx-rwx') o null si no se encuentra.
+     */
+    public function getUserPermissionsMask(int $userId): ?string {        
+        $query = "
+            SELECT 
+                fr.permissions_mask
+            FROM 
+                fiscalization_user_level fule
+            INNER JOIN 
+                fiscalization_roles fr ON fule.role_id = fr.role_id
+            WHERE 
+                fule.user_id = :user_id;
+        ";
 
-    public function createTablesUsersFisc(): void {
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Retorna la máscara o null
+            return $result['permissions_mask'] ?? null;
+            
+        } catch (PDOException $e) {
+            error_log("Error al obtener máscara de permisos para el usuario ID {$userId}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Actualiza la máscara de permisos de un rol.
+     */
+    public function updateRolePermissions(int $roleId, string $newPermissionsMask): bool {
+        $sql = "
+            UPDATE fiscalization_roles
+            SET permissions_mask = :mask
+            WHERE role_id = :role_id;
+        ";
+        
+        // Asegurar que la máscara tenga el formato esperado (ej. 9 caracteres)
+        if (strlen($newPermissionsMask) > 10 || !preg_match('/^([rwx-]{3}){1,3}$/', $newPermissionsMask)) {
+            error_log("Máscara de permisos inválida: " . $newPermissionsMask);
+            return false;
+        }
+
+        try {
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':mask', $newPermissionsMask, PDO::PARAM_STR);
+            $stmt->bindParam(':role_id', $roleId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al actualizar la máscara de permisos: " . $e->getMessage());
+            return false;
+        }
+    }    
+
+    public function createTablesUsersFisc(): void {        
         $sqlRoles = "
         CREATE TABLE IF NOT EXISTS `fiscalization_roles` (
             `role_id` INT(11) NOT NULL AUTO_INCREMENT,

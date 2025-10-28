@@ -14,11 +14,9 @@ require_once __DIR__ . '/../public/utils/FileUpload.php';
 
 class InfractionsController {
     private $infractionsModel;
-    //public $marketStallsModel;
     
     public function __construct() {
         $this->infractionsModel = new InfractionsModel();
-        //$this->marketStallsModel = new MarketStallsModel();
     }
 
     public function getStallsList() {
