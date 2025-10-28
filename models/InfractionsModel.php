@@ -227,6 +227,7 @@ class InfractionsModel {
             $whereSQL = $conditions['whereSQL'];            
 
             $query = "SELECT i.*, 
+                             a.id as id_adjudicatory,
                              a.first_name as adjudicatory_name,
                              a.id_number as adjudicatory_document,
                              s.stall_number,
@@ -575,6 +576,7 @@ class InfractionsModel {
     public function getInfractionDetails($id) {
         try {
             $query = "SELECT i.*, 
+                             a.id as id_adjudicatory,
                              a.first_name as adjudicatory_name,
                              a.id_number as adjudicatory_document,
                              s.stall_number,
