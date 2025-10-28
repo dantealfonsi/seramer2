@@ -52,6 +52,12 @@ class AuthController {
             }
             }
             
+            $mask = $this->userModel->getUserPermissionsMask($user_data['id'] ?? null);
+
+            if ($mask) {         
+                $_SESSION['user_permissions_mask'] = $mask;
+            }
+
             // Guardar datos del usuario en sesión
             $_SESSION['user_id'] = $user_data['id'];
             $_SESSION['username'] = $user_data['username'];

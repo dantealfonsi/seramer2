@@ -1,2 +1,7 @@
 [26-Oct-2025 21:05:48 UTC] Error al obtener sanciones: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'st.sanction_type_name' in 'SELECT'
 [27-Oct-2025 17:22:31 UTC] Error al eliminar sanción: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status_logical' in 'SET'
+[28-Oct-2025 13:55:48 UTC] PHP Warning:  Undefined variable $rol in C:\Apache24\htdocs\seramer2\views\sanctions\index.php on line 91
+[28-Oct-2025 13:55:48 UTC] PHP Fatal error:  Uncaught Error: Call to a member function hasPermission() on null in C:\Apache24\htdocs\seramer2\views\sanctions\index.php:91
+Stack trace:
+#0 {main}
+  thrown in C:\Apache24\htdocs\seramer2\views\sanctions\index.php on line 91

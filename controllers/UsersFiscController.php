@@ -39,9 +39,14 @@ class UsersFiscController {
             return;
         }
 
-        $success = $this->model->updateRolePermissions($roleId, $newPermissionsMask);
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }        
 
-        if ($success) {
+        $success = $this->model->updateRolePermissions($roleId, $newPermissionsMask);
+        $_SESSION['user_permissions_mask'] = $newPermissionsMask;
+
+        if ($success) {            
             echo json_encode(['success' => true, 'message' => 'Permisos actualizados correctamente.']);
         } else {
             http_response_code(500);

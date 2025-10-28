@@ -5,8 +5,10 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/SanctionsController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
 
 $sanctionsController = new SanctionsController();
+$rol = new RolesController();
 
 // --- MAPAS DE TRADUCCIÓN Y ESTILOS ---
 $allowed_sanction_status = [
@@ -196,18 +198,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <?php echo htmlspecialchars($allowed_sanction_status[$sanction['sanction_status']] ?? 'Desconocido'); ?>
                                                     </span>
                                                 </td>
-                                                <td class="text-center">
-                                                    <div class="d-flex gap-2 justify-content-center">
-                                                        <a href="view.php?id=<?php echo htmlspecialchars($sanction['sanction_id']); ?>" class="btn btn-sm btn-info" title="Ver">
-                                                            <i class="ri-eye-line"></i>
-                                                        </a>
-                                                        <a href="edit.php?id=<?php echo htmlspecialchars($sanction['sanction_id']); ?>" class="btn btn-sm btn-warning" title="Editar">
-                                                            <i class="ri-edit-line"></i>
-                                                        </a>
-                                                        <button type="button" class="btn btn-sm btn-danger" title="Eliminar/Cancelar" onclick="confirmDelete(<?php echo htmlspecialchars($sanction['sanction_id']); ?>)">
-                                                            <i class="ri-delete-bin-line"></i>
-                                                        </button>
-                                                    </div>
+                                                <td class="text-end">
+                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
+                                                    <a href="view.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-info">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
+                                                    <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-warning">
+                                                        <i class="ri-edit-line"></i>
+                                                    </a>
+                                                    <?php endif; ?>
+                                                    <!-- <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button> -->
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
