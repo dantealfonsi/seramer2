@@ -5,8 +5,10 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/UsersFiscController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
 
 $controller = new UsersFiscController();
+$rol = new RolesController();
 $result = $controller->indexRoles();
 
 $roles = $result['roles'];
@@ -67,7 +69,9 @@ $permission_types = [
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php foreach ($roles as $role): ?>
+                                    <?php 
+                                    if ($rol->hasPermission('USERS_AUDIT', 'r')):
+                                    foreach ($roles as $role): ?>
                                         <tr data-role-id="<?php echo htmlspecialchars($role['role_id']); ?>">
                                             <td class="fw-bold"><?php echo htmlspecialchars(ucfirst($role['role_name'])); ?></td>
                                             <td class="text-monospace">
@@ -77,7 +81,8 @@ $permission_types = [
                                             </td>
                                             
                                             <?php 
-                                                // Iterar sobre los 9 permisos individuales
+                                                // Iterar sobre los 9 permisos individuales si tienes permiso
+                                                if ($rol->hasPermission('USERS_AUDIT', 'w')):
                                                 $mask = $role['permissions_mask'];
                                                 for ($i = 0; $i < 9; $i++): 
                                                     $char = substr($mask, $i, 1);
@@ -95,10 +100,10 @@ $permission_types = [
                                                                <?php echo $isChecked ? 'checked' : ''; ?>>
                                                     </div>
                                                 </td>
-                                            <?php endfor; ?>
+                                            <?php endfor; endif;?>
                                             
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php endforeach; endif;?>
                                 </tbody>
                             </table>
                         </div>

@@ -4,8 +4,11 @@ session_start();
 
 // Incluir el controlador
 require_once __DIR__ . '/../../controllers/InfractionsController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
+
 
 $infractionsController = new InfractionsController();
+$rol = new RolesController();
 
 // 1. Obtener la tasa actual (Asume que el controlador tiene un método para esto)
 $economicIndicators = $infractionsController->getLatestEconomicIndicators();
@@ -87,7 +90,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <?php if ($can_create_infraction): ?>
+                        <?php if ($can_create_infraction && $rol->hasPermission('INFRACTIONS', 'w')): ?>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nueva Infracción
                         </a>
@@ -272,9 +275,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </span>
                                             </td>
                                                 <td class="text-center">
+                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
                                                     <a href="view.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
+                                                    <?php endif; ?>
+                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
                                                     <a href="edit.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                         <i class="ri-edit-line"></i>
                                                     </a>
@@ -284,6 +290,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                             onclick="confirmDelete(<?php echo $infraction['infraction_id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
+                                                    <?php endif; ?>
                                                 </td>
                                             </td>
                                         </tr>
