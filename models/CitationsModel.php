@@ -14,6 +14,7 @@ class CitationsModel {
     }
 
        // Nuevo método para actualizar el estado y la fecha de la citación
+// Nuevo método para actualizar el estado y la fecha de la citación (Mantenido)
     public function updateStatusAndDate($id, $status, $new_datetime = null) {
         try {
             $sql = "UPDATE " . $this->table . " SET citation_status = :status";
@@ -41,37 +42,59 @@ class CitationsModel {
     }
 
     /**
-     * Obtiene todas las citaciones con paginación y opción de búsqueda.
-     * @param int $page La página actual.
-     * @param int $limit El número de registros por página.
+     * Obtiene citaciones. Si $limit es 0, trae todos los registros (para DataTables).
+     * @param int $page La página actual (ignorado si $limit=0).
+     * @param int $limit El número de registros por página (0 para todos).
      * @param string $search Un término de búsqueda opcional.
      * @return array Un arreglo de citaciones.
      */
     public function getAll($page, $limit, $search) {
-        $offset = ($page - 1) * $limit;
-        $sql = "SELECT * FROM citations";
+        $sql = "
+            SELECT 
+                c.*, 
+                c.infraction_id, 
+                c.mediator_user_id
+            FROM 
+                " . $this->table . " c
+            /* Si necesitas el nombre real del mediador o la descripción de la infracción, 
+            deberías hacer un JOIN a las tablas 'infractions' e 'inspectors' aquí */
+        ";
         $params = [];
+        $where = [];
 
         if (!empty($search)) {
-            // Se asume que se busca por 'location' y 'citation_status'
-            $sql .= " WHERE location LIKE ? OR citation_status LIKE ?";
+            // Asume que se busca por 'location' y 'citation_status' (y se mantiene la misma lógica de búsqueda)
+            $where[] = "(c.location LIKE ? OR c.citation_status LIKE ?)";
             $params[] = "%$search%";
             $params[] = "%$search%";
         }
+        
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(' AND ', $where);
+        }
 
-        $sql .= " ORDER BY citation_datetime DESC LIMIT ? OFFSET ?";
-        $params[] = $limit;
-        $params[] = $offset;
+        $sql .= " ORDER BY c.citation_datetime DESC";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // *** CAMBIO CLAVE: Omitir LIMIT/OFFSET si el límite es 0 ***
+        if ((int)$limit > 0) {
+            $offset = ($page - 1) * $limit;
+            $sql .= " LIMIT ? OFFSET ?";
+            $params[] = $limit; // Se agrega el límite como parámetro
+            $params[] = $offset; // Se agrega el offset como parámetro
+        }
+        
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+             error_log("Error en CitationsModel::getAll: " . $e->getMessage());
+             return []; // Devuelve un array vacío en caso de error
+        }
     }
 
     /**
-     * Cuenta el número total de citaciones.
-     * @param string $search Un término de búsqueda opcional.
-     * @return int El número total de registros.
+     * Cuenta el número total de citaciones. (Mantenido)
      */
     public function countAll($search) {
         $sql = "SELECT COUNT(*) FROM citations";
@@ -86,19 +109,15 @@ class CitationsModel {
         return $stmt->fetchColumn();
     }
 
-    /**
-     * Obtiene una citación por su ID.
-     * @param int $id El ID de la citación.
-     * @return array|false La citación encontrada o false si no existe.
-     */
+    // ... (El resto de los métodos getById, create, update, delete, getInfractionsList, getMediatorsList se mantienen iguales)
+    
     public function getById($id) {
         $stmt = $this->db->prepare("SELECT * FROM citations WHERE citation_id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Crea una nueva citación en la base de datos.
+     /* Crea una nueva citación en la base de datos.
      * @param array $data Los datos de la citación a crear.
      * @return array El resultado de la operación.
      */

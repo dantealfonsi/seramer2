@@ -166,7 +166,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         placeholder="Ej: 42" 
                                         value="<?php echo htmlspecialchars($_GET['awardee_id'] ?? ''); ?>">
                                 </div>
-
                                 <div class="col-12 d-flex justify-content-end align-items-end">
                                     <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
                                     <button type="submit" class="btn btn-info">

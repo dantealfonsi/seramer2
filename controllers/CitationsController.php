@@ -11,21 +11,31 @@ class CitationsController {
     }
 
     /**
-     * Muestra una lista de citaciones con filtros y paginación.
+     * Muestra una lista de citaciones para DataTables (sin paginación en el servidor).
      */
     public function index($params = []) {
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
+        // Ignoramos $page y $limit, ya que DataTables maneja la paginación en el cliente.
         $search = isset($params['search']) ? trim($params['search']) : '';
         
-        $citations = $this->citationsModel->getAll($page, $limit, $search);
-        $total = (int)$this->citationsModel->countAll($search);
-        $totalPages = (int)ceil($total / $limit);
-                
+        // **IMPORTANTE:** Aquí asumimos que CitationsModel tiene un método 'getAllForDataTables' 
+        // o modificamos getAll para que ignore $page y $limit si se envían valores nulos/cero.
+        // Asumiendo que modificaremos el llamado al modelo:
+        
+        // Llama a getAll, pero ahora pasamos 0 o null para deshabilitar la paginación en el modelo.
+        // ¡Necesitarás actualizar CitationsModel.php para manejar estos valores!
+        $citations = $this->citationsModel->getAll(0, 0, $search); 
+        
+        // Ya no necesitamos $total ni $totalPages. $total_records es count($citations).
+        $total = count($citations); 
+        
         return [
+            // Incluimos una clave 'success' para estandarizar la respuesta
+            'success' => true,
             'citations' => $citations,
-            'current_page' => $page,
-            'total_pages' => $totalPages,
+            // Las siguientes claves se mantienen, pero con valores simplificados/basados en el total.
+            // La vista anterior las necesitaba, aunque DataTables las ignorará.
+            'current_page' => 1,
+            'total_pages' => 1,
             'total_records' => $total,
             'search' => $search,
             'page_title' => 'Gestión de Citaciones',

@@ -21,40 +21,80 @@ class SanctionsModel {
      * Obtiene todos los registros de sanciones.
      * @return array
      */
-     public function index($page = 1, $limit = 10, $search = '') {
+public function index($filters = []) {
         try {
-            $offset = ($page - 1) * $limit;
             $query = "SELECT s.*, 
                              i.infraction_description AS infraction_description, 
                              st.severity_name AS severity_name
                       FROM " . $this->table . " s
                       JOIN infractions i ON s.infraction_id = i.infraction_id
                       JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
-                      ";
+                      WHERE 1=1 "; // Cláusula base para empezar a añadir filtros
             
             $params = [];
-            if (!empty($search)) {
-                $query .= " AND (i.infraction_description LIKE :search OR st.severity_name LIKE :search)";
-                $params[':search'] = '%' . $search . '%';
-            }
-            
-            $query .= " ORDER BY s.imposition_date DESC LIMIT :limit OFFSET :offset";
 
+            // --- APLICACIÓN DE FILTROS ---
+
+            // 1. Filtrar por ID de Sanción
+            if (!empty($filters['sanction_id'])) {
+                $query .= " AND s.sanction_id = :sanction_id";
+                $params[':sanction_id'] = $filters['sanction_id'];
+            }
+
+            // 2. Filtrar por Estado
+            if (!empty($filters['sanction_status'])) {
+                $query .= " AND s.sanction_status = :sanction_status";
+                $params[':sanction_status'] = $filters['sanction_status'];
+            }
+
+            // 3. Filtrar por Fecha Desde (imposition_date)
+            if (!empty($filters['date_from'])) {
+                $query .= " AND s.imposition_date >= :date_from";
+                // Asegurar que la fecha sea YYYY-MM-DD para la BD
+                $params[':date_from'] = $filters['date_from']; 
+            }
+
+            // 4. Filtrar por Fecha Hasta (imposition_date)
+            if (!empty($filters['date_to'])) {
+                $query .= " AND s.imposition_date <= :date_to";
+                // Añadir ' 23:59:59' si la columna es datetime, para incluir todo el último día
+                $params[':date_to'] = $filters['date_to']; 
+            }
+
+            // --- ORDENAMIENTO y EJECUCIÓN ---
+            
+            $query .= " ORDER BY s.imposition_date DESC";
+
+            // NOTA: Se eliminaron LIMIT y OFFSET de esta versión para que DataTables pueda 
+            // manejar toda la colección de datos filtrada en el cliente, si no usas Server-Side Processing.
+            
             $stmt = $this->conn->prepare($query);
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            
+            // Enlazar parámetros
             foreach ($params as $key => &$val) {
-                $stmt->bindParam($key, $val);
+                // Usamos bindParam para que pueda manejar cualquier tipo de dato
+                $stmt->bindParam($key, $val); 
             }
 
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $sanctions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Retornar un array estandarizado en caso de éxito
+            return [
+                'success' => true,
+                'sanctions' => $sanctions
+            ];
+
         } catch (PDOException $exception) {
-            error_log("Error al obtener sanciones: " . $exception->getMessage());
-            return [];
+            error_log("Error al obtener sanciones con filtros: " . $exception->getMessage());
+            // Retornar un array estandarizado en caso de error
+            return [
+                'success' => false,
+                'message' => 'Error de la base de datos al filtrar sanciones: ' . $exception->getMessage(),
+                'sanctions' => []
+            ];
         }
     }
-
     /**
      * Crea un nuevo registro de sanción.
      * @param array $data
