@@ -1,15 +1,64 @@
 <?php
-// views/reports/statistical_reports.php - COMPLETO con Inclusión de Reporte Interno
+// views/reports/statistical_reports.php - CÓDIGO FINAL CON TODOS LOS CAMBIOS Y CORRECCIONES DE LÓGICA
 session_start();
 
 $page_title = "Centro de Reportes y Estadísticas";
-$selected_report = $_GET['report_type'] ?? null; // Variable para detectar si hay un reporte que cargar
+// Variable para detectar si hay un reporte que cargar (report_type) y su modo (report_mode)
+$selected_report = $_GET['report_type'] ?? null;
+$selected_mode_param = $_GET['report_mode'] ?? null; 
 
-// Incluir layouts
-require_once __DIR__ . '/../layouts/header.php';
-include __DIR__ . '/../layouts/navigation.php';
-include __DIR__ . '/../layouts/navigation-top.php';
+// Incluir layouts (Asegúrate que estas rutas sean correctas)
+require_once __DIR__ . '/../layouts/header.php'; 
+include __DIR__ . '/../layouts/navigation.php'; // Navbar lateral
+include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
 ?>
+
+<style>
+/* Por defecto, el encabezado SERAMER está oculto en la pantalla */
+.print-header {
+    display: none;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+@media print {
+    /* 1. Ocultar todos los elementos de la interfaz (navbars, formulario, botones) */
+    body * {
+        visibility: hidden;
+    }
+
+    /* 2. Mostrar solo el contenedor del reporte (#reportContainer) y su contenido */
+    #reportContainer, #reportContainer * {
+        visibility: visible;
+    }
+
+    /* 3. Posicionar el reporte en la esquina superior de la página impresa */
+    #reportContainer {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+    }
+    
+    /* 4. Mostrar y estilizar el encabezado de impresión */
+    .print-header {
+        display: block; 
+        color: #343a40; /* Color oscuro para impresión */
+        border-bottom: 2px solid #343a40; 
+        padding-top: 20px;
+    }
+
+    /* 5. Ocultar los botones de "Imprimir" y "Generar Reporte" dentro del contenedor de resultados */
+    #reportContainer .btn {
+        display: none !important;
+    }
+}
+</style>
 
 <div class="main-content">
     <div class="container-fluid">
@@ -27,19 +76,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form id="reportForm" action="" method="GET" class="card p-3 mb-4 shadow-sm">
                             <h6 class="card-title mb-3"><i class="ri-settings-4-line me-1"></i> Configuración de Reporte</h6>
                             <div class="row g-3 align-items-end">
-                                
                                 <div class="col-md-6">
                                     <label for="report_type" class="form-label small">1. Seleccione el Tipo de Reporte</label>
                                     <select class="form-select" id="report_type" name="report_type">
                                         <option value="">-- Elija un Reporte --</option>
                                         <option value="activity_history" <?php echo ($selected_report == 'activity_history') ? 'selected' : ''; ?>>Historial de Actividad (Tabla)</option>
+                                        <option value="infraction_count" <?php echo ($selected_report == 'infraction_count') ? 'selected' : ''; ?>>Conteo de Infracciones por Tiempo (Gráfico) *</option>
                                         <option value="inspector_performance" <?php echo ($selected_report == 'inspector_performance') ? 'selected' : ''; ?>>Desempeño de Inspectores (Estadístico)</option>
-                                        <option value="detailed_inspections" <?php echo ($selected_report == 'detailed_inspecciones') ? 'selected' : ''; ?>>Detalle de Inspecciones (Tabla)</option>
+                                        <option value="detailed_inspections" <?php echo ($selected_report == 'detailed_inspections') ? 'selected' : ''; ?>>Detalle de Inspecciones (Tabla)</option>
                                         <option value="payment_status" <?php echo ($selected_report == 'payment_status') ? 'selected' : ''; ?>>Estatus de Pagos (Gráfico)</option>
                                         <option value="market_summary" <?php echo ($selected_report == 'market_summary') ? 'selected' : ''; ?>>Resumen por Mercado (Tabla)</option>
                                     </select>
                                 </div>
-                                
                                 <div class="col-md-6">
                                     <label for="report_mode" class="form-label small">2. Seleccione el Modo o Alcance</label>
                                     <select class="form-select" id="report_mode" name="report_mode" disabled>
@@ -51,10 +99,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div id="dynamicFiltersArea" class="row g-3 mt-3 p-3 border rounded" style="display: none; background-color: #f8f9fa;">
                                 <div class="col-12">
                                     <h6 class="mb-3 text-primary"><i class="ri-filter-line me-1"></i> Filtros Específicos para el Reporte Seleccionado:</h6>
-                                    
                                     <div class="row g-3" id="filtersContent">
-                                        </div>
-                                    
+                                    </div>
                                 </div>
                             </div>
                             
@@ -63,35 +109,49 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <button type="submit" class="btn btn-primary" id="generateReportBtn" disabled>
                                         <i class="ri-arrow-right-circle-line"></i> Generar Reporte
                                     </button>
+                                    
+                                    <?php if ($selected_report): ?>
+                                    <button type="button" class="btn btn-secondary ms-2" onclick="window.print()">
+                                        <i class="ri-printer-line"></i> Imprimir/Exportar PDF
+                                    </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </form>
                     </div>
                     
-                    <div class="card-body">
-                        <h5 class="mb-3 text-muted"><i class="ri-information-line me-2"></i> Instrucciones</h5>
-                        <p class="text-muted">Seleccione las opciones y pulse "Generar Reporte". El resultado aparecerá a continuación.</p>
-                    </div>
-
                     <?php if ($selected_report): ?>
-                        <div class="card-footer" id="reportContainer">
+                        <div class="card-footer p-4" id="reportContainer">
+                            
+                            <div class="print-header">
+                                <h1 style="margin: 0; color: #000080; font-size: 24pt;">SERAMER</h1>
+                                <p style="margin: 5px 0 0; font-size: 12pt;">Reporte Estadístico Generado</p>
+                            </div>
+                            
                             <div class="card-header border-bottom">
                                 <h5 class="card-title dani-title text-primary"><i class="ri-file-chart-line me-1"></i> Resultados del Reporte Seleccionado</h5>
                             </div>
                             <?php
-                            // Mapeo del tipo de reporte a su archivo de contenido (SIN LAYOUTS).
                             $report_content_map = [
-                                'activity_history' => 'activityHistory.php', // ** ESTE ES EL ARCHIVO QUE DEBES CREAR **
+                                'activity_history' => 'activityHistory.php', // Nombre de archivo de ejemplo
+                                'infraction_count' => 'infraction_count_chart.php',
                                 'inspector_performance' => 'performance_content.php',
+                                'detailed_inspections' => 'detailed_inspections_content.php',
+                                'payment_status' => 'payment_status_content.php',
+                                'market_summary' => 'market_summary_content.php',
                             ];
 
                             if (isset($report_content_map[$selected_report]) && file_exists(__DIR__ . '/' . $report_content_map[$selected_report])) {
-                                // INCLUYE el archivo de contenido aquí, cargando la tabla
                                 include __DIR__ . '/' . $report_content_map[$selected_report];
                             } else {
                                 echo '<div class="card-body"><p class="text-danger">Error: Tipo de reporte no válido o el archivo de contenido (' . htmlspecialchars($report_content_map[$selected_report] ?? 'N/A') . ') no se encontró.</p></div>';
                             }
                             ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="card-body">
+                            <h5 class="mb-3 text-muted"><i class="ri-information-line me-2"></i> Instrucciones</h5>
+                            <p class="text-muted">Seleccione las opciones y pulse "Generar Reporte". El resultado aparecerá a continuación.</p>
                         </div>
                     <?php endif; ?>
                     </div>
@@ -109,6 +169,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
+## 💡 Lógica JavaScript (Corregida)
+
+```javascript
 <script>
 $(document).ready(function() {
     const reportTypeSelect = $('#report_type');
@@ -117,12 +180,18 @@ $(document).ready(function() {
     const filtersContent = $('#filtersContent');
     const generateReportBtn = $('#generateReportBtn');
     
-    // 1. Opciones de Modos (Filtro Principal) para cada Reporte
+    // 1. Opciones de Modos (Filtro Principal)
     const reportModes = {
         activity_history: { 
             'date_range': 'Por Rango de Fechas',
             'user': 'Por Usuario Específico',
             'all': 'Ver todos los registros'
+        },
+        infraction_count: { 
+            'date_range': 'Por Rango de Fechas (Diario)',
+            'weekly': 'Por Rango de Fechas (Semanal)',
+            'last_6_months': 'Últimos 6 Meses (Por Mes)',
+            'annual': 'Por Año Específico',
         },
         inspector_performance: {
             'period': 'Por Período (Año/Mes)',
@@ -133,11 +202,11 @@ $(document).ready(function() {
             'period': 'Filtrar por Período (Año/Mes)',
         },
         payment_status: {
-            'year': 'Resumen Anual',
-            'quarter': 'Resumen Trimestral',
+            'year': 'Resumen Anual (Año)',
+            'quarter': 'Resumen Trimestral (Año)',
         },
         market_summary: {
-            'market': 'Por Mercado Específico',
+            'market': 'Por Mercado Específico (Sin filtro)',
             'period': 'Por Período (Año/Mes)',
         }
     };
@@ -182,6 +251,15 @@ $(document).ready(function() {
                 </select>
             </div>
         `,
+        year: `
+            <div class="col-md-4">
+                <label for="filter_year" class="form-label small">Seleccione el Año</label>
+                <select class="form-select" id="filter_year" name="filter_year">
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+        `,
         none: `<div class="col-12"><p class="text-muted mb-0">No se requieren filtros adicionales para este modo.</p></div>`
     };
 
@@ -189,10 +267,7 @@ $(document).ready(function() {
     reportTypeSelect.on('change', function() {
         const selectedReport = $(this).val();
         
-        reportModeSelect.empty();
-        reportModeSelect.append('<option value="">-- Seleccione el Modo --</option>');
-        reportModeSelect.prop('disabled', true);
-        
+        reportModeSelect.empty().append('<option value="">-- Seleccione el Modo --</option>').prop('disabled', true);
         dynamicFiltersArea.slideUp();
         filtersContent.empty();
         generateReportBtn.prop('disabled', true);
@@ -218,25 +293,59 @@ $(document).ready(function() {
 
             let filterHtml = filterTemplates.none; 
             
-            // Lógica de aparición de filtros
-            if (selectedReport === 'activity_history') {
-                if (selectedMode === 'date_range') {
-                    filterHtml = filterTemplates.date_range;
-                } else if (selectedMode === 'user') {
-                    filterHtml = filterTemplates.user;
-                }
-            } else if (selectedMode === 'period') {
-                filterHtml = filterTemplates.period;
-            } else if (selectedMode === 'inspector') {
-                filterHtml = filterTemplates.user; 
+            // Lógica de aparición de filtros (USANDO SWITCH)
+            switch (selectedReport) {
+                case 'activity_history':
+                    if (selectedMode === 'date_range') {
+                        filterHtml = filterTemplates.date_range;
+                    } else if (selectedMode === 'user') {
+                        filterHtml = filterTemplates.user;
+                    }
+                    break;
+                case 'infraction_count': 
+                    if (selectedMode === 'date_range' || selectedMode === 'weekly') {
+                        filterHtml = filterTemplates.date_range;
+                    } else if (selectedMode === 'annual') {
+                        filterHtml = filterTemplates.year;
+                    }
+                    // 'last_6_months' usa filterTemplates.none
+                    break;
+                case 'inspector_performance':
+                    if (selectedMode === 'period') {
+                        filterHtml = filterTemplates.period;
+                    } else if (selectedMode === 'inspector') {
+                        filterHtml = filterTemplates.user; 
+                    }
+                    break;
+                case 'detailed_inspections':
+                    if (selectedMode === 'period') {
+                        filterHtml = filterTemplates.period;
+                    }
+                    // 'all' usa filterTemplates.none
+                    break;
+                case 'payment_status':
+                    if (selectedMode === 'year') {
+                        filterHtml = filterTemplates.year; 
+                    } else if (selectedMode === 'quarter') {
+                        filterHtml = filterTemplates.year; // O period, dependiendo de lo que requiera tu lógica de backend.
+                    }
+                    break;
+                case 'market_summary':
+                    if (selectedMode === 'period') {
+                        filterHtml = filterTemplates.period;
+                    }
+                    // 'market' usa filterTemplates.none
+                    break;
             }
             
             filtersContent.html(filterHtml);
             
-            if (selectedMode !== 'all' && selectedMode !== 'none') {
-                 dynamicFiltersArea.slideDown();
+            // Mostrar u ocultar el área de filtros dinámicos
+            const needsFilters = (filterHtml !== filterTemplates.none);
+            if (needsFilters) {
+                dynamicFiltersArea.slideDown();
             } else {
-                 dynamicFiltersArea.slideUp();
+                dynamicFiltersArea.slideUp();
             }
         } else {
             dynamicFiltersArea.slideUp();
@@ -263,18 +372,48 @@ $(document).ready(function() {
                     reportModeSelect.val(selectedMode);
                     generateReportBtn.prop('disabled', false); // Habilitar el botón
                     
-                    // 3. Mostrar y precargar filtros dinámicos
+                    // 3. Mostrar y precargar filtros dinámicos (Lógica de precarga completa)
                     let filterHtml = filterTemplates.none; 
-                    if (selectedReport === 'activity_history') {
-                        if (selectedMode === 'date_range') {
-                            filterHtml = filterTemplates.date_range;
-                        } else if (selectedMode === 'user') {
-                            filterHtml = filterTemplates.user;
-                        }
-                    } else if (selectedMode === 'period') {
-                        filterHtml = filterTemplates.period;
-                    } else if (selectedMode === 'inspector') {
-                        filterHtml = filterTemplates.user; 
+                    
+                    switch (selectedReport) {
+                        case 'activity_history':
+                            if (selectedMode === 'date_range') {
+                                filterHtml = filterTemplates.date_range;
+                            } else if (selectedMode === 'user') {
+                                filterHtml = filterTemplates.user;
+                            }
+                            break;
+                        case 'infraction_count': 
+                            if (selectedMode === 'date_range' || selectedMode === 'weekly') {
+                                filterHtml = filterTemplates.date_range;
+                            } else if (selectedMode === 'annual') {
+                                filterHtml = filterTemplates.year;
+                            }
+                            break;
+                        case 'inspector_performance':
+                            if (selectedMode === 'period') {
+                                filterHtml = filterTemplates.period;
+                            } else if (selectedMode === 'inspector') {
+                                filterHtml = filterTemplates.user; 
+                            }
+                            break;
+                        case 'detailed_inspections':
+                            if (selectedMode === 'period') {
+                                filterHtml = filterTemplates.period;
+                            }
+                            break;
+                        case 'payment_status':
+                            if (selectedMode === 'year') {
+                                filterHtml = filterTemplates.year; 
+                            } else if (selectedMode === 'quarter') {
+                                filterHtml = filterTemplates.year; 
+                            }
+                            break;
+                        case 'market_summary':
+                            if (selectedMode === 'period') {
+                                filterHtml = filterTemplates.period;
+                            }
+                            break;
                     }
                     
                     filtersContent.html(filterHtml);
@@ -287,11 +426,12 @@ $(document).ready(function() {
                         }
                     });
                     
-                    // Mostrar área de filtros si no es modo 'all' o 'none'
-                    if (selectedMode !== 'all' && selectedMode !== 'none') {
-                         dynamicFiltersArea.slideDown();
+                    // Mostrar área de filtros si es necesario
+                    const needsFilters = (filterHtml !== filterTemplates.none);
+                    if (needsFilters) {
+                        dynamicFiltersArea.slideDown();
                     } else {
-                         dynamicFiltersArea.hide();
+                        dynamicFiltersArea.hide();
                     }
                 }
             }

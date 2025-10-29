@@ -104,7 +104,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body border-bottom">
                         <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado de Columnas (No DataTables)</h6>
+                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado</h6>
                             <div class="row g-3">
                                 
                                 <div class="col-md-3">

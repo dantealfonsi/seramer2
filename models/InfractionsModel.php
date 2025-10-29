@@ -781,4 +781,65 @@ class InfractionsModel {
             ];
         }
     }
+
+public function countInfractionsByMode($startDate, $endDate, $mode = 'day') {
+        // 1. Definir la lógica de agrupación y la etiqueta (label)
+        $grouping = '';
+        $labelSelect = '';
+        
+        switch ($mode) {
+            case 'month':
+                // Agrupa por Mes y Año
+                $grouping = 'DATE_FORMAT(infraction_datetime, "%Y-%m")'; 
+                $labelSelect = 'DATE_FORMAT(infraction_datetime, "%m/%Y") AS label';
+                break;
+            case 'week':
+                // Agrupa por el número de semana del año (Usando 3 para ISO 8601: Lunes es el primer día)
+                $grouping = 'YEAR(infraction_datetime), WEEK(infraction_datetime, 3)';
+                $labelSelect = 'CONCAT("Semana ", WEEK(infraction_datetime, 3), " - ", YEAR(infraction_datetime)) AS label';
+                break;
+            case 'day':
+            default:
+                // Agrupa por Día
+                $grouping = 'DATE(infraction_datetime)';
+                $labelSelect = 'DATE_FORMAT(infraction_datetime, "%d/%m/%Y") AS label';
+                break;
+        }
+
+        // 2. Construir la consulta SQL
+        $sql = "
+            SELECT 
+                {$labelSelect},
+                COUNT(infraction_id) AS count
+            FROM 
+                {$this->table} -- Usamos la propiedad $this->table
+            WHERE 
+                status_logical = 'active'
+                AND DATE(infraction_datetime) BETWEEN :start_date AND :end_date
+            GROUP BY 
+                {$grouping}
+            ORDER BY 
+                infraction_datetime ASC
+        ";
+
+        try {
+            // 3. Preparar y ejecutar la consulta usando $this->conn
+            $stmt = $this->conn->prepare($sql);
+            
+            // Asignar parámetros
+            $stmt->bindParam(':start_date', $startDate);
+            $stmt->bindParam(':end_date', $endDate);
+            
+            $stmt->execute();
+            
+            // Devolver los resultados
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            // Manejo de errores
+            error_log("Error al contar infracciones por modo: " . $e->getMessage());
+            return [];
+        }
+    }
+
 }
