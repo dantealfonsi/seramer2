@@ -48,7 +48,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-add-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <i class="ri-add-line me-1"
+                                style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
@@ -56,12 +57,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form action="create.php" method="POST">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label for="sanction_type_name" class="form-label">Nombre del Tipo de Sanción</label>
-                                    <input type="text" class="form-control" id="sanction_type_name" name="sanction_type_name" value="<?php echo htmlspecialchars($form_data['sanction_type_name'] ?? ''); ?>" required>
+                                    <label for="sanction_type_name" class="form-label">Nombre del Tipo de
+                                        Sanción</label>
+                                    <input onkeyup="validarText('sanction_type_name',3,'errorTextSanctionTypeName')"
+                                        type="text" class="form-control" id="sanction_type_name"
+                                        name="sanction_type_name"
+                                        value="<?php echo htmlspecialchars($form_data['sanction_type_name'] ?? ''); ?>"
+                                        required>
+                                    <div id="errorTextSanctionTypeName" style="color: red;"></div>
                                 </div>
                                 <div class="col-md-6">
                                     <label for="description" class="form-label">Descripción</label>
-                                    <input type="text" class="form-control" id="description" name="description" value="<?php echo htmlspecialchars($form_data['description'] ?? ''); ?>">
+                                    <input onkeyup="validarText('description',8,'errorTextDescription')" type="text"
+                                        class="form-control" id="description" name="description"
+                                        value="<?php echo htmlspecialchars($form_data['description'] ?? ''); ?>">
+                                    <div id="errorTextDescription" style="color: red;"></div>
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary">Registrar Tipo de Sanción</button>

@@ -147,7 +147,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="fine_currency" class="form-label">Moneda</label>
-                                    <input type="text" class="form-control" id="fine_currency" name="fine_currency" value="<?php echo htmlspecialchars($sanction['fine_currency'] ?? ''); ?>">
+                                    <input onkeyup="validarText('fine_currency',3,'errorTextFineCurrency')" type="text" class="form-control" id="fine_currency" name="fine_currency" value="<?php echo htmlspecialchars($sanction['fine_currency'] ?? ''); ?>">
+                                    <div id="errorTextFineCurrency" style="color: red;"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="effect_start_date" class="form-label">Fecha de Inicio de Efecto</label>
@@ -178,7 +179,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="sanction_observations" class="form-label">Observaciones</label>
-                                    <textarea class="form-control" id="sanction_observations" name="sanction_observations" rows="4"><?php echo htmlspecialchars($sanction['sanction_observations'] ?? ''); ?></textarea>
+                                    <textarea onKeyup="validarText('sanction_observations',8,'errorTextSanctionObservations')" class="form-control" id="sanction_observations" name="sanction_observations" rows="4"><?php echo htmlspecialchars($sanction['sanction_observations'] ?? ''); ?></textarea>
+                                    <div id="errorTextSanctionObservations" style="color: red;"></div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">

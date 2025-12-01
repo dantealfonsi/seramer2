@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'full_name' => trim($_POST['full_name'] ?? ''),
         'phone_number' => trim($_POST['phone_number'] ?? ''),
         'email' => trim($_POST['email'] ?? ''),
-        'is_active' => (bool)($_POST['is_active'] ?? 1),
+        'is_active' => (bool) ($_POST['is_active'] ?? 1),
     ];
 
     $result = $inspectorsController->update($data['inspector_id'], $data);
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Cargar el inspector y datos para el formulario
-$inspectorId = isset($_GET['id']) ? (int)$_GET['id'] : null;
+$inspectorId = isset($_GET['id']) ? (int) $_GET['id'] : null;
 if (!$inspectorId) {
     $_SESSION['flash_message'] = [
         'type' => 'danger',
@@ -83,7 +83,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-edit-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <i class="ri-edit-line me-1"
+                                style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="index.php" class="btn btn-secondary">
@@ -104,29 +105,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         ?>
 
                         <form method="POST" action="edit.php">
-                            <input type="hidden" name="inspector_id" value="<?php echo htmlspecialchars($inspector['inspector_id']); ?>">
+                            <input type="hidden" name="inspector_id"
+                                value="<?php echo htmlspecialchars($inspector['inspector_id']); ?>">
 
                             <div class="mb-3">
-                                <label for="inspector_code" class="form-label">Código de Inspector <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="inspector_code" name="inspector_code" value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" required>
+                                <label for="inspector_code" class="form-label">Código de Inspector <span
+                                        class="text-danger">*</span></label>
+                                <input onKeyup="validarLocation('inspector_code', 3)" type="text" class="form-control"
+                                    id="inspector_code" name="inspector_code"
+                                    value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" required>
+                                <div id="errorTextLocation" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="full_name" class="form-label">Nombre Completo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="full_name" name="full_name" value="<?php echo htmlspecialchars($inspector['full_name']); ?>" required>
+                                <label for="full_name" class="form-label">Nombre Completo <span
+                                        class="text-danger">*</span></label>
+                                <input onKeyup="validarNombre('full_name')" type="text" class="form-control"
+                                    id="full_name" name="full_name"
+                                    value="<?php echo htmlspecialchars($inspector['full_name']); ?>" required>
+                                <div id="errorNombre" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="phone_number" class="form-label">Número de Teléfono</label>
-                                <input type="text" class="form-control" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($inspector['phone_number']); ?>">
+                                <input onKeyup="validarTelefono('phone_number')" type="text" class="form-control"
+                                    id="phone_number" name="phone_number"
+                                    value="<?php echo htmlspecialchars($inspector['phone_number']); ?>">
+                                <div id="errorTelefono" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($inspector['email']); ?>">
+                                <input onKeyup="validarEmail('email')" type="email" class="form-control" id="email"
+                                    name="email" value="<?php echo htmlspecialchars($inspector['email']); ?>">
                             </div>
                             <div class="mb-3">
                                 <label for="is_active" class="form-label">Estado</label>
                                 <select class="form-select" id="is_active" name="is_active" required>
-                                    <option value="1" <?php echo ($inspector['is_active'] == 1) ? 'selected' : ''; ?>>Activo</option>
-                                    <option value="0" <?php echo ($inspector['is_active'] == 0) ? 'selected' : ''; ?>>Inactivo</option>
+                                    <option value="1" <?php echo ($inspector['is_active'] == 1) ? 'selected' : ''; ?>>
+                                        Activo</option>
+                                    <option value="0" <?php echo ($inspector['is_active'] == 0) ? 'selected' : ''; ?>>
+                                        Inactivo</option>
                                 </select>
                             </div>
 

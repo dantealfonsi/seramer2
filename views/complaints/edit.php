@@ -119,15 +119,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="client_name" class="form-label">Nombre del Cliente</label>
-                                        <input type="text" class="form-control" id="client_name" name="client_name" value="<?php echo htmlspecialchars($data['complaint']['client_name']); ?>" required>
+                                        <input onkeyup="validarText('client_name',8,'errorTextClientName')" type="text" class="form-control" id="client_name" name="client_name" value="<?php echo htmlspecialchars($data['complaint']['client_name']); ?>" required>
+                                        <div id="errorTextClientName" style="color: red;"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="client_email" class="form-label">Email del Cliente</label>
-                                        <input type="email" class="form-control" id="client_email" name="client_email" value="<?php echo htmlspecialchars($data['complaint']['client_email']); ?>" required>
+                                        <input onkeyup="validarEmail('client_email')" type="email" class="form-control" id="client_email" name="client_email" value="<?php echo htmlspecialchars($data['complaint']['client_email']); ?>" required>
+                                        <div id="errorEmail" style="color: red;"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="client_phone" class="form-label">Teléfono</label>
-                                        <input type="text" class="form-control" id="client_phone" name="client_phone" value="<?php echo htmlspecialchars($data['complaint']['client_phone']); ?>">
+                                        <input onkeyup="validarTelefono('client_phone')" type="text" class="form-control" id="client_phone" name="client_phone" value="<?php echo htmlspecialchars($data['complaint']['client_phone']); ?>">
+                                        <div id="errorTelefono" style="color: red;"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="complaint_type" class="form-label">Tipo de Queja</label>
@@ -167,7 +170,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="complaint_description" class="form-label">Descripción</label>
-                                        <textarea class="form-control" id="complaint_description" name="complaint_description" rows="5" required><?php echo htmlspecialchars($data['complaint']['complaint_description']); ?></textarea>
+                                        <textarea onkeyup="validarText('complaint_description',8,'errorTextComplaintDescription')" class="form-control" id="complaint_description" name="complaint_description" rows="5" required><?php echo htmlspecialchars($data['complaint']['complaint_description']); ?></textarea>
+                                        <div id="errorTextComplaintDescription" style="color: red;"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="complaint_status" class="form-label">Estado de la Queja</label>
@@ -197,7 +201,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </div>
                                     <div class="mb-3">
                                         <label for="internal_observations" class="form-label">Observaciones Internas</label>
-                                        <textarea class="form-control" id="internal_observations" name="internal_observations" rows="3"><?php echo htmlspecialchars($data['complaint']['internal_observations']); ?></textarea>
+                                        <textarea onkeyup="validarText('internal_observations',8,'errorTextInternalObservations')" class="form-control" id="internal_observations" name="internal_observations" rows="3"><?php echo htmlspecialchars($data['complaint']['internal_observations']); ?></textarea>
+                                        <div id="errorTextInternalObservations" style="color: red;"></div>
                                     </div>
                                 </div>
                             </div>

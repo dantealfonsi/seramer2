@@ -128,7 +128,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <!-- Campo Ubicación -->
                                 <div class="col-md-6">
                                     <label for="location" class="form-label">Ubicación</label>
-                                    <input type="text" class="form-control <?php echo isset($errors['location']) ? 'is-invalid' : ''; ?>" id="location" name="location" value="<?php echo htmlspecialchars($formData['location']); ?>">
+                                    <input onKeyup="validarLocation('location', 8)" type="text" class="form-control <?php echo isset($errors['location']) ? 'is-invalid' : ''; ?>" id="location" name="location" value="<?php echo htmlspecialchars($formData['location']); ?>">
+                                    <div id="errorTextLocation" style="color: red;"></div>
                                     <?php if (isset($errors['location'])): ?>
                                         <div class="invalid-feedback"><?php echo $errors['location']; ?></div>
                                     <?php endif; ?>

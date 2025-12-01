@@ -288,20 +288,24 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="infraction_description" class="form-label">
                                             Descripción <span class="text-danger">*</span>
                                         </label>
-                                        <textarea class="form-control" 
+                                        <textarea onKeyup="validarText('infraction_description',8,'errorTextLocation')" class="form-control" 
                                                   id="infraction_description" 
                                                   name="infraction_description" 
                                                   rows="3" 
-                                                  required><?php echo htmlspecialchars($form_data['infraction_description']); ?></textarea>
+                                                  required><?php echo htmlspecialchars($form_data['infraction_description']); ?>
+                                        </textarea>
+                                        <div id="errorTextLocation" style="color: red;"></div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="inspector_observations" class="form-label">
                                             Observaciones del Inspector
                                         </label>
-                                        <textarea class="form-control" 
+                                        <textarea onKeyup="validarText('inspector_observations',8,'errorTextObservations')" class="form-control" 
                                                   id="inspector_observations" 
                                                   name="inspector_observations" 
-                                                  rows="3"><?php echo htmlspecialchars($form_data['inspector_observations']); ?></textarea>
+                                                  rows="3"><?php echo htmlspecialchars($form_data['inspector_observations']); ?>
+                                            </textarea>
+                                        <div id="errorTextObservations" style="color: red;"></div>
                                     </div>
                                 </div>
                             </div>

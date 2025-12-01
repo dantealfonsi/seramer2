@@ -178,10 +178,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <label for="general_observations" class="form-label">
                                             Observaciones Generales
                                         </label>
-                                        <textarea class="form-control"
+                                        <textarea onKeyup="validarLocation('general_observations', 8)" class="form-control"
                                                   id="general_observations"
                                                   name="general_observations"
-                                                  rows="5"><?php echo htmlspecialchars($report['general_observations']); ?></textarea>
+                                                  rows="5"><?php echo htmlspecialchars($report['general_observations']); ?>
+                                        </textarea>
+                                        <div id="errorTextLocation" style="color: red;"></div>
                                     </div>
                                 </div>
                                 <h6 class="text-success mb-3"><i class="ri-calendar-check-line"></i> Detalles de la Cita Programada</h6>

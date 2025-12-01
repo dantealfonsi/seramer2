@@ -62,7 +62,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-user-add-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <i class="ri-user-add-line me-1"
+                                style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="index.php" class="btn btn-secondary">
@@ -84,20 +85,30 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <form action="create.php" method="POST">
                             <div class="mb-3">
-                                <label for="inspector_code" class="form-label">Código de Inspector <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="inspector_code" name="inspector_code" required>
+                                <label for="inspector_code" class="form-label">Código de Inspector <span
+                                        class="text-danger">*</span></label>
+                                <input onKeyup="validarLocation('inspector_code', 3)" type="text" class="form-control"
+                                    id="inspector_code" name="inspector_code" required>
+                                <div id="errorTextLocation" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="full_name" class="form-label">Nombre Completo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="full_name" name="full_name" required>
+                                <label for="full_name" class="form-label">Nombre Completo <span
+                                        class="text-danger">*</span></label>
+                                <input onKeyup="validarNombre('full_name')" type="text" class="form-control"
+                                    id="full_name" name="full_name" required>
+                                <div id="errorNombre" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="phone_number" class="form-label">Número de Teléfono</label>
-                                <input type="text" class="form-control" id="phone_number" name="phone_number">
+                                <input onKeyup="validarTelefono('phone_number')" type="text" class="form-control"
+                                    id="phone_number" name="phone_number">
+                                <div id="errorTelefono" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email">
+                                <input onKeyup="validarEmail('email')" type="email" class="form-control" id="email"
+                                    name="email">
+                                <div id="errorEmail" style="color: red;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="hire_date" class="form-label">Fecha de Contratación</label>

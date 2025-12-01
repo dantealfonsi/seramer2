@@ -203,10 +203,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <label for="general_observations" class="form-label">
                                                 Observaciones Generales <span class="text-danger">*</span>
                                             </label>
-                                            <textarea class="form-control"
+                                            <textarea onKeyup="validarLocation('general_observations', 8)" class="form-control"
                                                      id="general_observations"
                                                      name="general_observations"
-                                                     rows="5" required><?php echo htmlspecialchars($form_data['general_observations']); ?></textarea>
+                                                     rows="5" required><?php echo htmlspecialchars($form_data['general_observations']); ?>
+                                            </textarea>
+                                            <div id="errorTextLocation" style="color: red;"></div>
                                         </div>
                                     </div>
                                     <input type="hidden" name="inspector_signature_url" value="<?php echo htmlspecialchars($form_data['inspector_signature_url']); ?>">
