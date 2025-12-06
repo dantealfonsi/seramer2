@@ -1,7 +1,7 @@
 <?php
 
 // Requerir el archivo de configuración de la base de datos
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/Database.php';
 
 class CitationsModel {
     private $db;
