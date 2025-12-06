@@ -1,0 +1,221 @@
+#!/bin/bash
+
+# ===============================================
+# SCRIPT DE INSTALACIÓN LAMP (Debian 13)
+# Instala Apache2, MariaDB y PHP (versión 8.2 por defecto en Debian 13)
+# ⚠️ DEBE EJECUTARSE CON 'sudo'
+# ===============================================
+
+# --- Variables de Configuración ---
+NUEVA_CONTRASENA="a10882990"
+DB_NOMBRE="seramermvc"
+DB_SQL_FILE="seramermvc.sql"
+ARCHIVO="seramer2.tar"
+DESTINO="/var/www/html/"
+CARPETA_DESCOMPRIMIDA="${DESTINO}seramer2"
+
+# 🚩 Lógica de Instalación solo para la Base de Datos🚩
+# Si es 'true', el script intentará cambiar la contraseña de root usando el socket.
+# Si es 'false', saltará el paso 1 y usará $NUEVA_CONTRASENA directamente para los pasos siguientes.
+IS_NEW_INSTALLATION=false
+
+# 1. Actualizar el sistema e instalar utilidades básicas
+echo "--- 1. Actualizando índices de paquetes y software del sistema..."
+sudo apt update -y
+sudo apt upgrade -y
+sudo apt install -y vim wget curl git
+
+# 2. Instalar el Servidor Web Apache
+echo "--- 2. Instalando Apache2 (Servidor Web)..."
+sudo apt install -y apache2
+sudo systemctl enable apache2
+sudo systemctl start apache2
+
+# 3. Instalar el Servidor de Base de Datos MariaDB
+echo "--- 3. Instalando MariaDB (Base de Datos)..."
+sudo apt install -y mariadb-server
+sudo systemctl enable mariadb
+sudo systemctl start mariadb
+
+# 4. Instalar PHP y los Módulos de PHP Necesarios
+# Debian 13 usa PHP 8.2 por defecto.
+echo "--- 4. Instalando PHP 8.2 y módulos necesarios (libapache2-mod-php, mysql)..."
+sudo apt install -y php libapache2-mod-php php-mysql php-cli php-json php-curl php-mbstring php-xml php-zip
+
+# 5. Configuración de Apache para usar el módulo PHP
+echo "--- 5. Habilitando módulo PHP en Apache2 (si no está ya habilitado)..."
+sudo a2enmod php
+sudo systemctl restart apache2
+
+# 6. Ejecutar el Script de Seguridad de MariaDB (INTERACTIVO)
+echo "--- 6. Ejecutando el script de seguridad de MariaDB. SE RECOMIENDA:"
+echo "   - Establecer una contraseña 'root' fuerte (IMPORTANTE)."
+echo "   - Responder 'Y' a las demás preguntas para mayor seguridad."
+sudo mysql_secure_installation
+
+# 7. Crear un archivo de prueba (info.php)
+chmod -R 777 /var/www/
+echo "--- 7. Creando el archivo de prueba de PHP (/var/www/html/info.php)..."
+echo "<?php phpinfo(); ?>" | sudo tee /var/www/html/info.php
+
+# 8. Reiniciar Apache para aplicar todos los cambios
+echo "--- 8. Reiniciando Apache2 por última vez..."
+sudo systemctl restart apache2
+
+# 9. Verificación final e instrucciones
+echo "==============================================="
+echo "✅ ¡INSTALACIÓN LAMP COMPLETADA! ✅"
+echo "==============================================="
+echo "* Estado de Apache: $(systemctl is-active apache2)"
+echo "* Estado de MariaDB: $(systemctl is-active mariadb)"
+echo ""
+echo "Para verificar la instalación:"
+echo "1. Abre tu navegador y navega a la dirección IP del servidor."
+echo "   Deberías ver la página por defecto de Apache2 (It works!)."
+echo "2. Para ver la información de PHP, navega a:"
+echo "   http://<DIRECCIÓN_IP_DEL_SERVIDOR>/info.php"
+echo ""
+echo "Recuerda eliminar el archivo 'info.php' después de la verificación por razones de seguridad."
+echo "Comando para eliminar: sudo rm /var/www/html/info.php"
+
+
+# ==============================================================
+# SCRIPT DE DESEMPAQUETADO Y PERMISOS
+# ==============================================================
+
+
+echo "--- Iniciando Script de Desempaquetado y Permisos ---"
+
+# --- 2. Asegurar que 'tar' esté instalado ---
+echo "Comprobando si el paquete 'tar' está instalado..."
+if ! command -v tar &> /dev/null
+then
+    echo "'tar' no está instalado. Intentando instalarlo..."
+    # Ejecutar la actualización e instalación con permisos de superusuario
+    sudo apt update && sudo apt install -y tar
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Falló la instalación de 'tar'. Abortando."
+        exit 1
+    fi
+    echo "'tar' instalado correctamente."
+else
+    echo "'tar' ya está instalado."
+fi
+
+# --- 3. Verificar la existencia del archivo .tar ---
+if [ ! -f "$ARCHIVO" ]; then
+    echo "ERROR: El archivo '$ARCHIVO' no se encontró en el directorio actual."
+    echo "Asegúrate de ejecutar el script en la misma ubicación del archivo $ARCHIVO."
+    exit 1
+fi
+
+# --- 4. Crear el directorio de destino si no existe ---
+if [ ! -d "$DESTINO" ]; then
+    echo "El directorio de destino '$DESTINO' no existe. Creándolo..."
+    sudo mkdir -p "$DESTINO"
+    if [ $? -ne 0 ]; then
+        echo "ERROR: Falló la creación del directorio '$DESTINO'. Abortando."
+        exit 1
+    fi
+fi
+
+# --- 5. Desempaquetar el archivo ---
+echo "Desempaquetando '$ARCHIVO' en '$DESTINO'..."
+# La opción -x (extract), -f (file), -v (verbose)
+sudo tar -xf "$ARCHIVO" -C "$DESTINO"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Falló el desempaquetado del archivo."
+    exit 1
+fi
+echo "Desempaquetado completado en '$CARPETA_DESCOMPRIMIDA'."
+
+# --- 6. Cambiar permisos recursivamente ---
+echo "Aplicando permisos recursivos (chmod -R 777) a '$CARPETA_DESCOMPRIMIDA'..."
+# Advertencia: Usar 777 es permisivo y no se recomienda en entornos de producción.
+# Para entornos web se suele usar 755 para directorios y 644 para archivos,
+# ajustando la propiedad con chown al usuario del servidor web (ej. www-data).
+sudo chmod -R 777 "$CARPETA_DESCOMPRIMIDA"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Falló el cambio de permisos."
+    exit 1
+fi
+echo "Permisos cambiados a 777."
+
+echo "--- Finalizado Exitosamente ---"
+
+# ==============================================================
+# SCRIPT DE CONFIGURACIÓN Y PREPARACIÓN DE BASE DE DATOS
+# ==============================================================
+
+# --- Verificación Inicial ---
+if [ "$EUID" -ne 0 ]; then
+    echo "❌ Error: Por favor, ejecuta este script con 'sudo'."
+    exit 1
+fi
+
+if [ ! -f "${DB_SQL_FILE}" ]; then
+    echo "❌ Error: No se encontró el archivo SQL '${DB_SQL_FILE}' en el directorio actual."
+    exit 1
+fi
+
+echo "# --- Iniciando configuración de MariaDB y preparación de la base de datos..."
+
+# --- 1. Configuración de Contraseña 'root' (Condicional) ---
+if $IS_NEW_INSTALLATION ; then
+    echo "# --- 1/3: [INSTALACIÓN NUEVA] Configurando la contraseña 'root' de MariaDB..."
+
+    SQL_ROOT_SETUP="
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${NUEVA_CONTRASENA}';
+FLUSH PRIVILEGES;
+"
+    # Autenticación sin contraseña para sistemas con autenticación por socket/unix_socket
+    echo "${SQL_ROOT_SETUP}" | sudo mariadb -u root
+    ROOT_SETUP_EXIT_CODE=$?
+
+    if [ $ROOT_SETUP_EXIT_CODE -eq 0 ]; then
+        echo "✅ Éxito: La contraseña del usuario 'root'@'localhost' ha sido establecida."
+    else
+        echo "❌ Error: Falló la configuración de la contraseña 'root'. (Código: ${ROOT_SETUP_EXIT_CODE})"
+        echo "       Asegúrate de que el servicio MariaDB esté activo y que puedas acceder como 'root' sin contraseña."
+        exit 1
+    fi
+else
+    echo "# --- 1/3: [RECONFIGURACIÓN] Saltando el cambio de contraseña de 'root'."
+fi
+
+# --- 2. Eliminar y Crear Base de Datos (Usando Nueva Contraseña) ---
+echo "# --- 2/3: Eliminando y creando la base de datos '${DB_NOMBRE}'..."
+
+SQL_DB_SETUP="
+DROP DATABASE IF EXISTS ${DB_NOMBRE};
+CREATE DATABASE ${DB_NOMBRE} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+"
+
+# Usamos la contraseña para autenticar la operación
+sudo mariadb -u root -p"${NUEVA_CONTRASENA}" <<< "${SQL_DB_SETUP}"
+DB_SETUP_EXIT_CODE=$?
+
+if [ $DB_SETUP_EXIT_CODE -eq 0 ]; then
+    echo "✅ Éxito: La base de datos '${DB_NOMBRE}' ha sido eliminada (si existía) y creada."
+else
+    echo "❌ Error: Falló la eliminación/creación de la base de datos. (Código: ${DB_SETUP_EXIT_CODE})"
+    echo "       Asegúrate de que la contraseña en la variable \$NUEVA_CONTRASENA es correcta."
+    exit 1
+fi
+
+# --- 3. Importar Datos ---
+echo "# --- 3/3: Importando datos desde '${DB_SQL_FILE}' a '${DB_NOMBRE}'..."
+
+# Importar el archivo SQL. Usamos la nueva contraseña (sin espacio después de -p)
+sudo mariadb -u root -p"${NUEVA_CONTRASENA}" "${DB_NOMBRE}" < "${DB_SQL_FILE}"
+IMPORT_EXIT_CODE=$?
+
+if [ $IMPORT_EXIT_CODE -eq 0 ]; then
+    echo "✅ Éxito: Los datos han sido importados correctamente a '${DB_NOMBRE}'."
+    echo "# --- ¡CONFIGURACIÓN COMPLETA! ---"
+else
+    echo "❌ Error: Falló la importación de datos desde '${DB_SQL_FILE}'. (Código: ${IMPORT_EXIT_CODE})"
+    exit 1
+fi
+
+exit 0
