@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2025 a las 17:54:39
+-- Tiempo de generación: 06-12-2025 a las 16:37:15
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -267,7 +267,7 @@ CREATE TABLE `citations` (
 --
 
 INSERT INTO `citations` (`citation_id`, `infraction_id`, `citation_datetime`, `location`, `mediator_user_id`, `citation_status`) VALUES
-(1, 4, '2025-09-23 16:13:00', 'dsdsds dsds', 5, 'Completed');
+(1, 4, '2025-09-23 16:13:00', 'dsdsds dsds', 5, 'Resuelta');
 
 -- --------------------------------------------------------
 
@@ -296,7 +296,8 @@ CREATE TABLE `complaints` (
 --
 
 INSERT INTO `complaints` (`complaint_id`, `complaint_datetime`, `client_user_id`, `client_name`, `client_phone`, `client_email`, `complaint_description`, `stall_id`, `awardee_id`, `complaint_type`, `complaint_status`, `complaint_priority`, `internal_observations`) VALUES
-(9, '2025-09-19 02:43:59', 8, 'pepe veraz', '04264804748', 'pepe@gmail.com', 'sdsdsdsdsd dwsdsd', 1, 2, 'Suggestion', 'Received', 'Medium', 'dsds dsdsd');
+(9, '2025-09-19 02:43:59', 8, 'pepe veraz', '04264804748', 'pepe@gmail.com', 'sdsdsdsdsd dwsdsd', 1, 2, 'Suggestion', 'Received', 'Medium', 'dsds dsdsd'),
+(10, '2025-10-28 03:53:55', 8, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'asdas', 1, 2, 'Suggestion', 'Received', 'Medium', 'asdasd');
 
 -- --------------------------------------------------------
 
@@ -373,7 +374,9 @@ CREATE TABLE `conciliation_reports` (
 --
 
 INSERT INTO `conciliation_reports` (`report_id`, `citation_id`, `awardee_attendance`, `result`, `agreement_details`, `report_date`) VALUES
-(1, 1, 1, 'Agreement Reached', 'dsddsdsd dsdsd dsdsd dsd ', '2025-09-22 02:27:18');
+(1, 1, 1, 'Agreement Reached', 'dsddsdsd dsdsd dsdsd dsd ', '2025-09-22 02:27:18'),
+(2, 1, 1, 'Agreement Reached', 'Se detallaron muchas cosas', '2025-10-28 23:08:07'),
+(3, 1, 0, 'Agreement Reached', 'asdasd', '2025-10-29 02:02:04');
 
 -- --------------------------------------------------------
 
@@ -566,6 +569,27 @@ INSERT INTO `divisions` (`id`, `department_id`, `name`, `description`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `economic_indicators`
+--
+
+CREATE TABLE `economic_indicators` (
+  `indicator_id` int(11) NOT NULL,
+  `ut_value` decimal(18,6) NOT NULL COMMENT 'Valor de la Unidad Tributaria (UT)',
+  `euro_bcv_rate` decimal(18,6) NOT NULL COMMENT 'Tasa del Euro según BCV (Moneda de Mayor Valor - Art. 105)',
+  `effective_date` date NOT NULL COMMENT 'Fecha desde la que son vigentes estos valores',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `economic_indicators`
+--
+
+INSERT INTO `economic_indicators` (`indicator_id`, `ut_value`, `euro_bcv_rate`, `effective_date`, `created_at`) VALUES
+(1, 40.000000, 220.000000, '2025-10-28', '2025-10-28 05:30:04');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `euro_rates`
 --
 
@@ -698,6 +722,49 @@ CREATE TABLE `fine_payments` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `fiscalization_roles`
+--
+
+CREATE TABLE `fiscalization_roles` (
+  `role_id` int(11) NOT NULL,
+  `role_name` varchar(50) NOT NULL COMMENT 'administrador, oficina, inspector',
+  `description` varchar(255) DEFAULT NULL,
+  `permissions_mask` varchar(10) NOT NULL COMMENT 'Cadena de permisos rwx (ej: rwx-r--)'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `fiscalization_roles`
+--
+
+INSERT INTO `fiscalization_roles` (`role_id`, `role_name`, `description`, `permissions_mask`) VALUES
+(1, 'administrador', 'Acceso total y gestión de usuarios.', 'rwxrwxrwx'),
+(2, 'oficina', 'Gestión de reportes, sin poder de modificación de tasas/config.', 'rw-r--rw-'),
+(3, 'inspector', 'Solo reportar infracciones y ver sus propios casos.', 'rw-r-----');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `fiscalization_user_level`
+--
+
+CREATE TABLE `fiscalization_user_level` (
+  `user_level_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `role_id` int(11) NOT NULL,
+  `assigned_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `fiscalization_user_level`
+--
+
+INSERT INTO `fiscalization_user_level` (`user_level_id`, `user_id`, `role_id`, `assigned_at`) VALUES
+(1, 8, 1, '2025-10-28 03:37:26'),
+(2, 3, 2, '2025-10-28 21:01:09');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `fiscal_year`
 --
 
@@ -741,7 +808,9 @@ CREATE TABLE `infractions` (
 --
 
 INSERT INTO `infractions` (`infraction_id`, `awardee_id`, `stall_id`, `infraction_datetime`, `infraction_type_id`, `infraction_description`, `infraction_status`, `inspector_observations`, `proof`, `status_logical`) VALUES
-(4, 2, 1, '2025-09-18 20:19:43', 1, 'sssssssss fgfgfgf ffgfg', 'In Process', 'sssssssssss', '68cc695fbe614.jpg', 'active');
+(4, 2, 1, '2025-09-18 20:19:43', 1, 'sssssssss fgfgfgf ffgfg', 'In Process', 'sssssssssss', '68cc695fbe614.jpg', 'active'),
+(5, 2, 1, '2025-10-29 00:11:19', 25, 'TestTestestestse', 'Reported', 'Test', '', 'active'),
+(6, 1, 1, '2025-10-29 02:48:44', 22, 'Esto es una descripcion de mas de 10 caracteres', 'Reported', 'No se', '', 'active');
 
 -- --------------------------------------------------------
 
@@ -823,10 +892,38 @@ CREATE TABLE `inspection_reports` (
 --
 
 INSERT INTO `inspection_reports` (`report_id`, `scheduled_inspection_id`, `main_inspector_id`, `assistant_inspector_id`, `stall_id`, `awardee_id`, `creation_date`, `general_observations`, `inspector_signature_url`, `assistant_signature_url`) VALUES
-(2, 1, 5, 1, 1, 2, '2025-09-17 01:32:49', 'swadsd', '', ''),
-(3, 2, 1, 3, 1, 2, '2025-09-17 11:43:12', 'aaaaa', '', ''),
-(4, 3, 3, 5, 1, 1, '2025-09-17 12:50:32', 'wwwwwwwwwwwwww', '', ''),
-(5, 4, 5, 1, 1, 2, '2025-09-19 13:07:49', 'hghghg', '', '');
+(2, 1, 5, 1, 1, 2, '2025-09-17 01:32:49', 'El inspector fue bueno', '', ''),
+(3, 2, 1, 3, 1, 2, '2025-09-17 11:43:12', 'El inspector fue malo', '', ''),
+(4, 3, 3, 5, 1, 1, '2025-09-17 12:50:32', 'No lo se', '', ''),
+(5, 4, 5, 1, 1, 2, '2025-09-19 13:07:49', 'Esto es una prueba', '', ''),
+(6, 5, 5, 1, 1, 2, '2025-10-26 22:38:50', 'asdasd', '', ''),
+(7, 6, 3, 1, 1, 1, '2025-10-26 22:55:23', 'Test', '', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `inspection_updates`
+--
+
+CREATE TABLE `inspection_updates` (
+  `update_id` int(11) NOT NULL,
+  `report_id` int(11) NOT NULL,
+  `status_old` varchar(50) NOT NULL,
+  `status_new` varchar(50) NOT NULL,
+  `update_description` text DEFAULT NULL,
+  `updated_by_user_id` int(11) DEFAULT NULL,
+  `update_date` datetime DEFAULT current_timestamp(),
+  `inspection_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `inspection_updates`
+--
+
+INSERT INTO `inspection_updates` (`update_id`, `report_id`, `status_old`, `status_new`, `update_description`, `updated_by_user_id`, `update_date`, `inspection_id`) VALUES
+(3, 7, 'In Progress', 'In Progress', 'asdasd\n--- Resultado: asdasd', 8, '2025-10-27 01:59:33', 6),
+(4, 7, 'In Progress', 'In Progress', 'asdasdasd\n--- Resultado: asdasdasd', 8, '2025-10-27 01:59:45', 6),
+(5, 7, 'In Progress', 'Completed', 'AAAA\n--- Resultado: AAAA', 8, '2025-10-27 02:13:53', 6);
 
 -- --------------------------------------------------------
 
@@ -854,7 +951,7 @@ INSERT INTO `inspectors` (`inspector_id`, `inspector_code`, `full_name`, `phone_
 (1, 'A-01', 'Daniel Alfonsi', '04264804748', 'alfonsi.acosta@gmail.com', '2025-09-16', 1, '2025-09-16 16:40:48', '2025-09-16 16:40:48'),
 (2, 'B-01', 'Pedro Berti', '04163197919', 'pedro@gmail.com', '2025-09-15', 0, '2025-09-16 16:46:42', '2025-09-16 17:11:45'),
 (3, 'C-01', 'Jose Figuera', '04264804748', 'jose@gmail.com', '2025-09-16', 1, '2025-09-16 16:53:12', '2025-09-16 16:53:12'),
-(5, 'D-02', 'Amador Jose Figuera', '04264804748', 'amador_01@gmail.com', '2025-09-13', 1, '2025-09-16 16:54:44', '2025-09-17 12:50:04');
+(5, 'D-02', 'Amador Jose Figueras', '04128581', 'amador_01@gmail.com', '2025-09-13', 1, '2025-09-16 16:54:44', '2025-10-28 04:44:35');
 
 -- --------------------------------------------------------
 
@@ -1093,7 +1190,9 @@ CREATE TABLE `sanctions` (
 --
 
 INSERT INTO `sanctions` (`sanction_id`, `infraction_id`, `sanction_type_id`, `fine_amount`, `fine_currency`, `imposition_date`, `effect_start_date`, `effect_end_date`, `sanction_status`, `sanction_observations`, `is_repeat_offense`, `imposed_by_user_id`) VALUES
-(1, 4, 1, 100.00, 'Euro', '2025-09-21 00:27:52', '2025-09-22', '2025-09-23', 'Paid', 'dsdssd', 0, 1);
+(1, 4, 1, 100.00, 'Euro', '2025-09-21 00:27:52', '2025-09-22', '2025-09-23', 'Paid', 'dsdssd', 0, 1),
+(4, 5, 2, 400.00, 'VES', '2025-10-28 23:11:19', '0000-00-00', '0000-00-00', 'Imposed', 'Test', 0, 1),
+(5, 6, 2, 400.00, 'VES', '2025-10-29 01:48:44', '2025-10-28', '0000-00-00', 'Imposed', 'No se', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -1143,10 +1242,13 @@ CREATE TABLE `scheduled_inspections` (
 --
 
 INSERT INTO `scheduled_inspections` (`inspection_id`, `scheduled_date`, `inspection_type`, `assigned_responsible_id`, `inspection_status`, `observations`, `created_at`) VALUES
-(1, '2025-09-19', 'dsdsds', 8, 'Pending', 'dsdsds', '2025-09-17 01:32:48'),
-(2, '2025-09-25', 'aaaaaaaaaaaaaa', 3, 'Pending', 'aaaaaaaaaaaaaaaaa', '2025-09-17 11:43:12'),
-(3, '2025-09-25', 'wwwwwwwww', 9, 'In Progress', 'wwwwwwwwwwwww', '2025-09-17 12:50:32'),
-(4, '2025-09-20', 'hjkjkjhk', 11, 'Pending', 'jhgjhg', '2025-09-19 13:07:49');
+(1, '2025-09-19', 'Rutina', 8, 'Pending', 'dsdsds', '2025-09-17 01:32:48'),
+(2, '2025-09-25', 'Rutina', 3, 'Pending', 'aaaaaaaaaaaaaaaaa', '2025-09-17 11:43:12'),
+(3, '2025-09-25', 'Queja', 9, 'In Progress', 'wwwwwwwwwwwww', '2025-09-17 12:50:32'),
+(4, '2025-09-20', 'Queja', 11, 'Pending', 'jhgjhg', '2025-09-19 13:07:49'),
+(5, '2025-10-14', 'Rutine', 11, 'Pending', 'asdasd', '2025-10-26 22:38:50'),
+(6, '2025-10-14', 'Rutine', 8, 'Completed', 'Test', '2025-10-26 22:55:23'),
+(7, '2025-10-17', 'New Stall', 8, 'Pending', 'asdasd', '2025-10-27 05:30:20');
 
 -- --------------------------------------------------------
 
@@ -1299,7 +1401,7 @@ INSERT INTO `users` (`id`, `staff_id`, `username`, `password_hash`, `email`, `la
 (5, NULL, 'devliq', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 'devliquidacion@empresa.com', '2025-08-03 16:50:17', NULL, NULL, 'active', '2025-08-02 21:28:47', '2025-08-03 20:50:17'),
 (6, NULL, 'devcob', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 'devcobranza@empresa.com', NULL, NULL, NULL, 'active', '2025-08-02 21:28:47', '2025-08-03 13:39:47'),
 (7, NULL, 'devrrhh', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 'devrrhh@empresa.com', NULL, NULL, NULL, 'active', '2025-08-02 21:28:47', '2025-08-03 13:39:48'),
-(8, NULL, 'devfisc', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 'devfiscalizacion@empresa.com', '2025-10-26 10:14:46', NULL, NULL, 'active', '2025-08-02 21:28:47', '2025-10-26 14:14:46'),
+(8, 7, 'devfisc', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 'devfiscalizacion@empresa.com', '2025-12-06 11:14:07', NULL, NULL, 'active', '2025-08-02 21:28:47', '2025-12-06 15:14:07'),
 (9, 9, 'afigueroa', '$2y$12$iFj3D7pQ3wCsdkCs4nU5O.Z0rBgK4ydNpbph5RumpqlqLj6q96SuO', 'Andres.Figueroa@empresa.com', NULL, NULL, NULL, 'active', '2025-08-03 02:56:10', '2025-08-03 02:56:10'),
 (10, 5, 'plopez', '$2y$12$.Xv3sGjkrCSNnlJmdyz1j.sxfCYf2C/09OvOa794nxeA2sWCwX6WC', 'pedro.lopez@empresa.com', NULL, NULL, NULL, 'active', '2025-08-03 13:36:10', '2025-08-03 15:33:38'),
 (11, 10, 'arojas', '$2y$12$DxcEraAN3tao8.z.FaOgsuz5jP39VqoFpDSQU3qZDgioePvAK6vh6', 'ana.rojas@empresa.com', NULL, NULL, NULL, 'active', '2025-08-04 16:42:11', '2025-08-04 16:42:11'),
@@ -1346,6 +1448,27 @@ INSERT INTO `user_departments` (`id`, `user_id`, `department_id`, `status`, `cre
 (10, 10, 1, 'active', '2025-08-03 13:36:11'),
 (11, 11, 2, 'active', '2025-08-04 16:42:11'),
 (12, 12, 2, 'active', '2025-08-04 16:42:40');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `user_records`
+--
+
+CREATE TABLE `user_records` (
+  `id` int(11) NOT NULL,
+  `action` varchar(500) NOT NULL,
+  `user_id` int(100) NOT NULL,
+  `department_id` int(100) NOT NULL,
+  `created_at` date NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `user_records`
+--
+
+INSERT INTO `user_records` (`id`, `action`, `user_id`, `department_id`, `created_at`) VALUES
+(1, 'Ha editado una infracción', 7, 3, '2025-10-28');
 
 -- --------------------------------------------------------
 
@@ -1608,6 +1731,13 @@ ALTER TABLE `divisions`
   ADD KEY `idx_name` (`name`);
 
 --
+-- Indices de la tabla `economic_indicators`
+--
+ALTER TABLE `economic_indicators`
+  ADD PRIMARY KEY (`indicator_id`) USING BTREE,
+  ADD UNIQUE KEY `idx_effective_date` (`effective_date`) USING BTREE;
+
+--
 -- Indices de la tabla `euro_rates`
 --
 ALTER TABLE `euro_rates`
@@ -1630,6 +1760,21 @@ ALTER TABLE `fee_payments`
 --
 ALTER TABLE `fine_payments`
   ADD PRIMARY KEY (`payment_id`);
+
+--
+-- Indices de la tabla `fiscalization_roles`
+--
+ALTER TABLE `fiscalization_roles`
+  ADD PRIMARY KEY (`role_id`),
+  ADD UNIQUE KEY `role_name` (`role_name`);
+
+--
+-- Indices de la tabla `fiscalization_user_level`
+--
+ALTER TABLE `fiscalization_user_level`
+  ADD PRIMARY KEY (`user_level_id`),
+  ADD UNIQUE KEY `user_id` (`user_id`),
+  ADD KEY `role_id` (`role_id`);
 
 --
 -- Indices de la tabla `fiscal_year`
@@ -1658,6 +1803,14 @@ ALTER TABLE `infraction_types`
 --
 ALTER TABLE `inspection_reports`
   ADD PRIMARY KEY (`report_id`);
+
+--
+-- Indices de la tabla `inspection_updates`
+--
+ALTER TABLE `inspection_updates`
+  ADD PRIMARY KEY (`update_id`),
+  ADD KEY `report_id` (`report_id`),
+  ADD KEY `updated_by_user_id` (`updated_by_user_id`);
 
 --
 -- Indices de la tabla `inspectors`
@@ -1821,6 +1974,12 @@ ALTER TABLE `user_departments`
   ADD KEY `idx_status` (`status`);
 
 --
+-- Indices de la tabla `user_records`
+--
+ALTER TABLE `user_records`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `vacations`
 --
 ALTER TABLE `vacations`
@@ -1921,7 +2080,7 @@ ALTER TABLE `citations`
 -- AUTO_INCREMENT de la tabla `complaints`
 --
 ALTER TABLE `complaints`
-  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `complaint_tracking`
@@ -1939,7 +2098,7 @@ ALTER TABLE `compliance_alerts`
 -- AUTO_INCREMENT de la tabla `conciliation_reports`
 --
 ALTER TABLE `conciliation_reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `contracts`
@@ -1990,6 +2149,12 @@ ALTER TABLE `divisions`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT de la tabla `economic_indicators`
+--
+ALTER TABLE `economic_indicators`
+  MODIFY `indicator_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `euro_rates`
 --
 ALTER TABLE `euro_rates`
@@ -2014,6 +2179,18 @@ ALTER TABLE `fine_payments`
   MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `fiscalization_roles`
+--
+ALTER TABLE `fiscalization_roles`
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=400;
+
+--
+-- AUTO_INCREMENT de la tabla `fiscalization_user_level`
+--
+ALTER TABLE `fiscalization_user_level`
+  MODIFY `user_level_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
+
+--
 -- AUTO_INCREMENT de la tabla `fiscal_year`
 --
 ALTER TABLE `fiscal_year`
@@ -2023,7 +2200,7 @@ ALTER TABLE `fiscal_year`
 -- AUTO_INCREMENT de la tabla `infractions`
 --
 ALTER TABLE `infractions`
-  MODIFY `infraction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `infraction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `infraction_types`
@@ -2035,7 +2212,13 @@ ALTER TABLE `infraction_types`
 -- AUTO_INCREMENT de la tabla `inspection_reports`
 --
 ALTER TABLE `inspection_reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `inspection_updates`
+--
+ALTER TABLE `inspection_updates`
+  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `inspectors`
@@ -2071,7 +2254,7 @@ ALTER TABLE `market_stalls`
 -- AUTO_INCREMENT de la tabla `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ordinance_articles`
@@ -2101,7 +2284,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `sanctions`
 --
 ALTER TABLE `sanctions`
-  MODIFY `sanction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `sanction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `sanction_types`
@@ -2113,7 +2296,7 @@ ALTER TABLE `sanction_types`
 -- AUTO_INCREMENT de la tabla `scheduled_inspections`
 --
 ALTER TABLE `scheduled_inspections`
-  MODIFY `inspection_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `inspection_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `sectors`
@@ -2144,6 +2327,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `user_departments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `user_records`
+--
+ALTER TABLE `user_records`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `vacations`
@@ -2264,12 +2453,26 @@ ALTER TABLE `divisions`
   ADD CONSTRAINT `divisions_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Filtros para la tabla `fiscalization_user_level`
+--
+ALTER TABLE `fiscalization_user_level`
+  ADD CONSTRAINT `fk_fisc_user_level_role` FOREIGN KEY (`role_id`) REFERENCES `fiscalization_roles` (`role_id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_fisc_user_level_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Filtros para la tabla `infractions`
 --
 ALTER TABLE `infractions`
   ADD CONSTRAINT `fk_infractions_awardees` FOREIGN KEY (`awardee_id`) REFERENCES `awardees` (`id`),
   ADD CONSTRAINT `fk_infractions_infraction_types` FOREIGN KEY (`infraction_type_id`) REFERENCES `infraction_types` (`infraction_type_id`),
   ADD CONSTRAINT `fk_infractions_market_stalls` FOREIGN KEY (`stall_id`) REFERENCES `market_stalls` (`id`);
+
+--
+-- Filtros para la tabla `inspection_updates`
+--
+ALTER TABLE `inspection_updates`
+  ADD CONSTRAINT `inspection_updates_ibfk_1` FOREIGN KEY (`report_id`) REFERENCES `inspection_reports` (`report_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `inspection_updates_ibfk_2` FOREIGN KEY (`updated_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
 
 --
 -- Filtros para la tabla `leave_requests`

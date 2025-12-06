@@ -138,15 +138,30 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ ' + data.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Éxito',
+                        text: '✅ ' + data.message,
+                        confirmButtonText: 'Aceptar'
+                    });
                 } else {
-                    alert('❌ Error: ' + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '❌ Error: ' + data.message,
+                        confirmButtonText: 'Entendido'
+                    });
                     location.reload(); // Recargar si hay error para resetear la interfaz
                 }
             })
             .catch(error => {
                 console.error('Error en la conexión AJAX:', error);
-                alert('❌ Error de conexión al servidor.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Conexión',
+                    text: '❌ Error de conexión al servidor.',
+                    confirmButtonText: 'Entendido'
+                });
                 location.reload();
             });
         });

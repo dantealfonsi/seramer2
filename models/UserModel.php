@@ -536,7 +536,8 @@ class UserModel {
                     'icon' => 'ri-chat-3-line',
                     'submenu' => [
                         ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
-                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php']
+                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
+                        ['title' => 'Detalles de Queja', 'url' => 'views/complaints/details.php']
                     ]
                 ],
                 [

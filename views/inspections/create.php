@@ -317,7 +317,12 @@ function nextStep() {
         document.getElementById('scheduled-inspections').style.display = 'block';
         window.scrollTo(0, 0); // Opcional: desplazar al inicio de la página para ver el nuevo formulario
     } else {
-        alert('⚠️ Por favor, complete todos los campos obligatorios (marcados con *) antes de avanzar.');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos Incompletos',
+            text: '⚠️ Por favor, complete todos los campos obligatorios (marcados con *) antes de avanzar.',
+            confirmButtonText: 'Entendido'
+        });
     }
 }
 

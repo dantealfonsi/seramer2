@@ -52,8 +52,8 @@ if (!empty($current_department)) {
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
-                <li class="menu-item <?php echo (basename($_SERVER['PHP_SELF']) == 'dashboard.php') ? 'active' : ''; ?>">
-                    <a href="<?php echo url('views/dashboard/dashboard.php'); ?>" class="menu-link">
+                <li class="menu-item <?php echo (basename($_SERVER['PHP_SELF']) == 'dashboard.php') ? 'active' : ''; ?>" >
+                    <a href="<?php echo url('views/dashboard/dashboard.php'); ?>" class="menu-link"  style="color:black">
                         <i class="menu-icon icon-base ri ri-home-smile-line"></i>
                         <div data-i18n="Dashboard">Dashboard</div>
                     </a>
@@ -64,7 +64,7 @@ if (!empty($current_department)) {
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">Departamento</span>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item"  style="color:black">
                     <select class="form-select form-select-sm" id="department-selector" onchange="changeDepartment(this.value)">
                         <?php foreach ($user_departments as $dept): ?>
                             <option value="<?php echo htmlspecialchars($dept['name']); ?>" 
@@ -88,15 +88,15 @@ if (!empty($current_department)) {
                     <?php foreach ($department_menus as $menu): ?>
                         <?php if (isset($menu['submenu'])): ?>
                             <!-- Menú con submenús -->
-                            <li class="menu-item">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <li class="menu-item"  style="color:black">
+                                <a href="javascript:void(0);" class="menu-link menu-toggle"  style="color:black">
                                     <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
                                     <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
                                 </a>
                                 <ul class="menu-sub">
                                     <?php foreach ($menu['submenu'] as $submenu): ?>
                                         <li class="menu-item">
-                                            <a href="<?php echo url($submenu['url']); ?>" class="menu-link">
+                                            <a href="<?php echo url($submenu['url']); ?>" class="menu-link"  style="color:black">
                                                 <div data-i18n="<?php echo $submenu['title']; ?>"><?php echo htmlspecialchars($submenu['title']); ?></div>
                                             </a>
                                         </li>
@@ -106,7 +106,7 @@ if (!empty($current_department)) {
                         <?php else: ?>
                             <!-- Menú simple -->
                             <li class="menu-item">
-                                <a href="<?php echo url($menu['url']); ?>" class="menu-link">
+                                <a href="<?php echo url($menu['url']); ?>" class="menu-link"  style="color:black">
                                     <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
                                     <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
                                 </a>
@@ -177,7 +177,12 @@ if (!empty($current_department)) {
         }
 
         function showManagerMenuInfo() {
-            alert('Como jefe de departamento, tienes acceso de solo lectura a la información de usuarios de tu departamento. Para realizar modificaciones, contacta al departamento de Recursos Humanos.');
+            Swal.fire({
+                icon: 'info',
+                title: 'Acceso Limitado',
+                text: 'Como jefe de departamento, tiene acceso de solo lectura a la información de usuarios de tu departamento. Para realizar modificaciones, contacta al departamento de Recursos Humanos.',
+                confirmButtonText: 'Entendido'
+            });
         }
         </script>
 

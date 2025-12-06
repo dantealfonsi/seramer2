@@ -171,13 +171,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         maskDisplay.classList.add('bg-secondary');
                     }, 1500); // Muestra un feedback de éxito temporal
                 } else {
-                    alert('❌ Error: ' + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '❌ Error: ' + data.message,
+                        confirmButtonText: 'Entendido'
+                    });
                     this.checked = !this.checked; // Revertir si hubo error en el servidor
                 }
             })
             .catch(error => {
                 console.error('Error de conexión AJAX:', error);
-                alert('❌ Error de conexión al servidor.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Conexión',
+                    text: '❌ Error de conexión al servidor.',
+                    confirmButtonText: 'Entendido'
+                });
                 this.checked = !this.checked; // Revertir
             });
         });

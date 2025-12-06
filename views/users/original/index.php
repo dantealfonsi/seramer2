@@ -276,7 +276,12 @@ function confirmReactivate(userId) {
 }
 
 function showManagerLimitationAlert() {
-    alert('Como jefe de departamento, tienes acceso completo para gestionar los usuarios de tu departamento. Para gestionar usuarios de otros departamentos, contacta al departamento de Recursos Humanos.');
+    Swal.fire({
+        icon: 'info',
+        title: 'Acceso Limitado',
+        text: 'Como jefe de departamento, tiene acceso completo para gestionar los usuarios de tu departamento. Para gestionar usuarios de otros departamentos, contacta al departamento de Recursos Humanos.',
+        confirmButtonText: 'Entendido'
+    });
 }
 </script>
 
