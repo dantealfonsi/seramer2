@@ -129,7 +129,7 @@ class InfractionsModel {
 
     public function getStallsList() {
         try {
-            $query = "SELECT id, sector_id, stall_number, location_description FROM market_stalls ORDER BY stall_number";
+            $query = "SELECT id, sector_id, stall_number, location_description, awardee_id FROM market_stalls ORDER BY stall_number";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

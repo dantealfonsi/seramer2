@@ -50,7 +50,7 @@ require_once __DIR__ . '/../../config/app.php';
         <script src="<?php echo vendor('libs/perfect-scrollbar/perfect-scrollbar.js'); ?>"></script>
         <script src="<?php echo vendor('libs/hammer/hammer.js'); ?>"></script>
         <script src="<?php echo vendor('js/menu.js'); ?>"></script>
-        <script src="<?php echo vendor('libs/sweetalert2/sweetalert2.js'); ?>"></script>
+        <script src="<?php echo url('public/sweetalert2@11.js'); ?>"></script>
         <script src="<?php echo js('main.js'); ?>"></script>
     </body>
 </html>

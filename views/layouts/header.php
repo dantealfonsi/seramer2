@@ -33,7 +33,7 @@ require_once __DIR__ . '/../../config/app.php';
     <link rel="stylesheet" href="<?php echo vendor('libs/pickr/pickr-themes.css'); ?>" />
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="<?php echo vendor('libs/perfect-scrollbar/perfect-scrollbar.css'); ?>" />
-    <link rel="stylesheet" href="<?php echo vendor('libs/sweetalert2/sweetalert2.css'); ?>" />
+    <!-- <link rel="stylesheet" href="<?php echo vendor('libs/sweetalert2/sweetalert2.css'); ?>" /> -->
     <!-- endbuild -->
     <script src="<?php echo vendor('js/template-customizer.js'); ?>"></script>
     <!-- Helpers -->

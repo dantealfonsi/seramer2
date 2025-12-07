@@ -81,7 +81,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <a href="edit.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-warning">
                                 <i class="ri-edit-line"></i> Editar
                             </a>
-                            <a href="../reports/index.php?report=print_infraction.rep&action=view&id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-info">
+                            <a href="../reports/index.php?report=infraction_invoice.rep&action=view&id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-info">
                                 <i class="ri-printer-line"></i> Generar Reporte
                             </a>
                             <button type="button" 

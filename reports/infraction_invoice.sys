@@ -1,0 +1,19 @@
+{
+  "sql": "SELECT i.infraction_id, DATE_FORMAT(i.infraction_datetime, '%d/%m/%Y %H:%i') as infraction_datetime, i.infraction_description, i.inspector_observations, CONCAT(a.first_name, ' ', IFNULL(a.last_name, '')) as adjudicatory_name, a.phone, ms.stall_number, msi.business_name, msi.address, msi.rif, it.infraction_type_name, s.fine_amount, s.sanction_status, st.severity_name FROM infractions i LEFT JOIN awardees a ON i.awardee_id = a.id LEFT JOIN market_stalls ms ON i.stall_id = ms.id LEFT JOIN market_stall_info msi ON ms.id = msi.stall_id LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id LEFT JOIN sanctions s ON i.infraction_id = s.infraction_id LEFT JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id WHERE i.infraction_id = :id",
+  "fields": [
+    "infraction_id",
+    "infraction_datetime",
+    "infraction_description",
+    "inspector_observations",
+    "adjudicatory_name",
+    "phone",
+    "stall_number",
+    "business_name",
+    "address",
+    "rif",
+    "infraction_type_name",
+    "fine_amount",
+    "sanction_status",
+    "severity_name"
+  ]
+}

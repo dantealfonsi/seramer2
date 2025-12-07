@@ -266,7 +266,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <a href="index.php" class="btn btn-outline-secondary">
                                             <i class="ri-close-line"></i> Cancelar
                                         </a>
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary" id="btn-submit-inspection">
                                             <i class="ri-save-line"></i> Crear Inspección
                                         </button>
                                     </div>
@@ -279,6 +279,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
         </div>
     </div>
 </div>
+
+</script>
 
 <script>
 /**
@@ -316,11 +318,12 @@ function nextStep() {
         document.getElementById('inspection-form').style.display = 'none';
         document.getElementById('scheduled-inspections').style.display = 'block';
         window.scrollTo(0, 0); // Opcional: desplazar al inicio de la página para ver el nuevo formulario
+        validateStep2(); // Validar estado inicial del botón en el paso 2
     } else {
         Swal.fire({
             icon: 'warning',
             title: 'Campos Incompletos',
-            text: '⚠️ Por favor, complete todos los campos obligatorios (marcados con *) antes de avanzar.',
+            text: 'Complete todos los campos obligatorios (marcados con *) antes de avanzar.',
             confirmButtonText: 'Entendido'
         });
     }
@@ -334,6 +337,37 @@ function backStep() {
     document.getElementById('inspection-form').style.display = 'block';
     window.scrollTo(0, 0); // Opcional: desplazar al inicio de la página
 }
+
+/**
+ * Valida los campos del paso 2 para habilitar/deshabilitar el botón de crear.
+ */
+function validateStep2() {
+    const scheduledDate = document.getElementById('scheduled_date').value;
+    const inspectionType = document.getElementById('inspection_type').value;
+    const inspectionStatus = document.getElementById('inspection_status').value;
+    const btnSubmit = document.getElementById('btn-submit-inspection');
+
+    if (scheduledDate && inspectionType && inspectionStatus) {
+        btnSubmit.disabled = false;
+    } else {
+        btnSubmit.disabled = true;
+    }
+}
+
+// Agregar listeners para la validación en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldsStep2 = ['scheduled_date', 'inspection_type', 'inspection_status'];
+    fieldsStep2.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', validateStep2);
+            element.addEventListener('change', validateStep2);
+        }
+    });
+
+    // Validación inicial
+    validateStep2();
+});
 </script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
