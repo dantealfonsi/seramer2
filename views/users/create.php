@@ -48,7 +48,10 @@ $page_title = $is_manager && !$is_rrhh ?
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-0"><?php echo htmlspecialchars($page_title); ?></h5>
+                        <h5 class="mb-0" style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri-user-add-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
                         <?php if ($is_manager && !$is_rrhh): ?>
                             <small class="text-muted">Solo puedes crear usuarios para personal de tu departamento</small>
                         <?php endif; ?>

@@ -16,8 +16,7 @@ class InfractionTypesModel {
      * @param string $search
      * @return array
      */
-    public function getAll($page, $limit, $search) {
-        $offset = ($page - 1) * $limit;
+    public function getAll($page = 1, $limit = null, $search = '') {
         $sql = "SELECT * FROM infraction_types";
         
         $params = [];
@@ -29,7 +28,12 @@ class InfractionTypesModel {
             array_push($params, $searchTerm, $searchTerm, $searchTerm);
         }
 
-        $sql .= " ORDER BY infraction_type_name ASC LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        $sql .= " ORDER BY infraction_type_name ASC";
+
+        if ($limit > 0) {
+            $offset = ($page - 1) * $limit;
+            $sql .= " LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
+        }
 
         return $this->db->fetchAll($sql, $params);
     }

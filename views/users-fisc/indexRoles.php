@@ -35,7 +35,7 @@ $permission_types = [
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-lock-2-line me-1"></i>
+                            <i class="ri-lock-2-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>

@@ -29,7 +29,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-team-line me-1"></i>
+                            <i class="ri-team-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
@@ -42,7 +42,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="table table-striped table-hover" id="usersFiscTable">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID de Usuario</th>
@@ -111,8 +111,75 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const radios = document.querySelectorAll('.role-radio');
+    // DataTables Initialization
+    if ($.fn.DataTable) {
+         $('#usersFiscTable').DataTable({ 
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    orientation: 'landscape', 
+                    pageSize: 'LETTER', 
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5] // Exclude Role Selection Column (index 6)
+                    },
+                    title: 'Usuarios_Fiscalizacion_Seramer'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                         columns: [0, 1, 2, 3, 4, 5] 
+                    },
+                    title: 'Usuarios_Fiscalizacion_Seramer' 
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                         columns: [0, 1, 2, 3, 4, 5] 
+                    }
+                },
+                'colvis'
+            ],
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json",
+                 "decimal": "",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron registros coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": activar para ordenar la columna ascendente",
+                    "sortDescending": ": activar para ordenar la columna descendente"
+                }
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 6 } // Disable sorting on Role Selection
+            ]
+        });
+    }
 
+    // Role Update Logic
+    const radios = document.querySelectorAll('.role-radio');
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
             const userId = this.getAttribute('data-user-id');
@@ -120,15 +187,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const roleName = this.getAttribute('data-role-name');
 
             if (!confirm(`¿Estás seguro de que quieres asignar el rol '${roleName.toUpperCase()}' al usuario ID ${userId}?`)) {
-                // Si cancela, revertir la selección (es complejo, pero se puede simplificar)
-                // Por simplicidad, alertamos, pero en un entorno real deberías guardar la selección anterior.
-                // Revertir a un estado conocido para evitar que la interfaz mienta:
                 location.reload(); 
                 return;
             }
 
-            // Realizar la petición AJAX
-            fetch('ajax_update_role.php', { // Tendrás que crear este archivo de endpoint
+            fetch('ajax_update_role.php', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -151,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         text: '❌ Error: ' + data.message,
                         confirmButtonText: 'Entendido'
                     });
-                    location.reload(); // Recargar si hay error para resetear la interfaz
+                    location.reload(); 
                 }
             })
             .catch(error => {
@@ -171,3 +234,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<!-- DataTables includes -->
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
