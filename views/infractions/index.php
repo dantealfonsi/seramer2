@@ -169,7 +169,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="col-12 d-flex justify-content-end align-items-end">
                                     <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
                                     <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros (Lado Servidor)
+                                        <i class="ri-search-line"></i> Aplicar Filtros
                                     </button>
                                 </div>
                             </div>

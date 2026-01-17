@@ -180,10 +180,6 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
 <link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
-
-## 💡 Lógica JavaScript (Corregida)
-
-```javascript
 <script>
 $(document).ready(function() {
     const reportTypeSelect = $('#report_type');
