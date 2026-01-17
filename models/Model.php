@@ -48,7 +48,7 @@ class Model {
         return $this->conn->lastInsertId();
     }
     
-    protected function findById($id) {
+    public function findById($id) {
         $table = isset($this->table) ? $this->table : '';
         if (!$table) return null;
         return $this->queryOne("SELECT * FROM {$table} WHERE id = :id", ['id' => $id]);

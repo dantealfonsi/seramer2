@@ -84,8 +84,6 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
                                         <option value="infraction_count" <?php echo ($selected_report == 'infraction_count') ? 'selected' : ''; ?>>Conteo de Infracciones por Tiempo (Gráfico) *</option>
                                         <option value="inspector_performance" <?php echo ($selected_report == 'inspector_performance') ? 'selected' : ''; ?>>Desempeño de Inspectores (Estadístico)</option>
                                         <option value="detailed_inspections" <?php echo ($selected_report == 'detailed_inspections') ? 'selected' : ''; ?>>Detalle de Inspecciones (Tabla)</option>
-                                        <option value="payment_status" <?php echo ($selected_report == 'payment_status') ? 'selected' : ''; ?>>Estatus de Pagos (Gráfico)</option>
-                                        <option value="market_summary" <?php echo ($selected_report == 'market_summary') ? 'selected' : ''; ?>>Resumen por Mercado (Tabla)</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">

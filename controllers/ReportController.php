@@ -85,13 +85,47 @@ class ReportController {
         // 3. Obtener la plantilla del reporte
         $reportTemplate = $this->reportModel->getReportContent($_GET['report']);
 
-        // 4. Reemplazar los placeholders en la plantilla con los datos reales
+        // 4. Detectar si el reporte es HTML o texto plano
+        $isHtmlReport = (stripos($reportTemplate, '<!DOCTYPE html>') !== false || 
+                         stripos($reportTemplate, '<html') !== false);
+
+        // 5. Reemplazar los placeholders en la plantilla con los datos reales
         $finalReport = $reportTemplate;
+        
+        // Primero manejar secciones condicionales tipo Mustache {{#variable}}...{{/variable}}
         foreach ($details as $key => $value) {
-            $finalReport = str_replace('{{' . $key . '}}', htmlspecialchars($value), $finalReport);
+            // Manejar secciones condicionales: {{#key}}...{{/key}}
+            $pattern = '/\{\{#' . preg_quote($key, '/') . '\}\}(.*?)\{\{\/' . preg_quote($key, '/') . '\}\}/s';
+            
+            if (!empty($value)) {
+                // Si el valor existe, mostrar el contenido de la sección
+                $finalReport = preg_replace_callback($pattern, function($matches) use ($value) {
+                    return $matches[1]; // Retornar el contenido dentro de la sección
+                }, $finalReport);
+            } else {
+                // Si el valor está vacío, eliminar toda la sección
+                $finalReport = preg_replace($pattern, '', $finalReport);
+            }
+        }
+        
+        // Luego reemplazar variables simples {{variable}}
+        foreach ($details as $key => $value) {
+            // Si es HTML, no escapar los valores para mantener el formato
+            if ($isHtmlReport) {
+                $finalReport = str_replace('{{' . $key . '}}', $value, $finalReport);
+            } else {
+                $finalReport = str_replace('{{' . $key . '}}', htmlspecialchars($value), $finalReport);
+            }
         }
 
-        // 5. Cargar la vista para mostrar el reporte final
-        require __DIR__. '/../views/reports/view.php';
+        // 6. Cargar la vista apropiada según el tipo de reporte
+        if ($isHtmlReport) {
+            // Para reportes HTML, renderizar directamente sin layout adicional
+            header('Content-Type: text/html; charset=UTF-8');
+            echo $finalReport;
+        } else {
+            // Para reportes de texto plano, usar la vista tradicional
+            require __DIR__. '/../views/reports/view.php';
+        }
     }
 }

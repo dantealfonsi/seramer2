@@ -1,25 +1,18 @@
 {
-  "sql": "SELECT cr.report_id, mk.stall_number AS puesto, mk.location_description AS local, ifr.infraction_description, aw.first_name, aw.last_name, aw.id_number AS cedula, aw.phone, cr.citation_id, cr.awardee_attendance, cr.result, cr.agreement_details, DATE(cr.report_date) AS report_date_only, TIME(cr.report_date) AS report_time_only, cr.report_date, c.infraction_id, c.citation_datetime, c.location, c.mediator_user_id, c.citation_status FROM conciliation_reports cr INNER JOIN citations c ON cr.citation_id = c.citation_id INNER JOIN infractions ifr ON ifr.infraction_id = c.infraction_id INNER JOIN awardees aw ON aw.id = ifr.awardee_id INNER JOIN market_stalls mk ON mk.id = ifr.stall_id WHERE  cr.citation_id = :id",
- "fields": [
-    "first_name",
-    "infraction_description",
+  "sql": "SELECT cr.report_id, mk.stall_number AS puesto, mk.location_description AS local, ifr.infraction_description, aw.first_name, aw.last_name, aw.id_number AS cedula, aw.phone, cr.agreement_details, DATE_FORMAT(cr.report_date, '%d/%m/%Y') AS report_date_only, DATE_FORMAT(cr.report_date, '%h:%i %p') AS report_time_only, CONCAT(s_mgr.first_name, ' ', s_mgr.last_name) AS manager_name, s_mgr.id_number AS manager_cedula FROM conciliation_reports cr INNER JOIN citations c ON cr.citation_id = c.citation_id INNER JOIN infractions ifr ON ifr.infraction_id = c.infraction_id INNER JOIN awardees aw ON aw.id = ifr.awardee_id INNER JOIN market_stalls mk ON mk.id = ifr.stall_id LEFT JOIN departments d ON d.name LIKE '%Fiscalizaci%' LEFT JOIN staff s_mgr ON d.manager_id = s_mgr.id WHERE cr.report_id = :id",
+  "fields": [
+    "report_id",
     "puesto",
     "local",
+    "infraction_description",
+    "first_name",
     "last_name",
     "cedula",
     "phone",
-    "report_id",
-    "citation_id",
-    "awardee_attendance",
-    "result",
     "agreement_details",
-    "report_date_only",   
+    "report_date_only",
     "report_time_only",
-    "report_date",
-    "infraction_id",
-    "citation_datetime",
-    "location",
-    "mediator_user_id",
-    "citation_status"
-]
+    "manager_name",
+    "manager_cedula"
+  ]
 }
