@@ -17,6 +17,10 @@ try {
         'transaction_reference' => $_POST['transaction_reference'] ?? null,
         'concept' => $_POST['concept'] ?? 'Pago de deuda'
     ];
+
+    // DEBUG: Log incoming payment data
+    error_log("Payment Process Request: " . print_r($paymentData, true));
+
     
     // Process payment
     $result = $controller->processPayment($paymentData);

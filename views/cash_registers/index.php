@@ -2,8 +2,17 @@
 require_once __DIR__ . '/../../controllers/CashRegisterController.php';
 
 $controller = new CashRegisterController();
-$data = $controller->index();
+
+// Prepare filters
+$filters = [
+    'name' => $_GET['name'] ?? '',
+    'user_id' => $_GET['user_id'] ?? '',
+    'status' => $_GET['status'] ?? '',
+];
+
+$data = $controller->index(['filters' => $filters]);
 $cashRegisters = $data['cashRegisters'];
+$users = $data['users'];
 $page_title = $data['page_title'];
 
 require_once __DIR__ . '/../layouts/header.php';
@@ -15,18 +24,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="../dashboard/index.php">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Gestión de Cajas</li>
-                    </ol>
-                </nav>
                 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
-                            <i class="ri-archive-drawer-line icon-premium"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
+                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
+                             <i class="ri-file-list-3-line mr-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="card-tools">
                             <a href="create.php" class="btn btn-primary">
@@ -34,6 +37,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </a>
                         </div>
                     </div>
+                    
+                    <!-- Filters -->
+                    <div class="card-body border-bottom">
+                        <form method="GET" action="" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label small">Nombre de Caja</label>
+                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Usuario Asignado</label>
+                                <select name="user_id" class="form-select">
+                                    <option value="">-- Todos los Usuarios --</option>
+                                    <?php foreach ($users as $user): ?>
+                                        <option value="<?php echo $user['id']; ?>" <?php echo (string)$filters['user_id'] === (string)$user['id'] ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($user['username'] . ' (' . ($user['staff_first_name'] ?? 'Sin nombre') . ')'); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small">Estatus</label>
+                                <select name="status" class="form-select">
+                                    <option value="">-- Todos --</option>
+                                    <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activa</option>
+                                    <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactiva</option>
+                                </select>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
+                                    <i class="ri-search-line me-1"></i> Filtrar 
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='index.php'">
+                                    <i class="ri-refresh-line"></i> Limpiar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                     <div class="card-body">
                         <?php if (isset($_SESSION['flash_message'])): 
                             $msg = $_SESSION['flash_message'];
@@ -134,7 +175,8 @@ $(document).ready(function() {
         ],
         language: {
             url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
-        }
+        },
+        order: [[0, 'desc']]
     });
 });
 </script>

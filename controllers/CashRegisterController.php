@@ -11,17 +11,20 @@ class CashRegisterController {
         $this->userModel = new UserModel();
     }
     
-    public function index() {
+    public function index($params = []) {
+        $filters = $params['filters'] ?? [];
         return [
             'page_title' => 'Gestión de Cajas',
-            'cashRegisters' => $this->cashRegisterModel->getAll()
+            'cashRegisters' => $this->cashRegisterModel->getAll($filters),
+            'users' => $this->userModel->getAllForSelect(),
+            'filters' => $filters
         ];
     }
     
     public function create() {
         return [
             'page_title' => 'Crear Caja',
-            'users' => $this->userModel->getAll()
+            'users' => $this->userModel->getAllForSelect()
         ];
     }
     
@@ -62,7 +65,7 @@ class CashRegisterController {
             'success' => true,
             'page_title' => 'Editar Caja',
             'cashRegister' => $cashRegister,
-            'users' => $this->userModel->getAll()
+            'users' => $this->userModel->getAllForSelect()
         ];
     }
     

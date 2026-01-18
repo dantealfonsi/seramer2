@@ -263,6 +263,28 @@ class UserModel {
     }
 
     /**
+     * Obtener todos los usuarios activos para selects
+     * @return array
+     */
+    public function getAllForSelect() {
+        try {
+            $query = "SELECT u.id, u.username, s.first_name as staff_first_name, s.last_name as staff_last_name
+                      FROM " . $this->table . " u
+                      LEFT JOIN staff s ON u.staff_id = s.id
+                      WHERE u.status = 'active'
+                      ORDER BY u.username ASC";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error obteniendo usuarios para select: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Obtener todos los usuarios con paginación
      * @param int $page
      * @param int $limit

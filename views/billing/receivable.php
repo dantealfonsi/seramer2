@@ -6,9 +6,10 @@ $controller = new BillingController();
 // Get search parameters
 $searchTerm = $_GET['search_term'] ?? '';
 $searchType = $_GET['search_type'] ?? 'id_number';
+$idPrefix = $_GET['id_prefix'] ?? 'V';
 
 // Perform search
-$result = $controller->searchDebtor($searchTerm, $searchType);
+$result = $controller->searchDebtor($searchTerm, $searchType, ['id_prefix' => $idPrefix]);
 
 $page_title = 'Procesar Cobros';
 $has_results = $result['has_results'];
@@ -39,48 +40,63 @@ include __DIR__ . '/../layouts/navigation-top.php';
         padding: 0.5rem 1.5rem;
         border-radius: 10px;
     }
+    .search-error-msg {
+        color: #dc3545;
+        font-size: 0.85rem;
+        margin-top: 0.25rem;
+        display: none;
+    }
+    .input-group-text-prefix {
+        background-color: #f8f9fa;
+        min-width: 60px;
+    }
 </style>
 
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
                         <h5 class="mb-0 card-title-premium d-flex align-items-center">
                             <i class="ri-money-dollar-circle-line icon-premium"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
                     
-                    <div class="card-body">
-                        <!-- Search Form -->
-                        <form method="GET" action="" id="searchForm" class="mb-4">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Tipo de Búsqueda</label>
-                                    <select name="search_type" class="form-select">
-                                        <option value="id_number" <?php echo $searchType === 'id_number' ? 'selected' : ''; ?>>Cédula/RIF</option>
-                                        <option value="name" <?php echo $searchType === 'name' ? 'selected' : ''; ?>>Nombre</option>
-                                        <option value="stall" <?php echo $searchType === 'stall' ? 'selected' : ''; ?>>Número de Puesto</option>
-                                    </select>
+                    <div class="card-body pt-0">
+                        <!-- Redesigned Search Form -->
+                        <div class="bg-light p-4 rounded-3 mb-4">
+                            <form method="GET" action="" id="searchForm">
+                                <div class="row g-4">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold text-muted small text-uppercase mb-2">Método de Búsqueda</label>
+                                        <select name="search_type" id="search_type" class="form-select form-select-lg border-0 shadow-sm">
+                                            <option value="id_number" <?php echo $searchType === 'id_number' ? 'selected' : ''; ?>>Cédula / RIF</option>
+                                            <option value="name" <?php echo $searchType === 'name' ? 'selected' : ''; ?>>Nombre del Moroso</option>
+                                            <option value="stall" <?php echo $searchType === 'stall' ? 'selected' : ''; ?>>Número de Puesto</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold text-muted small text-uppercase mb-2">Dato a Ingresar</label>
+                                        <div class="input-group input-group-lg shadow-sm">
+                                            <select name="id_prefix" id="id_prefix" class="form-select border-0 bg-white" style="max-width: 80px; <?php echo $searchType !== 'id_number' ? 'display: none;' : ''; ?>">
+                                                <option value="V" <?php echo $idPrefix === 'V' ? 'selected' : ''; ?>>V</option>
+                                                <option value="E" <?php echo $idPrefix === 'E' ? 'selected' : ''; ?>>E</option>
+                                                <option value="J" <?php echo $idPrefix === 'J' ? 'selected' : ''; ?>>J</option>
+                                            </select>
+                                            <input type="text" name="search_term" id="search_term" class="form-control border-0" 
+                                                   placeholder="Ingrese el dato..." 
+                                                   value="<?php echo htmlspecialchars($searchTerm); ?>" required>
+                                            <button class="btn btn-primary px-4" type="submit" id="btnSearch">
+                                                <i class="ri-search-line me-1"></i> Buscar
+                                            </button>
+                                        </div>
+                                        <div id="search_validation_msg" class="search-error-msg"></div>
+                                    </div>
                                 </div>
-                                <div class="col-md-8">
-                                    <label class="form-label fw-semibold">Término de Búsqueda</label>
-                                    <input type="text" name="search_term" class="form-control" 
-                                           placeholder="Ingrese el dato a buscar..." 
-                                           value="<?php echo htmlspecialchars($searchTerm); ?>" required>
-                                </div>
-                                <div class="col-12 d-flex justify-content-end gap-2">
-                                    <button class="btn btn-info btn-sm text-white" type="submit" style="background-color: #0dcaf0; border-color: #0dcaf0;">
-                                        <i class="ri-search-line me-1"></i> Buscar Contribuyente
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='receivable.php'">
-                                        <i class="ri-refresh-line"></i> Limpiar
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
 
                         <?php if ($error): ?>
                             <div class="alert alert-danger" role="alert">
@@ -245,7 +261,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="mb-3">
                         <label class="form-label">Método de Pago</label>
-                        <select name="payment_method_id" class="form-select" required>
+                        <select name="payment_method_id" id="proc-payment-method" class="form-select" required>
                             <option value="">Seleccione...</option>
                             <?php if (isset($paymentMethods)): ?>
                                 <?php foreach ($paymentMethods as $pm): ?>
@@ -255,9 +271,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </select>
                     </div>
                     
-                    <div class="mb-3">
+                    <div class="mb-3" id="transaction_ref_container">
                         <label class="form-label">Referencia Bancaria/Transacción</label>
-                        <input type="text" name="transaction_reference" class="form-control">
+                        <input type="text" name="transaction_reference" id="proc-transaction-ref" class="form-control" placeholder="Solo números">
                     </div>
                 </form>
             </div>
@@ -283,6 +299,64 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <script>
 $(document).ready(function() {
+    
+    // Search Type Toggle
+    $('#search_type').on('change', function() {
+        const type = $(this).val();
+        if (type === 'id_number') {
+            $('#id_prefix').show();
+            $('#search_term').attr('placeholder', 'Ingrese el número...');
+        } else {
+            $('#id_prefix').hide();
+            $('#search_term').attr('placeholder', type === 'name' ? 'Ingrese el nombre...' : 'Ingrese el número de puesto...');
+        }
+        $('#search_validation_msg').hide();
+    });
+
+    // Search Validation
+    $('#searchForm').on('submit', function(e) {
+        const type = $('#search_type').val();
+        const term = $('#search_term').val();
+        const prefix = $('#id_prefix').val();
+        const errorMsg = $('#search_validation_msg');
+        
+        if (type === 'id_number') {
+            if (prefix === 'V' || prefix === 'E') {
+                if (!/^\d{7,8}$/.test(term)) {
+                   e.preventDefault();
+                   errorMsg.text('Para ' + prefix + ' debe ingresar de 7 a 8 números.').show();
+                   return false;
+                }
+            } else if (prefix === 'J') {
+                if (!/^\d{1,9}$/.test(term)) {
+                   e.preventDefault();
+                   errorMsg.text('Para J debe ingresar de 1 a 9 números.').show();
+                   return false;
+                }
+            }
+        }
+        errorMsg.hide();
+    });
+
+    // Payment Method Toggle for Transaction Ref
+    $('#proc-payment-method').on('change', function() {
+        const text = $(this).find('option:selected').text();
+        const container = $('#transaction_ref_container');
+        const input = $('#proc-transaction-ref');
+        
+        if (text.toLowerCase().includes('efectivo')) {
+            container.fadeOut();
+            input.val('').prop('required', false);
+        } else {
+            container.fadeIn();
+            input.prop('required', true);
+        }
+    });
+
+    // Transaction Ref numeric-only validation
+    $('#proc-transaction-ref').on('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
     
     // Common settings
     const commonLanguage = {
@@ -420,6 +494,11 @@ $(document).ready(function() {
         $('#proc-amount').val(amount);
         $('#proc-display-amount').text('Bs. ' + parseFloat(amount).toLocaleString('es-VE', {minimumFractionDigits: 2}));
         $('#proc-label').text(label);
+        
+        // Reset modal fields
+        $('#proc-payment-method').val('');
+        $('#proc-transaction-ref').val('');
+        $('#transaction_ref_container').show();
         
         $('#paymentProcessModal').modal('show');
     });

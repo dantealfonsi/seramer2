@@ -226,4 +226,46 @@ class ContractPaymentModel extends Model {
         
         return $results;
     }
+
+    public function getPaymentWithRateInfo(int $id): ?array {
+        $query = "SELECT 
+                    cp.*,
+                    er.bs_value as rate_amount,
+                    MONTH(cp.payment_date) as month_num,
+                    YEAR(cp.payment_date) as year,
+                    (SELECT SUM(COALESCE(ic.payment_count, 0) + COALESCE(ec.payment_count, 0))
+                     FROM contract_business_categories cbc
+                     LEFT JOIN internal_business_categories ic ON cbc.internal_category_id = ic.id
+                     LEFT JOIN external_business_categories ec ON cbc.external_category_id = ec.id
+                     WHERE cbc.contract_id = cp.contract_id
+                    ) as amount_euro,
+                    ((SELECT SUM(COALESCE(ic2.payment_count, 0) + COALESCE(ec2.payment_count, 0))
+                      FROM contract_business_categories cbc2
+                      LEFT JOIN internal_business_categories ic2 ON cbc2.internal_category_id = ic2.id
+                      LEFT JOIN external_business_categories ec2 ON cbc2.external_category_id = ec2.id
+                      WHERE cbc2.contract_id = cp.contract_id
+                     ) * COALESCE(er.bs_value, 0)) as amount_bs
+                  FROM {$this->table} cp
+                  LEFT JOIN euro_rates er ON cp.euro_rate_id = er.id
+                  WHERE cp.id = :id
+                  LIMIT 1";
+        
+        $row = $this->queryOne($query, ['id' => $id]);
+        
+        if ($row) {
+            $months = [
+                1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+                5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+                9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+            ];
+            $row['month_name'] = $months[(int)$row['month_num']] ?? 'N/A';
+        }
+        
+        return $row;
+    }
+
+    public function updateStatus(int $id, string $status): bool {
+        $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
+        return $this->execute($query, ['id' => $id, 'status' => $status]);
+    }
 }

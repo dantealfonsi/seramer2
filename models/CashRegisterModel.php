@@ -6,7 +6,27 @@ require_once __DIR__ . '/DailyCashRegisterModel.php';
 class CashRegisterModel extends Model {
     protected $table = 'cash_registers';
     
-    public function getAll(): array {
+    public function getAll(array $filters = []): array {
+        $params = [];
+        $where = [];
+
+        if (!empty($filters['name'])) {
+            $where[] = "cr.name LIKE :name";
+            $params['name'] = '%' . $filters['name'] . '%';
+        }
+
+        if (!empty($filters['status'])) {
+            $where[] = "cr.status = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        if (!empty($filters['user_id'])) {
+            $where[] = "cr.user_id = :user_id";
+            $params['user_id'] = $filters['user_id'];
+        }
+
+        $whereSql = !empty($where) ? " WHERE " . implode(" AND ", $where) : "";
+
         $query = "SELECT cr.*,
                          u.username,
                          u.email,
@@ -18,8 +38,9 @@ class CashRegisterModel extends Model {
                   FROM {$this->table} cr
                   LEFT JOIN users u ON cr.user_id = u.id
                   LEFT JOIN staff s ON u.staff_id = s.id
+                  {$whereSql}
                   ORDER BY cr.name ASC";
-        return $this->query($query);
+        return $this->query($query, $params);
     }
     
     public function getById(int $id): ?array {

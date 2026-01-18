@@ -17,13 +17,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="../dashboard/index.php">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Reporte de Cierre de Caja</li>
-                    </ol>
-                </nav>
-
                 <?php if (isset($_SESSION['flash_message'])): ?>
                     <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show" role="alert">
                         <?php echo $_SESSION['flash_message']['message']; ?>
@@ -32,39 +25,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Summary Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card bg-danger text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white opacity-75">INICIO DEL DÍA (Todas las Cajas)</h6>
-                                        <h2 class="text-white mb-0">Bs. <?php echo number_format($summary['total_initial'], 2, ',', '.'); ?></h2>
-                                    </div>
-                                    <div class="p-3 bg-white bg-opacity-25 rounded-circle">
-                                        <i class="ri-safe-2-line fs-3"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card bg-success text-white h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white opacity-75">TOTAL RECAUDADO (Cierre)</h6>
-                                        <h2 class="text-white mb-0">Bs. <?php echo number_format($summary['total_final'], 2, ',', '.'); ?></h2>
-                                    </div>
-                                    <div class="p-3 bg-white bg-opacity-25 rounded-circle">
-                                        <i class="ri-money-dollar-circle-line fs-3"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
 
                 <!-- Filters -->
                 <div class="card mb-4">
@@ -86,11 +47,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactivas</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="ri-filter-3-line me-1"></i> Filtrar
-                                </button>
-                            </div>
+                                <div class="col-12 d-flex justify-content-end gap-2">
+                                    <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
+                                        <i class="ri-search-line me-1"></i> Filtrar 
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='index.php'">
+                                        <i class="ri-refresh-line"></i> Limpiar
+                                    </button>
+                                </div>
                         </form>
                     </div>
                 </div>
@@ -98,9 +62,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <!-- Report Table -->
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
-                            <i class="ri-file-list-3-line icon-premium"></i>
-                            Historial de Cierres Diarios
+                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
+                             <i class="ri-file-list-3-line mr-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                             Historial de Cierres Diarios
                         </h5>
                     </div>
                     <div class="card-body">
@@ -110,11 +74,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tr>
                                         <th>Fecha</th>
                                         <th>Caja</th>
-                                        <th>Usuario</th>
-                                        <th>Estatus Caja</th>
-                                        <th>Monto Inicial</th>
-                                        <th>Total Recaudado</th>
-                                        <th>Balance Final</th>
+                                        <th>Estatus (Actividad)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -123,21 +83,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td><?php echo date('d/m/Y', strtotime($row['open_date'])); ?></td>
                                             <td><strong><?php echo htmlspecialchars($row['register_name']); ?></strong></td>
                                             <td>
-                                                <div class="d-flex flex-column">
-                                                    <span><?php echo htmlspecialchars($row['username']); ?></span>
-                                                    <small class="text-muted"><?php echo htmlspecialchars($row['staff_name']); ?></small>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <?php if ($row['register_status'] === 'active'): ?>
-                                                    <span class="badge bg-success">Activa</span>
+                                                <?php if ($row['total_collected'] > 0): ?>
+                                                    <span class="badge bg-success">Con Actividad (Bs. <?php echo number_format($row['total_collected'], 2, ',', '.'); ?>)</span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-danger">Inactiva</span>
+                                                    <span class="badge bg-secondary">Sin Actividad</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td>Bs. <?php echo number_format($row['initial_amount'], 2, ',', '.'); ?></td>
-                                            <td class="text-success fw-bold">Bs. <?php echo number_format($row['total_collected'], 2, ',', '.'); ?></td>
-                                            <td class="fw-bold">Bs. <?php echo number_format($row['initial_amount'] + $row['total_collected'], 2, ',', '.'); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
