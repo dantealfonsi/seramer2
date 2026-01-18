@@ -568,16 +568,6 @@ class UserModel {
                     ]
                 ],
                 [
-                    'title' => 'Cobranza y Cajas',
-                    'icon' => 'ri-money-dollar-circle-line',
-                    'submenu' => [
-                        ['title' => 'Cuentas por Cobrar', 'url' => 'views/billing/receivable.php'],
-                        ['title' => 'Pagos Recibidos', 'url' => 'views/billing/payments.php'],
-                        ['title' => 'Cierre de Caja', 'url' => 'views/daily_cash/index.php'],
-                        ['title' => 'Administrar Cajas', 'url' => 'views/cash_registers/index.php']
-                    ]
-                ],
-                [
                     'title' => 'Maestros y Catálogos',
                     'icon' => 'ri-database-2-line',
                     'submenu' => [
@@ -614,11 +604,22 @@ class UserModel {
                     'icon' => 'ri-money-cny-circle-line',
                     'submenu' => [
                         ['title' => 'Cuentas por Cobrar', 'url' => 'views/billing/receivable.php'],
-                        ['title' => 'Pagos Recibidos', 'url' => 'views/billing/payments.php']
+                        ['title' => 'Gestión de Multas', 'url' => 'views/billing/fines.php'],
+                        ['title' => 'Control de Morosidad', 'url' => 'views/billing/delinquency.php'],
+                        ['title' => 'Pagos Recibidos', 'url' => 'views/billing/payments.php'],
                     ]
-                ]
+                ],
+                [
+                    'title' => 'Cajas',
+                    'icon' => 'ri-money-dollar-circle-line',
+                    'submenu' => [
+                        ['title' => 'Cierre de Caja', 'url' => 'views/daily_cash/index.php'],
+                        ['title' => 'Administrar Cajas', 'url' => 'views/cash_registers/index.php']
+                    ]
+                ],
             ]
         ];
+
 
         return isset($menus[$department_name]) ? $menus[$department_name] : [];
     }

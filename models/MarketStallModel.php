@@ -64,6 +64,21 @@ class MarketStallModel extends Model {
         ]) ?: null;
     }
     
+    /**
+     * Search stall by number only (without sector).
+     * @param string $stallNumber
+     * @return array|null
+     */
+    public function searchByStallNumber(string $stallNumber): ?array {
+        $query = "SELECT ms.*, s.name as sector_name, z.name as zone_name 
+                  FROM {$this->table} ms
+                  LEFT JOIN sectors s ON ms.sector_id = s.id
+                  LEFT JOIN zones z ON s.zone_id = z.id
+                  WHERE ms.stall_number = :stall_number 
+                  LIMIT 1";
+        return $this->queryOne($query, ['stall_number' => $stallNumber]) ?: null;
+    }
+    
     public function getAvailable(): array {
         $query = "SELECT ms.*, s.name as sector_name, z.name as zone_name 
                   FROM {$this->table} ms

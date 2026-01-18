@@ -61,7 +61,7 @@ public function index($params = []) {
             return ['success' => false, 'message' => 'ID de sanción inválido.'];
         }
 
-        $sanction = $this->model->getById($id);
+        $sanction = $this->model->getSanctionWithDetails($id);
 
         if (!$sanction) {
             return ['success' => false, 'message' => 'Sanción no encontrado.'];

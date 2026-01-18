@@ -48,7 +48,44 @@ class CashRegisterModel extends Model {
         return $this->queryOne($query, ['user_id' => $userId]);
     }
     
+    public function validateUniqueName(string $name, ?int $excludeId = null): bool {
+        $query = "SELECT COUNT(*) as count FROM {$this->table} WHERE name = :name";
+        $params = ['name' => $name];
+        
+        if ($excludeId) {
+            $query .= " AND id != :id";
+            $params['id'] = $excludeId;
+        }
+        
+        $result = $this->queryOne($query, $params);
+        return ((int)($result['count'] ?? 0)) === 0;
+    }
+
+    public function validateSingleActiveUser(int $userId, ?int $excludeId = null): bool {
+        $query = "SELECT COUNT(*) as count FROM {$this->table} WHERE user_id = :user_id AND status = 'active'";
+        $params = ['user_id' => $userId];
+        
+        if ($excludeId) {
+            $query .= " AND id != :id";
+            $params['id'] = $excludeId;
+        }
+        
+        $result = $this->queryOne($query, $params);
+        return ((int)($result['count'] ?? 0)) === 0;
+    }
+
     public function create(array $data) {
+        // Validation
+        if (!$this->validateUniqueName($data['name'])) {
+            throw new Exception("Ya existe una caja con el nombre '{$data['name']}'");
+        }
+
+        if (($data['status'] ?? 'active') === 'active') {
+            if (!$this->validateSingleActiveUser($data['user_id'])) {
+                throw new Exception("El usuario ya tiene una caja activa asignada");
+            }
+        }
+
         $query = "INSERT INTO {$this->table} 
                   (name, user_id, status) 
                   VALUES 
@@ -72,6 +109,17 @@ class CashRegisterModel extends Model {
     public function update(int $id, array $data): bool {
         $old = $this->getById($id);
         if (!$old) return false;
+
+        // Validation
+        if (!$this->validateUniqueName($data['name'], $id)) {
+            throw new Exception("Ya existe una caja con el nombre '{$data['name']}'");
+        }
+
+        if (($data['status'] ?? 'active') === 'active') {
+            if (!$this->validateSingleActiveUser($data['user_id'], $id)) {
+                throw new Exception("El usuario ya tiene una caja activa asignada");
+            }
+        }
         
         $query = "UPDATE {$this->table} 
                   SET name = :name,

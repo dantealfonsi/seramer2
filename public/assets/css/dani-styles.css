@@ -11,3 +11,13 @@
     font-size: 2rem !important;
     font-weight: 600 !important;
 }
+
+/* SweetAlert Z-Index Fix */
+.swal2-container {
+    z-index: 20000 !important;
+}
+
+/* Ensure navbar stays below */
+.layout-navbar {
+    z-index: 1000 !important;
+}

@@ -13,21 +13,22 @@ class Model {
     /**
      * Executes a query and returns all results as an array.
      */
-    protected function query(string $sql, array $params = []): array {
+    public function query(string $sql, array $params = []): array {
         return $this->db->fetchAll($sql, $params);
     }
 
     /**
      * Executes a query and returns a single result row.
      */
-    protected function queryOne(string $sql, array $params = []) {
-        return $this->db->fetchOne($sql, $params);
+    public function queryOne(string $sql, array $params = []) {
+        $result = $this->db->fetchOne($sql, $params);
+        return $result !== false ? $result : null;
     }
 
     /**
      * Executes a query (INSERT, UPDATE, DELETE) and returns true on success.
      */
-    protected function execute(string $sql, array $params = []): bool {
+    public function execute(string $sql, array $params = []): bool {
         $stmt = $this->db->executeQuery($sql, $params);
         return $stmt !== false;
     }

@@ -31,44 +31,69 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
-             <div class="col-md-6">
+            <div class="col-12">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="../dashboard/index.php">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="index.php">Gestión de Cajas</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Editar Caja</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <div class="col-md-6 mx-auto">
                  <div class="card">
                      <div class="card-header">
-                         <h5 class="card-title"><?php echo htmlspecialchars($page_title); ?></h5>
+                         <h5 class="card-title mb-0"><i class="ri-edit-circle-line me-2"></i><?php echo htmlspecialchars($page_title); ?></h5>
                      </div>
                      <div class="card-body">
                          <?php if (isset($error)): ?>
-                             <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                             <div class="alert alert-danger">
+                                <i class="ri-error-warning-line me-2"></i>
+                                <?php echo htmlspecialchars($error); ?>
+                             </div>
                          <?php endif; ?>
                          
                          <form method="POST" action="">
                              <div class="mb-3">
                                  <label class="form-label">Nombre de Caja</label>
-                                 <input type="text" name="name" class="form-control" required value="<?php echo htmlspecialchars($cashRegister['name']); ?>">
+                                 <div class="input-group">
+                                    <span class="input-group-text"><i class="ri-archive-drawer-line"></i></span>
+                                    <input type="text" name="name" class="form-control" required value="<?php echo htmlspecialchars($cashRegister['name']); ?>">
+                                 </div>
                              </div>
                              
                              <div class="mb-3">
                                  <label class="form-label">Usuario Asignado</label>
-                                 <select name="user_id" class="form-control" required>
-                                     <option value="">Seleccione Usuario...</option>
-                                     <?php foreach ($users as $user): ?>
-                                         <option value="<?php echo $user['id']; ?>" <?php echo ($user['id'] == $cashRegister['user_id'] ? 'selected' : ''); ?>>
-                                             <?php echo htmlspecialchars($user['username'] . ' (' . ($user['staff_first_name'] ?? 'Sin nombre') . ')'); ?>
-                                         </option>
-                                     <?php endforeach; ?>
-                                 </select>
+                                 <div class="input-group">
+                                    <span class="input-group-text"><i class="ri-user-line"></i></span>
+                                    <select name="user_id" class="form-control" required>
+                                        <option value="">Seleccione Usuario...</option>
+                                        <?php foreach ($users as $user): ?>
+                                            <option value="<?php echo $user['id']; ?>" <?php echo ($user['id'] == $cashRegister['user_id'] ? 'selected' : ''); ?>>
+                                                <?php echo htmlspecialchars($user['username'] . ' (' . ($user['staff_first_name'] ?? 'Sin nombre') . ')'); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                 </div>
                              </div>
                              
                              <div class="mb-3">
-                                 <label class="form-label">Estado</label>
-                                 <select name="status" class="form-control">
-                                     <option value="active" <?php echo ($cashRegister['status'] == 'active' ? 'selected' : ''); ?>>Activo</option>
-                                     <option value="inactive" <?php echo ($cashRegister['status'] == 'inactive' ? 'selected' : ''); ?>>Inactivo</option>
-                                 </select>
+                                 <label class="form-label">Estatus</label>
+                                 <div class="input-group">
+                                    <span class="input-group-text"><i class="ri-toggle-line"></i></span>
+                                    <select name="status" class="form-control">
+                                        <option value="active" <?php echo ($cashRegister['status'] == 'active' ? 'selected' : ''); ?>>Activa</option>
+                                        <option value="inactive" <?php echo ($cashRegister['status'] == 'inactive' ? 'selected' : ''); ?>>Inactiva</option>
+                                    </select>
+                                 </div>
+                                 <small class="text-muted">Desactivar la caja impedirá que el usuario asignado realice cobros.</small>
                              </div>
                              
-                             <button type="submit" class="btn btn-primary">Actualizar</button>
-                             <a href="index.php" class="btn btn-secondary">Cancelar</a>
+                             <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i> Actualizar Caja</button>
+                                <a href="index.php" class="btn btn-outline-secondary">Cancelar</a>
+                             </div>
                          </form>
                      </div>
                  </div>

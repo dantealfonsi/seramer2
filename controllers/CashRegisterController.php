@@ -34,17 +34,21 @@ class CashRegisterController {
             return ['success' => false, 'message' => 'Nombre y usuario requeridos'];
         }
         
-        $id = $this->cashRegisterModel->create([
-            'name' => $name,
-            'user_id' => $userId,
-            'status' => $status
-        ]);
-        
-        if ($id) {
-            $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Caja creada exitosamente'];
-            return ['success' => true, 'redirect' => 'index.php'];
-        } else {
-            return ['success' => false, 'message' => 'Error al crear la caja'];
+        try {
+            $id = $this->cashRegisterModel->create([
+                'name' => $name,
+                'user_id' => $userId,
+                'status' => $status
+            ]);
+            
+            if ($id) {
+                $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Caja creada exitosamente'];
+                return ['success' => true, 'redirect' => 'index.php'];
+            } else {
+                return ['success' => false, 'message' => 'Error al crear la caja'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
     
@@ -67,17 +71,21 @@ class CashRegisterController {
         $userId = (int) ($data['user_id'] ?? 0);
         $status = $data['status'] ?? 'active';
         
-        $success = $this->cashRegisterModel->update($id, [
-            'name' => $name,
-            'user_id' => $userId,
-            'status' => $status
-        ]);
-        
-        if ($success) {
-            $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Caja actualizada exitosamente'];
-            return ['success' => true, 'redirect' => 'index.php'];
-        } else {
-             return ['success' => false, 'message' => 'Error al actualizar la caja'];
+        try {
+            $success = $this->cashRegisterModel->update($id, [
+                'name' => $name,
+                'user_id' => $userId,
+                'status' => $status
+            ]);
+            
+            if ($success) {
+                $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Caja actualizada exitosamente'];
+                return ['success' => true, 'redirect' => 'index.php'];
+            } else {
+                 return ['success' => false, 'message' => 'Error al actualizar la caja'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
         }
     }
     

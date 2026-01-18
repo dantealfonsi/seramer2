@@ -20,6 +20,86 @@ class DailyCashRegisterModel extends Model {
         error_log($message);
     }
     
+    
+    /**
+     * Get or Create a daily cash session for the given register and user for TODAY.
+     */
+    public function getOrCreateCurrentSession(int $cashRegisterId, int $userId): int {
+        $today = date('Y-m-d');
+        
+        $query = "SELECT id FROM {$this->table} 
+                  WHERE cash_register_id = :register_id 
+                  AND user_id = :user_id 
+                  AND open_date = :today 
+                  LIMIT 1";
+                  
+        $existing = $this->queryOne($query, [
+            'register_id' => $cashRegisterId,
+            'user_id' => $userId,
+            'today' => $today
+        ]);
+        
+        if ($existing) {
+            return (int)$existing['id'];
+        }
+        
+        // Create new session
+        $insertQuery = "INSERT INTO {$this->table} 
+                        (cash_register_id, user_id, open_date, open_time, initial_amount, status) 
+                        VALUES 
+                        (:register_id, :user_id, :today, CURTIME(), 0, 'open')";
+        
+        $this->execute($insertQuery, [
+            'register_id' => $cashRegisterId,
+            'user_id' => $userId,
+            'today' => $today
+        ]);
+        
+        return $this->lastInsertId();
+    }
+
+    /**
+     * Get report data for Daily Cash view
+     */
+    public function getDailyReport(array $filters = []): array {
+        $params = [];
+        $query = "SELECT dcr.id as session_id,
+                         dcr.open_date,
+                         dcr.initial_amount,
+                         cr.name as register_name,
+                         cr.status as register_status,
+                         u.username,
+                         CONCAT(COALESCE(s.first_name, ''), ' ', COALESCE(s.last_name, '')) as staff_name,
+                         (
+                            COALESCE((SELECT SUM(amount) FROM contract_payment_installments WHERE daily_cash_register_id = dcr.id), 0) +
+                            COALESCE((SELECT SUM(amount_paid) FROM fine_payments WHERE daily_cash_register_id = dcr.id), 0)
+                          ) as total_collected
+                  FROM {$this->table} dcr
+                  JOIN cash_registers cr ON dcr.cash_register_id = cr.id
+                  LEFT JOIN users u ON dcr.user_id = u.id
+                  LEFT JOIN staff s ON u.staff_id = s.id
+                  WHERE 1=1";
+
+        if (!empty($filters['status'])) {
+            $query .= " AND cr.status = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        if (!empty($filters['date_from'])) {
+            $query .= " AND dcr.open_date >= :date_from";
+            $params['date_from'] = $filters['date_from'];
+        }
+
+        if (!empty($filters['date_to'])) {
+            $query .= " AND dcr.open_date <= :date_to";
+            $params['date_to'] = $filters['date_to'];
+        }
+
+        $query .= " ORDER BY dcr.open_date DESC, dcr.open_time DESC";
+
+        return $this->query($query, $params);
+    }
+
     public function openCash(int $cashRegisterId, int $userId, float $initialAmount) {
         try {
             $this->beginTransaction();
@@ -192,12 +272,23 @@ class DailyCashRegisterModel extends Model {
     }
     
     public function getTotalInstallments(int $dailyCashId): float {
-        $query = "SELECT COALESCE(SUM(cpi.amount), 0) as total
-                  FROM contract_payment_installments cpi
-                  WHERE cpi.daily_cash_register_id = :daily_cash_id";
+        // Sum contract installments
+        $query1 = "SELECT COALESCE(SUM(cpi.amount), 0) as total
+                   FROM contract_payment_installments cpi
+                   WHERE cpi.daily_cash_register_id = :daily_cash_id";
         
-        $result = $this->queryOne($query, ['daily_cash_id' => $dailyCashId]);
-        return (float) ($result['total'] ?? 0);
+        $res1 = $this->queryOne($query1, ['daily_cash_id' => $dailyCashId]);
+        $total1 = (float) ($res1['total'] ?? 0);
+        
+        // Sum fine payments
+        $query2 = "SELECT COALESCE(SUM(fp.amount_paid), 0) as total
+                   FROM fine_payments fp
+                   WHERE fp.daily_cash_register_id = :daily_cash_id";
+        
+        $res2 = $this->queryOne($query2, ['daily_cash_id' => $dailyCashId]);
+        $total2 = (float) ($res2['total'] ?? 0);
+        
+        return $total1 + $total2;
     }
     
     public function getInstallmentsByDailyCash(int $dailyCashId): array {

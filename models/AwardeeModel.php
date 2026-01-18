@@ -16,7 +16,7 @@ class AwardeeModel extends Model {
     
     public function getByIdNumber(string $idNumber): ?array {
         $query = "SELECT * FROM {$this->table} WHERE id_number = :id_number LIMIT 1";
-        return $this->queryOne($query, ['id_number' => $idNumber]);
+        return $this->queryOne($query, ['id_number' => $idNumber]) ?: null;
     }
     
     public function search(string $search): array {
