@@ -159,18 +159,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="awardee_id" class="form-label">
+                                        <label for="awardee_id_display" class="form-label">
                                             Adjudicatario <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="awardee_id" name="awardee_id" required>
+                                        <select class="form-select" id="awardee_id_display" disabled>
                                             <option value="">Seleccione un adjudicatario</option>
                                             <?php foreach ($awardees as $awardee): ?>
                                                 <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
                                                         <?php echo ((int)$report['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($awardee['first_name']); ?>
+                                                    <?php echo htmlspecialchars($awardee['full_name'] ?? $awardee['first_name']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
+                                        <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($report['awardee_id']); ?>">
+                                        <small class="text-muted">Se asigna automáticamente al seleccionar el puesto.</small>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -221,3 +223,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
 </div>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<script>
+// Mapeo de Puesto -> Adjudicatario
+const stallAwardeeMapping = <?php echo json_encode($stallAwardeeMapping); ?>;
+
+document.getElementById('stall_id').addEventListener('change', function() {
+    const stallId = this.value;
+    const awardeeIdDisplay = document.getElementById('awardee_id_display');
+    const awardeeIdHidden = document.getElementById('awardee_id');
+    
+    if (stallId && stallAwardeeMapping[stallId]) {
+        const mapping = stallAwardeeMapping[stallId];
+        awardeeIdDisplay.value = mapping.id;
+        awardeeIdHidden.value = mapping.id;
+    } else {
+        awardeeIdDisplay.value = "";
+        awardeeIdHidden.value = "";
+    }
+});
+</script>

@@ -38,6 +38,8 @@ class InspectionController {
         $search = $params['search'] ?? '';
         
         $reports = $this->inspectionModel->getFilteredReports($filters); 
+        $inspectors = $this->inspectionModel->getInspectors();
+        $stalls = $this->inspectionModel->getStalls();
         
         $total = count($reports);
         $page = 1;
@@ -46,6 +48,8 @@ class InspectionController {
 
         return [
             'inspections' => $reports, 
+            'inspectors' => $inspectors,
+            'stalls' => $stalls,
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $total,
@@ -109,6 +113,7 @@ class InspectionController {
         $stalls = $this->inspectionModel->getStalls();
         $awardees = $this->inspectionModel->getAwardees();
         $users = $this->inspectionModel->getUsers();
+        $stallAwardeeMapping = $this->inspectionModel->getStallAwardeeMapping();
         
         return [
             'page_title' => 'Registrar Nuevo Reporte de Inspección',
@@ -116,6 +121,7 @@ class InspectionController {
             'stalls' => $stalls,
             'users' => $users,
             'awardees' => $awardees,
+            'stallAwardeeMapping' => $stallAwardeeMapping,
             'action' => 'create'
         ];
     }
@@ -150,6 +156,7 @@ class InspectionController {
         $inspectors = $this->inspectionModel->getInspectors();
         $stalls = $this->inspectionModel->getStalls();
         $awardees = $this->inspectionModel->getAwardees();
+        $stallAwardeeMapping = $this->inspectionModel->getStallAwardeeMapping();
 
         return [
             'success' => true,
@@ -158,6 +165,7 @@ class InspectionController {
             'inspectors' => $inspectors,
             'stalls' => $stalls,
             'awardees' => $awardees,
+            'stallAwardeeMapping' => $stallAwardeeMapping,
             'action' => 'edit'
         ];
     }
@@ -208,9 +216,21 @@ class InspectionController {
         }
         
         // 5. Devolver resultado y mensaje Flash
+        $statusTranslations = [
+            'Pending' => 'Pendiente',
+            'In Progress' => 'En Curso',
+            'Completed' => 'Completado',
+            'Cancelled' => 'Cancelado'
+        ];
+        $translatedStatus = $statusTranslations[$newStatus] ?? $newStatus;
+        
+        $msg = $result['success'] 
+            ? "Reporte de inspección actualizado exitosamente. Estado: {$translatedStatus}" 
+            : $result['message'];
+
         $_SESSION['flash_message'] = [
             'type' => $result['success'] ? 'success' : 'error',
-            'message' => $result['message']
+            'message' => $msg
         ];
         
         if ($result['success']) {

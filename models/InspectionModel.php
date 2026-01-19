@@ -238,7 +238,7 @@ class InspectionModel {
             ];
 
             $this->db->executeQuery($sql_report, $params_report);
-            return ['success' => true, 'message' => 'Reporte e inspección registrados exitosamente.'];
+            return ['success' => true, 'message' => 'Reporte de inspección registrados exitosamente.'];
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Error al registrar los datos: ' . $e->getMessage()];
         }
@@ -319,8 +319,35 @@ class InspectionModel {
     }
 
     public function getAwardees() {
-        $sql = "SELECT id, first_name FROM awardees ORDER BY first_name";
+        $sql = "SELECT id, CONCAT(first_name, ' ', last_name) as full_name FROM awardees ORDER BY first_name";
         return $this->db->fetchAll($sql);
+    }
+
+    /**
+     * Obtiene un mapeo de todos los puestos con su adjudicatario asignado.
+     * @return array
+     */
+    public function getStallAwardeeMapping() {
+        $sql = "SELECT 
+                    s.id as stall_id, 
+                    a.id as awardee_id, 
+                    CONCAT(a.first_name, ' ', a.last_name) as awardee_name
+                FROM 
+                    market_stalls s
+                LEFT JOIN 
+                    awardees a ON s.awardee_id = a.id
+                WHERE 
+                    s.awardee_id IS NOT NULL";
+        
+        $results = $this->db->fetchAll($sql);
+        $mapping = [];
+        foreach ($results as $row) {
+            $mapping[$row['stall_id']] = [
+                'id' => $row['awardee_id'],
+                'name' => $row['awardee_name']
+            ];
+        }
+        return $mapping;
     }
 
     public function getUsers() {
