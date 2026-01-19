@@ -639,6 +639,13 @@ class UserModel {
                         ['title' => 'Administrar Cajas', 'url' => 'views/cash_registers/index.php']
                     ]
                 ],
+                [
+                    'title' => 'Reportes',
+                    'icon' => 'ri-bar-chart-box-line',
+                    'submenu' => [
+                         ['title' => 'Reportes de Cobranza', 'url' => 'views/collection-reports/index.php']
+                    ]
+                ]
             ]
         ];
 
