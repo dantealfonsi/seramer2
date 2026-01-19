@@ -220,4 +220,154 @@ class CollectionReportModel extends Model {
             'borderColor' => $borderColors
         ];
     }
+
+    /**
+     * Get aggregated stats for the dashboard.
+     * @return array
+     */
+    public function getDashboardStats() {
+        $today = date('Y-m-d');
+        $startOfMonth = date('Y-m-01');
+        $endOfMonth = date('Y-m-t');
+
+        // 1. Revenue Today
+        $sqlToday = "
+            SELECT SUM(amount) as total 
+            FROM (
+                SELECT amount_paid as amount FROM fee_payments WHERE DATE(payment_date) = :today AND payment_status = 'Paid'
+                UNION ALL
+                SELECT amount_paid as amount FROM fine_payments WHERE DATE(payment_date) = :today AND payment_status = 'Paid'
+            ) t
+        ";
+        $todayRevenue = $this->query($sqlToday, [':today' => $today])[0]['total'] ?? 0;
+
+        // 2. Revenue This Month
+        $sqlMonth = "
+            SELECT SUM(amount) as total 
+            FROM (
+                SELECT amount_paid as amount FROM fee_payments WHERE DATE(payment_date) BETWEEN :start AND :end AND payment_status = 'Paid'
+                UNION ALL
+                SELECT amount_paid as amount FROM fine_payments WHERE DATE(payment_date) BETWEEN :start AND :end AND payment_status = 'Paid'
+            ) t
+        ";
+        $monthRevenue = $this->query($sqlMonth, [':start' => $startOfMonth, ':end' => $endOfMonth])[0]['total'] ?? 0;
+
+        // 3. Active Payers (Distinct count this month)
+        $sqlPayers = "
+            SELECT COUNT(DISTINCT payer_id) as total
+            FROM (
+                SELECT c.awardee_id as payer_id
+                FROM fee_payments fp
+                JOIN contracts c ON fp.contract_id = c.id
+                WHERE DATE(fp.payment_date) BETWEEN :start AND :end AND fp.payment_status = 'Paid'
+                UNION
+                SELECT i.awardee_id as payer_id
+                FROM fine_payments fnp
+                JOIN sanctions s ON fnp.sanction_id = s.sanction_id
+                JOIN infractions i ON s.infraction_id = i.infraction_id
+                WHERE DATE(fnp.payment_date) BETWEEN :start AND :end AND fnp.payment_status = 'Paid'
+            ) t
+        ";
+        $activePayers = $this->query($sqlPayers, [':start' => $startOfMonth, ':end' => $endOfMonth])[0]['total'] ?? 0;
+
+        // 4. Recent Transactions Count (Last 30 days)
+        $start30 = date('Y-m-d', strtotime('-30 days'));
+        $sqlTransactions = "
+            SELECT COUNT(*) as total 
+            FROM (
+                SELECT id FROM fee_payments WHERE DATE(payment_date) >= :start AND payment_status = 'Paid'
+                UNION ALL
+                SELECT id FROM fine_payments WHERE DATE(payment_date) >= :start AND payment_status = 'Paid'
+            ) t
+        ";
+        $recentTransactions = $this->query($sqlTransactions, [':start' => $start30])[0]['total'] ?? 0;
+
+        return [
+            'today_revenue' => (float)$todayRevenue,
+            'month_revenue' => (float)$monthRevenue,
+            'active_payers' => (int)$activePayers,
+            'recent_transactions' => (int)$recentTransactions
+        ];
+    }
+
+    /**
+     * Get monthly revenue for the last N months.
+     * @param int $months
+     * @return array Chart data
+     */
+    public function getMonthlyRevenue($months = 6) {
+        $labels = [];
+        $data = [];
+        
+        for ($i = $months - 1; $i >= 0; $i--) {
+            $monthStart = date('Y-m-01', strtotime("-$i months"));
+            $monthEnd = date('Y-m-t', strtotime("-$i months"));
+            $label = date('M Y', strtotime($monthStart));
+            
+            // Adjust label to Spanish roughly or keep english
+            $spanishMonths = ['Jan'=>'Ene','Feb'=>'Feb','Mar'=>'Mar','Apr'=>'Abr','May'=>'May','Jun'=>'Jun','Jul'=>'Jul','Aug'=>'Ago','Sep'=>'Sep','Oct'=>'Oct','Nov'=>'Nov','Dec'=>'Dic'];
+            $engMonth = date('M', strtotime($monthStart));
+            $label = ($spanishMonths[$engMonth] ?? $engMonth) . ' ' . date('Y', strtotime($monthStart));
+
+            $sql = "
+                SELECT SUM(amount) as total 
+                FROM (
+                    SELECT amount_paid as amount FROM fee_payments WHERE DATE(payment_date) BETWEEN :start AND :end AND payment_status = 'Paid'
+                    UNION ALL
+                    SELECT amount_paid as amount FROM fine_payments WHERE DATE(payment_date) BETWEEN :start AND :end AND payment_status = 'Paid'
+                ) t
+            ";
+            $result = $this->query($sql, [':start' => $monthStart, ':end' => $monthEnd]);
+            
+            $labels[] = $label;
+            $data[] = (float)($result[0]['total'] ?? 0);
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $data
+        ];
+    }
+
+    /**
+     * Get recent individual payments.
+     * @param int $limit
+     * @return array
+     */
+    public function getRecentPayments($limit = 5) {
+        $sql = "
+            SELECT 
+                payment_date,
+                amount,
+                type,
+                awardee_name
+            FROM (
+                SELECT 
+                    fp.payment_date, 
+                    fp.amount_paid as amount, 
+                    'Canon' as type,
+                    CONCAT(a.first_name, ' ', a.last_name) as awardee_name
+                FROM fee_payments fp
+                JOIN contracts c ON fp.contract_id = c.id
+                JOIN awardees a ON c.awardee_id = a.id
+                WHERE fp.payment_status = 'Paid'
+
+                UNION ALL
+
+                SELECT 
+                    fnp.payment_date, 
+                    fnp.amount_paid as amount, 
+                    'Multa' as type,
+                    CONCAT(a.first_name, ' ', a.last_name) as awardee_name
+                FROM fine_payments fnp
+                JOIN sanctions s ON fnp.sanction_id = s.sanction_id
+                JOIN infractions i ON s.infraction_id = i.infraction_id
+                JOIN awardees a ON i.awardee_id = a.id
+                WHERE fnp.payment_status = 'Paid'
+            ) all_payments
+            ORDER BY payment_date DESC
+            LIMIT " . (int)$limit;
+            
+        return $this->query($sql);
+    }
 }

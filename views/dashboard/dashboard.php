@@ -19,6 +19,13 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     exit();
 }
 
+// Redireccionar si es el departamento de Cobranza
+if (isset($_SESSION['selected_department']) && $_SESSION['selected_department'] === 'Cobranza') {
+    $collectionDashboardUrl = url('views/dashboard/collection.php');
+    header("Location: $collectionDashboardUrl");
+    exit();
+}
+
 // Verificar si la sesión es válida (no expirada)
 $session_timeout = 1800; // 30 minutos
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $session_timeout) {

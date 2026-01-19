@@ -621,6 +621,7 @@ class UserModel {
             // I'll leave Cobranza as is (or removed) but focus on Liquidacion.
             // Let's assume Liquidacion is the new main one.
             'Cobranza' => [
+
                  [
                     'title' => 'Gestión de Cobros',
                     'icon' => 'ri-money-cny-circle-line',
