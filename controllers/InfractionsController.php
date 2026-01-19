@@ -66,6 +66,7 @@ class InfractionsController {
         $result = [
             'infractions' => $infractions,
             'awardees' => $awardees,
+            'stalls' => $this->infractionsModel->getStallsList(),
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $total,
@@ -190,7 +191,7 @@ class InfractionsController {
             return [
                 'message' => $result['message'],
                 'success' => true,                
-                'redirect' =>  '../reports/index.php?report=print_infraction.rep&action=view&id=' . $result['id']
+                'redirect' =>  '../reports/index.php?report=infraction_invoice.rep&action=view&id=' . $result['id']
             ];   
 
         } else {

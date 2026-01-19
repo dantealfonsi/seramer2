@@ -224,23 +224,46 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <form method="POST" enctype="multipart/form-data" novalidate>
                             <!-- Adjudicatario and Tipo de Infracción - Side by Side -->
+                            <!-- Stall and Awardee - Side by Side -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="awardee_id" class="form-label">
-                                            Adjudicatario <span class="text-danger">*</span>
+                                        <label for="stall_id" class="form-label">
+                                            Puesto <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="awardee_id" name="awardee_id" onchange="loadSanctions()" required>
-                                            <option value="">Seleccione un adjudicatario</option>
-                                            <?php foreach ($awardees as $adj): ?>
-                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
-                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($adj['first_name']); ?>
-                                            </option>
+                                        <select class="form-select" id="stall_id" name="stall_id" onchange="autoSelectAwardeeByStall()" required>
+                                            <option value="">Seleccione un puesto</option>
+                                            <?php foreach ($stalls as $stall): ?>
+                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
+                                                    data-awardee-id="<?php echo htmlspecialchars($stall['awardee_id'] ?? ''); ?>"
+                                                    <?php echo ((int)$form_data['stall_id'] == (int)$stall['id']) ? ' selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
+                                                </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="awardee_id_display" class="form-label">
+                                            Adjudicatario <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="awardee_id_display" disabled>
+                                            <option value="">Se seleccionará automáticamente</option>
+                                            <?php foreach ($awardees as $adj): ?>
+                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
+                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($adj['full_name'] ?? $adj['first_name']); ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Infraction Type and Date - Side by Side -->
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="infraction_type_id" class="form-label">
@@ -255,6 +278,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </option>
                                             <?php endforeach; ?>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="infraction_datetime" class="form-label">
+                                            Fecha de la Infracción <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="date"
+                                               class="form-control"
+                                               id="infraction_datetime"
+                                               name="infraction_datetime"
+                                               value="<?php echo htmlspecialchars($form_data['infraction_datetime']); ?>"
+                                               required>
                                     </div>
                                 </div>
                             </div>
@@ -284,48 +320,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="infraction_datetime" class="form-label">
-                                            Fecha de la Infracción <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="date"
-                                               class="form-control"
-                                               id="infraction_datetime"
-                                               name="infraction_datetime"
-                                               value="<?php echo htmlspecialchars($form_data['infraction_datetime']); ?>"
-                                               required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="stall_id" class="form-label">
-                                            Puesto <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select" id="stall_id" name="stall_id" required>
-                                            <option value="">Seleccione un puesto</option>
-                                            <?php 
-                                            // Solo mostrar stalls si hay un awardee seleccionado (modo edición)
-                                            if (!empty($form_data['awardee_id'])) {
-                                                foreach ($stalls as $stall): 
-                                                    // Solo mostrar stalls que pertenecen al awardee actual
-                                                    if ($stall['awardee_id'] == $form_data['awardee_id']):
-                                            ?>
-                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
-                                                    data-awardee-id="<?php echo htmlspecialchars($stall['awardee_id'] ?? ''); ?>"
-                                                    <?php echo ((int)$form_data['stall_id'] == (int)$stall['id']) ? ' selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
-                                                </option>
-                                            <?php 
-                                                    endif;
-                                                endforeach;
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+
 
                             <!-- Descripción and Observaciones - Side by Side -->
                             <div class="row">
@@ -456,32 +451,28 @@ function getInfractionTypeName(id) {
 /**
  * Filtra los puestos (stalls) basándose en el adjudicatario seleccionado
  */
-function filterStallsByAwardee() {
-    const awardeeId = document.getElementById('awardee_id').value;
+/**
+ * Selecciona automáticamente el adjudicatario basado en el puesto seleccionado
+ */
+function autoSelectAwardeeByStall() {
     const stallSelect = document.getElementById('stall_id');
-    const currentStallId = stallSelect.value; // Guardar el valor actual
+    const awardeeSelect = document.getElementById('awardee_id_display');
+    const awardeeHidden = document.getElementById('awardee_id');
     
-    // Limpiar opciones excepto la primera (placeholder)
-    stallSelect.innerHTML = '<option value="">Seleccione un puesto</option>';
+    // Obtener la opción seleccionada
+    const selectedOption = stallSelect.options[stallSelect.selectedIndex];
+    const awardeeId = selectedOption.getAttribute('data-awardee-id');
     
-    if (!awardeeId) {
-        // Si no hay awardee seleccionado, no mostrar ningún stall
-        return;
+    if (awardeeId) {
+        awardeeSelect.value = awardeeId;
+        awardeeHidden.value = awardeeId;
+        
+        // Recalcular conteo de infecciones ya que el adjudicatario cambió
+        loadInfractionCount(); 
+    } else {
+        awardeeSelect.value = "";
+        awardeeHidden.value = "";
     }
-    
-    // Filtrar solo los stalls que pertenecen al awardee seleccionado
-    const filteredStalls = STALLS.filter(stall => stall.awardee_id == awardeeId);
-    
-    filteredStalls.forEach(stall => {
-        const option = document.createElement('option');
-        option.value = stall.id;
-        option.textContent = stall.stall_number;
-        option.setAttribute('data-awardee-id', stall.awardee_id);
-        if (stall.id == currentStallId) {
-            option.selected = true;
-        }
-        stallSelect.appendChild(option);
-    });
 }
 
 function getInfractionTypeName(id) {

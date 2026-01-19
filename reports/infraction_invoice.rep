@@ -341,8 +341,8 @@
                 <button onclick="window.print()" class="btn btn-primary">
                     🖨️ Imprimir
                 </button>
-                <a href="javascript:history.back()" class="btn btn-secondary">
-                    ← Volver
+                <a href="../infractions/index.php" class="btn btn-secondary">
+                    Volver al Listado
                 </a>
             </div>
         </div>
