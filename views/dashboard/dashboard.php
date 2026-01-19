@@ -40,6 +40,11 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) >
 // Actualizar timestamp de actividad
 $_SESSION['last_activity'] = time();
 
+// Sincronizar automáticamente la tasa del Euro
+require_once __DIR__ . '/../../controllers/InfractionsController.php';
+$infractionsCtrl = new InfractionsController();
+$infractionsCtrl->syncEuroWithSystemRates();
+
 // Obtener datos del usuario
 $user = [
     'id' => $_SESSION['user_id'] ?? null,

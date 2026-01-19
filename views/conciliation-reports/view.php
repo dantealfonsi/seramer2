@@ -52,13 +52,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-eye-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             Detalles del Informe
                         </h5>
-                        <a href="index.php" class="btn btn-secondary">
-                            <i class="ri-arrow-left-line"></i> Volver
-                        </a>
-                        <a href="../reports/index.php?report=acta_conciliacion.rep&action=view&id=<?php echo $report['report_id']; ?>" class="btn btn-info">
-                            <i class="ri-printer-line"></i> Generar Reporte
-                        </a>
-
+                        <div class="btn-group" role="group">
+                            <a href="../citations/index.php" class="btn btn-secondary">
+                                <i class="ri-arrow-left-line"></i> Volver
+                            </a>
+                            <a href="edit.php?id=<?php echo htmlspecialchars($report['report_id']); ?>" class="btn btn-warning">
+                                <i class="ri-edit-line"></i> Editar
+                            </a>
+                            <a href="../reports/index.php?report=acta_conciliacion.rep&action=view&id=<?php echo $report['report_id']; ?>" class="btn btn-info">
+                                <i class="ri-printer-line"></i> Generar Reporte
+                            </a>
+                        </div>
                     </div>
                     
                     <div class="card-body">
@@ -68,6 +72,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <p class="form-control-plaintext"><?php echo htmlspecialchars($report['report_id']); ?></p>
                             </div>
                             <div class="col-md-6">
+                                <p class="mb-1"><strong>Fecha del Informe:</strong></p>
+                                <p class="form-control-plaintext">
+                                    <?php 
+                                    $date = new DateTime($report['report_date']);
+                                    echo $date->format('d/m/Y H:i'); 
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
                                 <p class="mb-1"><strong>ID de la Citación:</strong></p>
                                 <p class="form-control-plaintext"><?php echo htmlspecialchars($report['citation_id']); ?></p>
                             </div>
@@ -76,11 +92,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <p class="mb-1"><strong>Asistencia del Citado:</strong></p>
-                                <p class="form-control-plaintext"><?php echo htmlspecialchars($attendance_options[$report['awardee_attendance']]); ?></p>
+                                <p class="form-control-plaintext">
+                                    <?php 
+                                    $attendanceBadge = $report['awardee_attendance'] == 1 ? 'success' : 'danger';
+                                    $attendanceText = $attendance_options[$report['awardee_attendance']];
+                                    ?>
+                                    <span class="badge bg-<?php echo $attendanceBadge; ?>"><?php echo htmlspecialchars($attendanceText); ?></span>
+                                </p>
                             </div>
                             <div class="col-md-6">
                                 <p class="mb-1"><strong>Resultado:</strong></p>
-                                <p class="form-control-plaintext"><?php echo htmlspecialchars($result_options[$report['result']]); ?></p>
+                                <p class="form-control-plaintext">
+                                    <?php 
+                                    $resultBadge = 'secondary';
+                                    switch($report['result']) {
+                                        case 'Agreement Reached': $resultBadge = 'success'; break;
+                                        case 'No Agreement': $resultBadge = 'warning'; break;
+                                        case 'Case Postponed': $resultBadge = 'info'; break;
+                                        case 'Absent Party': $resultBadge = 'danger'; break;
+                                    }
+                                    ?>
+                                    <span class="badge bg-<?php echo $resultBadge; ?>"><?php echo htmlspecialchars($result_options[$report['result']]); ?></span>
+                                </p>
                             </div>
                         </div>
 
@@ -91,24 +124,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <p class="mb-1"><strong>Fecha del Informe:</strong></p>
-                            <p class="form-control-plaintext">
-                                <?php 
-                                $date = new DateTime($report['report_date']);
-                                echo $date->format('d/m/Y H:i'); 
-                                ?>
-                            </p>
-                        </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="edit.php?id=<?php echo htmlspecialchars($report['report_id']); ?>" class="btn btn-warning">
-                                <i class="ri-edit-line"></i> Editar
-                            </a>
-                            <button type="button" class="btn btn-danger" onclick="confirmDelete(<?php echo htmlspecialchars($report['report_id']); ?>)">
-                                <i class="ri-delete-bin-line"></i> Eliminar
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>

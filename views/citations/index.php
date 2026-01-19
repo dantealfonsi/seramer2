@@ -2,8 +2,10 @@
 session_start();
 // Asegúrate de que esta ruta es correcta
 require_once __DIR__ . '/../../controllers/CitationsController.php';
+require_once __DIR__ . '/../../controllers/ConciliationReportsController.php';
 
 $citationsController = new CitationsController();
+$conciliationReportsController = new ConciliationReportsController();
 
 // 1. OBTENER PARÁMETROS DE FILTRADO DEL GET
 // Ahora obtenemos los parámetros de filtro del URL (método GET), que se establecen al hacer clic en "Aplicar Filtros"
@@ -99,7 +101,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado</h6>
                             <div class="row g-3 align-items-end">
                                 
-                                <div class="col-md-3">
+                                <!-- Filtro por Fecha -->
+                                <div class="col-md-2">
+                                    <label for="filterDate" class="form-label small">Fecha:</label>
+                                    <input type="date" id="filterDate" name="filterDate" class="form-control" 
+                                           value="<?php echo htmlspecialchars($_GET['filterDate'] ?? ''); ?>">
+                                </div>
+                                
+                                <!-- Filtro por Estado -->
+                                <div class="col-md-2">
                                     <label for="filterStatus" class="form-label small">Estado:</label>
                                     <select id="filterStatus" name="filterStatus" class="form-select">
                                         <?php foreach ($allowed_status as $key => $value): ?>
@@ -110,23 +120,39 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                
+
+                                <!-- Filtro por Puesto -->
+                                <div class="col-md-2">
+                                    <label for="filterStall" class="form-label small">Puesto:</label>
+                                    <input type="text" id="filterStall" name="filterStall" class="form-control" 
+                                           placeholder="Ej: L-001" value="<?php echo htmlspecialchars($_GET['filterStall'] ?? ''); ?>">
+                                </div>
+
+                                <!-- Filtro por Adjudicatario -->
+                                <div class="col-md-2">
+                                    <label for="filterAwardee" class="form-label small">Adjudicatario:</label>
+                                    <input type="text" id="filterAwardee" name="filterAwardee" class="form-control" 
+                                           placeholder="Nombre" value="<?php echo htmlspecialchars($_GET['filterAwardee'] ?? ''); ?>">
+                                </div>
+
+                                <!-- Filtro por Cédula/RIF -->
                                 <div class="col-md-3">
-                                    <label for="filterLocation" class="form-label small">Ubicación:</label>
-                                    <input type="text" id="filterLocation" name="filterLocation" class="form-control" placeholder="Ej: Calle Principal" 
-                                           value="<?php echo htmlspecialchars($filter_params['location']); ?>">
-                                </div>
-                                
-                                <div class="col-md-2">
-                                    <label for="filterDateStart" class="form-label small">Fecha Inicio:</label>
-                                    <input type="date" id="filterDateStart" name="filterDateStart" class="form-control" 
-                                           value="<?php echo htmlspecialchars($filter_params['dateStart']); ?>">
-                                </div>
-                                
-                                <div class="col-md-2">
-                                    <label for="filterDateEnd" class="form-label small">Fecha Fin:</label>
-                                    <input type="date" id="filterDateEnd" name="filterDateEnd" class="form-control"
-                                           value="<?php echo htmlspecialchars($filter_params['dateEnd']); ?>">
+                                    <label for="filterIdNumber" class="form-label small">Cédula/RIF:</label>
+                                    <div class="input-group">
+                                        <select id="filterIdPrefix" name="filterIdPrefix" class="form-select" style="max-width: 70px;">
+                                            <option value="">-</option>
+                                            <?php 
+                                            $prefixes = ['V', 'E', 'J', 'G', 'P'];
+                                            $selectedPrefix = $_GET['filterIdPrefix'] ?? '';
+                                            foreach ($prefixes as $prefix): ?>
+                                                <option value="<?php echo $prefix; ?>" <?php echo ($selectedPrefix === $prefix) ? 'selected' : ''; ?>>
+                                                    <?php echo $prefix; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <input type="text" id="filterIdNumber" name="filterIdNumber" class="form-control" 
+                                               placeholder="Número" pattern="[0-9]*" value="<?php echo htmlspecialchars($_GET['filterIdNumber'] ?? ''); ?>">
+                                    </div>
                                 </div>
                             </div>
                                 <div class="col-md-2 d-flex justify-content-end" style="align-self: end;width: auto;margin-top: 1em;">
@@ -155,11 +181,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <thead class="table-dark">
                                         <tr>
                                             <th>ID Citación</th> 
-                                            <th>ID Infracción</th>
-                                            <th>Fecha y Hora</th>
-                                            <th>Ubicación</th>
-                                            <th>ID Mediador</th>
-                                            <th>Estado (Filtro)</th> 
+                                            <th>Fecha</th>
+                                            <th>Hora</th>
+                                            <th>Puesto</th>
+                                            <th>Adjudicatario</th>
+                                            <th>Infracción</th>
+                                            <th>Mediador</th>
+                                            <th>Estado</th> 
                                             <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
@@ -168,30 +196,72 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <tr>
                                             <td><?php echo htmlspecialchars($citation['citation_id']); ?></td>
                                             <td>
-                                                <strong>#<?php echo htmlspecialchars($citation['infraction_id']); ?></strong>
-                                            </td>
-                                            <td>
                                                 <?php 
                                                 $date = new DateTime($citation['citation_datetime']);
-                                                echo $date->format('d/m/Y H:i'); 
+                                                echo $date->format('d/m/Y'); 
                                                 ?>
                                             </td>
                                             <td>
-                                                <?php echo htmlspecialchars($citation['location']); ?>
+                                                <?php 
+                                                echo $date->format('h:i A'); 
+                                                ?>
                                             </td>
                                             <td>
-                                                <strong>ID: <?php echo htmlspecialchars($citation['mediator_user_id']); ?></strong>
+                                                <span class="badge bg-light text-dark border">
+                                                    <?php echo htmlspecialchars($citation['stall_number'] ?? 'N/A'); ?>
+                                                </span>
                                             </td>
                                             <td>
-                                                <?php $status_key = $citation['citation_status']; ?>
-                                                <span class="badge bg-<?php echo $status_colors[$status_key] ?? 'light'; ?>" data-status-key="<?php echo htmlspecialchars(strtolower($status_key)); ?>">
-                                                    <?php echo htmlspecialchars($allowed_status[$status_key] ?? $status_key); ?>
+                                                <?php echo htmlspecialchars($citation['awardee_full_name'] ?? 'N/A'); ?>
+                                                <?php if (!empty($citation['awardee_id_number'])): ?>
+                                                    <br><small class="text-muted"><?php echo htmlspecialchars($citation['awardee_id_number']); ?></small>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-center">
+                                                <i class="ri-eye-line text-primary" style="cursor: pointer; font-size: 1.2rem;" 
+                                                   data-bs-toggle="popover" 
+                                                   data-bs-trigger="hover focus" 
+                                                   title="Detalles de la Infracción" 
+                                                   data-bs-html="true"
+                                                   data-bs-content="<strong>Desc:</strong> <?php echo htmlspecialchars($citation['infraction_description'] ?? 'Sin descripción'); ?><br><strong>Ubicación:</strong> <?php echo htmlspecialchars($citation['location']); ?>">
+                                                </i>
+                                            </td>
+                                            <td>
+                                                <?php echo htmlspecialchars($citation['mediator_full_name'] ?? 'N/A'); ?>
+                                            </td>
+                                            <td>
+                                                <?php 
+                                                $status_key = $citation['citation_status']; 
+                                                $badge_class = '';
+                                                switch($status_key) {
+                                                    case 'Scheduled': $badge_class = 'primary'; break;
+                                                    case 'In Process': $badge_class = 'warning'; break; // Nuevo estado
+                                                    case 'Rescheduled': $badge_class = 'info'; break;
+                                                    case 'Completed': $badge_class = 'success'; break;
+                                                    case 'Canceled': $badge_class = 'danger'; break; // Cambiado a danger o dark según preferencia
+                                                    default: $badge_class = 'secondary';
+                                                }
+                                                // Traducción manual si no está en el array allowed_status por alguna razón
+                                                $status_label = $allowed_status[$status_key] ?? $status_key;
+                                                if ($status_key === 'In Process') $status_label = 'En Proceso';
+                                                ?>
+                                                <span class="badge bg-<?php echo $badge_class; ?>" data-status-key="<?php echo htmlspecialchars(strtolower($status_key)); ?>">
+                                                    <?php echo htmlspecialchars($status_label); ?>
                                                 </span>
                                             </td>
                                             <td class="text-center">
+                                                <?php 
+                                                // Check if this citation has a conciliation report
+                                                $existingReport = $conciliationReportsController->getByCitationId($citation['citation_id']);
+                                                ?>
                                                 <div class="btn-group" role="group">
                                                     <a href="view.php?id=<?php echo $citation['citation_id']; ?>" class="btn btn-sm btn-outline-info" title="Ver detalles"><i class="ri-eye-line"></i></a>
                                                     <a href="edit.php?id=<?php echo $citation['citation_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
+                                                    <?php if ($existingReport): ?>
+                                                        <a href="../conciliation-reports/view.php?id=<?php echo $existingReport['report_id']; ?>" class="btn btn-sm btn-outline-success" title="Ver Informe"><i class="ri-file-text-line"></i></a>
+                                                    <?php else: ?>
+                                                        <a href="../conciliation-reports/create.php?citation_id=<?php echo $citation['citation_id']; ?>" class="btn btn-sm btn-outline-primary" title="Registrar Informe"><i class="ri-file-add-line"></i></a>
+                                                    <?php endif; ?>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $citation['citation_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                 </div>
                                             </td>
@@ -332,11 +402,18 @@ $(document).ready(function() {
                 "sortDescending": ": activar para ordenar la columna descendente"
             } 
         },
-        order: [[2, 'desc']], 
+        order: [[1, 'desc'], [2, 'desc']], 
         "columnDefs": [
-            { "orderable": false, "targets": 6 },
+            { "orderable": false, "targets": [5, 8] },
             { "visible": false, "targets": 0 } 
-        ]
+        ],
+        drawCallback: function() {
+            // Reinicializar popovers después de cada renderizado de la tabla
+            $('[data-bs-toggle="popover"]').popover({
+                html: true,
+                trigger: 'hover'
+            });
+        }
     });
 
     // =========================================================
@@ -348,24 +425,27 @@ $(document).ready(function() {
         function(settings, data, dataIndex) {
             // Obtener los valores de filtro de los campos de entrada
             const statusFilter = $('#filterStatus').val();
-            const locationFilter = $('#filterLocation').val().toLowerCase();
-            const dateStart = $('#filterDateStart').val();
-            const dateEnd = $('#filterDateEnd').val();
+            // const locationFilter = $('#filterLocation').val().toLowerCase(); // Eliminado
+            const dateFilter = $('#filterDate').val();
 
             // Columnas de la tabla (índices basados en 0):
-            // 2: Fecha y Hora (DD/MM/YYYY HH:mm)
-            // 3: Ubicación
-            // 5: Estado (HTML del badge)
+            // 0: ID (Oculto)
+            // 1: Fecha (DD/MM/YYYY)
+            // 2: Hora (hh:mm A)
+            // 3: Puesto
+            // 4: Adjudicatario
+            // 5: Infracción (Icono)
+            // 6: Mediador
+            // 7: Estado (HTML del badge)
+            // 8: Acciones
 
             // Obtener datos de la fila actual
-            const statusMatch = data[5].match(/data-status-key="([^"]+)"/);
+            const statusMatch = data[7].match(/data-status-key="([^"]+)"/);
             const rowStatus = statusMatch ? statusMatch[1] : ''; 
 
-            const rowLocation = data[3].toLowerCase();
-            const rowDateTime = data[2]; // Formato: DD/MM/YYYY HH:mm
+            const rowDateStr = data[1]; // Formato: DD/MM/YYYY
 
             let passStatus = true;
-            let passLocation = true;
             let passDate = true;
 
             // 1. Filtrar por Estado
@@ -373,43 +453,28 @@ $(document).ready(function() {
                 passStatus = false;
             }
 
-            // 2. Filtrar por Ubicación (búsqueda parcial)
-            if (locationFilter !== '' && rowLocation.indexOf(locationFilter) === -1) {
-                passLocation = false;
-            }
-
-            // 3. Filtrar por Rango de Fechas
-            if (dateStart || dateEnd) {
-                const dateParts = rowDateTime.split(' ')[0].split('/');
-                const rowDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
-                rowDate.setHours(0, 0, 0, 0); 
-
-                const startDate = dateStart ? new Date(dateStart) : null;
-                const endDate = dateEnd ? new Date(dateEnd) : null;
-                
-                if (startDate) startDate.setHours(0, 0, 0, 0);
-                if (endDate) endDate.setHours(0, 0, 0, 0);
-
-                if (startDate && rowDate < startDate) {
-                    passDate = false;
-                }
-                if (endDate && rowDate > endDate) {
-                    passDate = false;
+            // 2. Filtrar por Fecha exacta
+            if (dateFilter) {
+                // Convertir DD/MM/YYYY a YYYY-MM-DD para comparar con el input date (YYYY-MM-DD)
+                const parts = rowDateStr.split('/');
+                if (parts.length === 3) {
+                    // parts[0] = DD, parts[1] = MM, parts[2] = YYYY
+                    // Input date format: YYYY-MM-DD
+                    const rowDateISO = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    if (rowDateISO !== dateFilter) {
+                        passDate = false;
+                    }
                 }
             }
 
-            // La fila solo pasa si cumple con los tres criterios
-            return passStatus && passLocation && passDate;
+            // La fila solo pasa si cumple con los criterios
+            return passStatus && passDate;
         }
     );
     
     // **APLICACIÓN INICIAL DEL FILTRO:**
-    // Como los filtros están en el URL y PHP los imprime en el HTML,
-    // DataTables debe aplicar el filtro una vez que se carga la página.
-    // Sin embargo, como el filtro de Ubicación/Fecha no se propaga al campo de búsqueda de DataTables,
-    // es necesario forzar un draw al inicio, solo si hay algún filtro activo.
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('filterStatus') || urlParams.get('filterLocation') || urlParams.get('filterDateStart') || urlParams.get('filterDateEnd')) {
+    if (urlParams.get('filterStatus') || urlParams.get('filterDate')) {
         table.draw();
     }
 });

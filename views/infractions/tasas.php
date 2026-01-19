@@ -43,11 +43,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <?php endif; ?>
                     
                     <div class="card-body">
-                        <div class="alert alert-info border-0 shadow-sm mb-4">
-                            <h6><i class="ri-information-line me-1"></i> Tasas Vigentes Actualmente</h6>
-                            <p class="mb-1"><strong>Unidad Tributaria (UT):</strong> <?php echo htmlspecialchars($ut_actual); ?></p>
-                            <p class="mb-1"><strong>Tasa del Euro (BCV):</strong> <?php echo htmlspecialchars($euro_actual); ?></p>
-                            <small class="d-block text-muted">Última fecha de vigencia registrada: <?php echo htmlspecialchars($effective_date); ?></small>
+                        <div class="alert alert-info border-start border-info border-5 shadow-sm mb-4">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <h6 class="fw-bold">Tasas Vigentes Actualmente</h6>
+                                <p class="mb-1"><strong>Unidad Tributaria (UT):</strong> <?php echo htmlspecialchars($ut_actual); ?></p>
+                                <p class="mb-1"><strong>Tasa del Euro (BCV):</strong> <?php echo htmlspecialchars($euro_actual); ?></p>
+                                <small class="d-block text-muted">Última fecha de vigencia registrada: <?php echo htmlspecialchars($effective_date); ?></small>
+                            </div>
                         </div>
 
                         <form action="save_rates.php" method="POST">
@@ -64,8 +67,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="mb-4">
                                 <label for="euro_bcv_rate" class="form-label">Tasa del Euro (BCV)</label>
                                 <input type="number" step="0.000001" class="form-control" id="euro_bcv_rate" name="euro_bcv_rate" 
-                                       placeholder="Ej: 38.543210" required>
-                                <div class="form-text">Este valor se usará para el cálculo de multas.</div>
+                                       placeholder="Ej: 38.543210" value="<?php echo htmlspecialchars($euro_actual); ?>" disabled style="background-color: #e9ecef;">
+                                <div class="form-text">Este valor se actualiza automáticamente desde el módulo de Tasas de Euro.</div>
                             </div>
                             <?php endif; ?>
                             <?php if ($rol->hasPermission('CONFIG_RATES', 'w')): ?>

@@ -1,0 +1,18 @@
+--- STEP 1: Search Awardee Daniel ---
+ID: 2 | Name: Daniel Fiiguera
+
+--- STEP 2: Infractions for ID 2 ---
+ID: 4 | Status: In Process | Logical: active | TypeID: 1 | Desc: sssssssss fgfgfgf ffgfg
+   -> Type Name: Falta de Documentos
+ID: 5 | Status: Reported | Logical: active | TypeID: 25 | Desc: TestTestestestse
+   -> Type Name: Cierre temporal injustificado (Moderada)
+ID: 7 | Status: Reported | Logical: active | TypeID: 3 | Desc: Esta es una prueba
+   -> Type Name: Abandono de mercancía
+ID: 8 | Status: Reported | Logical: active | TypeID: 19 | Desc: aasdasasas
+   -> Type Name: Agresión física
+ID: 9 | Status: Reported | Logical: active | TypeID: 3 | Desc: asdasdasdasda
+   -> Type Name: Abandono de mercancía
+ID: 10 | Status: Reported | Logical: active | TypeID: 7 | Desc: TESTasdasdsd
+   -> Type Name: Almacenamiento indebido de alimentos
+ID: 11 | Status: Reported | Logical: active | TypeID: 28 | Desc: asdasaaassdfsdf
+   -> Type Name: Consumo de sustancias prohibidas

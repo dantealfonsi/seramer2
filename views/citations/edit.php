@@ -38,16 +38,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 // Opciones en español para el select de estado de citación
+// Opciones en español para el select de estado de citación
+// "Cuando editas una citacion, no deberias de poder seleccionar programada, solo reprogramada"
 $allowed_status = [
-    'Scheduled' => 'Programada',
     'Rescheduled' => 'Reprogramada',
     'Completed' => 'Completada',
-    'Canceled' => 'Cancelada'
+    'Canceled' => 'Cancelada',
+    'In Process' => 'En Proceso' // Agregamos En Proceso por si acaso se necesita manual
 ];
+// Si el estado actual es 'Scheduled', lo agregamos solo para que se vea, pero la idea es que cambie a Reprogramada
+if ($citation['citation_status'] === 'Scheduled') {
+    // Opción: No agregarlo para forzar el cambio, o agregarlo.
+    // El requerimiento dice "no deberias de poder seleccionar programada".
+    // Si no lo agrego, el select seleccionará 'Reprogramada' por defecto.
+}
 
-// Obtener las listas de infracciones y mediadores para los select
-$infractions = $citationsController->getInfractionsList();
+// Obtener las listas de mediadores para los select
 $mediators = $citationsController->getMediatorsList();
+$stalls = $citationsController->getStallsList();
+
+// Convertir puestos a JS para el buscador
+$stalls_js = array_map(function($s){
+    return [
+        'id' => (int)($s['id'] ?? 0),
+        'stall_number' => $s['stall_number'] ?? '',
+        'location' => $s['location_description'] ?? '',
+        'awardee_id' => (int)($s['awardee_id'] ?? 0),
+        'awardee_name' => trim(($s['awardee_full_name'] ?? ''))
+    ];
+}, $stalls);
+
+// Para el edit, necesitamos cargar las infracciones del adjudicatario actual inicialmente
+$initial_infractions = [];
+if (!empty($formData['awardee_id'])) {
+    $initial_infractions = $citationsController->getInfractionsByAwardee($formData['awardee_id']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $citation_id = filter_input(INPUT_POST, 'citation_id', FILTER_SANITIZE_NUMBER_INT);
@@ -125,15 +150,37 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form method="POST">
                             <input type="hidden" name="citation_id" value="<?php echo htmlspecialchars($citation_id); ?>">
                             <div class="row g-3">
-                                <!-- Campo Infracción -->
+                                <!-- Campo Puesto (Buscador) -->
                                 <div class="col-md-6">
-                                    <label for="infraction_id" class="form-label">Infracción</label>
-                                    <select id="infraction_id" name="infraction_id" class="form-select <?php echo isset($errors['infraction_id']) ? 'is-invalid' : ''; ?>">
-                                        <option value="">Seleccione una infracción...</option>
-                                        <?php foreach ($infractions as $infraction): ?>
-                                            <option value="<?php echo htmlspecialchars($infraction['infraction_id']); ?>"
-                                                <?php echo ($formData['infraction_id'] == $infraction['infraction_id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($infraction['infraction_description']); ?>
+                                    <label for="stall_search" class="form-label">Puesto / Local <span class="text-danger">*</span></label>
+                                    <input list="stalls_datalist" id="stall_search" class="form-control" placeholder="Escriba el número de puesto..." onchange="onStallSelected()" value="<?php echo htmlspecialchars($formData['stall_number'] ?? ''); ?>">
+                                    <datalist id="stalls_datalist">
+                                        <?php foreach ($stalls as $stall): ?>
+                                            <option value="<?php echo htmlspecialchars($stall['stall_number']); ?>" data-id="<?php echo $stall['id']; ?>">
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </div>
+
+                                <!-- Campo Adjudicatario (Auto-llenado) -->
+                                <div class="col-md-6">
+                                    <label for="awardee_name" class="form-label">Adjudicatario</label>
+                                    <input type="text" id="awardee_name" class="form-control" readonly placeholder="Se autocompletará al seleccionar el puesto" value="<?php echo htmlspecialchars($formData['awardee_full_name'] ?? ''); ?>">
+                                    <input type="hidden" id="awardee_id" name="awardee_id" value="<?php echo htmlspecialchars($formData['awardee_id'] ?? ''); ?>">
+                                </div>
+
+                                <!-- Campo Infracción (Dinámico) -->
+                                <div class="col-md-6">
+                                    <label for="infraction_id" class="form-label">Infracción <span class="text-danger">*</span></label>
+                                    <select id="infraction_id" name="infraction_id" class="form-select <?php echo isset($errors['infraction_id']) ? 'is-invalid' : ''; ?>" required>
+                                        <option value="">Seleccione un puesto primero...</option>
+                                        <?php foreach ($initial_infractions as $inf): ?>
+                                            <?php 
+                                            $date = (new DateTime($inf['infraction_datetime']))->format('d/m/Y');
+                                            $descSnippet = $inf['infraction_description'] ? (substr($inf['infraction_description'], 0, 50) . '...') : 'Sin descripción';
+                                            $label = "[" . strtoupper($inf['infraction_type_name']) . "] - Fecha: " . $date . " - (" . $descSnippet . ")";
+                                            ?>
+                                            <option value="<?php echo htmlspecialchars($inf['infraction_id']); ?>" <?php echo ($formData['infraction_id'] == $inf['infraction_id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($label); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -144,18 +191,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 
                                 <!-- Campo Fecha y Hora -->
                                 <div class="col-md-6">
-                                    <label for="citation_datetime" class="form-label">Fecha y Hora</label>
-                                    <input type="datetime-local" class="form-control <?php echo isset($errors['citation_datetime']) ? 'is-invalid' : ''; ?>" id="citation_datetime" name="citation_datetime" value="<?php echo htmlspecialchars($formData['citation_datetime']); ?>">
+                                    <label for="citation_datetime" class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
+                                    <input type="datetime-local" class="form-control <?php echo isset($errors['citation_datetime']) ? 'is-invalid' : ''; ?>" id="citation_datetime" name="citation_datetime" value="<?php echo htmlspecialchars($formData['citation_datetime']); ?>" required>
                                     <?php if (isset($errors['citation_datetime'])): ?>
                                         <div class="invalid-feedback"><?php echo $errors['citation_datetime']; ?></div>
                                     <?php endif; ?>
                                 </div>
                                 
-                                <!-- Campo Ubicación -->
+                                <!-- Campo Ubicación (Auto-llenado / Manual) -->
                                 <div class="col-md-6">
-                                    <label for="location" class="form-label">Ubicación</label>
-                                    <input onKeyup="validarLocation('location', 8)" type="text" class="form-control <?php echo isset($errors['location']) ? 'is-invalid' : ''; ?>" id="location" name="location" value="<?php echo htmlspecialchars($formData['location']); ?>">
-                                    <div id="errorTextLocation" style="color: red;"></div>
+                                    <label for="location" class="form-label">Ubicación <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control <?php echo isset($errors['location']) ? 'is-invalid' : ''; ?>" id="location" name="location" value="<?php echo htmlspecialchars($formData['location']); ?>" required>
                                     <?php if (isset($errors['location'])): ?>
                                         <div class="invalid-feedback"><?php echo $errors['location']; ?></div>
                                     <?php endif; ?>
@@ -163,8 +209,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                                 <!-- Campo Mediador -->
                                 <div class="col-md-6">
-                                    <label for="mediator_user_id" class="form-label">Mediador</label>
-                                    <select id="mediator_user_id" name="mediator_user_id" class="form-select <?php echo isset($errors['mediator_user_id']) ? 'is-invalid' : ''; ?>">
+                                    <label for="mediator_user_id" class="form-label">Mediador <span class="text-danger">*</span></label>
+                                    <select id="mediator_user_id" name="mediator_user_id" class="form-select <?php echo isset($errors['mediator_user_id']) ? 'is-invalid' : ''; ?>" required>
                                         <option value="">Seleccione un mediador...</option>
                                         <?php foreach ($mediators as $mediator): ?>
                                             <option value="<?php echo htmlspecialchars($mediator['inspector_id']); ?>"
@@ -180,8 +226,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 
                                 <!-- Campo Estado -->
                                 <div class="col-md-6">
-                                    <label for="citation_status" class="form-label">Estado</label>
-                                    <select id="citation_status" name="citation_status" class="form-select <?php echo isset($errors['citation_status']) ? 'is-invalid' : ''; ?>">
+                                    <label for="citation_status" class="form-label">Estado <span class="text-danger">*</span></label>
+                                    <select id="citation_status" name="citation_status" class="form-select <?php echo isset($errors['citation_status']) ? 'is-invalid' : ''; ?>" required>
                                         <?php foreach ($allowed_status as $key => $value): ?>
                                             <option value="<?php echo htmlspecialchars($key); ?>"
                                                 <?php echo ($formData['citation_status'] == $key) ? 'selected' : ''; ?>>
@@ -200,6 +246,59 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <a href="index.php" class="btn btn-secondary"><i class="ri-close-line me-1"></i>Cancelar</a>
                             </div>
                         </form>
+
+<script>
+const STALLS = <?php echo json_encode($stalls_js); ?>;
+
+function onStallSelected() {
+    const searchValue = document.getElementById('stall_search').value;
+    const stall = STALLS.find(s => s.stall_number === searchValue);
+    
+    if (stall) {
+        document.getElementById('awardee_name').value = stall.awardee_name;
+        document.getElementById('awardee_id').value = stall.awardee_id;
+        document.getElementById('location').value = stall.location;
+        loadInfractions(stall.awardee_id);
+    } else {
+        resetForm();
+    }
+}
+
+function loadInfractions(awardeeId) {
+    const infractionSelect = document.getElementById('infraction_id');
+    infractionSelect.disabled = true;
+    infractionSelect.innerHTML = '<option value="">Cargando infracciones...</option>';
+
+    fetch(`../infractions/api_infractions.php?getInfractionsByAwardee=1&awardeeId=${awardeeId}`)
+        .then(response => response.json())
+        .then(data => {
+            infractionSelect.innerHTML = '<option value="">Seleccione una infracción...</option>';
+            if (data.length > 0) {
+                data.forEach(inf => {
+                    const date = new Date(inf.infraction_datetime).toLocaleDateString();
+                    const descSnippet = inf.infraction_description ? (inf.infraction_description.substring(0, 50) + '...') : 'Sin descripción';
+                    infractionSelect.innerHTML += `<option value="${inf.infraction_id}">[${inf.infraction_type_name.toUpperCase()}] - Fecha: ${date} - (${descSnippet})</option>`;
+                });
+                infractionSelect.disabled = false;
+            } else {
+                infractionSelect.innerHTML = '<option value="">No hay infracciones reportadas para este adjudicatario.</option>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            infractionSelect.innerHTML = '<option value="">Error al cargar infracciones.</option>';
+        });
+}
+
+function resetForm() {
+    document.getElementById('awardee_name').value = '';
+    document.getElementById('awardee_id').value = '';
+    document.getElementById('location').value = '';
+    const infractionSelect = document.getElementById('infraction_id');
+    infractionSelect.disabled = true;
+    infractionSelect.innerHTML = '<option value="">Seleccione un puesto primero...</option>';
+}
+</script>
                     </div>
                 </div>
             </div>

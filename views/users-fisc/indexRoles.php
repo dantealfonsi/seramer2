@@ -41,8 +41,14 @@ $permission_types = [
                     </div>
                     
                     <div class="card-body">
-                        <div class="alert alert-info border-0 shadow-sm">
-                            La máscara de permisos (9 caracteres) se divide en tres grupos de 3: **Infracciones (rwx)**, **Tasas/Configuración (rwx)** y **Usuarios/Auditoría (rwx)**.
+                        <div class="alert alert-info border-start border-info border-5 shadow-sm mb-4">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <h6 class="fw-bold">Estructura de Permisos</h6>
+                                <p class="mb-0">
+                                    La máscara de permisos (9 caracteres) se divide en tres grupos de 3: <strong>Infracciones (rwx)</strong>, <strong>Tasas/Configuración (rwx)</strong> y <strong>Usuarios/Auditoría (rwx)</strong>.
+                                </p>
+                            </div>
                         </div>
 
                         <div class="table-responsive">

@@ -57,8 +57,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-body border-bottom">
                          <!-- El formulario de búsqueda manual se elimina o refactoriza para DataTables -->
                          <!-- DataTables tiene su propio buscador, así que podemos simplificar esto -->
-                        <div class="alert alert-info">
-                            <i class="ri-information-line"></i> Utilice el cuadro de "Buscar" en la tabla para filtrar por cualquier columna. Use los botones para Exportar.
+                        <div class="alert alert-info border-start border-info border-5 shadow-sm">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <strong>Información:</strong> Utilice el cuadro de "Buscar" en la tabla para filtrar por cualquier columna. Use los botones para Exportar los resultados.
+                            </div>
                         </div>
                     </div>
 
@@ -94,7 +97,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="view.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
                                                     <a href="edit.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $infractionType['infraction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                 </div>

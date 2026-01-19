@@ -78,7 +78,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="index.php" class="btn btn-secondary">
+                        <a href="../citations/index.php" class="btn btn-secondary">
                             <i class="ri-arrow-left-line"></i> Volver
                         </a>
                     </div>
@@ -100,7 +100,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <div class="mb-3">
                                 <label for="citation_id" class="form-label">Citación</label>
-                                <select class="form-control" id="citation_id" name="citation_id" required>
+                                <select class="form-control" id="citation_id" name="citation_id" required disabled>
                                     <option value="">Seleccione una citación</option>
                                     <?php foreach ($citations as $citation): ?>
                                         <option value="<?php echo htmlspecialchars($citation['citation_id']); ?>" <?php echo ($report['citation_id'] == $citation['citation_id']) ? 'selected' : ''; ?>>
@@ -110,6 +110,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <input type="hidden" name="citation_id" value="<?php echo htmlspecialchars($report['citation_id']); ?>">
                             </div>
 
                             <div class="mb-3">

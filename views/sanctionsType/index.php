@@ -20,7 +20,7 @@ $result = $sanctionTypesController->index($params);
 // Verifica y extrae el resultado de forma segura
 if (isset($result['success']) && $result['success']) {
     $sanction_types = $result['sanction_types'] ?? [];
-    $page_title = $result['page_title'] ?? 'Listado de Tipos de Sanción';
+    $page_title = str_replace('Gestión de ', '', $result['page_title'] ?? 'Tipos de Sanción');
     $search = $params['search']; // Para el input search si lo mantienes
     $has_search = !empty($search);
 } else {
@@ -73,21 +73,29 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1 dani-icon-lg dani-bg-purple" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="create.php" class="btn btn-primary">
-                            <i class="ri-add-line"></i> Nuevo Tipo de Sanción
-                        </a>
+                        <!-- Boton crear eliminado -->
                     </div>
                     
                     <div class="card-body">
+                        <div class="alert alert-info mb-4 shadow-sm border-start border-info border-5">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <h6 class="alert-heading fw-bold">Sobre los Tipos de Sanciones</h6>
+                                <p class="mb-0">
+                                    Los tipos de sanciones definen el marco normativo aplicado a los adjudicatarios del mercado. 
+                                    Se clasifican según su <strong>Severidad</strong> (Leve, Moderada, Grave) y determinan las acciones 
+                                    correctivas o multas económicas correspondientes a cada infracción cometida. Esta sección es de carácter 
+                                    informativo para consulta de los inspectores.
+                                </p>
+                            </div>
+                        </div>
+
                         <?php if (empty($sanction_types)): ?>
                             <div class="text-center py-4">
                                 <i class="ri-file-search-line text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="text-muted mt-2">
                                     No hay tipos de sanción registrados.
                                 </h5>
-                                <a href="create.php" class="btn btn-primary mt-2">
-                                    <i class="ri-add-line"></i> Registrar Primer Tipo de Sanción
-                                </a>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
@@ -96,7 +104,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <tr>
                                             <th>ID</th> <th>Tipo de Sanción</th>
                                             <th>Descripción</th>
-                                            <th class="text-center">Acciones</th>
                                         </tr>
                                     </thead>
                                         <tbody>
@@ -107,22 +114,26 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </td>
                                                 
                                                 <td>
-                                                    <strong><?php echo htmlspecialchars($sanctionType['severity_name']); ?></strong>
+                                                    <?php 
+                                                        $severity = strtolower($sanctionType['severity_name']);
+                                                        $color = 'secondary';
+                                                        $textColor = 'text-white'; // Por defecto texto blanco para badges oscuros/primarios
+                                                        
+                                                        if (stripos($severity, 'leve') !== false) {
+                                                            $color = 'primary'; 
+                                                        } elseif (stripos($severity, 'moderada') !== false) {
+                                                            $color = 'warning text-dark'; // Amarillo suele requerir texto oscuro
+                                                            $textColor = 'text-dark';
+                                                        } elseif (stripos($severity, 'grave') !== false) {
+                                                            $color = 'danger';
+                                                        }
+                                                    ?>
+                                                    <span class="badge bg-<?php echo $color; ?> <?php echo $textColor; ?> fs-6">
+                                                        <?php echo ucfirst(htmlspecialchars($sanctionType['severity_name'])); ?>
+                                                    </span>
                                                 </td>
                                                 
                                                 <td><?php echo htmlspecialchars($sanctionType['description']); ?></td>
-                                                
-                                                <td class="text-center">
-                                                    <div class="btn-group" role="group">
-                                                        <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
-                                                        <a href="view.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
-                                                        <?php endif; ?>
-                                                        <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
-                                                        <a href="edit.php?id=<?php echo $sanctionType['sanction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $sanctionType['sanction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </td>
                                             </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -131,25 +142,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <?php endif; ?>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el tipo de sanción con ID: <strong id="sanctionTypeId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción es permanente y puede afectar a otros registros que hagan referencia a este tipo de sanción.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
             </div>
         </div>
     </div>
@@ -165,22 +157,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteSanctionTypeId = null;
-
-function confirmDelete(id) {
-    deleteSanctionTypeId = id;
-    document.getElementById('sanctionTypeId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
-}
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteSanctionTypeId) {
-        // Mantenemos la eliminación por GET/redirección para simplicidad, como ya estaba
-        window.location.href = 'index.php?delete_id=' + deleteSanctionTypeId; 
-    }
-});
-
 // Inicialización de DataTables 🚀
 $(document).ready(function() {
     
@@ -192,7 +168,7 @@ $(document).ready(function() {
         </div>
     `;
     
-    // Columnas a exportar: ID (0), Tipo (1), Descripción (2). Se excluye Acciones (3).
+    // Columnas a exportar: ID (0), Tipo (1), Descripción (2).
     const exportColumns = [0, 1, 2]; 
     
     if ($.fn.DataTable) {
@@ -306,8 +282,7 @@ $(document).ready(function() {
             order: [[0, 'desc']], 
             // Deshabilitar el ordenamiento en la columna de Acciones
             "columnDefs": [
-                { "orderable": false, "targets": 3 },
-                // Ocultar la columna ID por defecto, pero permitir exportarla
+                // Ocultar la columna ID por defecto
                 { "visible": false, "targets": 0 }
             ]
         });

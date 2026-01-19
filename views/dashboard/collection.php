@@ -22,6 +22,11 @@ $user = [
 ];
 $current_user = ['full_name' => $user['name']];
 
+// Sincronizar automáticamente la tasa del Euro
+require_once __DIR__ . '/../../controllers/InfractionsController.php';
+$infractionsCtrl = new InfractionsController();
+$infractionsCtrl->syncEuroWithSystemRates();
+
 include __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';

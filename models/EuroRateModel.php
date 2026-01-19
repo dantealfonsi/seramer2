@@ -83,6 +83,18 @@ class EuroRateModel extends Model {
             }
             
             $this->commit();
+
+            // Sincronizar automáticamente con Indicadores Económicos de Infracciones
+            try {
+                require_once __DIR__ . '/InfractionsModel.php';
+                $infModel = new InfractionsModel();
+                $currentIndicators = $infModel->getLatestEconomicIndicators();
+                $currentUT = isset($currentIndicators['ut_value']) ? (float)$currentIndicators['ut_value'] : 1.0;
+                $infModel->saveOrUpdateEconomicIndicators($currentUT, (float)$data['bs_value']);
+            } catch (Exception $e) {
+                error_log("Error al sincronizar indicadores económicos desde EuroRateModel: " . $e->getMessage());
+            }
+
             return $euroRateId;
             
         } catch (\PDOException $e) {

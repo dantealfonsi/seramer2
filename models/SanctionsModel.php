@@ -22,15 +22,19 @@ class SanctionsModel extends Model {
 public function index($filters = []) {
         try {
             $query = "SELECT s.*, 
-                             i.infraction_description AS infraction_description, 
+                             i.infraction_description AS infraction_description,
+                             it.infraction_type_name, 
                              st.severity_name AS severity_name,
                              a.id_number,
                              a.first_name,
-                             a.last_name
+                             a.last_name,
+                             ms.stall_number
                       FROM " . $this->table . " s
                       JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
                       JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
                       JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls ms ON i.stall_id = ms.id
                       WHERE 1=1 "; // Cláusula base para empezar a añadir filtros
             
             $params = [];
@@ -59,8 +63,19 @@ public function index($filters = []) {
             // 4. Filtrar por Fecha Hasta (imposition_date)
             if (!empty($filters['date_to'])) {
                 $query .= " AND s.imposition_date <= :date_to";
-                // Añadir ' 23:59:59' si la columna es datetime, para incluir todo el último día
                 $params[':date_to'] = $filters['date_to']; 
+            }
+
+            // 5. Filtrar por Cédula
+            if (!empty($filters['awardee_cedula'])) {
+                $query .= " AND a.id_number LIKE :awardee_cedula";
+                $params[':awardee_cedula'] = '%' . $filters['awardee_cedula'] . '%';
+            }
+
+            // 6. Filtrar por Nombre
+            if (!empty($filters['awardee_name'])) {
+                $query .= " AND (a.first_name LIKE :awardee_name OR a.last_name LIKE :awardee_name OR CONCAT(a.first_name, ' ', a.last_name) LIKE :awardee_name)";
+                $params[':awardee_name'] = '%' . $filters['awardee_name'] . '%';
             }
 
             // --- ORDENAMIENTO y EJECUCIÓN ---
@@ -507,4 +522,36 @@ public function create($data) {
         }
     }
 
+    public function getAwardeesForFilter() {
+        $query = "SELECT DISTINCT a.id, a.first_name, a.last_name, a.id_number 
+                  FROM awardees a 
+                  JOIN infractions i ON a.id = i.awardee_id 
+                  JOIN sanctions s ON i.infraction_id = s.infraction_id 
+                  ORDER BY a.first_name, a.last_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Cancela todas las sanciones relacionadas con una infracción.
+     * @param int $infractionId
+     * @return bool
+     */
+    public function cancelSanctionByInfraction($infractionId) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET sanction_status = 'Cancelled' 
+                      WHERE infraction_id = :infraction_id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':infraction_id', $infractionId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch(PDOException $exception) {
+            error_log("Error al cancelar sanción por infracción: " . $exception->getMessage());
+            return false;
+        }
+    }
 }

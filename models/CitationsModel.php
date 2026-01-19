@@ -2,6 +2,7 @@
 
 // Requerir el archivo de configuración de la base de datos
 require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/NotificationModel.php';
 
 class CitationsModel {
     private $db;
@@ -53,20 +54,29 @@ class CitationsModel {
             SELECT 
                 c.*, 
                 c.infraction_id, 
-                c.mediator_user_id
+                c.mediator_user_id,
+                CONCAT(s.first_name, ' ', s.last_name) as mediator_full_name,
+                ms.stall_number,
+                CONCAT(a.first_name, ' ', a.last_name) as awardee_full_name,
+                a.id_number as awardee_id_number,
+                i.infraction_description
             FROM 
                 " . $this->table . " c
-            /* Si necesitas el nombre real del mediador o la descripción de la infracción, 
-            deberías hacer un JOIN a las tablas 'infractions' e 'inspectors' aquí */
+            LEFT JOIN users u ON c.mediator_user_id = u.id
+            LEFT JOIN staff s ON u.staff_id = s.id
+            LEFT JOIN infractions i ON c.infraction_id = i.infraction_id
+            LEFT JOIN market_stalls ms ON i.stall_id = ms.id
+            LEFT JOIN awardees a ON i.awardee_id = a.id
         ";
         $params = [];
         $where = [];
 
         if (!empty($search)) {
-            // Asume que se busca por 'location' y 'citation_status' (y se mantiene la misma lógica de búsqueda)
-            $where[] = "(c.location LIKE ? OR c.citation_status LIKE ?)";
-            $params[] = "%$search%";
-            $params[] = "%$search%";
+            // Search by location, status, mediator, stall, awardee name, or ID number
+            $where[] = "(c.location LIKE ? OR c.citation_status LIKE ? OR s.first_name LIKE ? OR s.last_name LIKE ? OR ms.stall_number LIKE ? OR a.first_name LIKE ? OR a.last_name LIKE ? OR a.id_number LIKE ?)";
+            for ($i = 0; $i < 8; $i++) {
+                $params[] = "%$search%";
+            }
         }
         
         if (!empty($where)) {
@@ -112,7 +122,24 @@ class CitationsModel {
     // ... (El resto de los métodos getById, create, update, delete, getInfractionsList, getMediatorsList se mantienen iguales)
     
     public function getById($id) {
-        $stmt = $this->db->prepare("SELECT * FROM citations WHERE citation_id = ?");
+        $sql = "
+            SELECT 
+                c.*, 
+                i.infraction_id,
+                i.infraction_description,
+                ms.id as stall_id,
+                ms.stall_number,
+                ms.location_description as stall_location,
+                a.id as awardee_id,
+                CONCAT(a.first_name, ' ', a.last_name) as awardee_full_name
+            FROM 
+                citations c
+            LEFT JOIN infractions i ON c.infraction_id = i.infraction_id
+            LEFT JOIN market_stalls ms ON i.stall_id = ms.id
+            LEFT JOIN awardees a ON i.awardee_id = a.id
+            WHERE c.citation_id = ?
+        ";
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -198,14 +225,79 @@ class CitationsModel {
     }
 
     /**
-     * Obtiene una lista de los usuarios con el rol de 'mediador'.
+     * Obtiene una lista de los usuarios con el rol de 'fiscalización'.
      * @return array
      */
     public function getMediatorsList() {
-        // Asumiendo que existe una tabla 'inspectors' con una columna 'user_role'
-        $stmt = $this->db->prepare("SELECT inspector_id, full_name FROM inspectors WHERE is_active = 1 ORDER BY full_name");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // Obtenemos los usuarios que pertenecen al departamento de Fiscalización (ID 3)
+        // Similar a UsersFiscModel::getUsersByFiscalizationDepartment
+        $fiscalization_department_id = 3; 
+        
+        $sql = "
+            SELECT
+                u.id AS inspector_id, -- Usamos 'inspector_id' como alias para mantener compatibilidad con el controlador/vista si lo usan
+                CONCAT(s.first_name, ' ', s.last_name) AS full_name
+            FROM
+                users u
+            INNER JOIN 
+                staff s ON u.staff_id = s.id
+            WHERE
+                s.department_id = :department_id
+            ORDER BY 
+                s.last_name, s.first_name
+        ";
+
+        try {
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':department_id', $fiscalization_department_id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error en CitationsModel::getMediatorsList: " . $e->getMessage());
+            return [];
+        }
     }
     
+    /**
+     * Verifica y actualiza automáticamente los estados de las citaciones según reglas de tiempo.
+     */
+    public function checkAndAutoUpdateStatuses() {
+        $notificationModel = new NotificationModel();
+        
+        // 1. Scheduled -> In Process (Si fecha cita <= Ahora y está Programada)
+        $sql = "SELECT citation_id, mediator_user_id FROM citations WHERE citation_status = 'Scheduled' AND citation_datetime <= NOW()";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $toProcess = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($toProcess as $cit) {
+            $this->updateStatusAndDate($cit['citation_id'], 'In Process');
+             // Notificar al mediador
+            $notificationModel->insertNotification(
+                null, // System
+                $cit['mediator_user_id'],
+                'citation_status_update',
+                'Citación En Proceso',
+                "La citación #{$cit['citation_id']} ha pasado a estado En Proceso."
+            );
+        }
+
+        // 2. In Process -> Canceled (Si Ahora > citation_datetime + 3 days)
+        $sql = "SELECT citation_id, mediator_user_id FROM citations WHERE citation_status = 'In Process' AND NOW() > DATE_ADD(citation_datetime, INTERVAL 3 DAY)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $toCancel = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($toCancel as $cit) {
+            $this->updateStatusAndDate($cit['citation_id'], 'Canceled');
+             // Notificar
+            $notificationModel->insertNotification(
+                null,
+                $cit['mediator_user_id'],
+                'citation_status_update',
+                'Citación Cancelada',
+                "La citación #{$cit['citation_id']} ha sido Cancelada automáticamente por inactividad tras 3 días."
+            );
+        }
+    }
 }

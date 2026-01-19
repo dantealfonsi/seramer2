@@ -26,6 +26,9 @@ $result = $reportsController->create();
 $citations = $result['citations'];
 $page_title = $result['page_title'];
 
+// Auto-select citation if provided in URL
+$preselectedCitationId = $_GET['citation_id'] ?? null;
+
 // Opciones para los menús desplegables
 $attendance_options = [
     1 => 'Presente',
@@ -55,7 +58,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="index.php" class="btn btn-secondary">
+                        <a href="../citations/index.php" class="btn btn-secondary">
                             <i class="ri-arrow-left-line"></i> Volver
                         </a>
                     </div>
@@ -74,16 +77,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <form method="POST">
                             <div class="mb-3">
                                 <label for="citation_id" class="form-label">Citación</label>
-                                <select class="form-control" id="citation_id" name="citation_id" required>
+                                <select class="form-control" id="citation_id" name="citation_id" required <?php echo $preselectedCitationId ? 'disabled' : ''; ?>>
                                     <option value="">Seleccione una citación</option>
                                     <?php foreach ($citations as $citation): ?>
-                                        <option value="<?php echo htmlspecialchars($citation['citation_id']); ?>">
+                                        <option value="<?php echo htmlspecialchars($citation['citation_id']); ?>" <?php echo ($preselectedCitationId == $citation['citation_id']) ? 'selected' : ''; ?>>
                                             Citación #<?php echo htmlspecialchars($citation['citation_id']); ?> -
                                             <?php echo htmlspecialchars($citation['location']); ?>
                                             (<?php echo htmlspecialchars($citation['citation_datetime']); ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if ($preselectedCitationId): ?>
+                                    <input type="hidden" name="citation_id" value="<?php echo htmlspecialchars($preselectedCitationId); ?>">
+                                <?php endif; ?>
                             </div>
 
                             <div class="mb-3">

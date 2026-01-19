@@ -21,3 +21,23 @@
 .layout-navbar {
     z-index: 1000 !important;
 }
+
+/* Custom styles for alert-info icons */
+.alert-info {
+    display: flex;
+    align-items: center;
+}
+
+.alert-info i.ri-information-line,
+.alert-info i.ri-info-card-line,
+.alert-info i.ri-error-warning-line {
+    font-size: 3.5rem !important;
+    margin-right: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert-info .alert-content {
+    flex: 1;
+}

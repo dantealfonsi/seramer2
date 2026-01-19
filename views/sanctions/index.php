@@ -48,10 +48,14 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST
 // Preparar parámetros de filtrado
 $filters = [
     'search' => $_GET['search'] ?? '', // Filtro general para DataTables
-    'sanction_id' => $_GET['sanction_id'] ?? null,
+    // ID removed
     'sanction_status' => $_GET['sanction_status'] ?? null,
     'date_from' => $_GET['date_from'] ?? null,
     'date_to' => $_GET['date_to'] ?? null,
+    'awardee_name' => $_GET['awardee_name'] ?? null,
+    'awardee_cedula' => isset($_GET['awardee_cedula_number']) && $_GET['awardee_cedula_number'] !== '' 
+                        ? ($_GET['awardee_cedula_prefix'] ?? 'V') . '%' . $_GET['awardee_cedula_number'] 
+                        : null,
 ];
 
 // Solo incluir filtros de servidor que tengan un valor distinto a null o cadena vacía
@@ -75,6 +79,9 @@ if (!$result['success']) {
 } else {
     $sanctions = $result['sanctions'] ?? [];
 }
+
+// Recuperar lista de adjudicatarios para los filtros
+$awardees = $result['awardees'] ?? [];
 
 $has_filters = !empty($activeFilters); // Para el mensaje de resultados filtrados
 
@@ -103,9 +110,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-forbid-2-line me-1 dani-icon-lg dani-bg-purple" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             Listado de Sanciones
                         </h5>
-                        <a href="create.php" class="btn btn-primary">
-                            <i class="ri-add-line"></i> Nueva Sanción
-                        </a>
+                        <!-- Botón de crear eliminado por solicitud -->
                     </div>
                     
                     <div class="card-body border-bottom">
@@ -114,16 +119,38 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="row g-3">
                                 <input type="hidden" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                                 
-                                <div class="col-md-2">
-                                    <label for="sanction_id" class="form-label small">ID Sanción</label>
-                                    <input type="number" class="form-control" id="sanction_id" name="sanction_id" 
-                                        placeholder="Ej: 105" 
-                                        value="<?php echo htmlspecialchars($_GET['sanction_id'] ?? ''); ?>">
-                                </div>
+                                <!-- Filtro por Adjudicatario -->
                                 <div class="col-md-3">
+                                    <label for="awardee_name" class="form-label small">Adjudicatario</label>
+                                    <input class="form-control" list="awardee_names" id="awardee_name" name="awardee_name" 
+                                           placeholder="Buscar por Nombre..." value="<?php echo htmlspecialchars($_GET['awardee_name'] ?? ''); ?>">
+                                    <datalist id="awardee_names">
+                                        <?php foreach ($awardees as $aw): ?>
+                                            <option value="<?php echo htmlspecialchars($aw['first_name'] . ' ' . $aw['last_name']); ?>">
+                                        <?php endforeach; ?>
+                                    </datalist>
+                                </div>
+
+                                <!-- Filtro por Cédula -->
+                                <div class="col-md-3">
+                                    <label for="awardee_cedula_number" class="form-label small">Cédula / RIF</label>
+                                    <div class="input-group">
+                                        <select class="form-select" name="awardee_cedula_prefix" style="max-width: 70px;">
+                                            <option value="V" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'V' ? 'selected' : ''; ?>>V</option>
+                                            <option value="E" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'E' ? 'selected' : ''; ?>>E</option>
+                                            <option value="J" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'J' ? 'selected' : ''; ?>>J</option>
+                                            <option value="G" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'G' ? 'selected' : ''; ?>>G</option>
+                                            <option value="P" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'P' ? 'selected' : ''; ?>>P</option>
+                                        </select>
+                                        <input type="number" class="form-control" id="awardee_cedula_number" name="awardee_cedula_number" 
+                                               placeholder="Solo números" value="<?php echo htmlspecialchars($_GET['awardee_cedula_number'] ?? ''); ?>">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
                                     <label for="sanction_status" class="form-label small">Estado</label>
                                     <select class="form-select" id="sanction_status" name="sanction_status">
-                                        <option value="">-- Todos los Estados --</option>
+                                        <option value="">-- Todos --</option>
                                         <?php 
                                         $current_status = $_GET['sanction_status'] ?? '';
                                         foreach ($allowed_sanction_status as $key => $value): 
@@ -135,12 +162,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="date_from" class="form-label small">Fecha Desde</label>
                                     <input type="date" class="form-control" id="date_from" name="date_from" 
                                         value="<?php echo htmlspecialchars($_GET['date_from'] ?? ''); ?>">
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="date_to" class="form-label small">Fecha Hasta</label>
                                     <input type="date" class="form-control" id="date_to" name="date_to" 
                                         value="<?php echo htmlspecialchars($_GET['date_to'] ?? ''); ?>">
@@ -168,15 +195,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="text-center py-4">
                                 <i class="ri-alert-line text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="text-muted mt-2">No se encontraron sanciones</h5>
-                                <p class="text-muted">Ajusta los filtros o crea una nueva sanción.</p>
-                                <a href="create.php" class="btn btn-primary"><i class="ri-add-line"></i> Nueva Sanción</a>
+                                <p class="text-muted">Ajusta los filtros.</p>
                             </div>
                         <?php else : ?>
                             <div class="table-responsive">
                                 <table id="sanctionsTable" class="table table-striped table-hover w-100">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID</th>
+                                            <th>Puesto</th>
+                                            <th>Adjudicatario</th>
                                             <th>Infracción</th>
                                             <th>Tipo de Sanción</th>
                                             <th>Monto de Multa</th>
@@ -188,9 +215,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($sanctions as $sanction) : ?>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($sanction['sanction_id']); ?></td>
-                                                <td><?php echo htmlspecialchars($sanction['infraction_description']); ?></td>
-                                                <td><?php echo htmlspecialchars($sanction['severity_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($sanction['stall_number'] ?? 'N/A'); ?></td>
+                                                <td>
+                                                    <?php echo htmlspecialchars($sanction['first_name'] . ' ' . $sanction['last_name']); ?> 
+                                                    <small class="text-muted">(<?php echo htmlspecialchars($sanction['id_number']); ?>)</small>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-secondary">
+                                                        <?php echo ucfirst(htmlspecialchars($sanction['infraction_type_name'])); ?>
+                                                    </span>
+                                                </td>
+                                                <td><?php echo ucfirst(htmlspecialchars($sanction['severity_name'])); ?></td>
                                                 <td><?php echo htmlspecialchars($sanction['fine_amount'] ?? 'N/A') . ' ' . htmlspecialchars($sanction['fine_currency'] ?? ''); ?></td>
                                                 <td><?php echo htmlspecialchars(date('d/m/Y', strtotime($sanction['imposition_date']))); ?></td>
                                                 <td>
@@ -204,14 +239,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <i class="ri-eye-line"></i>
                                                     </a>
                                                     <?php endif; ?>
-                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'w')): ?>
-                                                    <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-warning">
-                                                        <i class="ri-edit-line"></i>
-                                                    </a>
-                                                    <?php endif; ?>
-                                                    <!-- <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
-                                                        <i class="ri-delete-bin-line"></i>
-                                                    </button> -->
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -234,7 +261,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro que desea **eliminar o cancelar** la sanción con ID: <strong id="sanctionId"></strong>?</p>
+                <p>¿Está seguro que desea **eliminar o cancelar** la sanción del puesto <strong id="sanctionId"></strong>?</p>
                 <p class="text-danger"><small>Esta acción marcará la sanción como CANCELADA o la eliminará permanentemente (dependiendo de la lógica del servidor).</small></p>
             </div>
             <div class="modal-footer">
@@ -304,9 +331,9 @@ $(document).ready(function() {
     `;
     
     // Columnas a exportar
-    // Columnas: ID (0), Infracción (1), Tipo (2), Monto (3), Fecha (4), Estado (5)
-    // Se excluye la Columna 6 (Acciones)
-    const exportColumns = [0, 1, 2, 3, 4, 5]; 
+    // Puesto(0), Adjudicatario(1), Infracción(2), Tipo(3), Monto(4), Fecha(5), Estado(6)
+    // Se excluye la Columna 7 (Acciones)
+    const exportColumns = [0, 1, 2, 3, 4, 5, 6]; 
     
     if ($.fn.DataTable) {
         $('#sanctionsTable').DataTable({ 
@@ -419,7 +446,7 @@ $(document).ready(function() {
             order: [[0, 'desc']], 
             // Deshabilitar el ordenamiento en la columna de Acciones
             "columnDefs": [
-                { "orderable": false, "targets": 6 } 
+                { "orderable": false, "targets": 7 } 
             ]
         });
     } else {
