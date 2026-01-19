@@ -26,10 +26,14 @@ class DailyCashController {
         // Calculate Totals for Cards
         $totalInitial = 0;
         $totalCollected = 0;
+        $maxTransaction = 0;
         
         foreach ($reportData as $row) {
             $totalInitial += (float)$row['initial_amount'];
             $totalCollected += (float)$row['total_collected'];
+            if ((float)$row['max_amount'] > $maxTransaction) {
+                $maxTransaction = (float)$row['max_amount'];
+            }
         }
         
         return [
@@ -38,8 +42,8 @@ class DailyCashController {
             'filters' => $filters,
             'summary' => [
                 'total_initial' => $totalInitial,
-                'total_final' => $totalCollected, // Total generated/earned
-                'total_balance' => $totalInitial + $totalCollected // End balance
+                'total_final' => $totalCollected, 
+                'total_max' => $maxTransaction
             ]
         ];
     }

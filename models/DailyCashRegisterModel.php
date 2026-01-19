@@ -15,21 +15,24 @@ class DailyCashRegisterModel extends Model {
         $dateFrom = $filters['date_from'] ?? date('Y-m-d');
         $dateTo = $filters['date_to'] ?? date('Y-m-d');
         
-        $params['date_from'] = $dateFrom;
-        $params['date_to'] = $dateTo;
+        $params['main_date'] = $dateFrom;
+        $params['sub_from'] = $dateFrom;
+        $params['sub_to'] = $dateTo;
 
-        // Subquery to union all payments and group them by register and date
+        // Subquery to get totals, max and the exact time of the first payment
         $paymentsSubquery = "
-            SELECT daily_cash_register_id as register_id, 
-                   DATE(payment_date) as p_date,
-                   SUM(amount_paid) as total
+            SELECT register_id, 
+                   p_date,
+                   SUM(amount_paid) as total,
+                   MAX(amount_paid) as max_amt,
+                   MIN(p_time) as first_time
             FROM (
-                SELECT daily_cash_register_id, payment_date, amount_paid FROM fee_payments
+                SELECT daily_cash_register_id as register_id, payment_date as p_time, DATE(payment_date) as p_date, amount_paid FROM fee_payments
                 UNION ALL
-                SELECT daily_cash_register_id, payment_date, amount_paid FROM fine_payments
+                SELECT daily_cash_register_id as register_id, payment_date as p_time, DATE(payment_date) as p_date, amount_paid FROM fine_payments
             ) all_p
-            WHERE DATE(payment_date) BETWEEN :date_from AND :date_to
-            GROUP BY daily_cash_register_id, DATE(payment_date)
+            WHERE p_date BETWEEN :sub_from AND :sub_to
+            GROUP BY register_id, p_date
         ";
 
         $query = "SELECT 
@@ -38,9 +41,20 @@ class DailyCashRegisterModel extends Model {
                     cr.status as register_status,
                     u.username,
                     CONCAT(COALESCE(s.first_name, ''), ' ', COALESCE(s.last_name, '')) as staff_name,
-                    COALESCE(p.p_date, :date_from) as open_date,
-                    0 as initial_amount, -- No session table means no initial amount tracking
-                    COALESCE(p.total, 0) as total_collected
+                    COALESCE(p.p_date, :main_date) as open_date,
+                    COALESCE(p.max_amt, 0) as max_amount,
+                    COALESCE(p.total, 0) as total_collected,
+                    -- Get the amount of the first payment using a correlated subquery
+                    COALESCE((
+                        SELECT amount_paid FROM (
+                            SELECT daily_cash_register_id, payment_date, amount_paid FROM fee_payments
+                            UNION ALL
+                            SELECT daily_cash_register_id, payment_date, amount_paid FROM fine_payments
+                        ) t2 
+                        WHERE t2.daily_cash_register_id = cr.id 
+                        AND t2.payment_date = p.first_time 
+                        LIMIT 1
+                    ), 0) as initial_amount
                   FROM cash_registers cr
                   LEFT JOIN users u ON cr.user_id = u.id
                   LEFT JOIN staff s ON u.staff_id = s.id
@@ -52,7 +66,6 @@ class DailyCashRegisterModel extends Model {
             $params['status'] = $filters['status'];
         }
 
-        // If we have a date range, we might have multiple rows per register if they had activity on different days
         $query .= " ORDER BY open_date DESC, cr.name ASC";
 
         return $this->query($query, $params);
