@@ -508,6 +508,19 @@ class UserModel {
                     'title' => 'Reportes RRHH',
                     'icon' => 'ri-file-chart-line',
                     'url' => 'views/reports/hr.php'
+                ],
+                [
+                    'title' => 'Quejas',
+                    'icon' => 'ri-chat-3-line',
+                    'submenu' => [
+                        ['title' => 'Quejas (Registrar)', 'url' => 'views/complaints/create.php'],
+                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
+                    ]
+                ],
+                [
+                    'title' => 'Gestión de Departamentos',
+                    'icon' => 'ri-building-line',
+                    'url' => 'views/departments/index.php'
                 ]
             ],
             'Liquidacion' => [
@@ -546,20 +559,12 @@ class UserModel {
                 [
                     'title' => 'Conciliación',
                     'icon' => 'ri-discuss-line',
-                    'submenu' => [
-                        ['title' => 'Casos de Conciliación', 'url' => 'views/citations/index.php'],
-                        ['title' => 'Actas de Conciliación', 'url' => 'views/conciliation-reports/index.php']
-
-                    ]
+                    'url' => 'views/citations/index.php'
                 ],
                 [
-                    'title' => 'Quejas',
-                    'icon' => 'ri-chat-3-line',
-                    'submenu' => [
-                        ['title' => 'Registrar Queja', 'url' => 'views/complaints/create.php'],
-                        ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
-                        ['title' => 'Detalles de Queja', 'url' => 'views/complaints/details.php']
-                    ]
+                    'title' => 'Historial de Quejas',
+                    'icon' => 'ri-chat-history-line',
+                    'url' => 'views/complaints/index.php'
                 ],
                 [
                     'title' => 'Reportes',
@@ -574,8 +579,7 @@ class UserModel {
                     'icon' => 'ri-lock-line',
                     'submenu' => [
                         ['title' => 'Gestión de Roles', 'url' => 'views/users-fisc/indexRoles.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users-fisc/index.php'],
-                        ['title' => 'Gestión de Departamentos', 'url' => 'views/departments/index.php']
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users-fisc/index.php']
                     ]
                 ]
             ],
@@ -1237,6 +1241,37 @@ class UserModel {
 
 
     
+    /**
+     * Obtiene una lista de usuarios que tienen un rol específico por nombre.
+     * @param string $roleName Nombre del rol (ej: 'Cobranzas', 'administrador').
+     * @return array Lista de IDs de usuarios.
+     */
+    public function getUsersByRoleName(string $roleName): array {
+        $query = "
+            SELECT 
+                u.id
+            FROM 
+                " . $this->table . " u
+            INNER JOIN 
+                fiscalization_user_level fule ON u.id = fule.user_id
+            INNER JOIN 
+                fiscalization_roles fr ON fule.role_id = fr.role_id
+            WHERE 
+                fr.role_name = :role_name;
+        ";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':role_name', $roleName, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+        } catch (PDOException $e) {
+            error_log("Error al obtener usuarios para el rol {$roleName}: " . $e->getMessage());
+            return [];
+        }
+    }
 }
 
 ?>

@@ -198,6 +198,19 @@ class ComplaintsModel {
     }
 
     /**
+     * Obtiene el adjudicatario asociado a un puesto específico.
+     * @param int $stallId
+     * @return array|false
+     */
+    public function getAwardeeByStall($stallId) {
+        $sql = "SELECT a.id, a.first_name, a.last_name 
+                FROM awardees a
+                JOIN market_stalls ms ON a.id = ms.awardee_id
+                WHERE ms.id = ?";
+        return $this->db->fetchOne($sql, [$stallId]);
+    }
+
+    /**
      * Update an existing complaint.
      * @param int $id
      * @param array $data

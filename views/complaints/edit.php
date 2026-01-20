@@ -8,37 +8,17 @@ $complaintsController = new ComplaintsController();
 
 // Manejar la solicitud POST para actualizar la queja
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = [
-        'complaint_id' => $_POST['complaint_id'] ?? null,
-        'client_name' => trim($_POST['client_name'] ?? ''),
-        'client_phone' => trim($_POST['client_phone'] ?? ''),
-        'client_email' => trim($_POST['client_email'] ?? ''),
-        'complaint_description' => trim($_POST['complaint_description'] ?? ''),
-        'position_id' => trim($_POST['position_id'] ?? ''),
-        'awardee_id' => trim($_POST['awardee_id'] ?? ''),
-        'complaint_type' => trim($_POST['complaint_type'] ?? ''),
-        'complaint_status' => trim($_POST['complaint_status'] ?? 'Received'),
-        'complaint_priority' => trim($_POST['complaint_priority'] ?? 'Medium'),
-        'internal_observations' => trim($_POST['internal_observations'] ?? '')
+    // ... logic ...
+}
+
+// RBAC: Solo RRHH puede editar
+if (!isset($_SESSION['selected_department']) || $_SESSION['selected_department'] !== 'Recursos Humanos') {
+    $_SESSION['flash_message'] = [
+        'type' => 'danger',
+        'message' => 'No tiene permisos para acceder a esta sección.'
     ];
-
-    $result = $complaintsController->update($data['complaint_id'], $data);
-
-    if (isset($result['success']) && $result['success']) {
-        $_SESSION['flash_message'] = [
-            'type' => 'success',
-            'message' => $result['message']
-        ];
-        header('Location: ' . $result['redirect']);
-        exit;
-    } else {
-        $_SESSION['flash_message'] = [
-            'type' => 'danger',
-            'message' => $result['message']
-        ];
-        header("Location: edit.php?id=" . urlencode($data['complaint_id']));
-        exit;
-    }
+    header('Location: index.php');
+    exit;
 }
 
 // Cargar la queja y datos para el formulario
@@ -117,6 +97,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <div class="row">
                                 <div class="col-md-6">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Información del Cliente</h6>
                                     <div class="mb-3">
                                         <label for="client_name" class="form-label">Nombre del Cliente</label>
                                         <input onkeyup="validarText('client_name',8,'errorTextClientName')" type="text" class="form-control" id="client_name" name="client_name" value="<?php echo htmlspecialchars($data['complaint']['client_name']); ?>" required>
@@ -132,6 +113,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <input onkeyup="validarTelefono('client_phone')" type="text" class="form-control" id="client_phone" name="client_phone" value="<?php echo htmlspecialchars($data['complaint']['client_phone']); ?>">
                                         <div id="errorTelefono" style="color: red;"></div>
                                     </div>
+
+                                    <h6 class="fw-bold mt-4 mb-3 border-bottom pb-2">Asociación (Local / Adjudicatario)</h6>
+                                    <?php
+                                        // Buscar el número de puesto actual
+                                        $currentStallNumber = '';
+                                        foreach ($stalls as $stall) {
+                                            if ($stall['id'] == $data['complaint']['stall_id']) {
+                                                $currentStallNumber = $stall['stall_number'];
+                                                break;
+                                            }
+                                        }
+
+                                        // Buscar el nombre del adjudicatario actual
+                                        $currentAwardeeName = '';
+                                        if ($data['complaint']['awardee_id']) {
+                                            foreach ($data['awardees'] as $awardee) {
+                                                if ($awardee['id'] == $data['complaint']['awardee_id']) {
+                                                    $currentAwardeeName = $awardee['first_name'] . ' ' . $awardee['last_name'];
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    ?>
+                                    <div class="mb-3">
+                                        <label for="stall_search" class="form-label">Puesto del Mercado</label>
+                                        <input list="stalls_datalist" id="stall_search" class="form-control" placeholder="Escriba el número de puesto..." onchange="onStallSelected()" value="<?php echo htmlspecialchars($currentStallNumber); ?>">
+                                        <datalist id="stalls_datalist">
+                                            <?php foreach ($stalls as $stall): ?>
+                                                <option value="<?php echo htmlspecialchars($stall['stall_number']); ?>" data-id="<?php echo $stall['id']; ?>">
+                                            <?php endforeach; ?>
+                                        </datalist>
+                                        <input type="hidden" id="position_id" name="position_id" value="<?php echo htmlspecialchars($data['complaint']['stall_id']); ?>">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="awardee_name" class="form-label">Adjudicatario</label>
+                                        <input type="text" id="awardee_name" class="form-control" readonly placeholder="Se autocompletará al seleccionar el puesto" value="<?php echo htmlspecialchars($currentAwardeeName); ?>">
+                                        <input type="hidden" id="awardee_id" name="awardee_id" value="<?php echo htmlspecialchars($data['complaint']['awardee_id']); ?>">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold mb-3 border-bottom pb-2">Detalles de la Queja</h6>
                                     <div class="mb-3">
                                         <label for="complaint_type" class="form-label">Tipo de Queja</label>
                                         <select class="form-select" id="complaint_type" name="complaint_type" required>
@@ -141,33 +163,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="awardee_id" class="form-label">
-                                            Adjudicatario
-                                        </label>
-                                        <select class="form-select" id="awardee_id" name="awardee_id">
-                                            <option value="">Seleccione Adjudicatario (opcional)</option>
-                                            <?php foreach ($data['awardees'] as $awardee): ?>
-                                                <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
-                                                        <?php echo ((int)$data['complaint']['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($awardee['first_name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>                                    
-                                    <div class="mb-3">
-                                        <label for="position_id" class="form-label">Puesto del Mercado</label>
-                                        <select class="form-select" id="position_id" name="position_id">
-                                            <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stalls as $stall): ?>
-                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
-                                                        <?php echo ((int)$data['complaint']['stall_id'] == (int)$stall['id']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
+                                        <label for="complaint_priority" class="form-label">Prioridad</label>
+                                        <select class="form-select" id="complaint_priority" name="complaint_priority" required>
+                                            <option value="">Seleccione...</option>
+                                            <?php foreach ($allowed_priority as $value => $label): ?>
+                                                <option value="<?php echo htmlspecialchars($value); ?>"
+                                                        <?php echo ($data['complaint']['complaint_priority'] == $value) ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($label); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="complaint_description" class="form-label">Descripción</label>
                                         <textarea onkeyup="validarText('complaint_description',8,'errorTextComplaintDescription')" class="form-control" id="complaint_description" name="complaint_description" rows="5" required><?php echo htmlspecialchars($data['complaint']['complaint_description']); ?></textarea>
@@ -184,20 +190,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <div class="form-text">Nivel de Proceso en la gestión.</div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="complaint_priority" class="form-label">Prioridad</label>
-                                        <select class="form-select" id="complaint_priority" name="complaint_priority" required>
-                                            <option value="">Seleccione...</option>
-                                            <?php foreach ($allowed_priority as $value => $label): ?>
-                                                <option value="<?php echo htmlspecialchars($value); ?>"
-                                                        <?php echo ($data['complaint']['complaint_priority'] == $value) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($label); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <div class="form-text">Prioridad de avance en la gestión.</div>
                                     </div>
                                     <div class="mb-3">
                                         <label for="internal_observations" class="form-label">Observaciones Internas</label>
@@ -224,5 +216,39 @@ include __DIR__ . '/../layouts/navigation-top.php';
         </div>
     </div>
 </div>
+
+<script>
+function onStallSelected() {
+    const input = document.getElementById('stall_search');
+    const datalist = document.getElementById('stalls_datalist');
+    const option = Array.from(datalist.options).find(opt => opt.value === input.value);
+    
+    if (option) {
+        const stallId = option.getAttribute('data-id');
+        document.getElementById('position_id').value = stallId;
+        
+        // Fetch awardee data
+        fetch(`api_complaints.php?getAwardeeByStall=1&stallId=${stallId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.id) {
+                    document.getElementById('awardee_name').value = `${data.first_name} ${data.last_name}`;
+                    document.getElementById('awardee_id').value = data.id;
+                } else {
+                    document.getElementById('awardee_name').value = 'Sin adjudicatario asignado';
+                    document.getElementById('awardee_id').value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('awardee_name').value = 'Error al cargar';
+            });
+    } else {
+        document.getElementById('position_id').value = '';
+        document.getElementById('awardee_name').value = '';
+        document.getElementById('awardee_id').value = '';
+    }
+}
+</script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

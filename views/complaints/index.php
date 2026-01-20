@@ -101,9 +101,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-chat-voice-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="create.php" class="btn btn-primary">
-                            <i class="ri-add-line"></i> Nueva Queja
-                        </a>
+                        <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
+                            <a href="create.php" class="btn btn-primary">
+                                <i class="ri-add-line"></i> Nueva Queja
+                            </a>
+                        <?php endif; ?>
                     </div>
                     
                     <div class="card-body border-bottom">
@@ -238,10 +240,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <?php // if ($rol->hasPermission('COMPLAINTS', 'r')): ?>
                                                     <a href="view.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
                                                     <?php // endif; ?>
-                                                    <?php // if ($rol->hasPermission('COMPLAINTS', 'w')): ?>
+                                                    <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
                                                     <a href="edit.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $complaint['complaint_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
-                                                    <?php // endif; ?>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>
@@ -433,4 +435,95 @@ $(document).ready(function() {
         console.error("DataTables no está cargado.");
     }
 });
+<!-- Modal para Agregar Seguimiento -->
+<div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="historyModalLabel">Agregar Seguimiento de Queja</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="historyForm">
+                <div class="modal-body">
+                    <input type="hidden" id="history_complaint_id" name="complaint_id">
+                    <input type="hidden" name="action" value="addHistory">
+                    
+                    <div class="mb-3">
+                        <label for="action_type" class="form-label">Tipo de Acción</label>
+                        <select class="form-select" id="action_type" name="action_type" required>
+                            <option value="Inspection">Inspección</option>
+                            <option value="Call">Llamada</option>
+                            <option value="Meeting">Reunión</option>
+                            <option value="Resolution">Resolución</option>
+                            <option value="Other">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="action_description" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="action_description" name="action_description" rows="3" required placeholder="Escriba qué acciones se tomaron..."></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="action_result" class="form-label">Resultado</label>
+                        <textarea class="form-control" id="action_result" name="action_result" rows="2" placeholder="Resultado de estas acciones..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-info">Guardar Seguimiento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Funciones para Seguimiento
+function openHistoryModal(complaintId) {
+    document.getElementById('history_complaint_id').value = complaintId;
+    const historyModal = new bootstrap.Modal(document.getElementById('historyModal'));
+    historyModal.show();
+}
+
+document.getElementById('historyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('api_complaints.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Seguimiento agregado correctamente.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: data.message || 'No se pudo agregar el seguimiento.'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error al procesar la solicitud.'
+        });
+    });
+});
+</script>
+
 </script>

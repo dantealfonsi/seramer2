@@ -41,12 +41,16 @@ $permission_types = [
                     </div>
                     
                     <div class="card-body">
-                        <div class="alert alert-info border-start border-info border-5 shadow-sm mb-4">
+                        <div class="alert alert-info mb-4 shadow-sm border-start border-info border-5">
                             <i class="ri-information-line"></i>
                             <div class="alert-content">
-                                <h6 class="fw-bold">Estructura de Permisos</h6>
-                                <p class="mb-0">
+                                <h6 class="alert-heading fw-bold">Estructura de Permisos (rwx)</h6>
+                                <p class="mb-2">
                                     La máscara de permisos (9 caracteres) se divide en tres grupos de 3: <strong>Infracciones (rwx)</strong>, <strong>Tasas/Configuración (rwx)</strong> y <strong>Usuarios/Auditoría (rwx)</strong>.
+                                </p>
+                                <hr>
+                                <p class="mb-0 small">
+                                    Se refiere a los permisos básicos de un archivo o directorio: <strong>Read (leer)</strong>, <strong>Write (escribir)</strong> y <strong>eXecute (ejecutar)</strong>. Estos permisos se agrupan en tres categorías: el propietario, el grupo y los demás usuarios, y definen qué acciones se pueden realizar sobre el recurso (por ejemplo, <strong>rwx</strong> para el propietario significa lectura, escritura y ejecución).
                                 </p>
                             </div>
                         </div>

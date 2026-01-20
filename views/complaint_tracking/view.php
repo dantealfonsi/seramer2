@@ -98,9 +98,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <!-- Historial de Seguimiento -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0">Historial de Seguimiento</h6>
+                            <?php if ($_SESSION['selected_department'] === 'Recursos Humanos' || $_SESSION['selected_department'] === 'Fiscalizacion'): ?>
                             <a href="create.php?complaint_id=<?php echo htmlspecialchars($complaint_id); ?>" class="btn btn-primary">
                                 <i class="ri-add-line"></i> Añadir Registro
                             </a>
+                            <?php endif; ?>
                         </div>
                         
                         <?php if (empty($tracking_records)): ?>
@@ -116,10 +118,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <div class="card-body">
                                                 <div class="timeline-heading d-flex justify-content-between align-items-start">
                                                     <h6 class="timeline-title mb-1"><?php echo htmlspecialchars($record['action_type']); ?></h6>
+                                                    <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
                                                     <div class="btn-group">
                                                         <a href="edit.php?id=<?php echo htmlspecialchars($record['tracking_id']); ?>" class="btn btn-sm btn-outline-primary" title="Editar"><i class="ri-pencil-line"></i></a>
                                                         <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo htmlspecialchars($record['tracking_id']); ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                     </div>
+                                                    <?php endif; ?>
                                                 </div>
                                                 <div class="timeline-body">
                                                     <p class="mb-1"><strong>Realizado por:</strong> <?php echo htmlspecialchars($record['admin_name']); ?></p>
@@ -183,6 +187,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         background-color: #e5e5e5;
         left: 25px;
         margin-left: -1.5px;
+        height: 90%;
     }
 
     .timeline > li {
@@ -216,9 +221,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
         font-size: 1.2em;
         text-align: center;
         position: absolute;
-        top: 16px;
+        top: 60px !important;
         left: 0;
-        margin-left: -25px;
+        margin-left: -7px !important;
         background-color: #837aff;
         border-radius: 50%;
         border: 3px solid #fff;

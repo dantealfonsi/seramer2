@@ -44,4 +44,34 @@ class NotificationController {
             $infractionId
         );
     }
+    /**
+     * Envía una notificación a todos los usuarios que pertenecen a un rol específico.
+     *
+     * @param string $roleName Nombre del rol.
+     * @param string $message Mensaje de la notificación.
+     * @param string $type Tipo de notificación (por defecto 'system_alert').
+     * @param string $subject Asunto (opcional).
+     * @return bool True si se procesó correctamente.
+     */
+    public function sendNotificationToRole(string $roleName, string $message, string $type = 'system_alert', string $subject = 'Notificación del Sistema'): bool {
+        require_once __DIR__ . '/../models/UserModel.php';
+        $userModel = new UserModel();
+        $users = $userModel->getUsersByRoleName($roleName);
+
+        if (empty($users)) {
+            return false;
+        }
+
+        foreach ($users as $userId) {
+            $this->createNotification(
+                null, // Sender (System)
+                (int)$userId,
+                $type,
+                $subject,
+                $message
+            );
+        }
+
+        return true;
+    }
 }
