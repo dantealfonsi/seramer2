@@ -1,0 +1,228 @@
+<?php
+// Vista de listado de departamentos
+session_start();
+
+require_once __DIR__ . '/../../controllers/DepartmentController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
+
+$controller = new DepartmentController();
+$rol = new RolesController();
+
+// Si no vienen datos del controlador (acceso directo), redireccionar a través del controlador
+// Aunque en este proyecto las vistas parecen ser puntos de entrada que instancian controladores.
+$departments = (new DepartmentModel())->getAllWithManager();
+
+$page_title = 'Gestión de Departamentos';
+
+require_once __DIR__ . '/../../views/layouts/header.php';
+include __DIR__ . '/../../views/layouts/navigation.php';
+include __DIR__ . '/../../views/layouts/navigation-top.php';
+?>
+
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
+                            <i class="ri-building-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-primary">
+                            <i class="ri-add-line"></i> Nuevo Departamento
+                        </a>
+                    </div>
+
+                    <?php if (isset($_SESSION['flash_message'])): ?>
+                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mx-3 mt-3" role="alert">
+                        <?php echo $_SESSION['flash_message']['message']; ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <?php unset($_SESSION['flash_message']); ?>
+                    <?php endif; ?>
+
+                    <div class="card-body">
+                        <?php if (empty($departments)): ?>
+                            <div class="text-center py-4">
+                                <i class="ri-building-line text-muted" style="font-size: 3rem;"></i>
+                                <h5 class="text-muted mt-2">No hay departamentos registrados</h5>
+                                <p class="text-muted">Comienza creando el primer departamento.</p>
+                                <a href="create.php" class="btn btn-primary">
+                                    <i class="ri-add-line"></i> Crear Primer Departamento
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle" id="departmentsTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Nombre</th>
+                                            <th>Manager (Jefe)</th>
+                                            <th>Turno</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($departments as $dept): ?>
+                                        <tr>
+                                            <td><?php echo $dept['id']; ?></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm me-3">
+                                                        <span class="avatar-initial rounded-circle bg-label-primary">
+                                                            <i class="ri-building-line"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 text-truncate"><?php echo htmlspecialchars($dept['name']); ?></h6>
+                                                        <small class="text-muted"><?php echo htmlspecialchars($dept['description'] ?? ''); ?></small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <?php if (!empty($dept['first_name'])): ?>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ri-user-star-line me-2 text-primary"></i>
+                                                        <div>
+                                                            <span class="fw-medium"><?php echo htmlspecialchars($dept['first_name'] . ' ' . $dept['last_name']); ?></span>
+                                                            <br>
+                                                            <small class="text-muted">ID: <?php echo htmlspecialchars($dept['id_number'] ?? ''); ?></small>
+                                                        </div>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <span class="badge bg-label-secondary">Sin Asignar</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php 
+                                                $shift = $dept['shift_type'] ?? 'Day';
+                                                $shift_map = ['Day' => 'Diurno', 'Night' => 'Nocturno', 'Mixed' => 'Mixto'];
+                                                $shift_color = ['Day' => 'info', 'Night' => 'primary', 'Mixed' => 'warning'];
+                                                ?>
+                                                <span class="badge bg-<?php echo $shift_color[$shift] ?? 'secondary'; ?>">
+                                                    <?php echo $shift_map[$shift] ?? $shift; ?>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="edit.php?id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <i class="ri-edit-line"></i>
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger" 
+                                                        title="Eliminar"
+                                                        onclick="confirmDelete(<?php echo $dept['id']; ?>, '<?php echo addslashes($dept['name']); ?>')">
+                                                    <i class="ri-delete-bin-line"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar el departamento <strong id="deleteDeptName"></strong>?</p>
+                <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="delete.php" method="POST" id="deleteForm">
+                    <input type="hidden" name="id" id="deleteDeptId">
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
+
+<script>
+function confirmDelete(id, name) {
+    document.getElementById('deleteDeptId').value = id;
+    document.getElementById('deleteDeptName').textContent = name;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+$(document).ready(function() {
+    if ($.fn.DataTable) {
+        $('#departmentsTable').DataTable({
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    exportOptions: { columns: [0, 1, 2, 3] }
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: { columns: [0, 1, 2, 3] }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: { columns: [0, 1, 2, 3] }
+                },
+                'colvis'
+            ],
+            language: {
+                "url": "../../public/datatables/Spanish.json" // Pruébamos si tienen el json o usamos el manual
+            },
+            // Fallback si el json no carga
+            language: {
+                "decimal": "",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron registros coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            columnDefs: [
+                { visible: false, targets: 0 },
+                { orderable: false, targets: 4 }
+            ]
+        });
+    }
+});
+</script>
+

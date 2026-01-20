@@ -59,6 +59,15 @@ $inspections = $result['inspections'] ?? [];
 $page_title = $result['page_title'] ?? 'Listado de Reportes de Inspección';
 $has_filters = !empty($activeFilters);
 $inspection_types = $inspectionsController->getInspectionTypesList(); 
+$stalls_list = $result['stalls'] ?? [];
+$inspectors_list = $result['inspectors'] ?? [];
+
+// Mapa de traducción para tipos de inspección
+$type_translations = [
+    'Rutine' => 'Rutina',
+    'New Stall' => 'Nuevo Puesto',
+    'Complain' => 'Queja/Denuncia'
+];
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -131,16 +140,32 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         value="<?php echo htmlspecialchars($_GET['inspection_date'] ?? ''); ?>">
                                 </div>
                                 <div class="col-md-3">
-                                    <label for="stall_id" class="form-label small">Puesto (ID)</label>
-                                    <input type="number" class="form-control" id="stall_id" name="stall_id" 
-                                        placeholder="Ej: 15 (ID Interno)" 
-                                        value="<?php echo htmlspecialchars($_GET['stall_id'] ?? ''); ?>">
+                                    <label for="stall_id" class="form-label small">Puesto</label>
+                                    <select class="form-select" id="stall_id" name="stall_id">
+                                        <option value="">-- Todos los Puestos --</option>
+                                        <?php 
+                                        $current_stall = $_GET['stall_id'] ?? '';
+                                        foreach ($stalls_list as $stall): 
+                                        ?>
+                                            <option value="<?php echo $stall['id']; ?>" <?php echo ($current_stall == $stall['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($stall['stall_number']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <label for="inspector_id" class="form-label small">Inspector (ID)</label>
-                                    <input type="number" class="form-control" id="inspector_id" name="inspector_id" 
-                                        placeholder="Ej: 101 (ID Interno)" 
-                                        value="<?php echo htmlspecialchars($_GET['inspector_id'] ?? ''); ?>">
+                                    <label for="inspector_id" class="form-label small">Inspector</label>
+                                    <select class="form-select" id="inspector_id" name="inspector_id">
+                                        <option value="">-- Todos los Inspectores --</option>
+                                        <?php 
+                                        $current_inspector = $_GET['inspector_id'] ?? '';
+                                        foreach ($inspectors_list as $inspector): 
+                                        ?>
+                                            <option value="<?php echo $inspector['inspector_id']; ?>" <?php echo ($current_inspector == $inspector['inspector_id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($inspector['full_name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
                                 <div class="col-12 d-flex justify-content-end align-items-end">
                                     <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
@@ -180,7 +205,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <table id="inspectionsTable" class="table table-striped table-hover w-100">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID Reporte</th>
                                             <th>Puesto</th>
                                             <th>Tipo</th>
                                             <th>Fecha Programada</th>
@@ -192,13 +216,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($inspections as $inspection): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($inspection['report_id']); ?></td>
                                             <td><span class="badge bg-secondary"><?php echo htmlspecialchars($inspection['stall_number'] ?? 'N/A'); ?></span></td>
-                                            <td><span class="badge bg-info"><?php echo htmlspecialchars($inspection['inspection_type_name']); ?></span></td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    <?php 
+                                                    $type_key = $inspection['inspection_type_name'];
+                                                    echo htmlspecialchars($type_translations[$type_key] ?? $type_key); 
+                                                    ?>
+                                                </span>
+                                            </td>
                                             <td>
                                                 <?php 
                                                 $inspection_date = new DateTime($inspection['scheduled_datetime']);
-                                                echo $inspection_date->format('d/m/Y H:i'); 
+                                                echo $inspection_date->format('d/m/Y'); 
                                                 ?>
                                             </td>
                                             <td><?php echo htmlspecialchars($inspection['inspector_name'] ?? 'N/A'); ?></td>
@@ -307,10 +337,9 @@ $(document).ready(function() {
         </div>
     `;
     
-    // Columnas a exportar (excluyendo la Columna 0: ID Reporte y Columna 6: Acciones)
-    // Columnas: ID Reporte (0), Puesto (1), Tipo (2), Fecha Programada (3), Inspector (4), Estado (5)
-    // **Nota:** Se incluye el ID Reporte (columna 0) para exportación en los ajustes del DataTables.
-    const exportColumns = [0, 1, 2, 3, 4, 5]; 
+    // Columnas a exportar (excluyendo la Columna 5: Acciones)
+    // Columnas: Puesto (0), Tipo (1), Fecha Programada (2), Inspector (3), Estado (4)
+    const exportColumns = [0, 1, 2, 3, 4]; 
     
     if ($.fn.DataTable) {
         $('#inspectionsTable').DataTable({ 
@@ -433,7 +462,7 @@ $(document).ready(function() {
             order: [[0, 'desc']], 
              // Deshabilitar el ordenamiento en la columna de Acciones
             "columnDefs": [
-                { "orderable": false, "targets": 6 } 
+                { "orderable": false, "targets": 5 } 
             ]
         });
     } else {

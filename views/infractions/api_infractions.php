@@ -39,4 +39,12 @@ if (isset($_GET['getLatestEconomicIndicators'])) {
     exit;
 }
 
+// endpoint para obtener infracciones por adjudicatario
+if (isset($_GET['getInfractionsByAwardee']) && isset($_GET['awardeeId'])) {
+    $awardeeId = (int)$_GET['awardeeId'];
+    $infractions = $infractionsController->getInfractionsByAwardee($awardeeId);
+    echo json_encode($infractions);
+    exit;
+}
+
 ?>

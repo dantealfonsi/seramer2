@@ -81,7 +81,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <a href="edit.php?id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-warning">
                                 <i class="ri-edit-line"></i> Editar
                             </a>
-                            <a href="../reports/index.php?report=print_infraction.rep&action=view&id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-info">
+                            <a href="../reports/index.php?report=infraction_invoice.rep&action=view&id=<?php echo $infraction['infraction_id']; ?>" class="btn btn-info">
                                 <i class="ri-printer-line"></i> Generar Reporte
                             </a>
                             <button type="button" 
@@ -153,7 +153,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                         </tr>
                                         <tr>
-                                            <th>Sancion:</th>                                        
+                                            <th>Monto de la Multa:</th>                                        
                                             <td>
                                                 <?php                                             
                                                 $sancion_colors = [
@@ -162,10 +162,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     'Paid' => 'success',
                                                     'Cancelled' => 'danger'
                                                 ];
-                                                $color = $santion_colors[$infraction['sanction_status']] ?? 'secondary';
+                                                $color = $sancion_colors[$infraction['sanction_status']] ?? 'secondary';
+                                                
+                                                // Definir el símbolo o texto de la moneda
+                                                $currency = $infraction['fine_currency'] ?? 'VES';
+                                                $amount = number_format($infraction['fine_amount'] ?? 0, 2, ',', '.');
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6" style="cursor:pointer;" onclick="window.location.href='../sanctions/view.php?id=<?php echo $infraction['sanction_id']; ?>'">
-                                                    <?php echo htmlspecialchars($allowed_sanction_status[$infraction['sanction_status']] . " ". $infraction['fine_amount'].$infraction['fine_currency'] ); ?>
+                                                    <?php echo htmlspecialchars($amount . ' ' . $currency); ?>
                                                 </span>
                                             </td>
                                         </tr>

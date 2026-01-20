@@ -1,19 +1,25 @@
 <?php
 
 require_once __DIR__ . '/../models/CitationsModel.php';
+require_once __DIR__ . '/../models/InfractionsModel.php';
 require_once __DIR__ . '/../config/app.php';
 
 class CitationsController {
     private $citationsModel;
+    private $infractionsModel;
 
     public function __construct() {
         $this->citationsModel = new CitationsModel();
+        $this->infractionsModel = new InfractionsModel();
     }
 
     /**
      * Muestra una lista de citaciones para DataTables (sin paginación en el servidor).
      */
     public function index($params = []) {
+        // Ejecutar actualización automática de estados antes de obtener la lista
+        $this->citationsModel->checkAndAutoUpdateStatuses();
+
         // Ignoramos $page y $limit, ya que DataTables maneja la paginación en el cliente.
         $search = isset($params['search']) ? trim($params['search']) : '';
         
@@ -84,6 +90,9 @@ class CitationsController {
      * Procesa la creación de una nueva citación.
      */
     public function store($data) {
+        // Forzar estado 'Scheduled' al crear
+        $data['citation_status'] = 'Scheduled';
+
         $validation = $this->validateCitationData($data);
         if (!$validation['success']) {
             return $validation; // Devuelve errores para mostrar en el formulario
@@ -209,7 +218,7 @@ class CitationsController {
         }
         
         // Validar que los valores de status sean los permitidos
-        $allowed_status = ['Scheduled', 'Rescheduled', 'Completed', 'Canceled'];
+        $allowed_status = ['Scheduled', 'In Process', 'Rescheduled', 'Completed', 'Canceled'];
         if (isset($data['citation_status']) && !in_array($data['citation_status'], $allowed_status)) {
             $errors[] = 'El estado de la citación no es válido.';
         }
@@ -229,6 +238,14 @@ class CitationsController {
         return $this->citationsModel->getMediatorsList();
     }
     
+    public function getStallsList() {
+        return $this->infractionsModel->getStallsList();
+    }
+
+    public function getInfractionsByAwardee($awardeeId) {
+        return $this->infractionsModel->getInfractionsByAwardee($awardeeId);
+    }
+
     public function getById($id) {
         return $this->citationsModel->getById($id);
     }

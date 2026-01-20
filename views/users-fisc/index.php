@@ -29,12 +29,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-team-line me-1"></i>
+                            <i class="ri-team-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
                     
                     <div class="card-body">
+                        <div class="alert alert-info mb-4 shadow-sm border-start border-info border-5">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <h6 class="alert-heading fw-bold">Gestión de Usuarios de Fiscalización</h6>
+                                <p class="mb-0">
+                                    Este componente permite visualizar y administrar el personal asignado al departamento de Fiscalización. 
+                                    Aquí puede gestionar los <strong>Niveles de Acceso</strong> (Administrador, Oficina, Inspector) para cada usuario, 
+                                    lo que determina sus capacidades dentro del sistema, desde la generación de reportes hasta la auditoría de procesos.
+                                </p>
+                            </div>
+                        </div>
                         <?php if (empty($users)): ?>
                             <div class="text-center py-5">
                                 <i class="ri-alert-line text-muted" style="font-size: 3rem;"></i>
@@ -42,23 +53,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="table table-striped table-hover" id="usersFiscTable">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>ID de Usuario</th>
                                             <th>Nombre Completo</th>
                                             <th>Cédula</th>
                                             <th>Usuario (Login)</th>
                                             <th>Email</th>
                                             <th>Estado</th>
+                                            <?php if ($rol->hasPermission('USERS_AUDIT', 'w')): ?>
                                             <th class="text-center" style="min-width: 300px;">Nivel de Fiscalización</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php if ($rol->hasPermission('USERS_AUDIT', 'r')): ?>
                                         <?php foreach ($users as $user): ?>
                                             <tr>
-                                                <?php if ($rol->hasPermission('USERS_AUDIT', 'r')): ?>
-                                                <td><?php echo htmlspecialchars($user['user_id']); ?></td>
                                                 <td>
                                                     <strong><?php echo htmlspecialchars($user['last_name'] . ' ' . $user['first_name']); ?></strong>
                                                 </td>
@@ -71,12 +82,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         $badge_color = ($status === 'active') ? 'success' : 'danger';
                                                     ?>
                                                     <span class="badge bg-<?php echo $badge_color; ?>">
-                                                        <?php echo htmlspecialchars(ucfirst($status)); ?>
+                                                        <?php echo ($status === 'active') ? 'Activo' : 'Inactivo'; ?>
                                                     </span>
                                                 </td>
                                                 <?php if ($rol->hasPermission('USERS_AUDIT', 'w')): ?>
                                                 <td class="text-center">
                                                     <?php foreach ($roles as $role): ?>
+                                                        <?php if (strtolower($role['role_name']) === 'cobranzas') continue; ?>
                                                         <div class="form-check form-check-inline">
                                                             <input class="form-check-input role-radio" 
                                                                 type="radio" 
@@ -85,6 +97,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                                 value="<?php echo htmlspecialchars($role['role_id']); ?>"
                                                                 data-user-id="<?php echo htmlspecialchars($user['user_id']); ?>"
                                                                 data-role-name="<?php echo htmlspecialchars($role['role_name']); ?>"
+                                                                data-is-admin-user="<?php echo ($user['role_name'] === 'administrador') ? '1' : '0'; ?>"
+                                                                data-is-self="<?php echo ($user['user_id'] == $_SESSION['user_id']) ? '1' : '0'; ?>"
                                                                 <?php echo ($user['role_id'] == $role['role_id']) ? 'checked' : ''; ?>
                                                                 <?php echo ($user['role_id'] == null && $role['role_name'] == 'oficina') ? 'checked' : ''; ?> 
                                                                 >
@@ -95,9 +109,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <?php endforeach; ?>
                                                 </td> 
                                                 <?php endif; ?>
-                                                <?php endif; ?> 
                                             </tr>
                                         <?php endforeach; ?>
+                                        <?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -111,58 +125,150 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const radios = document.querySelectorAll('.role-radio');
+    // DataTables Initialization
+    if ($.fn.DataTable) {
+         $('#usersFiscTable').DataTable({ 
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    orientation: 'landscape', 
+                    pageSize: 'LETTER', 
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4] // Exclude Role Selection Column (index 5 now)
+                    },
+                    title: 'Usuarios_Fiscalizacion_Seramer'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                         columns: [0, 1, 2, 3, 4] 
+                    },
+                    title: 'Usuarios_Fiscalizacion_Seramer' 
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                         columns: [0, 1, 2, 3, 4] 
+                    }
+                },
+                'colvis'
+            ],
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json",
+                 "decimal": "",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron registros coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": activar para ordenar la columna ascendente",
+                    "sortDescending": ": activar para ordenar la columna descendente"
+                }
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 5 } // Disable sorting on Role Selection
+            ]
+        });
+    }
 
+    // Role Update Logic
+    const radios = document.querySelectorAll('.role-radio');
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
+            const radioElement = this;
             const userId = this.getAttribute('data-user-id');
             const roleId = this.value;
             const roleName = this.getAttribute('data-role-name');
+            const isAdmin = this.getAttribute('data-is-admin-user') === '1';
+            const isSelf = this.getAttribute('data-is-self') === '1';
 
-            if (!confirm(`¿Estás seguro de que quieres asignar el rol '${roleName.toUpperCase()}' al usuario ID ${userId}?`)) {
-                // Si cancela, revertir la selección (es complejo, pero se puede simplificar)
-                // Por simplicidad, alertamos, pero en un entorno real deberías guardar la selección anterior.
-                // Revertir a un estado conocido para evitar que la interfaz mienta:
-                location.reload(); 
+            // Verificación: No bajar rango a un administrador
+            if (isAdmin && roleName.toLowerCase() !== 'administrador') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Acción restringida',
+                    text: 'No se puede bajar el rango a un administrador por seguridad. Esta acción debe ser supervisada.',
+                    confirmButtonText: 'Entendido'
+                });
+                // Revertir el radio button sin recargar la página
+                setTimeout(() => { location.reload(); }, 500); // Recargamos para estar seguros del estado actual
                 return;
             }
 
-            // Realizar la petición AJAX
-            fetch('ajax_update_role.php', { // Tendrás que crear este archivo de endpoint
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `action=update_role&user_id=${userId}&role_id=${roleId}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Éxito',
-                        text: '✅ ' + data.message,
-                        confirmButtonText: 'Aceptar'
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `¿Deseas asignar el rol '${roleName.toUpperCase()}' al usuario?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cambiar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('ajax_update_role.php', { 
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `action=update_role&user_id=${userId}&role_id=${roleId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Actualizado!',
+                                text: '✅ ' + data.message,
+                                confirmButtonText: 'Genial'
+                            }).then(() => {
+                                location.reload(); // Recargar para actualizar los data-attributes y el estado real
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: '❌ Error: ' + data.message,
+                                confirmButtonText: 'Entendido'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la conexión AJAX:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de Conexión',
+                            text: '❌ Error de conexión al servidor.',
+                            confirmButtonText: 'Entendido'
+                        }).then(() => {
+                            location.reload();
+                        });
                     });
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: '❌ Error: ' + data.message,
-                        confirmButtonText: 'Entendido'
-                    });
-                    location.reload(); // Recargar si hay error para resetear la interfaz
+                    // Si cancela, volvemos a cargar para resetear los radio buttons al estado real de la DB
+                    location.reload();
                 }
-            })
-            .catch(error => {
-                console.error('Error en la conexión AJAX:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error de Conexión',
-                    text: '❌ Error de conexión al servidor.',
-                    confirmButtonText: 'Entendido'
-                });
-                location.reload();
             });
         });
     });
@@ -171,3 +277,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<!-- DataTables includes -->
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>

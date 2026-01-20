@@ -154,22 +154,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="stall_id" class="form-label small">Puesto (ID/Nro)</label>
-                                    <input type="number" class="form-control" id="stall_id" name="stall_id" 
-                                        placeholder="Ej: 15" 
-                                        value="<?php echo htmlspecialchars($_GET['stall_id'] ?? ''); ?>">
+                                    <label for="stall_id" class="form-label small">Puesto</label>
+                                    <select class="form-select" id="stall_id" name="stall_id">
+                                        <option value="">-- Todos los Puestos --</option>
+                                        <?php 
+                                        $current_stall = $_GET['stall_id'] ?? '';
+                                        if (isset($stalls) && is_array($stalls)) {
+                                            foreach ($stalls as $stall) {
+                                                $id = $stall['id'];
+                                                $number = $stall['stall_number'];
+                                                $selected = ($current_stall == $id) ? 'selected' : '';
+                                                echo "<option value=\"$id\" $selected>$number</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
 
                                 <div class="col-md-3">
-                                    <label for="awardee_id" class="form-label small">Adjudicatario (ID)</label>
-                                    <input type="number" class="form-control" id="awardee_id" name="awardee_id" 
-                                        placeholder="Ej: 42" 
-                                        value="<?php echo htmlspecialchars($_GET['awardee_id'] ?? ''); ?>">
+                                    <label for="awardee_id" class="form-label small">Adjudicatario</label>
+                                    <select class="form-select" id="awardee_id" name="awardee_id">
+                                        <option value="">-- Todos los Adjudicatarios --</option>
+                                        <?php 
+                                        $current_awardee = $_GET['awardee_id'] ?? '';
+                                        if (isset($awardees) && is_array($awardees)) {
+                                            foreach ($awardees as $awardee) {
+                                                $id = $awardee['id'];
+                                                $name = $awardee['full_name'] ?? $awardee['first_name'];
+                                                $selected = ($current_awardee == $id) ? 'selected' : '';
+                                                echo "<option value=\"$id\" $selected>$name</option>";
+                                            }
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
                                 <div class="col-12 d-flex justify-content-end align-items-end">
                                     <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
                                     <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros (Lado Servidor)
+                                        <i class="ri-search-line"></i> Aplicar Filtros
                                     </button>
                                 </div>
                             </div>

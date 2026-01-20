@@ -1,13 +1,16 @@
 <?php
 
 require_once __DIR__ . '/../models/ComplaintsModel.php';
+require_once __DIR__ . '/../models/ComplaintTrackingModel.php';
 require_once __DIR__ . '/../config/app.php';
 
 class ComplaintsController {
     private $complaintsModel;
+    private $trackingModel;
     
     public function __construct() {
         $this->complaintsModel = new ComplaintsModel();
+        $this->trackingModel = new ComplaintTrackingModel();
     }
 
     /**
@@ -15,6 +18,10 @@ class ComplaintsController {
      */
     public function getStallsList() {
         return $this->complaintsModel->getStallsList();
+    }
+
+    public function getAwardeeByStall($stallId) {
+        return $this->complaintsModel->getAwardeeByStall($stallId);
     }
 
 public function index($params = []) {
@@ -235,6 +242,25 @@ public function index($params = []) {
         ];
         
         // La redirección se hará en la vista que procesa el delete.
+        return $result;
+    }
+
+    /**
+     * Get tracking history for a complaint.
+     */
+    public function getHistory($complaintId) {
+        return $this->trackingModel->getAllByComplaintId($complaintId);
+    }
+
+    /**
+     * Add a new tracking entry.
+     */
+    public function addHistory($data) {
+        if (empty($data['complaint_id']) || empty($data['action_description'])) {
+            return ['success' => false, 'message' => 'Datos incompletos para el seguimiento.'];
+        }
+
+        $result = $this->trackingModel->create($data);
         return $result;
     }
 

@@ -43,10 +43,13 @@ $awardees_js = array_map(function($a){
 $infraction_types = $infractionsModel->getInfractionTypesList();
 
 $stalls =  $infractionsModel->getStallsList();
-$stallDict = [];
-foreach ($stalls as $id => $stall_number) {
-    $stallDict[] = ['id' => $id, 'stall_number' => $stall_number];     
-}
+$stalls_js = array_map(function($s){
+    return [
+        'id' => (int)($s['id'] ?? 0),
+        'stall_number' => $s['stall_number'] ?? '',
+        'awardee_id' => (int)($s['awardee_id'] ?? 0)
+    ];
+}, $stalls);
 
 $sanction_types = $sanctionTypesController->index()['sanction_types'];
 
@@ -189,58 +192,79 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
-                        <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" class="btn btn-secondary">
-                            <i class="ri-arrow-left-line"></i> 
-                            <?php echo $is_edit ? 'Volver a detalles' : 'Volver al listado'; ?>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <?php if ($is_edit): ?>
+                            <a href="../../index.php?report=infraction_invoice.rep&action=view&id=<?php echo htmlspecialchars($idEdit); ?>" 
+                               class="btn btn-primary" 
+                               target="_blank">
+                                <i class="ri-file-list-3-line"></i> 
+                                Ver Factura
+                            </a>
+                            <?php endif; ?>
+                            <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" class="btn btn-secondary">
+                                <i class="ri-arrow-left-line"></i> 
+                                <?php echo $is_edit ? 'Volver a detalles' : 'Volver al listado'; ?>
+                            </a>
+                        </div>
                     </div>
                     
                     <div class="card-body">
                         <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <h6 class="alert-heading">
-                                <i class="ri-error-warning-line"></i> Se encontraron errores:
-                            </h6>
-                            <ul class="mb-0">
-                                <?php foreach ($errors as $error): ?>
-                                <li><?php echo htmlspecialchars($error); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Campos Incompletos',
+                                html: '<?php echo implode("<br>", array_map("htmlspecialchars", $errors)); ?>',
+                                confirmButtonText: 'Entendido'
+                            });
+                        });
+                        </script>
                         <?php endif; ?>
 
                         <form method="POST" enctype="multipart/form-data" novalidate>
+                            <!-- Adjudicatario and Tipo de Infracción - Side by Side -->
+                            <!-- Stall and Awardee - Side by Side -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="awardee_id" class="form-label">
-                                            Adjudicatario <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select" id="awardee_id" name="awardee_id" onchange="loadSanctions()" required>
-                                            <option value="">Seleccione un adjudicatario</option>
-                                            <?php foreach ($awardees as $adj): ?>
-                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
-                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($adj['first_name']); ?>
-                                            </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
                                         <label for="stall_id" class="form-label">
-                                            Puesto
+                                            Puesto <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="stall_id" name="stall_id">
-                                            <option value="">Seleccione un puesto (opcional)</option>
-                                            <?php foreach ($stalls as $item): ?>
-                                                <option value="<?php echo htmlspecialchars($item['id']); ?>"
-                                                    <?php echo ((int)$form_data['stall_id'] == (int)$item['id']) ? ' selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($item['stall_number']); ?>
+                                        <select class="form-select" id="stall_id" name="stall_id" onchange="autoSelectAwardeeByStall()" required>
+                                            <option value="">Seleccione un puesto</option>
+                                            <?php foreach ($stalls as $stall): ?>
+                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
+                                                    data-awardee-id="<?php echo htmlspecialchars($stall['awardee_id'] ?? ''); ?>"
+                                                    <?php echo ((int)$form_data['stall_id'] == (int)$stall['id']) ? ' selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="awardee_id_display" class="form-label">
+                                            Adjudicatario <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select" id="awardee_id_display" disabled>
+                                            <option value="">Se seleccionará automáticamente</option>
+                                            <?php foreach ($awardees as $adj): ?>
+                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
+                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($adj['full_name'] ?? $adj['first_name']); ?>
+                                            </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Infraction Type and Date - Side by Side -->
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="infraction_type_id" class="form-label">
                                             Tipo de Infracción <span class="text-danger">*</span>
@@ -255,22 +279,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Resumen</label>
-                                        <div id="sanction_results" class="mb-2">
-                                            <!-- Los resultados del conteo de sanciones se cargarán aquí -->
-                                        </div>
-                                        <label form="sanction_type_id" class="form-label">Sanción a Aplica:</label>
-                                        <input readonly type="hidden" class="form-control" id="sanction_type_id" name="sanction_type_id" 
-                                               value="<?php echo isset($form_data['sanction_type_id']) ? htmlspecialchars($form_data['sanction_type_id']) : ''; ?>">
-                                        <div style="font-size:1.2rem;" id="text_sanction_type_id">
-                                            N/A
-                                        </div>
-                                    </div>  
-                                    <div class="col-md-6 mb-3" id="box_effect_end_date" style="display: none;">
-                                        <label for="effect_end_date" class="form-label">Fecha limite del Efecto de la Sancion</label>
-                                        <input type="date" class="form-control" id="effect_end_date" name="effect_end_date">
-                                    </div>                                                                      
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -284,6 +292,39 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                value="<?php echo htmlspecialchars($form_data['infraction_datetime']); ?>"
                                                required>
                                     </div>
+                                </div>
+                            </div>
+
+                            <!-- Resumen de Sanciones - Full Width Card -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-sm mb-4">
+                                        <div class="card-body">
+                                            <h6 class="card-subtitle mb-3 text-muted">
+                                                <i class="ri-bar-chart-box-line me-1"></i>Resumen de Sanciones
+                                            </h6>
+                                            <div id="sanction_results" class="mb-3">
+                                                <p class="text-muted mb-0"><i class="ri-information-line"></i> Seleccione un adjudicatario para ver el resumen</p>
+                                            </div>
+                                            <hr class="my-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <label class="form-label mb-0 fw-bold">Sanción a Aplicar:</label>
+                                                <input readonly type="hidden" class="form-control" id="sanction_type_id" name="sanction_type_id" 
+                                                       value="<?php echo isset($form_data['sanction_type_id']) ? htmlspecialchars($form_data['sanction_type_id']) : ''; ?>">
+                                                <span class="badge bg-secondary" id="text_sanction_type_id" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                                    N/A
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Descripción and Observaciones - Side by Side -->
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="infraction_description" class="form-label">
                                             Descripción <span class="text-danger">*</span>
@@ -291,11 +332,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <textarea onKeyup="validarText('infraction_description',8,'errorTextLocation')" class="form-control" 
                                                   id="infraction_description" 
                                                   name="infraction_description" 
-                                                  rows="3" 
+                                                  rows="5" 
                                                   required><?php echo htmlspecialchars($form_data['infraction_description']); ?>
                                         </textarea>
                                         <div id="errorTextLocation" style="color: red;"></div>
                                     </div>
+                                </div>
+                                <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="inspector_observations" class="form-label">
                                             Observaciones del Inspector
@@ -303,15 +346,25 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <textarea onKeyup="validarText('inspector_observations',8,'errorTextObservations')" class="form-control" 
                                                   id="inspector_observations" 
                                                   name="inspector_observations" 
-                                                  rows="3"><?php echo htmlspecialchars($form_data['inspector_observations']); ?>
+                                                  rows="5"><?php echo htmlspecialchars($form_data['inspector_observations']); ?>
                                             </textarea>
                                         <div id="errorTextObservations" style="color: red;"></div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3" id="box_effect_end_date" style="display: none;">
+                                        <label for="effect_end_date" class="form-label">Fecha limite del Efecto de la Sancion</label>
+                                        <input type="date" class="form-control" id="effect_end_date" name="effect_end_date">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
                             
                             <hr class="my-4">
 
+                            <!-- Evidencias and Estado - Side by Side -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -378,6 +431,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
 // Inyectar la lista de adjudicatarios en JS (solo id y name)
 const AWARDEES = <?php echo json_encode($awardees_js, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?>;
 const awardeeById = new Map(AWARDEES.map(a => [String(a.id), a.name]));
+
+// Inyectar la lista de puestos en JS
+const STALLS = <?php echo json_encode($stalls_js, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?>;
+
 // Inyectar la lista de tipos de infracciones en JS (solo id y sanction_type_id)
 const infractionTypes = <?php echo json_encode($infraction_types, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?>;
 const infractionTypeById = new Map(infractionTypes.map(it => [String(it.infraction_type_id), it.sanction_type_id]));
@@ -385,6 +442,37 @@ var countSanctions = {};
 
 function getAwardeeName(id) {
     return awardeeById.get(String(id)) || 'N/A';
+}
+
+function getInfractionTypeName(id) {
+    return infractionTypeById.get(String(id)) || 'N/A';
+}
+
+/**
+ * Filtra los puestos (stalls) basándose en el adjudicatario seleccionado
+ */
+/**
+ * Selecciona automáticamente el adjudicatario basado en el puesto seleccionado
+ */
+function autoSelectAwardeeByStall() {
+    const stallSelect = document.getElementById('stall_id');
+    const awardeeSelect = document.getElementById('awardee_id_display');
+    const awardeeHidden = document.getElementById('awardee_id');
+    
+    // Obtener la opción seleccionada
+    const selectedOption = stallSelect.options[stallSelect.selectedIndex];
+    const awardeeId = selectedOption.getAttribute('data-awardee-id');
+    
+    if (awardeeId) {
+        awardeeSelect.value = awardeeId;
+        awardeeHidden.value = awardeeId;
+        
+        // Recalcular conteo de infecciones ya que el adjudicatario cambió
+        loadInfractionCount(); 
+    } else {
+        awardeeSelect.value = "";
+        awardeeHidden.value = "";
+    }
 }
 
 function getInfractionTypeName(id) {
@@ -495,20 +583,22 @@ function determineSanctionSeverity(infractionTypeId, currentTypeCount) {
     }
     if (displayDiv && finalStyle) {
         displayDiv.textContent = finalStyle.text;
+        displayDiv.className = 'badge';
         
         // Aplicar estilos para el color
         displayDiv.style.color = finalStyle.color;
         displayDiv.style.fontWeight = 'bold';
-        displayDiv.style.padding = '5px 10px';
+        displayDiv.style.fontSize = '0.9rem';
+        displayDiv.style.padding = '0.5rem 1rem';
         displayDiv.style.borderRadius = '5px';
         displayDiv.style.backgroundColor = finalStyle.background;
         displayDiv.style.border = `1px solid ${finalStyle.color}`;
     } else if (displayDiv) {
          // Fallback si no hay estilo (ej. si finalSanctionId no está en severityStyleMap)
         displayDiv.textContent = 'ERROR (ID ' + finalSanctionId + ')';
-        displayDiv.style.color = '#000000';
-        displayDiv.style.backgroundColor = 'transparent';
-        displayDiv.style.border = 'none';
+        displayDiv.className = 'badge bg-secondary';
+        displayDiv.style.fontSize = '0.9rem';
+        displayDiv.style.padding = '0.5rem 1rem';
     }    
     
     // Mostrar u ocultar la caja de "Fecha limite del Efecto de la Sancion"
@@ -523,6 +613,9 @@ function determineSanctionSeverity(infractionTypeId, currentTypeCount) {
 function loadSanctions() {
     // 1. Obtener el valor del ID del adjudicatario desde el input
     const awardeeId = document.getElementById('awardee_id').value;
+    
+    // Filtrar los puestos basándose en el adjudicatario seleccionado
+    filterStallsByAwardee();
     
     // Asume que tienes un elemento donde quieres mostrar los resultados, por ejemplo, un div
     const resultsContainer = document.getElementById('sanction_results');
@@ -563,13 +656,40 @@ function loadSanctions() {
                     // Si la API devuelve el formato esperado
                     countSanctions = data; // Guardar los datos globalmente si es necesario
                     let html = `
-                        <h4>Acumulado de Sanciones para: ${awardeeName} (ID: ${awardeeId})</h4>
-                        <ul>
-                            <li><strong>Leves:</strong> ${data.leve}</li>
-                            <li><strong>Moderadas:</strong> ${data.moderada}</li>
-                            <li><strong>Graves:</strong> ${data.grave}</li>
-                            <li><strong>Total:</strong> ${data.total ?? (data.leve + data.moderada + data.grave)}</li>
-                        </ul>
+                        <div class="mb-2">
+                            <strong class="d-block mb-2">${awardeeName}</strong>
+                            <small class="text-muted">ID: ${awardeeId}</small>
+                        </div>
+                        <div class="row g-2 mt-2">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-success me-2" style="width: 12px; height: 12px; padding: 0;"></span>
+                                    <span class="text-muted small">Leves:</span>
+                                    <span class="ms-auto fw-bold">${data.leve}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-warning me-2" style="width: 12px; height: 12px; padding: 0;"></span>
+                                    <span class="text-muted small">Moderadas:</span>
+                                    <span class="ms-auto fw-bold">${data.moderada}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-danger me-2" style="width: 12px; height: 12px; padding: 0;"></span>
+                                    <span class="text-muted small">Graves:</span>
+                                    <span class="ms-auto fw-bold">${data.grave}</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-primary me-2" style="width: 12px; height: 12px; padding: 0;"></span>
+                                    <span class="text-muted small">Total:</span>
+                                    <span class="ms-auto fw-bold">${data.total ?? (data.leve + data.moderada + data.grave)}</span>
+                                </div>
+                            </div>
+                        </div>
                     `;
                     resultsContainer.innerHTML = html;
                 } else {

@@ -19,6 +19,13 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     exit();
 }
 
+// Redireccionar si es el departamento de Cobranza
+if (isset($_SESSION['selected_department']) && $_SESSION['selected_department'] === 'Cobranza') {
+    $collectionDashboardUrl = url('views/dashboard/collection.php');
+    header("Location: $collectionDashboardUrl");
+    exit();
+}
+
 // Verificar si la sesión es válida (no expirada)
 $session_timeout = 1800; // 30 minutos
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $session_timeout) {
@@ -32,6 +39,11 @@ if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) >
 
 // Actualizar timestamp de actividad
 $_SESSION['last_activity'] = time();
+
+// Sincronizar automáticamente la tasa del Euro
+require_once __DIR__ . '/../../controllers/InfractionsController.php';
+$infractionsCtrl = new InfractionsController();
+$infractionsCtrl->syncEuroWithSystemRates();
 
 // Obtener datos del usuario
 $user = [
@@ -47,6 +59,11 @@ $current_user = ['full_name' => $user['name']]; // Usar el nombre de usuario de 
 include __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
+
+// Fetch Dashboard Stats
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
 ?>
 
 <!-- Content -->
@@ -81,7 +98,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div>
                                     <h6 class="text-muted fw-normal">Infracciones Activas</h6>
                                     <div class="d-flex align-items-center">
-                                        <h4 class="mb-0 me-2">45</h4>
+                                        <h4 class="mb-0 me-2"><?php echo $dashboardStats['active_infractions']; ?></h4>
                                         <small class="text-success fw-semibold"><i class="ri-arrow-up-s-line align-middle"></i>+5%</small>
                                     </div>
                                 </div>
@@ -99,7 +116,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div>
                                     <h6 class="text-muted fw-normal">Infracciones Resueltas</h6>
                                     <div class="d-flex align-items-center">
-                                        <h4 class="mb-0 me-2">120</h4>
+                                        <h4 class="mb-0 me-2"><?php echo $dashboardStats['resolved_infractions']; ?></h4>
                                         <small class="text-success fw-semibold"><i class="ri-arrow-up-s-line align-middle"></i>+12%</small>
                                     </div>
                                 </div>
@@ -116,7 +133,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-muted fw-normal">Adjudicatarios</h6>
-                                    <h4 class="mb-0">850</h4>
+                                    <h4 class="mb-0"><?php echo number_format($dashboardStats['awardees']); ?></h4>
                                 </div>
                                 <div class="avatar flex-shrink-0">
                                     <span class="avatar-initial rounded-3 bg-label-info"><i class="ri-group-line ri-2x"></i></span>
@@ -131,7 +148,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-muted fw-normal">Puestos de Mercado</h6>
-                                    <h4 class="mb-0">1,500</h4>
+                                    <h4 class="mb-0"><?php echo number_format($dashboardStats['stalls']); ?></h4>
                                 </div>
                                 <div class="avatar flex-shrink-0">
                                     <span class="avatar-initial rounded-3 bg-label-primary"><i class="ri-store-2-line ri-2x"></i></span>
@@ -190,34 +207,52 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
-<!-- Scripts para Chart.js -->
+<?php
+// --- Obtención de Datos Reales para Gráficos ---
+// (StatisticalReportModel ya inicializado arriba)
+
+// 1. Infracciones por Mes (Últimos 6 meses)
+$infractionsData = $statsModel->getInfractionsByMonth(6);
+$infractionsLabels = json_encode($infractionsData['labels']);
+$infractionsCounts = json_encode($infractionsData['data']);
+
+// 2. Empleados por Departamento
+$employeesData = $statsModel->getEmployeesByDepartment();
+$employeesLabels = json_encode($employeesData['labels']);
+$employeesCounts = json_encode($employeesData['data']);
+$employeesBgColors = json_encode($employeesData['backgroundColor']);
+$employeesBorderColors = json_encode($employeesData['borderColor']);
+
+// 3. Productividad de Inspección (Últimos 12 meses)
+$productivityData = $statsModel->getInspectionProductivity(12);
+$productivityLabels = json_encode($productivityData['labels']);
+$productivityCounts = json_encode($productivityData['data']);
+?>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Datos simulados para los gráficos ---
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
+    
     // Gráfico de Infracciones por Mes (Barra)
-    const monthlyInfractionsData = {
-        labels: months.slice(6), // Últimos 6 meses
-        datasets: [{
-            label: 'Número de Infracciones',
-            data: [12, 19, 3, 5, 2, 3].sort(() => Math.random() - 0.5), // Datos simulados
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1
-        }]
-    };
-
     const monthlyInfractionsConfig = {
         type: 'bar',
-        data: monthlyInfractionsData,
+        data: {
+            labels: <?php echo $infractionsLabels; ?>,
+            datasets: [{
+                label: 'Número de Infracciones',
+                data: <?php echo $infractionsCounts; ?>,
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
                 }
             }
         }
@@ -225,30 +260,18 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('monthlyInfractionsChart'), monthlyInfractionsConfig);
 
     // Gráfico de Empleados por Departamento (Dona)
-    const employeesByDepartmentData = {
-        labels: ['Vigilancia', 'Administración', 'Inspección', 'Mantenimiento'],
-        datasets: [{
-            label: 'Empleados',
-            data: [30, 15, 25, 10], // Datos simulados
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
-            ],
-            borderWidth: 1
-        }]
-    };
-
     const employeesByDepartmentConfig = {
         type: 'doughnut',
-        data: employeesByDepartmentData,
+        data: {
+            labels: <?php echo $employeesLabels; ?>,
+            datasets: [{
+                label: 'Empleados',
+                data: <?php echo $employeesCounts; ?>,
+                backgroundColor: <?php echo $employeesBgColors; ?>,
+                borderColor: <?php echo $employeesBorderColors; ?>,
+                borderWidth: 1
+            }]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -262,27 +285,26 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('employeesByDepartmentChart'), employeesByDepartmentConfig);
 
     // Gráfico de Línea de Productividad de la Inspección
-    const inspectionProductivityData = {
-        labels: months,
-        datasets: [{
-            label: 'Inspecciones Realizadas',
-            data: [35, 42, 50, 48, 55, 60, 65, 70, 68, 75, 72, 80],
-            borderColor: '#424242',
-            backgroundColor: 'rgba(66, 66, 66, 0.2)',
-            fill: true,
-            tension: 0.4
-        }]
-    };
-
     const inspectionProductivityConfig = {
         type: 'line',
-        data: inspectionProductivityData,
+        data: {
+            labels: <?php echo $productivityLabels; ?>,
+            datasets: [{
+                label: 'Inspecciones Realizadas',
+                data: <?php echo $productivityCounts; ?>,
+                borderColor: '#424242',
+                backgroundColor: 'rgba(66, 66, 66, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
                 }
             },
             plugins: {

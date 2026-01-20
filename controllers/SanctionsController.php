@@ -30,7 +30,8 @@ public function index($params = []) {
         if (isset($result['success']) && $result['success']) {
             return [
                 'success' => true,
-                'sanctions' => $result['sanctions']
+                'sanctions' => $result['sanctions'],
+                'awardees' => $this->model->getAwardeesForFilter()
             ];
         }
         
@@ -61,7 +62,7 @@ public function index($params = []) {
             return ['success' => false, 'message' => 'ID de sanción inválido.'];
         }
 
-        $sanction = $this->model->getById($id);
+        $sanction = $this->model->getSanctionWithDetails($id);
 
         if (!$sanction) {
             return ['success' => false, 'message' => 'Sanción no encontrado.'];

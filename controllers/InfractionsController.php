@@ -4,8 +4,9 @@ require_once __DIR__ . '/../models/InfractionsModel.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../config/app.php';
 
-// Importar los modelos de tablas relacionadas para los selects en los formularios
+// Módulos relacionados
 require_once __DIR__ . '/../models/InfractionTypesModel.php';
+require_once __DIR__ . '/../models/EuroRateModel.php';
 require_once __DIR__ . '/../controllers/SanctionTypesController.php';
 require_once __DIR__ . '/../controllers/SanctionsController.php';
 require_once __DIR__ . '/../controllers/NotificationController.php';
@@ -42,6 +43,73 @@ class InfractionsController {
     {
         return $this->infractionsModel->saveOrUpdateEconomicIndicators($ut_value, $euro_bcv_rate);
     }
+
+    /**
+     * Sincroniza la tasa del Euro en indicadores económicos con la última tasa registrada en euro_rates.
+     * @return bool True si se actualizó o ya estaba actualizada, false si falló.
+     */
+    public function syncEuroWithSystemRates() {
+        try {
+            $euroModel = new EuroRateModel();
+            $allRates = $euroModel->getAll(); // Ordered by year DESC, month DESC
+            
+            if (empty($allRates)) {
+                return false; // No hay tasas para sincronizar
+            }
+            
+            $latestRate = $allRates[0];
+            $euroValue = (float)$latestRate['bs_value'];
+            
+            // Obtener indicadores actuales
+            $currentIndicators = $this->getLatestEconomicIndicators();
+            $currentUT = isset($currentIndicators['ut_value']) ? (float)$currentIndicators['ut_value'] : 0;
+            $currentEuro = isset($currentIndicators['euro_bcv_rate']) ? (float)$currentIndicators['euro_bcv_rate'] : 0;
+            
+            // Si la UT es 0, intentar mantener un valor por defecto o no tocarlo si ya existe
+            // La función saveOrUpdateEconomicIndicators requiere ambos valores.
+            // Si $currentUT es 0 (no existe registro previo), necesitamos un valor inicial.
+            if ($currentUT <= 0) {
+                 $currentUT = 1.00; // Valor por defecto seguro si no hay nada
+            }
+            
+            // Actualizar si el valor ha cambiado
+            if (abs($currentEuro - $euroValue) > 0.000001) {
+                return $this->saveOrUpdateEconomicIndicators($currentUT, $euroValue);
+            }
+            
+            return true; // Ya está actualizado
+            
+            
+        } catch (Exception $e) {
+            error_log("Error en syncEuroWithSystemRates: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualiza la UT con el valor proporcionado y sincroniza el Euro desde el sistema.
+     * @param float $utValue
+     * @return bool
+     */
+    public function updateUTAndSyncEuro($utValue) {
+        $euroModel = new EuroRateModel();
+        $allRates = $euroModel->getAll();
+        
+        $euroValue = 0;
+        if (!empty($allRates)) {
+            $euroValue = (float)$allRates[0]['bs_value'];
+        } else {
+            // Fallback: usar el valor actual de economic indicators si no hay euro_rates
+            $current = $this->getLatestEconomicIndicators();
+            $euroValue = isset($current['euro_bcv_rate']) ? (float)$current['euro_bcv_rate'] : 0;
+        }
+        
+        if ($euroValue <= 0) {
+            return false; // No se pudo determinar una tasa de Euro válida
+        }
+        
+        return $this->saveOrUpdateEconomicIndicators($utValue, $euroValue);
+    }
     /**
      * Muestra la lista de infracciones con filtros y paginación.
      * @param array $params
@@ -66,6 +134,7 @@ class InfractionsController {
         $result = [
             'infractions' => $infractions,
             'awardees' => $awardees,
+            'stalls' => $this->infractionsModel->getStallsList(),
             'current_page' => $page,
             'total_pages' => $totalPages,
             'total_records' => $total,
@@ -190,7 +259,7 @@ class InfractionsController {
             return [
                 'message' => $result['message'],
                 'success' => true,                
-                'redirect' =>  '../reports/index.php?report=print_infraction.rep&action=view&id=' . $result['id']
+                'redirect' =>  '../reports/index.php?report=infraction_invoice.rep&action=view&id=' . $result['id']
             ];   
 
         } else {
@@ -393,6 +462,10 @@ class InfractionsController {
     public function contarTipoInfraccionEspecificoAnual(int $awardeeId, int $infractionTypeId): int
     {
         return $this->infractionsModel->contarTipoInfraccionEspecificoAnual($awardeeId,$infractionTypeId);
+    }
+
+    public function getInfractionsByAwardee(int $awardeeId) {
+        return $this->infractionsModel->getInfractionsByAwardee($awardeeId);
     }
 
 }

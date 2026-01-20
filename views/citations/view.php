@@ -83,10 +83,26 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <p class="form-control-static fw-bold">#<?php echo htmlspecialchars($citation['citation_id']); ?></p>
                             </div>
 
+                            <!-- Puesto -->
+                            <div class="col-md-6">
+                                <label class="form-label">Puesto / Local</label>
+                                <p class="form-control-static">
+                                    <span class="badge bg-light text-dark border">
+                                        <?php echo htmlspecialchars($citation['stall_number'] ?? 'N/A'); ?>
+                                    </span>
+                                </p>
+                            </div>
+
+                            <!-- Adjudicatario -->
+                            <div class="col-md-6">
+                                <label class="form-label">Adjudicatario</label>
+                                <p class="form-control-static"><?php echo htmlspecialchars($citation['awardee_full_name'] ?? 'N/A'); ?></p>
+                            </div>
+
                             <!-- Infracción -->
                             <div class="col-md-6">
                                 <label class="form-label">Infracción Asociada</label>
-                                <p class="form-control-static"><?php echo htmlspecialchars($infractionDescription); ?></p>
+                                <p class="form-control-static"><?php echo htmlspecialchars($citation['infraction_description'] ?? 'No disponible'); ?></p>
                             </div>
 
                             <!-- Fecha y Hora -->
@@ -112,10 +128,22 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <label class="form-label">Estado</label>
                                 <p class="form-control-static">
                                     <?php
-                                    $status_colors = ['Scheduled' => 'primary', 'Rescheduled' => 'info', 'Completed' => 'success', 'Canceled' => 'dark'];
-                                    $s_color = $status_colors[$citation['citation_status']] ?? 'light';
+                                    $status_colors = [
+                                        'Scheduled' => 'primary', 
+                                        'Rescheduled' => 'info', 
+                                        'Completed' => 'success', 
+                                        'Canceled' => 'dark', 
+                                        'Resuelta' => 'success', 
+                                        'In Process' => 'warning'
+                                    ];
+                                    $s_color = $status_colors[$citation['citation_status']] ?? 'secondary';
+                                    
+                                    // Traducción manual si no está en el array allowed_status
+                                    $display_status = $allowed_status[$citation['citation_status']] ?? $citation['citation_status'];
+                                    if ($citation['citation_status'] === 'Resuelta') $display_status = 'Resuelta';
+                                    if ($citation['citation_status'] === 'In Process') $display_status = 'En Proceso';
                                     ?>
-                                    <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($allowed_status[$citation['citation_status']]); ?></span>
+                                    <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($display_status); ?></span>
                                 </p>
                             </div>
                         </div>

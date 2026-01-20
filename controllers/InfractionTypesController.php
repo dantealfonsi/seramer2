@@ -14,22 +14,17 @@ class InfractionTypesController {
      * Muestra una lista de tipos de infracción con filtros y paginación.
      */
     public function index($params = []) {
-        $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
+        // DataTables manejará la paginación y búsqueda en el cliente.
+        // Obtenemos todos los registros pasando limit = 0 o null.
         $search = isset($params['search']) ? trim($params['search']) : '';
         
-        $infractionTypes = $this->infractionTypesModel->getAll($page, $limit, $search);
-        $total = (int)$this->infractionTypesModel->countAll($search);
-        $totalPages = (int)ceil($total / $limit);
-
+        $infractionTypes = $this->infractionTypesModel->getAll(1, 0, $search);
+        
         return [
             'infraction_types' => $infractionTypes,
-            'current_page' => $page,
-            'total_pages' => $totalPages,
-            'total_records' => $total,
             'search' => $search,
             'page_title' => 'Gestión de Tipos de Infracción',
-            'has_search' => !empty($search)
+            'has_search' => !empty($search) // Mantenemos para compatibilidad con la vista, aunque DataTables tiene su propio search
         ];
     }
 

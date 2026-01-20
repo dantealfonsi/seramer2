@@ -24,6 +24,16 @@ if ($result['success']) {
     $record = $result['record'];
 } else {
     $_SESSION['flash_message'] = ['type' => 'danger', 'message' => $result['message']];
+    header("Location: view.php?id=" . ($record['complaint_id'] ?? ''));
+    exit;
+}
+
+// RBAC: Solo RRHH puede editar seguimiento
+if (!isset($_SESSION['selected_department']) || $_SESSION['selected_department'] !== 'Recursos Humanos') {
+    $_SESSION['flash_message'] = [
+        'type' => 'danger',
+        'message' => 'No tiene permisos para acceder a esta sección.'
+    ];
     header("Location: view.php?id=" . $record['complaint_id']);
     exit;
 }

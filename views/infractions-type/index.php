@@ -55,19 +55,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form method="GET" class="row g-3">
-                            <div class="col-md-6">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="search" placeholder="Buscar por tipo de infracción, artículo violado..." value="<?php echo htmlspecialchars($search); ?>">
-                                    <button class="btn btn-outline-secondary" type="submit"><i class="ri-search-line"></i></button>
-                                </div>
+                         <!-- El formulario de búsqueda manual se elimina o refactoriza para DataTables -->
+                         <!-- DataTables tiene su propio buscador, así que podemos simplificar esto -->
+                        <div class="alert alert-info border-start border-info border-5 shadow-sm">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <strong>Información:</strong> Utilice el cuadro de "Buscar" en la tabla para filtrar por cualquier columna. Use los botones para Exportar los resultados.
                             </div>
-                            <?php if ($has_search): ?>
-                            <div class="col-md-3">
-                                <a href="index.php" class="btn btn-outline-info"><i class="ri-close-line"></i> Limpiar búsqueda</a>
-                            </div>
-                            <?php endif; ?>
-                        </form>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -75,17 +70,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="text-center py-4">
                                 <i class="ri-file-search-line text-muted" style="font-size: 3rem;"></i>
                                 <h5 class="text-muted mt-2">
-                                    <?php echo $has_search ? 'No se encontraron tipos de infracción con ese criterio' : 'No hay tipos de infracción registrados'; ?>
+                                    No hay tipos de infracción registrados
                                 </h5>
-                                <?php if (!$has_search): ?>
-                                    <a href="create.php" class="btn btn-primary mt-2">
-                                        <i class="ri-add-line"></i> Registrar Primer Tipo de Infracción
-                                    </a>
-                                <?php endif; ?>
+                                <a href="create.php" class="btn btn-primary mt-2">
+                                    <i class="ri-add-line"></i> Registrar Primer Tipo de Infracción
+                                </a>
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table table-striped table-hover">
+                                <table class="table table-striped table-hover" id="infractionTypesTable">
                                     <thead class="table-dark">
                                         <tr>
                                             <th>Tipo de Infracción</th>
@@ -104,7 +97,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
                                             <td>
                                                 <div class="btn-group" role="group">
-                                                    <a href="view.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver detalles"><i class="ri-eye-line"></i></a>
                                                     <a href="edit.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $infractionType['infraction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                 </div>
@@ -114,24 +106,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </tbody>
                                 </table>
                             </div>
-
-                            <?php if ($total_pages > 1): ?>
-                            <nav aria-label="Paginación de tipos de infracción">
-                                <ul class="pagination justify-content-center" style="margin-top: 1rem;">
-                                    <li class="page-item <?php echo ($current_page <= 1) ? 'disabled' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $current_page - 1; ?>&search=<?php echo urlencode($search); ?>">Anterior</a>
-                                    </li>
-                                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                    <li class="page-item <?php echo ($current_page == $i) ? 'active' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>"><?php echo $i; ?></a>
-                                    </li>
-                                    <?php endfor; ?>
-                                    <li class="page-item <?php echo ($current_page >= $total_pages) ? 'disabled' : ''; ?>">
-                                        <a class="page-link" href="?page=<?php echo $current_page + 1; ?>&search=<?php echo urlencode($search); ?>">Siguiente</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                            <?php endif; ?>
+                            <!-- Paginación manual eliminada, DataTables se encarga -->
                         <?php endif; ?>
                     </div>
                 </div>
@@ -161,6 +136,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
+<!-- DataTables includes -->
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
+
 <script>
 let deleteInfractionTypeId = null;
 
@@ -174,6 +157,75 @@ function confirmDelete(id) {
 document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
     if (deleteInfractionTypeId) {
         window.location.href = 'index.php?delete_id=' + deleteInfractionTypeId; 
+    }
+});
+
+// DataTables Initialization
+$(document).ready(function() {
+    if ($.fn.DataTable) {
+         $('#infractionTypesTable').DataTable({ 
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    orientation: 'portrait', 
+                    pageSize: 'LETTER', 
+                    exportOptions: {
+                        columns: [0, 1, 2] // Exclude Actions
+                    },
+                    title: 'Tipos de Infracción - Seramer'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                        columns: [0, 1, 2] 
+                    },
+                    title: 'Tipos_Infraccion_Seramer' 
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                        columns: [0, 1, 2] 
+                    }
+                },
+                'colvis'
+            ],
+            language: {
+                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json",
+                "decimal": "",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "infoPostFix": "",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron registros coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": activar para ordenar la columna ascendente",
+                    "sortDescending": ": activar para ordenar la columna descendente"
+                } 
+            },
+            "columnDefs": [
+                { "orderable": false, "targets": 3 } // Disable sorting on Actions
+            ]
+        });
     }
 });
 </script>

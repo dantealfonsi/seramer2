@@ -444,7 +444,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <style>
 .timeline {
     position: relative;
-    padding-left: 30px; 
+    padding-left: 30px;
+    height: auto; 
 }
 .timeline::before {
     content: '';
@@ -462,7 +463,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 .timeline-dot {
     position: absolute;
     left: -20px; 
-    top: 5px;
+    top: 60px;
     width: 40px;
     height: 40px;
     background-color: #fff;

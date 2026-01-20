@@ -2,15 +2,24 @@
 
 require_once __DIR__ . '/../models/ConciliationReportsModel.php';
 require_once __DIR__ . '/../models/CitationsModel.php';
+require_once __DIR__ . '/../models/InfractionsModel.php';
+require_once __DIR__ . '/../models/SanctionsModel.php';
+require_once __DIR__ . '/../controllers/NotificationController.php';
 require_once __DIR__ . '/../config/app.php';
 
 class ConciliationReportsController {
     private $reportsModel;
     private $citationsModel;
+    private $infractionsModel;
+    private $sanctionsModel;
+    private $notificationController;
     
     public function __construct() {
         $this->reportsModel = new ConciliationReportsModel();
         $this->citationsModel = new CitationsModel();
+        $this->infractionsModel = new InfractionsModel();
+        $this->sanctionsModel = new SanctionsModel();
+        $this->notificationController = new NotificationController();
     }
 
     /**
@@ -97,6 +106,11 @@ public function index($params = []) {
         
         $result = $this->reportsModel->create($data);
         $this->updateCitationStatus($data);
+        
+        // Handle agreement reached logic
+        if ($result['success'] && $data['result'] === 'Agreement Reached') {
+            $this->handleAgreementReached($data['citation_id']);
+        }
 
         $_SESSION['flash_message'] = [
             'type' => $result['success'] ? 'success' : 'error',
@@ -104,7 +118,7 @@ public function index($params = []) {
         ];
         
         if ($result['success']) {
-            return ['success' => true, 'redirect' => 'index.php'];
+            return ['success' => true, 'redirect' => '../citations/index.php'];
         }
         return $result;
     }
@@ -144,13 +158,19 @@ public function index($params = []) {
         
         $result = $this->reportsModel->update($id, $data);
         $this->updateCitationStatus($data);
+        
+        // Handle agreement reached logic
+        if ($result['success'] && $data['result'] === 'Agreement Reached') {
+            $this->handleAgreementReached($data['citation_id']);
+        }
+        
         $_SESSION['flash_message'] = [
             'type' => $result['success'] ? 'success' : 'error',
             'message' => $result['message']
         ];
         
         if ($result['success']) {
-            return ['success' => true, 'redirect' => 'index.php'];
+            return ['success' => true, 'redirect' => '../citations/index.php'];
         }
         return $result;
     }
@@ -231,5 +251,45 @@ public function index($params = []) {
         }
 
         return ['success' => true, 'report' => $report];
+    }
+    
+    /**
+     * Obtiene un informe de conciliación por ID de citación.
+     * @param int $citationId
+     * @return array|false
+     */
+    public function getByCitationId($citationId) {
+        return $this->reportsModel->getByCitationId($citationId);
+    }
+    
+    /**
+     * Handles the business logic when an agreement is reached.
+     * Cancels the related infraction and sanction, and notifies Cobranzas users.
+     * @param int $citationId
+     */
+    private function handleAgreementReached($citationId) {
+        try {
+            // Get citation to find the infraction_id
+            $citation = $this->citationsModel->getById($citationId);
+            if (!$citation || empty($citation['infraction_id'])) {
+                error_log("No se pudo encontrar la infracción para la citación ID: $citationId");
+                return;
+            }
+            
+            $infractionId = $citation['infraction_id'];
+            
+            // Cancel the infraction
+            $this->infractionsModel->cancelInfraction($infractionId);
+            
+            // Cancel the related sanction
+            $this->sanctionsModel->cancelSanctionByInfraction($infractionId);
+            
+            // Send notification to Cobranzas users
+            $message = "Se ha alcanzado un acuerdo en la citación #{$citationId}. La infracción #{$infractionId} y su sanción relacionada han sido canceladas.";
+            $this->notificationController->sendNotificationToRole('Cobranzas', $message, 'info');
+            
+        } catch (Exception $e) {
+            error_log("Error al procesar acuerdo alcanzado: " . $e->getMessage());
+        }
     }    
 }

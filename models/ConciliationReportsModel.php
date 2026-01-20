@@ -142,6 +142,18 @@ public function countAll($filters = []) {
     }
     
     /**
+     * Obtiene un informe de conciliación por ID de citación.
+     * @param int $citationId El ID de la citación.
+     * @return array|false
+     */
+    public function getByCitationId($citationId) {
+        $sql = "SELECT * FROM conciliation_reports WHERE citation_id = ? LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$citationId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    /**
      * Crea un nuevo informe de conciliación.
      * @param array $data Los datos del informe.
      * @return array

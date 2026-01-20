@@ -71,9 +71,9 @@ $allowed_sanction_status = [
                             <a href="index.php" class="btn btn-secondary">
                                 <i class="ri-arrow-left-line"></i> Volver al listado
                             </a>
-                            <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-warning">
+                            <!-- <a href="edit.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-warning">
                                 <i class="ri-edit-line"></i> Editar
-                            </a>
+                            </a> -->
                             <!-- <button type="button" 
                                     class="btn btn-danger" 
                                     onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>)">
@@ -95,7 +95,7 @@ $allowed_sanction_status = [
                                             <th>Infracción:</th>
                                             <td>
                                                 <span class="badge bg-primary fs-6">
-                                                    <?php echo htmlspecialchars($sanction['infraction_description']); ?>
+                                                    <?php echo ucfirst(htmlspecialchars($sanction['infraction_type_name'] ?? 'Infracción')); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -103,7 +103,7 @@ $allowed_sanction_status = [
                                             <th>Tipo de Sanción:</th>
                                             <td>
                                                 <span class="badge bg-info fs-6">
-                                                    <?php echo htmlspecialchars($sanction['severity_name']); ?>
+                                                    <?php echo ucfirst(htmlspecialchars($sanction['severity_name'])); ?>
                                                 </span>
                                             </td>
                                         </tr>

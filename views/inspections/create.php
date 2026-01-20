@@ -184,18 +184,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="awardee_id" class="form-label">
+                                            <label for="awardee_id_display" class="form-label">
                                                 Adjudicatario <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select" id="awardee_id" name="awardee_id" required>
+                                            <select class="form-select" id="awardee_id_display" disabled>
                                                 <option value="">Seleccione un adjudicatario</option>
                                                 <?php foreach ($awardees as $awardee): ?>
                                                     <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
                                                              <?php echo ((int)$form_data['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
-                                                         <?php echo htmlspecialchars($awardee['first_name']); ?>
+                                                         <?php echo htmlspecialchars($awardee['full_name']); ?>
                                                      </option>
                                                 <?php endforeach; ?>
                                             </select>
+                                            <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
+                                            <small class="text-muted">Se asigna automáticamente al seleccionar el puesto.</small>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -266,7 +268,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <a href="index.php" class="btn btn-outline-secondary">
                                             <i class="ri-close-line"></i> Cancelar
                                         </a>
-                                        <button type="submit" class="btn btn-primary">
+                                        <button type="submit" class="btn btn-primary" id="btn-submit-inspection">
                                             <i class="ri-save-line"></i> Crear Inspección
                                         </button>
                                     </div>
@@ -279,6 +281,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
         </div>
     </div>
 </div>
+
+</script>
+
+<script>
+// Mapeo de Puesto -> Adjudicatario
+const stallAwardeeMapping = <?php echo json_encode($stallAwardeeMapping); ?>;
+
+document.getElementById('stall_id').addEventListener('change', function() {
+    const stallId = this.value;
+    const awardeeIdDisplay = document.getElementById('awardee_id_display');
+    const awardeeIdHidden = document.getElementById('awardee_id');
+    
+    if (stallId && stallAwardeeMapping[stallId]) {
+        const mapping = stallAwardeeMapping[stallId];
+        awardeeIdDisplay.value = mapping.id;
+        awardeeIdHidden.value = mapping.id;
+    } else {
+        awardeeIdDisplay.value = "";
+        awardeeIdHidden.value = "";
+    }
+});
+</script>
 
 <script>
 /**
@@ -316,11 +340,12 @@ function nextStep() {
         document.getElementById('inspection-form').style.display = 'none';
         document.getElementById('scheduled-inspections').style.display = 'block';
         window.scrollTo(0, 0); // Opcional: desplazar al inicio de la página para ver el nuevo formulario
+        validateStep2(); // Validar estado inicial del botón en el paso 2
     } else {
         Swal.fire({
             icon: 'warning',
             title: 'Campos Incompletos',
-            text: '⚠️ Por favor, complete todos los campos obligatorios (marcados con *) antes de avanzar.',
+            text: 'Complete todos los campos obligatorios (marcados con *) antes de avanzar.',
             confirmButtonText: 'Entendido'
         });
     }
@@ -334,6 +359,37 @@ function backStep() {
     document.getElementById('inspection-form').style.display = 'block';
     window.scrollTo(0, 0); // Opcional: desplazar al inicio de la página
 }
+
+/**
+ * Valida los campos del paso 2 para habilitar/deshabilitar el botón de crear.
+ */
+function validateStep2() {
+    const scheduledDate = document.getElementById('scheduled_date').value;
+    const inspectionType = document.getElementById('inspection_type').value;
+    const inspectionStatus = document.getElementById('inspection_status').value;
+    const btnSubmit = document.getElementById('btn-submit-inspection');
+
+    if (scheduledDate && inspectionType && inspectionStatus) {
+        btnSubmit.disabled = false;
+    } else {
+        btnSubmit.disabled = true;
+    }
+}
+
+// Agregar listeners para la validación en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    const fieldsStep2 = ['scheduled_date', 'inspection_type', 'inspection_status'];
+    fieldsStep2.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', validateStep2);
+            element.addEventListener('change', validateStep2);
+        }
+    });
+
+    // Validación inicial
+    validateStep2();
+});
 </script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

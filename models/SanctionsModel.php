@@ -1,20 +1,18 @@
 <?php
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Model.php';
 
 /**
  * Modelo para la gestión de Sanciones
  * * Interactúa directamente con la base de datos para
  * realizar operaciones CRUD en la tabla `sanctions`.
  */
-class SanctionsModel {
+class SanctionsModel extends Model {
 
-    private $conn;
-    private $table = "sanctions";
+    protected $table = "sanctions";
     private $status_logical_column = "status_logical";
 
     public function __construct() {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        parent::__construct();
     }
 
     /**
@@ -24,11 +22,19 @@ class SanctionsModel {
 public function index($filters = []) {
         try {
             $query = "SELECT s.*, 
-                             i.infraction_description AS infraction_description, 
-                             st.severity_name AS severity_name
+                             i.infraction_description AS infraction_description,
+                             it.infraction_type_name, 
+                             st.severity_name AS severity_name,
+                             a.id_number,
+                             a.first_name,
+                             a.last_name,
+                             ms.stall_number
                       FROM " . $this->table . " s
                       JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
                       JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
+                      JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls ms ON i.stall_id = ms.id
                       WHERE 1=1 "; // Cláusula base para empezar a añadir filtros
             
             $params = [];
@@ -57,8 +63,19 @@ public function index($filters = []) {
             // 4. Filtrar por Fecha Hasta (imposition_date)
             if (!empty($filters['date_to'])) {
                 $query .= " AND s.imposition_date <= :date_to";
-                // Añadir ' 23:59:59' si la columna es datetime, para incluir todo el último día
                 $params[':date_to'] = $filters['date_to']; 
+            }
+
+            // 5. Filtrar por Cédula
+            if (!empty($filters['awardee_cedula'])) {
+                $query .= " AND a.id_number LIKE :awardee_cedula";
+                $params[':awardee_cedula'] = '%' . $filters['awardee_cedula'] . '%';
+            }
+
+            // 6. Filtrar por Nombre
+            if (!empty($filters['awardee_name'])) {
+                $query .= " AND (a.first_name LIKE :awardee_name OR a.last_name LIKE :awardee_name OR CONCAT(a.first_name, ' ', a.last_name) LIKE :awardee_name)";
+                $params[':awardee_name'] = '%' . $filters['awardee_name'] . '%';
             }
 
             // --- ORDENAMIENTO y EJECUCIÓN ---
@@ -295,6 +312,246 @@ public function create($data) {
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }    
+    }
 
+    // ========== BILLING MODULE METHODS ==========
+
+    /**
+     * Get pending (unpaid) sanctions for a specific awardee.
+     * @param int $awardeeId
+     * @return array
+     */
+    public function getPendingSanctionsByAwardee($awardeeId) {
+        try {
+            $query = "SELECT s.*, 
+                             i.infraction_id,
+                             i.infraction_datetime,
+                             i.infraction_description,
+                             i.stall_id,
+                             it.infraction_type_name,
+                             st.severity_name,
+                             st.description as sanction_type_description,
+                             ms.stall_number
+                      FROM " . $this->table . " s
+                      JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
+                      LEFT JOIN market_stalls ms ON i.stall_id = ms.id
+                      WHERE i.awardee_id = :awardee_id
+                      AND s.sanction_status IN ('Imposed', 'Pending')
+                      AND i.status_logical = 'active'
+                      ORDER BY s.imposition_date DESC";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':awardee_id', $awardeeId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $exception) {
+            error_log("Error getting pending sanctions: " . $exception->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get paid sanctions for a specific awardee.
+     * @param int $awardeeId
+     * @return array
+     */
+    public function getPaidSanctionsByAwardee($awardeeId) {
+        try {
+            $query = "SELECT s.*, 
+                             i.infraction_id,
+                             i.infraction_datetime,
+                             i.infraction_description,
+                             it.infraction_type_name,
+                             st.severity_name,
+                             fp.payment_date,
+                             fp.amount_paid,
+                             fp.transaction_reference
+                      FROM " . $this->table . " s
+                      JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
+                      LEFT JOIN fine_payments fp ON s.sanction_id = fp.sanction_id
+                      WHERE i.awardee_id = :awardee_id
+                      AND s.sanction_status = 'Paid'
+                      ORDER BY fp.payment_date DESC";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':awardee_id', $awardeeId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $exception) {
+            error_log("Error getting paid sanctions: " . $exception->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Update sanction payment status.
+     * @param int $sanctionId
+     * @param string $status ('Paid', 'Imposed', 'Pending')
+     * @return bool
+     */
+    public function updatePaymentStatus($sanctionId, $status) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET sanction_status = :status 
+                      WHERE sanction_id = :sanction_id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':status', $status, PDO::PARAM_STR);
+            $stmt->bindValue(':sanction_id', $sanctionId, PDO::PARAM_INT);
+            
+            return $stmt->execute();
+        } catch (PDOException $exception) {
+            error_log("Error updating sanction payment status: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get sanction with full details (infraction, awardee, type).
+     * @param int $sanctionId
+     * @return array|null
+     */
+    public function getSanctionWithDetails($sanctionId) {
+        try {
+            $query = "SELECT s.*, 
+                             i.infraction_id,
+                             i.infraction_datetime,
+                             i.infraction_description,
+                             i.stall_id,
+                             i.awardee_id,
+                             it.infraction_type_name,
+                             it.violated_article,
+                             st.severity_name,
+                             st.description as sanction_type_description,
+                             a.first_name,
+                             a.last_name,
+                             a.id_number,
+                             a.phone,
+                             a.email,
+                             ms.stall_number,
+                             ms.location_description
+                      FROM " . $this->table . " s
+                      JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
+                      JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls ms ON i.stall_id = ms.id
+                      WHERE s.sanction_id = :sanction_id
+                      LIMIT 1";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':sanction_id', $sanctionId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $exception) {
+            error_log("Error getting sanction details: " . $exception->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get all delinquent sanctions (overdue and unpaid).
+     * @param array $filters Optional filters (sector_id, zone_id, days_overdue)
+     * @return array
+     */
+    public function getDelinquentSanctions($filters = []) {
+        try {
+            $query = "SELECT s.*, 
+                             i.infraction_id,
+                             i.infraction_datetime,
+                             i.infraction_description,
+                             i.awardee_id,
+                             it.infraction_type_name,
+                             st.severity_name,
+                             a.first_name,
+                             a.last_name,
+                             a.id_number,
+                             ms.stall_number,
+                             sec.name as sector_name,
+                             z.name as zone_name,
+                             DATEDIFF(CURDATE(), s.imposition_date) as days_overdue
+                      FROM " . $this->table . " s
+                      JOIN infractions i ON s.infraction_id = i.infraction_id
+                      JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      JOIN sanction_types st ON s.sanction_type_id = st.sanction_type_id
+                      JOIN awardees a ON i.awardee_id = a.id
+                      LEFT JOIN market_stalls ms ON i.stall_id = ms.id
+                      LEFT JOIN sectors sec ON ms.sector_id = sec.id
+                      LEFT JOIN zones z ON sec.zone_id = z.id
+                      WHERE s.sanction_status IN ('Imposed', 'Pending')
+                      AND i.status_logical = 'active'
+                      HAVING days_overdue > 0";
+            
+            $params = [];
+            
+            // Apply filters
+            if (!empty($filters['sector_id'])) {
+                $query .= " AND sec.id = :sector_id";
+                $params[':sector_id'] = $filters['sector_id'];
+            }
+            
+            if (!empty($filters['zone_id'])) {
+                $query .= " AND z.id = :zone_id";
+                $params[':zone_id'] = $filters['zone_id'];
+            }
+            
+            if (!empty($filters['min_days_overdue'])) {
+                $query .= " AND days_overdue >= :min_days";
+                $params[':min_days'] = $filters['min_days_overdue'];
+            }
+            
+            $query .= " ORDER BY days_overdue DESC, s.fine_amount DESC";
+            
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $exception) {
+            error_log("Error getting delinquent sanctions: " . $exception->getMessage());
+            return [];
+        }
+    }
+
+    public function getAwardeesForFilter() {
+        $query = "SELECT DISTINCT a.id, a.first_name, a.last_name, a.id_number 
+                  FROM awardees a 
+                  JOIN infractions i ON a.id = i.awardee_id 
+                  JOIN sanctions s ON i.infraction_id = s.infraction_id 
+                  ORDER BY a.first_name, a.last_name";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Cancela todas las sanciones relacionadas con una infracción.
+     * @param int $infractionId
+     * @return bool
+     */
+    public function cancelSanctionByInfraction($infractionId) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET sanction_status = 'Cancelled' 
+                      WHERE infraction_id = :infraction_id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':infraction_id', $infractionId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch(PDOException $exception) {
+            error_log("Error al cancelar sanción por infracción: " . $exception->getMessage());
+            return false;
+        }
+    }
 }

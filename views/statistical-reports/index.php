@@ -82,10 +82,11 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
                                         <option value="">-- Elija un Reporte --</option>
                                         <option value="activity_history" <?php echo ($selected_report == 'activity_history') ? 'selected' : ''; ?>>Historial de Actividad (Tabla)</option>
                                         <option value="infraction_count" <?php echo ($selected_report == 'infraction_count') ? 'selected' : ''; ?>>Conteo de Infracciones por Tiempo (Gráfico) *</option>
+                                        <option value="infractions_by_month" <?php echo ($selected_report == 'infractions_by_month') ? 'selected' : ''; ?>>Infracciones por Mes (Gráfico)</option>
+                                        <option value="employees_by_department" <?php echo ($selected_report == 'employees_by_department') ? 'selected' : ''; ?>>Empleados por Departamento (Gráfico)</option>
+                                        <option value="inspection_productivity" <?php echo ($selected_report == 'inspection_productivity') ? 'selected' : ''; ?>>Productividad de la Inspección (Gráfico)</option>
                                         <option value="inspector_performance" <?php echo ($selected_report == 'inspector_performance') ? 'selected' : ''; ?>>Desempeño de Inspectores (Estadístico)</option>
-                                        <option value="detailed_inspections" <?php echo ($selected_report == 'detailed_inspections') ? 'selected' : ''; ?>>Detalle de Inspecciones (Tabla)</option>
-                                        <option value="payment_status" <?php echo ($selected_report == 'payment_status') ? 'selected' : ''; ?>>Estatus de Pagos (Gráfico)</option>
-                                        <option value="market_summary" <?php echo ($selected_report == 'market_summary') ? 'selected' : ''; ?>>Resumen por Mercado (Tabla)</option>
+                                        <option value="revenue_by_type" <?php echo ($selected_report == 'revenue_by_type') ? 'selected' : ''; ?>>Ingresos por Tipo de Infracción (Gráfico)</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -95,6 +96,13 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
                                         </select>
                                 </div>
                             </div>
+                            
+                            <?php 
+                            // Fetch inspectors list for JS injection
+                            require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+                            $statsModelForFilter = new StatisticalReportModel();
+                            $inspectorsList = $statsModelForFilter->getInspectorsList();
+                            ?>
                             
                             <div id="dynamicFiltersArea" class="row g-3 mt-3 p-3 border rounded" style="display: none; background-color: #f8f9fa;">
                                 <div class="col-12">
@@ -133,9 +141,13 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
                             </div>
                             <?php
                             $report_content_map = [
-                                'activity_history' => 'activityHistory.php', // Nombre de archivo de ejemplo
+                                'activity_history' => 'activityHistory.php', 
                                 'infraction_count' => 'infraction_count_chart.php',
+                                'infractions_by_month' => 'infractions_by_month.php',
+                                'employees_by_department' => 'employees_by_department.php',
+                                'inspection_productivity' => 'inspection_productivity.php',
                                 'inspector_performance' => 'performance_content.php',
+                                'revenue_by_type' => 'revenue_by_infraction_type.php',
                                 'detailed_inspections' => 'detailed_inspections_content.php',
                                 'payment_status' => 'payment_status_content.php',
                                 'market_summary' => 'market_summary_content.php',
@@ -168,10 +180,6 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
 <link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
-
-## 💡 Lógica JavaScript (Corregida)
-
-```javascript
 <script>
 $(document).ready(function() {
     const reportTypeSelect = $('#report_type');
@@ -180,11 +188,20 @@ $(document).ready(function() {
     const filtersContent = $('#filtersContent');
     const generateReportBtn = $('#generateReportBtn');
     
+    // Inject Inspectors Data from PHP
+    const inspectorsData = <?php echo json_encode($inspectorsList); ?>;
+    let inspectorOptions = '<option value="">-- Seleccione un Inspector --</option>';
+    if (inspectorsData) {
+        inspectorsData.forEach(function(inspector) {
+            inspectorOptions += `<option value="${inspector.inspector_id}">${inspector.full_name}</option>`;
+        });
+    }
+
     // 1. Opciones de Modos (Filtro Principal)
     const reportModes = {
         activity_history: { 
             'date_range': 'Por Rango de Fechas',
-            'user': 'Por Usuario Específico',
+            'user': 'Por Usuario Específico', // Keep generic user filter for audit
             'all': 'Ver todos los registros'
         },
         infraction_count: { 
@@ -193,22 +210,23 @@ $(document).ready(function() {
             'last_6_months': 'Últimos 6 Meses (Por Mes)',
             'annual': 'Por Año Específico',
         },
+        infractions_by_month: {
+            'last_6_months': 'Últimos 6 Meses',
+            'annual': 'Últimos 12 Meses (Anual)',
+        },
+        employees_by_department: {
+            'all': 'Ver Distribución Actual',
+        },
+        inspection_productivity: {
+            'last_12': 'Últimos 12 Meses',
+        },
+        revenue_by_type: {
+             'all': 'Ver Distribución Global',
+        },
         inspector_performance: {
             'period': 'Por Período (Año/Mes)',
             'inspector': 'Por Inspector Específico',
         },
-        detailed_inspections: {
-            'all': 'Ver todos los registros (Sin modo)',
-            'period': 'Filtrar por Período (Año/Mes)',
-        },
-        payment_status: {
-            'year': 'Resumen Anual (Año)',
-            'quarter': 'Resumen Trimestral (Año)',
-        },
-        market_summary: {
-            'market': 'Por Mercado Específico (Sin filtro)',
-            'period': 'Por Período (Año/Mes)',
-        }
     };
     
     // 2. Definición de Plantillas de Filtros Secundarios
@@ -225,12 +243,9 @@ $(document).ready(function() {
         `,
         user: `
             <div class="col-md-12">
-                <label for="filter_user" class="form-label small">Seleccione Usuario</label>
-                <select class="form-select" id="filter_user" name="filter_user">
-                    <option value="">-- Seleccione un Usuario --</option>
-                    <option value="1">admin</option>
-                    <option value="2">operador_01</option>
-                    <option value="3">inspector_99</option>
+                <label for="filter_inspector" class="form-label small">Seleccione Inspector</label>
+                <select class="form-select" id="filter_inspector" name="filter_inspector">
+                    ${inspectorOptions}
                 </select>
             </div>
         `,
@@ -309,6 +324,13 @@ $(document).ready(function() {
                         filterHtml = filterTemplates.year;
                     }
                     // 'last_6_months' usa filterTemplates.none
+                    break;
+                case 'infractions_by_month':
+                case 'employees_by_department':
+                case 'inspection_productivity':
+                case 'revenue_by_type':
+                    // Estos reportes no usan filtros adicionales por ahora (o usan valores por defecto)
+                    filterHtml = filterTemplates.none; 
                     break;
                 case 'inspector_performance':
                     if (selectedMode === 'period') {

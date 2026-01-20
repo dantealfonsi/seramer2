@@ -35,14 +35,24 @@ $permission_types = [
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-lock-2-line me-1"></i>
+                            <i class="ri-lock-2-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
                     
                     <div class="card-body">
-                        <div class="alert alert-info border-0 shadow-sm">
-                            La máscara de permisos (9 caracteres) se divide en tres grupos de 3: **Infracciones (rwx)**, **Tasas/Configuración (rwx)** y **Usuarios/Auditoría (rwx)**.
+                        <div class="alert alert-info mb-4 shadow-sm border-start border-info border-5">
+                            <i class="ri-information-line"></i>
+                            <div class="alert-content">
+                                <h6 class="alert-heading fw-bold">Estructura de Permisos (rwx)</h6>
+                                <p class="mb-2">
+                                    La máscara de permisos (9 caracteres) se divide en tres grupos de 3: <strong>Infracciones (rwx)</strong>, <strong>Tasas/Configuración (rwx)</strong> y <strong>Usuarios/Auditoría (rwx)</strong>.
+                                </p>
+                                <hr>
+                                <p class="mb-0 small">
+                                    Se refiere a los permisos básicos de un archivo o directorio: <strong>Read (leer)</strong>, <strong>Write (escribir)</strong> y <strong>eXecute (ejecutar)</strong>. Estos permisos se agrupan en tres categorías: el propietario, el grupo y los demás usuarios, y definen qué acciones se pueden realizar sobre el recurso (por ejemplo, <strong>rwx</strong> para el propietario significa lectura, escritura y ejecución).
+                                </p>
+                            </div>
                         </div>
 
                         <div class="table-responsive">

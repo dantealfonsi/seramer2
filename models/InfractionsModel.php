@@ -117,7 +117,7 @@ class InfractionsModel {
 
     public function getAwardeesList() {
         try {
-            $query = "SELECT id, first_name, last_name, id_number,phone FROM awardees ORDER BY first_name";
+            $query = "SELECT id, CONCAT(first_name, ' ', last_name) as full_name, id_number, phone FROM awardees ORDER BY first_name";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -129,7 +129,17 @@ class InfractionsModel {
 
     public function getStallsList() {
         try {
-            $query = "SELECT id, sector_id, stall_number, location_description FROM market_stalls ORDER BY stall_number";
+            // Direct mapping using awardee_id column in market_stalls
+            $query = "SELECT 
+                        s.id, 
+                        s.sector_id, 
+                        s.stall_number, 
+                        s.location_description, 
+                        s.awardee_id,
+                        CONCAT(a.first_name, ' ', a.last_name) as awardee_full_name
+                      FROM market_stalls s
+                      LEFT JOIN awardees a ON s.awardee_id = a.id
+                      ORDER BY s.stall_number";
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -228,7 +238,7 @@ class InfractionsModel {
 
             $query = "SELECT i.*, 
                              a.id as id_adjudicatory,
-                             a.first_name as adjudicatory_name,
+                             CONCAT(a.first_name, ' ', a.last_name) as adjudicatory_name,
                              a.id_number as adjudicatory_document,
                              s.stall_number,
                              it.infraction_type_name
@@ -577,7 +587,8 @@ class InfractionsModel {
         try {
             $query = "SELECT i.*, 
                              a.id as id_adjudicatory,
-                             a.first_name as adjudicatory_name,
+                             a.id as id_adjudicatory,
+                             CONCAT(a.first_name, ' ', a.last_name) as adjudicatory_name,
                              a.id_number as adjudicatory_document,
                              s.stall_number,
                              s.location_description,
@@ -839,6 +850,58 @@ public function countInfractionsByMode($startDate, $endDate, $mode = 'day') {
             // Manejo de errores
             error_log("Error al contar infracciones por modo: " . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Obtiene las infracciones activas (No canceladas) de un adjudicatario.
+     * @param int $awardeeId
+     * @return array
+     */
+    public function getInfractionsByAwardee($awardeeId) {
+        try {
+            $query = "SELECT 
+                        i.infraction_id, 
+                        i.infraction_description, 
+                        i.infraction_datetime, 
+                        it.infraction_type_name
+                      FROM " . $this->table . " i
+                      LEFT JOIN infraction_types it ON i.infraction_type_id = it.infraction_type_id
+                      WHERE i.awardee_id = :awardee_id 
+                      AND i.status_logical = 'active'
+                      AND i.infraction_status != 'Cancelled'
+                      ORDER BY i.infraction_datetime DESC";
+                      
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':awardee_id', $awardeeId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $exception) {
+            error_log("Error al obtener infracciones por adjudicatario: " . $exception->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Cancela una infracción estableciendo su estado a 'Cancelled'.
+     * @param int $infractionId
+     * @return bool
+     */
+    public function cancelInfraction($infractionId) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET infraction_status = 'Cancelled' 
+                      WHERE infraction_id = :infraction_id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':infraction_id', $infractionId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch(PDOException $exception) {
+            error_log("Error al cancelar infracción: " . $exception->getMessage());
+            return false;
         }
     }
 

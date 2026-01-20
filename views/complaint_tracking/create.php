@@ -15,6 +15,17 @@ if (!$complaint_id) {
     exit;
 }
 
+// RBAC: Solo RRHH y Fiscalización pueden añadir seguimiento
+$allowed_depts = ['Recursos Humanos', 'Fiscalizacion'];
+if (!isset($_SESSION['selected_department']) || !in_array($_SESSION['selected_department'], $allowed_depts)) {
+    $_SESSION['flash_message'] = [
+        'type' => 'danger',
+        'message' => 'No tiene permisos para acceder a esta sección.'
+    ];
+    header("Location: view.php?id=" . $complaint_id);
+    exit;
+}
+
 // Opciones predefinidas para el formulario
 $action_types = [
     'Assignment' => 'Asignación',
