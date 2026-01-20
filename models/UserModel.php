@@ -1272,6 +1272,27 @@ class UserModel {
             return [];
         }
     }
+    /**
+     * Obtiene una lista de usuarios que pertenecen a un departamento específico.
+     * @param int $departmentId
+     * @return array IDs de usuarios
+     */
+    public function getUsersByDepartmentId(int $departmentId): array {
+        $query = "
+            SELECT user_id 
+            FROM user_departments 
+            WHERE department_id = :dept_id 
+            AND status = 'active'
+        ";
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':dept_id', $departmentId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            error_log("Error al obtener usuarios por departamento {$departmentId}: " . $e->getMessage());
+            return [];
+        }
+    }
 }
-
 ?>
