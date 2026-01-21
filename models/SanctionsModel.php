@@ -554,4 +554,64 @@ public function create($data) {
             return false;
         }
     }
+
+    /**
+     * Obtener el último ID insertado
+     * @return int
+     */
+    public function getLastInsertId() {
+        return $this->conn->lastInsertId();
+    }
+
+    /**
+     * Actualizar estado de una sanción
+     * @param int $sanctionId
+     * @param string $status
+     * @return bool
+     */
+    public function updateStatus($sanctionId, $status) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET sanction_status = :status 
+                      WHERE sanction_id = :id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $sanctionId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error actualizando estado de sanción: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Perdonar sanción (cambiar a Waived)
+     * @param int $sanctionId
+     * @return bool
+     */
+    public function pardonSanction($sanctionId) {
+        return $this->updateStatus($sanctionId, 'Waived');
+    }
+
+    /**
+     * Obtener sanción por ID de infracción
+     * @param int $infractionId
+     * @return array|false
+     */
+    public function getByInfractionId($infractionId) {
+        try {
+            $query = "SELECT * FROM " . $this->table . " 
+                      WHERE infraction_id = :infraction_id 
+                      LIMIT 1";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':infraction_id', $infractionId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error obteniendo sanción por infracción: " . $e->getMessage());
+            return false;
+        }
+    }
 }

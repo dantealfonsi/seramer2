@@ -793,7 +793,7 @@ class InfractionsModel {
         }
     }
 
-public function countInfractionsByMode($startDate, $endDate, $mode = 'day') {
+    public function countInfractionsByMode($startDate, $endDate, $mode = 'day') {
         // 1. Definir la lógica de agrupación y la etiqueta (label)
         $grouping = '';
         $labelSelect = '';
@@ -901,6 +901,28 @@ public function countInfractionsByMode($startDate, $endDate, $mode = 'day') {
             return true;
         } catch(PDOException $exception) {
             error_log("Error al cancelar infracción: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Actualizar estado de una infracción
+     * @param int $infractionId
+     * @param string $status
+     * @return bool
+     */
+    public function updateStatus($infractionId, $status) {
+        try {
+            $query = "UPDATE " . $this->table . " 
+                      SET infraction_status = :status 
+                      WHERE infraction_id = :id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $infractionId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error actualizando estado de infracción: " . $e->getMessage());
             return false;
         }
     }

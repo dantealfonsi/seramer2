@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../models/ComplaintsModel.php';
 require_once __DIR__ . '/../models/ComplaintTrackingModel.php';
+require_once __DIR__ . '/../models/NotificationModel.php';
+require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../config/app.php';
 
 class ComplaintsController {
@@ -176,9 +178,58 @@ public function index($params = []) {
         ];
         
         if ($result['success']) {
+            // Enviar notificación a todos los usuarios del departamento de Fiscalización
+            $this->sendComplaintNotification($result['complaint_id'] ?? null);
+            
             return ['success' => true, 'redirect' => 'index.php', 'message' => $result['message']];
         }
         return $result;
+    }
+
+    /**
+     * Enviar notificación a Fiscalización cuando se crea una nueva queja
+     */
+    private function sendComplaintNotification($complaintId) {
+        if (!$complaintId) return;
+
+        try {
+            $userModel = new UserModel();
+            $notificationModel = new NotificationModel();
+            
+            // ID del departamento de Fiscalización (ajustar según tu base de datos)
+            $fiscalizacionDeptId = 3;
+            
+            // Obtener todos los usuarios de Fiscalización
+            $fiscalizacionUsers = $userModel->getUsersByDepartment($fiscalizacionDeptId);
+            
+            if (empty($fiscalizacionUsers)) return;
+            
+            // Preparar notificaciones masivas
+            $notifications = [];
+            $senderUserId = $_SESSION['user_id'] ?? null;
+            
+            foreach ($fiscalizacionUsers as $userId) {
+                $notifications[] = [
+                    'sender_user_id' => $senderUserId,
+                    'recipient_user_id' => $userId,
+                    'notification_type' => 'complaint_new',
+                    'notification_subject' => 'Nueva Queja Registrada',
+                    'notification_message' => "Se ha registrado una nueva queja #$complaintId. Por favor, revise los detalles y asigne un inspector si es necesario.",
+                    'complaint_id' => $complaintId,
+                    'alert_id' => null,
+                    'infraction_id' => null,
+                    'target_role_id' => null,
+                    'target_department_id' => $fiscalizacionDeptId,
+                    'is_global' => 0
+                ];
+            }
+            
+            // Insertar todas las notificaciones de una vez
+            $notificationModel->insertBulkNotifications($notifications);
+            
+        } catch (Exception $e) {
+            error_log("Error enviando notificación de queja: " . $e->getMessage());
+        }
     }
 
     /**

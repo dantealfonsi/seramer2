@@ -108,6 +108,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <a href="index.php" class="btn btn-secondary">
                                 <i class="ri-arrow-left-line"></i> Volver al listado
                             </a>
+                            <!-- Botón de seguimiento de inspección -->
+                            <a href="../inspections/index.php?complaint_id=<?php echo htmlspecialchars($complaint['complaint_id']); ?>" 
+                               class="btn btn-info text-white">
+                                <i class="ri-search-eye-line"></i> Seguimiento de Inspección
+                            </a>
                             <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
                                 <a href="edit.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-warning">
                                     <i class="ri-edit-line"></i> Editar

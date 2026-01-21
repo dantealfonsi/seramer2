@@ -154,6 +154,33 @@ class UserModel {
     }
 
     /**
+     * Obtener todos los usuarios activos de un departamento específico
+     * Útil para enviar notificaciones masivas a un departamento
+     * @param int $department_id
+     * @return array Array de user_ids
+     */
+    public function getUsersByDepartment($department_id) {
+        try {
+            $query = "SELECT DISTINCT u.id 
+                      FROM users u 
+                      INNER JOIN user_departments ud ON u.id = ud.user_id 
+                      WHERE ud.department_id = :department_id 
+                      AND ud.status = 'active' 
+                      AND u.status = 'active'
+                      ORDER BY u.id";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':department_id', $department_id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch (PDOException $e) {
+            error_log("Error obteniendo usuarios por departamento: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Crear nuevo usuario
      * @param array $data
      * @return bool|int

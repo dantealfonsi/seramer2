@@ -11,6 +11,8 @@ require_once __DIR__ . '/../models/DailyCashRegisterModel.php';
 require_once __DIR__ . '/../models/BillingReportModel.php';
 require_once __DIR__ . '/../models/FeePaymentModel.php';
 require_once __DIR__ . '/../models/MarketStallModel.php';
+require_once __DIR__ . '/../models/NotificationModel.php';
+require_once __DIR__ . '/../models/InfractionsModel.php';
 
 class BillingController {
     private $awardeeModel;
@@ -246,6 +248,16 @@ class BillingController {
             'daily_cash_register_id' => $dailyCashRegisterId,
             'payment_type' => $paymentTypeName
         ]);
+
+        if ($result && $sanction['infraction_id']) {
+            $this->sanctionsModel->updateStatus($sanctionId, 'Paid');
+            
+            $infractionsModel = new InfractionsModel();
+            $infractionsModel->updateStatus($sanction['infraction_id'], 'Resolved');
+
+            // Enviar notificación a Fiscalización
+            $this->sendPaymentNotification($sanctionId, $sanction['infraction_id']);
+        }
         
         return $result;
     }

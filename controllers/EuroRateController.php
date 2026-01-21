@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/EuroRateModel.php';
+require_once __DIR__ . '/../models/NotificationModel.php';
 
 class EuroRateController {
     private $model;
@@ -33,6 +34,8 @@ class EuroRateController {
 
         $id = $this->model->create($data);
         if ($id) {
+            // Enviar notificación global
+            $this->sendExchangeRateNotification($data['bs_value']);
             return ['success' => true, 'message' => 'Tasa creada exitosamente'];
         }
         return ['success' => false, 'message' => 'Error al crear la tasa'];
@@ -54,6 +57,8 @@ class EuroRateController {
         }
 
         if ($this->model->update($id, $data)) {
+            // Enviar notificación global
+            $this->sendExchangeRateNotification($data['bs_value']);
             return ['success' => true, 'message' => 'Tasa actualizada'];
         }
         return ['success' => false, 'message' => 'Error al actualizar la tasa'];
@@ -69,5 +74,34 @@ class EuroRateController {
             return ['success' => true, 'message' => 'Tasa eliminada'];
         }
         return ['success' => false, 'message' => 'Error al eliminar'];
+    }
+
+    /**
+     * Enviar notificación global cuando cambia la tasa de cambio
+     */
+    private function sendExchangeRateNotification($rate) {
+        try {
+            $notificationModel = new NotificationModel();
+            
+            // Notificación global
+            $notification = [
+                'sender_user_id' => $_SESSION['user_id'] ?? null,
+                'recipient_user_id' => null,
+                'notification_type' => 'exchange_rate_update',
+                'notification_subject' => 'Actualización de Tasa de Cambio',
+                'notification_message' => "La tasa de cambio del Euro ha sido actualizada a $rate Bs.",
+                'complaint_id' => null,
+                'alert_id' => null,
+                'infraction_id' => null,
+                'target_role_id' => null,
+                'target_department_id' => null,
+                'is_global' => 1
+            ];
+            
+            $notificationModel->insertBulkNotifications([$notification]);
+            
+        } catch (Exception $e) {
+            error_log("Error enviando notificación de tasa: " . $e->getMessage());
+        }
     }
 }
