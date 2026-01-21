@@ -36,6 +36,7 @@ if (!empty($todaysCitations)) {
                 'complaint_id' => null,
                 'alert_id' => null,
                 'infraction_id' => $citation['infraction_id'],
+                'citation_id' => $citation['citation_id'],
                 'target_role_id' => null,
                 'target_department_id' => $fiscalizacionDeptId,
                 'is_global' => 0

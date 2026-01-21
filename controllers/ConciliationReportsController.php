@@ -292,7 +292,10 @@ public function index($params = []) {
             
             // Send notification to Cobranzas users
             $message = "Se ha alcanzado un acuerdo en la citación #{$citationId}. La infracción #{$infractionId} ha sido resuelta y la sanción perdonada.";
-            $this->notificationController->sendNotificationToRole('Cobranzas', $message, 'info');
+            $this->notificationController->sendNotificationToRole('Cobranzas', $message, 'citation_agreement', 'Acuerdo de Conciliación', [
+                'citation_id' => $citationId,
+                'infraction_id' => $infractionId
+            ]);
             
         } catch (Exception $e) {
             error_log("Error al procesar acuerdo alcanzado: " . $e->getMessage());
