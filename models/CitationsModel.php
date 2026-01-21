@@ -300,4 +300,45 @@ class CitationsModel {
             );
         }
     }
+
+    /**
+     * Obtener citaciones programadas para hoy
+     * @return array
+     */
+    public function getTodaysCitations() {
+        try {
+            $query = "SELECT c.*, i.awardee_id, i.infraction_id
+                      FROM citations c
+                      INNER JOIN infractions i ON c.infraction_id = i.infraction_id
+                      WHERE DATE(c.citation_datetime) = CURDATE()
+                      AND c.citation_status = 'Scheduled'
+                      ORDER BY c.citation_datetime";
+            
+            $stmt = $this->conn->getConnection()->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error obteniendo citaciones de hoy: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Cancelar citaciones que pasaron 3 horas
+     * @return bool
+     */
+    public function cancelOverdueCitations() {
+        try {
+            $query = "UPDATE citations 
+                      SET citation_status = 'Cancelled'
+                      WHERE citation_status = 'Scheduled'
+                      AND citation_datetime < DATE_SUB(NOW(), INTERVAL 3 HOUR)";
+            
+            $stmt = $this->conn->getConnection()->prepare($query);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error cancelando citaciones vencidas: " . $e->getMessage());
+            return false;
+        }
+    }
 }

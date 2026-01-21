@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../models/SanctionsModel.php';
+require_once __DIR__ . '/../models/NotificationModel.php';
+require_once __DIR__ . '/../models/UserModel.php';
 
 /**
  * Controlador para la gestión de Sanciones
@@ -45,6 +47,12 @@ public function index($params = []) {
      */
     public function create($data) {
         if ($this->model->create($data)) {
+            // Obtener el ID de la sanción recién creada
+            $sanctionId = $this->model->getLastInsertId();
+            
+            // Enviar notificación a Cobranzas
+            $this->sendSanctionNotification($sanctionId);
+            
             return [
                 'success' => true,
                 'message' => 'Sanción creada correctamente.'
@@ -54,6 +62,52 @@ public function index($params = []) {
                 'success' => false,
                 'message' => 'Error al crear la sanción.'
             ];
+        }
+    }
+
+    /**
+     * Enviar notificación a Cobranzas cuando se crea una nueva sanción
+     */
+    private function sendSanctionNotification($sanctionId) {
+        if (!$sanctionId) return;
+
+        try {
+            $userModel = new UserModel();
+            $notificationModel = new NotificationModel();
+            
+            // ID del departamento de Cobranzas (ajustar según tu base de datos)
+            $cobranzasDeptId = 2;
+            
+            // Obtener todos los usuarios de Cobranzas
+            $cobranzasUsers = $userModel->getUsersByDepartment($cobranzasDeptId);
+            
+            if (empty($cobranzasUsers)) return;
+            
+            // Preparar notificaciones masivas
+            $notifications = [];
+            $senderUserId = $_SESSION['user_id'] ?? null;
+            
+            foreach ($cobranzasUsers as $userId) {
+                $notifications[] = [
+                    'sender_user_id' => $senderUserId,
+                    'recipient_user_id' => $userId,
+                    'notification_type' => 'sanction_new',
+                    'notification_subject' => 'Nueva Sanción Aplicada',
+                    'notification_message' => "Se ha aplicado una nueva sanción #$sanctionId. Proceder con gestión de cobro.",
+                    'complaint_id' => null,
+                    'alert_id' => null,
+                    'infraction_id' => null,
+                    'target_role_id' => null,
+                    'target_department_id' => $cobranzasDeptId,
+                    'is_global' => 0
+                ];
+            }
+            
+            // Insertar todas las notificaciones de una vez
+            $notificationModel->insertBulkNotifications($notifications);
+            
+        } catch (Exception $e) {
+            error_log("Error enviando notificación de sanción: " . $e->getMessage());
         }
     }
 

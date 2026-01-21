@@ -24,7 +24,8 @@ class NotificationController {
         string $message,
         ?int $complaintId = null,
         ?int $alertId = null,
-        ?int $infractionId = null
+        ?int $infractionId = null,
+        ?int $citationId = null
     ): int|bool {
         return $this->notificationModel->insertNotification(
             $senderUserId,
@@ -34,7 +35,8 @@ class NotificationController {
             $message,
             $complaintId,
             $alertId,
-            $infractionId
+            $infractionId,
+            $citationId
         );
     }
 
@@ -53,6 +55,7 @@ class NotificationController {
                 'complaint_id' => $meta['complaint_id'] ?? null,
                 'alert_id' => $meta['alert_id'] ?? null,
                 'infraction_id' => $meta['infraction_id'] ?? null,
+                'citation_id' => $meta['citation_id'] ?? null,
                 'target_role_id' => $meta['target_role_id'] ?? null,
                 'target_department_id' => $meta['target_department_id'] ?? null,
                 'is_global' => $meta['is_global'] ?? 0
@@ -65,7 +68,7 @@ class NotificationController {
     /**
      * Envía una notificación a todos los usuarios de un ROL.
      */
-    public function sendNotificationToRole(string $roleName, string $message, string $type = 'system_alert', string $subject = 'Notificación del Sistema'): bool {
+    public function sendNotificationToRole(string $roleName, string $message, string $type = 'system_alert', string $subject = 'Notificación del Sistema', array $meta = []): bool {
         $users = $this->userModel->getUsersByRoleName($roleName);
 
         if (empty($users)) {
@@ -74,7 +77,7 @@ class NotificationController {
 
         // Obtener el ID del rol si es posible para metadata, pero no es crítico.
         // Simulamos un sender NULL (Sistema)
-        $bulkData = $this->prepareBulkData($users, null, $type, $subject, $message, ['target_role_id' => null]); 
+        $bulkData = $this->prepareBulkData($users, null, $type, $subject, $message, $meta); 
         
         return $this->notificationModel->insertBulkNotifications($bulkData);
     }
@@ -82,7 +85,7 @@ class NotificationController {
     /**
      * Envía una notificación a todos los usuarios de un DEPARTAMENTO.
      */
-    public function sendNotificationToDepartment(int $departmentId, string $message, string $type = 'dept_alert', string $subject = 'Aviso Departamental'): bool {
+    public function sendNotificationToDepartment(int $departmentId, string $message, string $type = 'dept_alert', string $subject = 'Aviso Departamental', array $meta = []): bool {
         // Obtenemos usuarios por departamento (Necesitamos implementar este método en UserModel o hacerlo aquí con query directa si UserModel no lo tiene)
         // Por seguridad, usaremos un metodo nuevo en UserModel: getUsersByDepartmentId
         // Si no existe, fallará. Debemos asegurarnos de modificar UserModel primero o usar una query raw aquí.
@@ -104,7 +107,8 @@ class NotificationController {
             return false;
         }
 
-        $bulkData = $this->prepareBulkData($users, null, $type, $subject, $message, ['target_department_id' => $departmentId]);
+        $meta['target_department_id'] = $departmentId;
+        $bulkData = $this->prepareBulkData($users, null, $type, $subject, $message, $meta);
         return $this->notificationModel->insertBulkNotifications($bulkData);
     }
 

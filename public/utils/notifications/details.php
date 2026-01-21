@@ -27,6 +27,7 @@ $routes = [
     'infraction' => '/seramer2/views/infractions/view.php',
     'complaint' => '/seramer2/views/complaints/view.php',
     'alert'     => '/seramer2/views/alerts/view.php',
+    'citation'  => '/seramer2/views/citations/view.php',
     // Agrega más entidades según las necesites
 ];
 

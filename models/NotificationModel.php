@@ -21,7 +21,8 @@ class NotificationModel {
         string $message,
         ?int $complaintId = null,
         ?int $alertId = null,
-        ?int $infractionId = null
+        ?int $infractionId = null,
+        ?int $citationId = null
     ): int|bool {
         $sql = "
             INSERT INTO notifications (
@@ -45,6 +46,7 @@ class NotificationModel {
                 :complaint_id,
                 :alert_id,
                 :infraction_id,
+                :citation_id,
                 NOW(),
                 0
             );
@@ -62,6 +64,7 @@ class NotificationModel {
             $stmt->bindValue(':complaint_id', $complaintId, $complaintId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':alert_id', $alertId, $alertId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':infraction_id', $infractionId, $infractionId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':citation_id', $citationId, $citationId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 return (int)$this->conn->lastInsertId();
@@ -92,7 +95,7 @@ class NotificationModel {
         $i = 0;
 
         foreach ($notificationsData as $data) {
-            $values[] = "(:sender_$i, :recipient_$i, :type_$i, :subject_$i, :message_$i, :complaint_$i, :alert_$i, :infraction_$i, :role_$i, :dept_$i, :global_$i, NOW(), 0)";
+            $values[] = "(:sender_$i, :recipient_$i, :type_$i, :subject_$i, :message_$i, :complaint_$i, :alert_$i, :infraction_$i, :citation_$i, :role_$i, :dept_$i, :global_$i, NOW(), 0)";
             
             $params[":sender_$i"] = $data['sender_user_id'] ?? null;
             $params[":recipient_$i"] = $data['recipient_user_id'] ?? null;
@@ -103,6 +106,7 @@ class NotificationModel {
             $params[":complaint_$i"] = $data['complaint_id'] ?? null;
             $params[":alert_$i"] = $data['alert_id'] ?? null;
             $params[":infraction_$i"] = $data['infraction_id'] ?? null;
+            $params[":citation_$i"] = $data['citation_id'] ?? null;
 
             // Extra metadata columns
             $params[":role_$i"] = $data['target_role_id'] ?? null;
@@ -114,7 +118,7 @@ class NotificationModel {
 
         $sql = "INSERT INTO notifications (
             sender_user_id, recipient_user_id, notification_type, notification_subject, notification_message, 
-            complaint_id, alert_id, infraction_id, target_role_id, target_department_id, is_global, notification_datetime, read_status
+            complaint_id, alert_id, infraction_id, citation_id, target_role_id, target_department_id, is_global, notification_datetime, read_status
         ) VALUES " . implode(', ', $values);
 
         try {

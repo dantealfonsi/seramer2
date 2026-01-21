@@ -49,7 +49,13 @@ switch ($action) {
         $formatted_notifications = array_map(function($n) {
             $type = strtolower($n['notification_type']);
             // Determinar ID relacionado
-            $related_id = $n['complaint_id'] ?? $n['alert_id'] ?? $n['infraction_id'] ?? 0;
+            $related_id = $n['citation_id'] ?? $n['complaint_id'] ?? $n['alert_id'] ?? $n['infraction_id'] ?? 0;
+            
+            // Si es una citación, forzar el tipo para el router si el notification_type no empieza por 'citation'
+            // (por si acaso se usan otros tipos que deban ir a citaciones)
+            if (!empty($n['citation_id'])) {
+                $type = 'citation';
+            }
             
             // Construir enlace
             $n['link'] = url('public/utils/notifications/details.php?id=' . $related_id . '&type=' . $type);

@@ -1,6 +1,8 @@
 <?php
 // Incluir la configuración al inicio de cada vista
 require_once __DIR__ . '/../../config/app.php';
+// Implementar Control de Acceso Estricto por Departamento
+require_once __DIR__ . '/../../helpers/access_control.php';
 ?>
 <!doctype html>
 

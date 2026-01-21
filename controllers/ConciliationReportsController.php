@@ -4,6 +4,9 @@ require_once __DIR__ . '/../models/ConciliationReportsModel.php';
 require_once __DIR__ . '/../models/CitationsModel.php';
 require_once __DIR__ . '/../models/InfractionsModel.php';
 require_once __DIR__ . '/../models/SanctionsModel.php';
+require_once __DIR__ . '/../models/CitationsModel.php';
+require_once __DIR__ . '/../models/InfractionsModel.php';
+require_once __DIR__ . '/../models/SanctionsModel.php';
 require_once __DIR__ . '/../controllers/NotificationController.php';
 require_once __DIR__ . '/../config/app.php';
 
@@ -278,15 +281,21 @@ public function index($params = []) {
             
             $infractionId = $citation['infraction_id'];
             
-            // Cancel the infraction
-            $this->infractionsModel->cancelInfraction($infractionId);
+            // Actualizar estado de la infracción a "Resolved"
+            $this->infractionsModel->updateStatus($infractionId, 'Resolved');
             
-            // Cancel the related sanction
-            $this->sanctionsModel->cancelSanctionByInfraction($infractionId);
+            // Perdonar la sanción asociada (si existe)
+            $sanction = $this->sanctionsModel->getByInfractionId($infractionId);
+            if ($sanction) {
+                $this->sanctionsModel->pardonSanction($sanction['sanction_id']);
+            }
             
             // Send notification to Cobranzas users
-            $message = "Se ha alcanzado un acuerdo en la citación #{$citationId}. La infracción #{$infractionId} y su sanción relacionada han sido canceladas.";
-            $this->notificationController->sendNotificationToRole('Cobranzas', $message, 'info');
+            $message = "Se ha alcanzado un acuerdo en la citación #{$citationId}. La infracción #{$infractionId} ha sido resuelta y la sanción perdonada.";
+            $this->notificationController->sendNotificationToRole('Cobranzas', $message, 'citation_agreement', 'Acuerdo de Conciliación', [
+                'citation_id' => $citationId,
+                'infraction_id' => $infractionId
+            ]);
             
         } catch (Exception $e) {
             error_log("Error al procesar acuerdo alcanzado: " . $e->getMessage());

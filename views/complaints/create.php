@@ -46,7 +46,14 @@ $stalls = $complaintsController->getStallsList();
 
 // Procesar envío del formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // ... same code ...
+    $result = $complaintsController->store($_POST);
+    if ($result['success']) {
+        header('Location: index.php');
+        exit;
+    } else {
+        $errors = $result['errors'] ?? [$result['message']];
+        $form_data = array_merge($form_data, $_POST);
+    }
 }
 
 // RBAC: Solo RRHH puede crear

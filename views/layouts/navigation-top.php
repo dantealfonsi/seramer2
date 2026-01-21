@@ -45,7 +45,7 @@ $current_user = $authController->getCurrentUser();
 
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="<?php echo url('views/profile/index.php'); ?>">
                                 <div class="d-flex">
                                     <div class="flex-shrink-0 me-3">
                                         <div class="avatar avatar-online">

@@ -284,6 +284,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 </div>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
 <script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
@@ -360,37 +361,40 @@ $(document).ready(function() {
                     },
                     // Personalización del PDF
                     customize: function (doc) {
-                        // 1. Añadir encabezados personalizados
+                        // Agregar logo y encabezados personalizados
                         doc.content.splice(0, 0, {
-                            text: 'Servicio Autonómo de Mercados de Bermúdez', 
-                            alignment: 'center', 
-                            style: 'header1'
-                        }, {
-                            text: 'Reportes de Inspección', 
-                            alignment: 'center', 
-                            style: 'header2'
-                        }, {
-                            text: '', // Espaciador
+                            image: commonPdfLogo,
+                            width: 150,
+                            alignment: 'center',
                             margin: [0, 0, 0, 10]
                         });
+                        doc.content.splice(1, 0, { 
+                            text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ', 
+                            alignment: 'center', 
+                            style: 'header1',
+                            margin: [0, 0, 0, 5]
+                        });
+                        doc.content.splice(2, 0, { 
+                            text: 'Reportes de Inspección', 
+                            alignment: 'center', 
+                            style: 'header2',
+                            margin: [0, 0, 0, 15]
+                        });
 
-                        // 2. Definir estilos para los encabezados personalizados
-                        doc.styles.header1 = { fontSize: 14, bold: true, margin: [0, 10, 0, 0] };
-                        doc.styles.header2 = { fontSize: 12, bold: true, margin: [0, 0, 0, 5] };
+                        doc.styles.header1 = { fontSize: 14, bold: true };
+                        doc.styles.header2 = { fontSize: 12, bold: true };
 
-                        // 3. Estilo para el encabezado de la tabla (thead)
                         const table = doc.content.find(content => content.table);
                         if (table && table.table.body.length > 0) {
                             const headerRow = table.table.body[0];
                             headerRow.forEach(cell => {
                                 cell.fillColor = '#343a40'; 
-                                cell.color = '#ffffff';      
+                                cell.color = '#ffffff';
                                 cell.bold = true;
-                                cell.alignment = 'left'; // Alineación a la IZQUIERDA
+                                cell.alignment = 'left'; 
                             });
                         }
                         
-                        // 4. Ajustar el ancho de la tabla para ocupar el 100% de la página
                         table.table.widths = Array(table.table.body[0].length).fill('*');
                     }
                 },
