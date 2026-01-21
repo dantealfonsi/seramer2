@@ -13,6 +13,7 @@ require_once __DIR__ . '/../models/FeePaymentModel.php';
 require_once __DIR__ . '/../models/MarketStallModel.php';
 require_once __DIR__ . '/../models/NotificationModel.php';
 require_once __DIR__ . '/../models/InfractionsModel.php';
+require_once __DIR__ . '/../models/UserModel.php';
 
 class BillingController {
     private $awardeeModel;
@@ -547,6 +548,52 @@ class BillingController {
                 return $this->searchDebtor($params['search_term'] ?? '', $params['search_type'] ?? 'id_number');
             default:
                 return ['success' => false, 'message' => 'Acción no válida'];
+        }
+    }
+    /**
+     * Send notification to Fiscalization about fine payment
+     * @param int $sanctionId
+     * @param int $infractionId
+     */
+    public function sendPaymentNotification($sanctionId, $infractionId) {
+        try {
+            if (!class_exists('UserModel')) {
+                require_once __DIR__ . '/../models/UserModel.php';
+            }
+            
+            // Get Fiscalization users
+            $userModel = new UserModel();
+            $fiscalizationUsers = $userModel->getUsersByDepartmentId(3); // 3 = Fiscalización
+
+            if (empty($fiscalizationUsers)) {
+                return;
+            }
+
+            if (!class_exists('NotificationModel')) {
+                 require_once __DIR__ . '/../models/NotificationModel.php';
+            }
+
+            $notificationModel = new NotificationModel();
+            
+            // Build bulk notifications
+            $notifications = [];
+            foreach ($fiscalizationUsers as $userId) {
+                $notifications[] = [
+                    'user_id' => $userId,
+                    'type' => 'fine_payment_received',
+                    'title' => 'Pago de Multa Recibido',
+                    'message' => "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
+                    'link' => "views/sanctions/index.php?id=$sanctionId",
+                    'is_global' => 0,
+                    'target_role_id' => null,
+                    'target_department_id' => 3
+                ];
+            }
+
+            $notificationModel->insertBulkNotifications($notifications);
+
+        } catch (Exception $e) {
+            error_log("Error sending payment notification: " . $e->getMessage());
         }
     }
 }

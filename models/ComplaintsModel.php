@@ -182,7 +182,12 @@ class ComplaintsModel {
 
         try {
             $this->db->executeQuery($sql, $params);
-            return ['success' => true, 'message' => 'Queja registrada exitosamente.'];
+            $complaintId = $this->conn->lastInsertId();
+            return [
+                'success' => true, 
+                'message' => 'Queja registrada exitosamente.',
+                'complaint_id' => $complaintId
+            ];
         } catch (Exception $e) {
             return ['success' => false, 'message' => 'Error al registrar la queja: ' . $e->getMessage()];
         }

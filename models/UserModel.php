@@ -155,29 +155,11 @@ class UserModel {
 
     /**
      * Obtener todos los usuarios activos de un departamento específico
-     * Útil para enviar notificaciones masivas a un departamento
      * @param int $department_id
      * @return array Array de user_ids
      */
     public function getUsersByDepartment($department_id) {
-        try {
-            $query = "SELECT DISTINCT u.id 
-                      FROM users u 
-                      INNER JOIN user_departments ud ON u.id = ud.user_id 
-                      WHERE ud.department_id = :department_id 
-                      AND ud.status = 'active' 
-                      AND u.status = 'active'
-                      ORDER BY u.id";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':department_id', $department_id, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_COLUMN);
-        } catch (PDOException $e) {
-            error_log("Error obteniendo usuarios por departamento: " . $e->getMessage());
-            return [];
-        }
+        return $this->getUsersByDepartmentId($department_id);
     }
 
     /**
@@ -513,30 +495,6 @@ class UserModel {
         $menus = [
             'Recursos Humanos' => [
                 [
-                    'title' => 'Gestión de Personal',
-                    'icon' => 'ri-team-line',
-                    'submenu' => [
-                        ['title' => 'Empleados', 'url' => 'views/staff/index.php'],
-                        ['title' => 'Contrataciones', 'url' => 'views/contracts/index.php'],
-                        ['title' => 'Expedientes', 'url' => 'views/staff/records.php'],
-                        ['title' => 'Posiciones', 'url' => 'views/job-positions']
-                    ]
-                ],
-                [
-                    'title' => 'Asistencia',
-                    'icon' => 'ri-calendar-check-line',
-                    'submenu' => [
-                        ['title' => 'Control de Asistencia', 'url' => 'views/attendance/index.php'],
-                        ['title' => 'Permisos', 'url' => 'views/leave-requests/index.php'],
-                        ['title' => 'Vacaciones', 'url' => 'views/vacations/index.php']
-                    ]
-                ],
-                [
-                    'title' => 'Reportes RRHH',
-                    'icon' => 'ri-file-chart-line',
-                    'url' => 'views/reports/hr.php'
-                ],
-                [
                     'title' => 'Quejas',
                     'icon' => 'ri-chat-3-line',
                     'submenu' => [
@@ -544,11 +502,6 @@ class UserModel {
                         ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
                     ]
                 ],
-                [
-                    'title' => 'Gestión de Departamentos',
-                    'icon' => 'ri-building-line',
-                    'url' => 'views/departments/index.php'
-                ]
             ],
             'Liquidacion' => [
                 [

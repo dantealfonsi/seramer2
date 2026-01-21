@@ -48,5 +48,6 @@ return [
     'views/reports/index.php' => ['Fiscalizacion'], 
     
     // Rutas protegidas genéricas
-    'views/users' => ['Recursos Humanos'], // Solo RRHH maneja usuarios generales normalmente. Jefes tienen acceso limitado pero mejor restringir la carpeta principal y manejar excepciones si es necesario.
+    'views/users' => ['Recursos Humanos'], 
+    'views/profile' => ['Recursos Humanos', 'Fiscalizacion', 'Liquidacion', 'Cobranza'], // Acceso universal al perfil
 ];
