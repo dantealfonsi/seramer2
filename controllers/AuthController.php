@@ -25,13 +25,31 @@ class AuthController {
                 ];
             }
 
-            // Intentar autenticar usuario
+            // Primero verificamos si el usuario existe para dar un mensaje específico
+            $existingUser = $this->userModel->getByUsername($username);
+            
+            if (!$existingUser) {
+                return [
+                    'success' => false,
+                    'message' => 'El usuario ingresado no existe'
+                ];
+            }
+
+            // Verificar estado del usuario antes de intentar autenticar password
+            if ($existingUser['status'] !== 'active') {
+                return [
+                    'success' => false,
+                    'message' => 'El usuario está inactivo. Contacte al administrador.'
+                ];
+            }
+
+            // Intentar autenticar usuario (verificar contraseña)
             $user_data = $this->userModel->authenticate($username, $password);
             
             if (!$user_data) {
                 return [
                     'success' => false,
-                    'message' => 'Credenciales inválidas'
+                    'message' => 'La contraseña introducida es incorrecta'
                 ];
             }
 
@@ -98,7 +116,7 @@ class AuthController {
                     'department' => $_SESSION['primary_department_name'] ?? 'Sin asignar',
                     'departments' => $user_data['departments']
                 ],
-                'redirect' => '../views/dashboard/dashboard.php'
+                'redirect' => '../dashboard/dashboard.php'
             ];
 
         } catch (Exception $e) {
@@ -122,7 +140,11 @@ class AuthController {
                 exit;
             }
 
-            // Obtener datos del formulario
+            // Detectar si es una petición AJAX
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+            // Obtener datos del formulario (soportar tanto POST form-data como JSON body si fuera necesario, pero mantenemos POST estándar por compatibilidad)
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
             $remember_me = isset($_POST['remember_me']);
@@ -130,6 +152,20 @@ class AuthController {
             // Procesar login
             $result = $this->login($username, $password);
 
+            if ($isAjax) {
+                // Si es AJAX, manejar "recordarme" antes de devolver JSON
+                if ($result['success'] && $remember_me) {
+                    setcookie('remember_username', $username, time() + (30 * 24 * 60 * 60), '/');
+                } elseif ($result['success'] && isset($_COOKIE['remember_username'])) {
+                    setcookie('remember_username', '', time() - 3600, '/');
+                }
+
+                header('Content-Type: application/json');
+                echo json_encode($result);
+                exit;
+            }
+
+            // Lógica original para peticiones normales
             if ($result['success']) {
                 // Si el login fue exitoso, manejar "recordarme"
                 if ($remember_me) {
@@ -148,11 +184,7 @@ class AuthController {
             } else {
                 // Si falló, redireccionar al login con mensaje de error
                 if (session_status() === PHP_SESSION_NONE) {
-                    if (session_status() === PHP_SESSION_NONE) {
-                if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-            }
+                    session_start();
                 }
                 $_SESSION['login_error'] = $result['message'];
                 header('Location: ../views/auth/login.php');
@@ -161,12 +193,21 @@ class AuthController {
 
         } catch (Exception $e) {
             error_log("Error en processLogin: " . $e->getMessage());
-            if (session_status() === PHP_SESSION_NONE) {
-                if (session_status() === PHP_SESSION_NONE) {
-                if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+            
+            // Respuesta de error consistente
+            $errorResponse = [
+                'success' => false,
+                'message' => 'Error interno del servidor'
+            ];
+
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                 header('Content-Type: application/json');
+                 echo json_encode($errorResponse);
+                 exit;
             }
+
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
             }
             $_SESSION['login_error'] = 'Error interno del servidor';
             header('Location: ../views/auth/login.php');

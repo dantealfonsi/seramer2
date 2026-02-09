@@ -133,10 +133,10 @@ $allowed_sanction_status = [
                                                         'Pending' => 'secondary',
                                                         'Canceled' => 'danger'
                                                     ];
-                                                    $color = $status_colors[$sanction['sanction_status']] ?? 'info';
+                                                    $color = $status_colors[$sanction['sanction_status']] ?? 'btn-outline-secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($allowed_sanction_status[$sanction['sanction_status']]); ?>
+                                                    <?php echo htmlspecialchars($allowed_sanction_status[$sanction['sanction_status']] ?? $sanction['sanction_status']); ?>
                                                 </span>
                                             </td>
                                         </tr>

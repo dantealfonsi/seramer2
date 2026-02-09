@@ -49,6 +49,10 @@ class UserModel {
             
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
+            if (!$result) {
+                return null;
+            }
+            
             // Retorna la máscara o null
             return $result['permissions_mask'] ?? null;
             
@@ -81,6 +85,10 @@ class UserModel {
             $stmt->execute();
             
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                return null;
+            }
             
             // Retorna el ID como entero, o null si no se encuentra
             return $result['role_id'] ? (int)$result['role_id'] : null;

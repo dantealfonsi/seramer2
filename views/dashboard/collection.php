@@ -177,7 +177,7 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
                 </div>
                 <div class="table-responsive text-nowrap">
                     <table class="table table-hover">
-                        <thead>
+                        <thead class="table-dark">
                             <tr>
                                 <th>Fecha</th>
                                 <th>Pagador</th>

@@ -205,7 +205,7 @@ class BillingController {
         $paymentMethodId = (int)($paymentData['payment_method_id'] ?? 0);
         $transactionRef = $paymentData['transaction_reference'] ?? null;
         
-        if (!$sanctionId || !$amount || !$paymentMethodId) {
+        if (!$sanctionId || $amount < 0 || !$paymentMethodId) {
             return ['success' => false, 'message' => 'Datos incompletos'];
         }
         
@@ -276,7 +276,7 @@ class BillingController {
         $concept = $paymentData['concept'] ?? 'Pago de mensualidad';
         $transactionRef = $paymentData['transaction_reference'] ?? null;
 
-        if (!$paymentId || !$amount || !$paymentMethodId) {
+        if (!$paymentId || $amount < 0 || !$paymentMethodId) {
             return ['success' => false, 'message' => 'Datos incompletos'];
         }
         
@@ -579,11 +579,16 @@ class BillingController {
             $notifications = [];
             foreach ($fiscalizationUsers as $userId) {
                 $notifications[] = [
-                    'user_id' => $userId,
-                    'type' => 'fine_payment_received',
-                    'title' => 'Pago de Multa Recibido',
-                    'message' => "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
-                    'link' => "views/sanctions/index.php?id=$sanctionId",
+                    'sender_user_id' => $_SESSION['user_id'] ?? null,
+                    'recipient_user_id' => $userId,
+                    'notification_type' => 'fine_payment_received',
+                    'notification_subject' => 'Pago de Multa Recibido',
+                    'notification_message' => "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
+                    // 'link' is not supported by insertBulkNotifications in current model
+                    'complaint_id' => null,
+                    'alert_id' => null,
+                    'infraction_id' => $sanction['infraction_id'] ?? null, // Link to infraction if column exists
+                    'citation_id' => null,
                     'is_global' => 0,
                     'target_role_id' => null,
                     'target_department_id' => 3

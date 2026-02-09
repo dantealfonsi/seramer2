@@ -99,7 +99,8 @@ public function index($params = []) {
                     'infraction_id' => null,
                     'target_role_id' => null,
                     'target_department_id' => $cobranzasDeptId,
-                    'is_global' => 0
+                    'is_global' => 0,
+                    'sanction_id' => $sanctionId
                 ];
             }
             

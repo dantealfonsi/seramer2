@@ -157,6 +157,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <div class="mb-3">
                                         <label for="complaint_type" class="form-label">Tipo de Queja</label>
                                         <select class="form-select" id="complaint_type" name="complaint_type" required>
+                                            <option value="">Seleccione...</option>
                                             <option value="Suggestion" <?php echo ($data['complaint']['complaint_type'] == 'Suggestion') ? 'selected' : ''; ?>>Sugerencia</option>
                                             <option value="Claim" <?php echo ($data['complaint']['complaint_type'] == 'Claim') ? 'selected' : ''; ?>>Reclamo</option>
                                             <option value="Question" <?php echo ($data['complaint']['complaint_type'] == 'Question') ? 'selected' : ''; ?>>Pregunta</option>

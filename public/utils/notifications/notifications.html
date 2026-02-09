@@ -70,13 +70,26 @@
         width: 360px;
         max-height: 80vh;
         /* Viewport height limit */
-        overflow-y: auto;
+        overflow-y: hidden;
         z-index: 10000;
         /* High Z-index */
         display: none;
         color: #050505;
         padding-bottom: 5px;
         cursor: default;
+    }
+
+    #notif-list-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    #notif-list-container::-webkit-scrollbar-thumb {
+        background: #bcc0c4;
+        border-radius: 10px;
+    }
+
+    #notif-list-container::-webkit-scrollbar-track {
+        background: #f0f2f5;
     }
 
     /* Arrow tip */
@@ -238,9 +251,9 @@
         <div class="notif-header">Notificaciones</div>
         <div class="notif-options">
             <span class="active">Todas</span>
-            <span>No leídas</span>
+            <span>Notificaciones Vistas</span>
         </div>
-        <div id="notif-list-container">
+        <div id="notif-list-container" style="max-height: 380px; overflow-y: auto;">
             <div class="notif-loading">Cargando...</div>
         </div>
     </div>
@@ -261,6 +274,8 @@
         const listContainer = document.getElementById('notif-list-container');
 
         let isDropdownOpen = false;
+        let allNotifications = [];
+        let currentFilter = 'all'; // 'all' (Pendientes) o 'read' (Vistas)
 
         // === FUNCIONES (Vanilla JS) ===
 
@@ -295,46 +310,44 @@
             }
         }
 
-        // Renderizar lista
-        function renderList(notifications) {
-            listContainer.innerHTML = ''; // Limpiar
+        // Renderizar lista filtrada
+        function renderList() {
+            listContainer.innerHTML = '';
 
-            if (!notifications || notifications.length === 0) {
-                listContainer.innerHTML = '<p class="no-notifications">No hay notificaciones nuevas</p>';
+            let filtered = [];
+            if (currentFilter === 'all') {
+                // En la pestaña "Todas", mostramos las PENDIENTES (read_status 0)
+                filtered = allNotifications.filter(n => parseInt(n.read_status) === 0);
+            } else {
+                // En "Notificaciones Vistas", mostramos las LEÍDAS (read_status 1)
+                filtered = allNotifications.filter(n => parseInt(n.read_status) === 1);
+            }
+
+            if (filtered.length === 0) {
+                const msg = currentFilter === 'all' ? 'No hay notificaciones nuevas' : 'No hay notificaciones vistas recientemente';
+                listContainer.innerHTML = `<p class="no-notifications">${msg}</p>`;
                 return;
             }
 
-            notifications.forEach(notif => {
-                // Construir HTML del item
+            filtered.forEach(notif => {
                 const item = document.createElement('a');
                 item.className = 'notif-item';
                 item.href = notif.link || '#';
 
-                // Icono / Avatar
                 const iconHtml = `
                 <div class="notif-icon-container">
                     <div class="notif-icon-placeholder">
-                        <i class="fas fa-info"></i>
+                        <i class="ri ri-notification-3-line"></i>
                     </div>
                 </div>`;
 
-                // New dot if unread (aunque aquí ya vienen marcadas como leídas tras el fetch, 
-                // pero si quisiéramos mantener estado visual lo haríamos logicamente.
-                // En este flujo, 'fetch_and_mark' las marca como leídas en backend al pedirlas.
-                // Simular unread si read_status era 0 (antes del update) sería ideal, pero la API las devuelve actualizadas?
-                // Revisando notifications.php: devuelve el estado ANTES del update? No, hace update Y luego select. Read=1.
-                // Ajuste: Podemos asumir que son recientes.)
-
                 const contentHtml = `
-                <div class="notif-content">
-                    <p class="notif-subject"><strong>${notif.notification_subject || 'Notificación'}</strong></p>
-                    <p class="notif-message">${notif.notification_message || ''}</p>
-                    <span class="notif-date">${notif.date_friendly || ''}</span>
-                </div>
-            `;
-
-                // Dot (Visual only, always hidde users prefer cleaned)
-                // const dotHtml = notif.read_status == 0 ? '<div class="notif-unread-dot"></div>' : ''; 
+                    <div class="notif-content">
+                        <p class="notif-subject"><strong>${notif.notification_subject || 'Notificación'}</strong></p>
+                        <p class="notif-message">${notif.notification_message || ''}</p>
+                        <span class="notif-date">${notif.date_friendly || ''}</span>
+                    </div>
+                `;
 
                 item.innerHTML = iconHtml + contentHtml;
                 listContainer.appendChild(item);
@@ -350,14 +363,13 @@
 
             isDropdownOpen = true;
             dropdown.style.display = 'block';
-            listContainer.innerHTML = '<div class="notif-loading"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>';
+            listContainer.innerHTML = '<div class="notif-loading">Cargando...</div>';
 
-            const data = await apiCall('fetch_and_mark');
+            const data = await apiCall('fetch');
 
             if (data && data.notifications) {
-                renderList(data.notifications);
-                // Actualizar contador a 0 localmente
-                countBadge.style.display = 'none';
+                allNotifications = data.notifications;
+                renderList();
             } else {
                 listContainer.innerHTML = '<div class="no-notifications" style="color:red">Error al cargar</div>';
             }
@@ -372,8 +384,21 @@
 
         // Toggle Click
         wrapper.addEventListener('click', (e) => {
-            e.stopPropagation(); // Evitar cerrar inmediato
+            e.stopPropagation();
             openDropdown();
+        });
+
+        // Tab Switching
+        const tabSpans = document.querySelectorAll('.notif-options span');
+        tabSpans.forEach(span => {
+            span.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tabSpans.forEach(s => s.classList.remove('active'));
+                span.classList.add('active');
+
+                currentFilter = span.textContent.includes('Vistas') ? 'read' : 'all';
+                renderList();
+            });
         });
 
         // Cerrar al hacer click fuera

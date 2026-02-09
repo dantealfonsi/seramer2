@@ -7,74 +7,29 @@ const formAuthentication = document.querySelector('#formAuthentication');
 
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
-    // Form validation for Add new record
+    // Form validation for Login
     if (formAuthentication) {
       const fv = FormValidation.formValidation(formAuthentication, {
         fields: {
           username: {
             validators: {
               notEmpty: {
-                message: 'Please enter username'
+                message: 'Por favor ingrese su usuario'
               },
               stringLength: {
-                min: 6,
-                message: 'Username must be more than 6 characters'
-              }
-            }
-          },
-          email: {
-            validators: {
-              notEmpty: {
-                message: 'Please enter your email'
-              },
-              emailAddress: {
-                message: 'Please enter valid email address'
-              }
-            }
-          },
-          'email-username': {
-            validators: {
-              notEmpty: {
-                message: 'Please enter email / username'
-              },
-              stringLength: {
-                min: 6,
-                message: 'Username must be more than 6 characters'
+                min: 4,
+                message: 'El usuario debe tener más de 4 caracteres'
               }
             }
           },
           password: {
             validators: {
               notEmpty: {
-                message: 'Please enter your password'
-              },
-              stringLength: {
-                min: 0,
-                message: 'Password must be more than 6 characters'
-              }
-            }
-          },
-          'confirm-password': {
-            validators: {
-              notEmpty: {
-                message: 'Please confirm password'
-              },
-              identical: {
-                compare: function () {
-                  return formAuthentication.querySelector('[name="password"]').value;
-                },
-                message: 'The password and its confirm are not the same'
+                message: 'Por favor ingrese su contraseña'
               },
               stringLength: {
                 min: 6,
-                message: 'Password must be more than 6 characters'
-              }
-            }
-          },
-          terms: {
-            validators: {
-              notEmpty: {
-                message: 'Please agree terms & conditions'
+                message: 'La contraseña debe tener más de 6 caracteres'
               }
             }
           }
@@ -86,8 +41,6 @@ document.addEventListener('DOMContentLoaded', function (e) {
             rowSelector: '.mb-5'
           }),
           submitButton: new FormValidation.plugins.SubmitButton(),
-
-          defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
           autoFocus: new FormValidation.plugins.AutoFocus()
         },
         init: instance => {
@@ -97,7 +50,63 @@ document.addEventListener('DOMContentLoaded', function (e) {
             }
           });
         }
-      });
+      })
+        .on('core.form.valid', function () {
+          const submitButton = formAuthentication.querySelector('[type="submit"]');
+          if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Iniciando...';
+          }
+
+          const formData = new FormData(formAuthentication);
+
+          fetch(formAuthentication.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                window.location.href = data.redirect;
+              } else {
+                if (submitButton) {
+                  submitButton.disabled = false;
+                  submitButton.innerHTML = 'Iniciar Sesión';
+                }
+
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error de autenticación',
+                  text: data.message,
+                  customClass: {
+                    confirmButton: 'btn btn-primary'
+                  },
+                  buttonsStyling: false
+                });
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Iniciar Sesión';
+              }
+
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error inesperado al procesar la solicitud.',
+                customClass: {
+                  confirmButton: 'btn btn-primary'
+                },
+                buttonsStyling: false
+              });
+            });
+        });
+
     }
 
     //  Two Steps Verification
@@ -113,3 +122,4 @@ document.addEventListener('DOMContentLoaded', function (e) {
     }
   })();
 });
+

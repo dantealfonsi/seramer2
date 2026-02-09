@@ -8,6 +8,23 @@ $searchTerm = $_GET['search_term'] ?? '';
 $searchType = $_GET['search_type'] ?? 'id_number';
 $idPrefix = $_GET['id_prefix'] ?? 'V';
 
+// Lógica de autoselección: Si es búsqueda por ID y el término es numérico
+if ($searchType === 'id_number' && !empty($searchTerm)) {
+    // Si el término contiene letras al inicio (como V123 o J123), las separamos
+    if (preg_match('/^([VEJ])(\d+)$/i', $searchTerm, $matches)) {
+        $idPrefix = strtoupper($matches[1]);
+        $searchTerm = $matches[2];
+    } elseif (ctype_digit($searchTerm)) {
+        // Si solo son números, decidimos por longitud (RIF suele ser > 8 dígitos o empezar por un patrón)
+        // En Venezuela Cédulas son hasta 3X.XXX.XXX (8 dígitos). RIFs suelen tener 9 dígitos + dígito de control.
+        if (strlen($searchTerm) >= 9) {
+            $idPrefix = 'J';
+        } else {
+            $idPrefix = 'V';
+        }
+    }
+}
+
 // Perform search
 $result = $controller->searchDebtor($searchTerm, $searchType, ['id_prefix' => $idPrefix]);
 
@@ -290,6 +307,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
 <!-- Scripts after footer to ensure jQuery is loaded -->
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
 <script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
@@ -418,7 +436,67 @@ $(document).ready(function() {
                     orientation: 'portrait',
                     pageSize: 'LETTER', 
                     exportOptions: { columns: [0, 1, 2, 3, 4] }, // Exclude Acciones (5)
-                    customize: function(doc) { commonPdfCustom(doc, 'Pagos de Contratos Pendientes'); }
+                    customize: function (doc) {
+                        // 1. Remover título por defecto
+                        doc.content.splice(0, 1);
+
+                        // 2. Agregar Encabezado Institucional (Logo + Texto)
+                        doc.content.unshift({
+                            columns: [
+                                {
+                                    image: commonPdfLogo,
+                                    width: 50
+                                },
+                                {
+                                    text: [
+                                        { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\\n', fontSize: 10, bold: true },
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\\n', fontSize: 10, bold: true },
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        });
+
+                        // 3. Agregar Línea Horizontal
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                            margin: [0, 0, 0, 20]
+                        });
+
+                        // 4. Agregar Título Centrado
+                        doc.content.splice(2, 0, {
+                            text: 'Pagos de Contratos Pendientes',
+                            style: 'header',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 15]
+                        });
+
+                        // 5. Estilo de tabla
+                        doc.styles.header = { fontSize: 14, bold: true };
+                        const table = doc.content.find(content => content.table);
+                        if (table && table.table.body.length > 0) {
+                            const headerRow = table.table.body[0];
+                            headerRow.forEach(cell => {
+                                cell.fillColor = '#2d4154';
+                                cell.color = '#ffffff';
+                                cell.bold = true;
+                            });
+                            
+                            // Zebra striping
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(cell => {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
+                            
+                            table.table.widths = Array(table.table.body[0].length).fill('*');
+                        }
+                    }
                 },
                 {
                     extend: 'excelHtml5',
@@ -431,7 +509,18 @@ $(document).ready(function() {
                     extend: 'print',
                     text: '<i class="ri-printer-line"></i> Imprimir',
                     className: 'btn btn-info btn-sm',
-                    exportOptions: { columns: [0, 1, 2, 3, 4] }
+                    exportOptions: { columns: [0, 1, 2, 3, 4] },
+                    messageTop: `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
+                            <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Pagos de Contratos Pendientes</h2>
+                        </div>`,
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('w-100').css('width', '100%');
+                        $(win.document.body).find('head').append(
+                            '<style>@media print { @page { size: letter; margin: 1cm; } } table thead th { background-color: #343a40 !important; color: white !important; -webkit-print-color-adjust: exact; text-align: left !important; }</style>'
+                        );
+                    }
                 },
                 'colvis' 
             ],
@@ -452,7 +541,67 @@ $(document).ready(function() {
                     orientation: 'portrait',
                     pageSize: 'LETTER', 
                     exportOptions: { columns: [0, 1, 2] }, // Exclude Acciones (3 now)
-                    customize: function(doc) { commonPdfCustom(doc, 'Multas Pendientes'); }
+                    customize: function (doc) {
+                        // 1. Remover título por defecto
+                        doc.content.splice(0, 1);
+
+                        // 2. Agregar Encabezado Institucional (Logo + Texto)
+                        doc.content.unshift({
+                            columns: [
+                                {
+                                    image: commonPdfLogo,
+                                    width: 50
+                                },
+                                {
+                                    text: [
+                                        { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\\n', fontSize: 10, bold: true },
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\\n', fontSize: 10, bold: true },
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        });
+
+                        // 3. Agregar Línea Horizontal
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                            margin: [0, 0, 0, 20]
+                        });
+
+                        // 4. Agregar Título Centrado
+                        doc.content.splice(2, 0, {
+                            text: 'Multas Pendientes',
+                            style: 'header',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 15]
+                        });
+
+                        // 5. Estilo de tabla
+                        doc.styles.header = { fontSize: 14, bold: true };
+                        const table = doc.content.find(content => content.table);
+                        if (table && table.table.body.length > 0) {
+                            const headerRow = table.table.body[0];
+                            headerRow.forEach(cell => {
+                                cell.fillColor = '#2d4154';
+                                cell.color = '#ffffff';
+                                cell.bold = true;
+                            });
+                            
+                            // Zebra striping
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(cell => {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
+                            
+                            table.table.widths = Array(table.table.body[0].length).fill('*');
+                        }
+                    }
                 },
                 {
                     extend: 'excelHtml5',
@@ -465,7 +614,18 @@ $(document).ready(function() {
                     extend: 'print',
                     text: '<i class="ri-printer-line"></i> Imprimir',
                     className: 'btn btn-info btn-sm',
-                    exportOptions: { columns: [0, 1, 2] }
+                    exportOptions: { columns: [0, 1, 2] },
+                    messageTop: `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
+                            <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Multas Pendientes</h2>
+                        </div>`,
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('w-100').css('width', '100%');
+                        $(win.document.body).find('head').append(
+                            '<style>@media print { @page { size: letter; margin: 1cm; } } table thead th { background-color: #343a40 !important; color: white !important; -webkit-print-color-adjust: exact; text-align: left !important; }</style>'
+                        );
+                    }
                 },
                 'colvis' 
             ],
