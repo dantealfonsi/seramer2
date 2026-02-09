@@ -148,7 +148,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $color = $status_colors[$infraction['infraction_status']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($status_translations[$infraction['infraction_status']]); ?>
+                                                    <?php echo htmlspecialchars($status_translations[$infraction['infraction_status']] ?? $infraction['infraction_status']); ?>
                                                 </span>
                                             </td>
                                         </tr>

@@ -61,6 +61,16 @@ $allowed_tipes = [
     'Question' => 'Pregunta'
 ];
 
+// Translations for action types
+$action_type_translations = [
+    'Resolution' => 'Resolución',
+    'Received' => 'Recibido',
+    'In Process' => 'En Proceso',
+    'Review' => 'Revisión',
+    'Closed' => 'Cerrado',
+    'Update' => 'Actualización'
+];
+
 // Manejar la solicitud de eliminación si se recibe (para registros de seguimiento)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_tracking') {
     // RBAC: Solo RRHH puede eliminar seguimiento
@@ -153,7 +163,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <th>Tipo de Queja:</th>
                                             <td>
                                                 <span class="badge bg-info fs-6">
-                                                    <?php echo htmlspecialchars($allowed_tipes[$complaint['complaint_type']]); ?>
+                                                    <?php echo htmlspecialchars($allowed_tipes[$complaint['complaint_type']] ?? $complaint['complaint_type']); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -164,12 +174,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $priority_colors = [
                                                     'Low' => 'success',
                                                     'Medium' => 'warning',
-                                                    'High' => 'danger'
+                                                    'High' => 'danger',
+                                                    'Urgent' => 'dark'
                                                 ];
                                                 $color = $priority_colors[$complaint['complaint_priority']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']]); ?>
+                                                    <?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']] ?? $complaint['complaint_priority']); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -187,7 +198,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 $color = $status_colors[$complaint['complaint_status']] ?? 'secondary';
                                                 ?>
                                                 <span class="badge bg-<?php echo $color; ?> fs-6">
-                                                    <?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']]); ?>
+                                                    <?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']] ?? $complaint['complaint_status']); ?>
                                                 </span>
                                             </td>
                                         </tr>
@@ -234,7 +245,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <div class="timeline-panel card">
                                             <div class="card-body">
                                                 <div class="timeline-heading d-flex justify-content-between align-items-start">
-                                                    <h6 class="timeline-title mb-1"><?php echo htmlspecialchars($record['action_type']); ?></h6>
+                                                    <h6 class="timeline-title mb-1"><?php echo htmlspecialchars($action_type_translations[$record['action_type']] ?? $record['action_type']); ?></h6>
                                                     <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
                                                     <div class="btn-group">
                                                         <a href="../complaint_tracking/edit.php?id=<?php echo htmlspecialchars($record['tracking_id']); ?>" class="btn btn-sm btn-outline-primary" title="Editar"><i class="ri-pencil-line"></i></a>

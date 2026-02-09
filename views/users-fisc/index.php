@@ -140,7 +140,69 @@ document.addEventListener('DOMContentLoaded', function() {
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4] // Exclude Role Selection Column (index 5 now)
                     },
-                    title: 'Usuarios_Fiscalizacion_Seramer'
+                    title: 'Usuarios_Fiscalizacion_Seramer',
+                    customize: function (doc) {
+                        // 1. Remover título por defecto
+                        doc.content.splice(0, 1);
+
+                        // 2. Agregar Encabezado Institucional (Logo + Texto)
+                        doc.content.unshift({
+                            columns: [
+                                {
+                                    image: commonPdfLogo,
+                                    width: 50
+                                },
+                                {
+                                    text: [
+                                        { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        });
+
+                        // 3. Agregar Línea Horizontal
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 750, y2: 5, lineWidth: 1, lineColor: '#000000' }], // Adjusted x2 for landscape
+                            margin: [0, 0, 0, 20]
+                        });
+
+                        // 4. Agregar Título Centrado
+                        doc.content.splice(2, 0, {
+                            text: 'Listado de Usuarios de Fiscalización',
+                            style: 'header',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 15]
+                        });
+
+                        // 5. Estilo de la Tabla
+                        const table = doc.content.find(content => content.table);
+                        if (table) {
+                            // Estilo de la cabecera
+                            table.table.body[0].forEach(function(cell) {
+                                cell.fillColor = '#2d4154';
+                                cell.color = 'white';
+                                cell.bold = true;
+                                cell.alignment = 'center';
+                            });
+
+                            // Zebra striping
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(function(cell) {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
+                            
+                            // Ajustar anchos
+                            table.table.widths = Array(table.table.body[0].length).fill('*');
+                        }
+                    }
                 },
                 {
                     extend: 'excelHtml5',
@@ -157,13 +219,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     className: 'btn btn-info btn-sm',
                     exportOptions: {
                          columns: [0, 1, 2, 3, 4] 
+                    },
+                    messageTop: `
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="margin: 0; font-size: 1.5em; text-align: center;">Servicio Autonómo de Mercados de Bermúdez</h1>
+                            <h2 style="margin: 0; font-size: 1.2em; text-align: center;">Listado de Usuarios de Fiscalización</h2>
+                        </div>`,
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('w-100').css('width', '100%');
+                        $(win.document.body).find('head').append(
+                            '<style>@media print { @page { size: letter; margin: 1cm; } } table thead th { background-color: #343a40 !important; color: white !important; -webkit-print-color-adjust: exact; text-align: left !important;}</style>'
+                        );
                     }
                 },
                 'colvis'
             ],
             language: {
-                "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json",
-                 "decimal": "",
+                "decimal": "",
                 "emptyTable": "No hay datos disponibles en la tabla",
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
                 "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
@@ -279,6 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
 <!-- DataTables includes -->
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
 <script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
 <script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>

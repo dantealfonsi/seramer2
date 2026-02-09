@@ -38,27 +38,30 @@ switch ($action) {
         echo json_encode(['count' => $count]);
         break;
 
-    case 'fetch_and_mark':
-        // 1. Marcar todas como leídas
-        $notificationModel->markAllAsRead($current_user_id);
+    case 'fetch':
+        // 1. Obtener lista reciente (Máximo 50)
+        $notifications = $notificationModel->getUserNotifications($current_user_id, 50);
 
-        // 2. Obtener lista reciente
-        $notifications = $notificationModel->getUserNotifications($current_user_id, 15);
-
-        // 3. Formatear
+        // 2. Formatear
         $formatted_notifications = array_map(function($n) {
             $type = strtolower($n['notification_type']);
             // Determinar ID relacionado
-            $related_id = $n['citation_id'] ?? $n['complaint_id'] ?? $n['alert_id'] ?? $n['infraction_id'] ?? 0;
+            $related_id = $n['sanction_id'] ?? $n['citation_id'] ?? $n['complaint_id'] ?? $n['alert_id'] ?? $n['infraction_id'] ?? 0;
             
-            // Si es una citación, forzar el tipo para el router si el notification_type no empieza por 'citation'
-            // (por si acaso se usan otros tipos que deban ir a citaciones)
-            if (!empty($n['citation_id'])) {
+            // PARCHE: Si el ID es 0, intentamos extraerlo del mensaje (ej: "Sanción #123")
+            if ($related_id == 0 && preg_match('/#(\d+)/', $n['notification_message'], $matches)) {
+                $related_id = $matches[1];
+            }
+
+            // Forzar el tipo para el router si tiene ID específico
+            if (!empty($n['sanction_id']) || strpos($type, 'sanction') !== false) {
+                $type = 'sanction';
+            } elseif (!empty($n['citation_id']) || strpos($type, 'citation') !== false) {
                 $type = 'citation';
             }
             
-            // Construir enlace
-            $n['link'] = url('public/utils/notifications/details.php?id=' . $related_id . '&type=' . $type);
+            // Construir enlace incluyendo notif_id
+            $n['link'] = url('public/utils/notifications/details.php?id=' . $related_id . '&type=' . $type . '&notif_id=' . $n['notification_id']);
             
             // Formatear fecha
             try {

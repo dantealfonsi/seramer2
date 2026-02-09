@@ -41,3 +41,11 @@
 .alert-info .alert-content {
     flex: 1;
 }
+
+/* Print Styles */
+@media print {
+    @page {
+        size: letter;
+        margin: 1cm;
+    }
+}

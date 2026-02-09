@@ -22,7 +22,8 @@ class NotificationModel {
         ?int $complaintId = null,
         ?int $alertId = null,
         ?int $infractionId = null,
-        ?int $citationId = null
+        ?int $citationId = null,
+        ?int $sanctionId = null
     ): int|bool {
         $sql = "
             INSERT INTO notifications (
@@ -34,6 +35,8 @@ class NotificationModel {
                 complaint_id,
                 alert_id,
                 infraction_id,
+                citation_id,
+                sanction_id,
                 notification_datetime,
                 read_status
             )
@@ -47,6 +50,7 @@ class NotificationModel {
                 :alert_id,
                 :infraction_id,
                 :citation_id,
+                :sanction_id,
                 NOW(),
                 0
             );
@@ -65,6 +69,7 @@ class NotificationModel {
             $stmt->bindValue(':alert_id', $alertId, $alertId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':infraction_id', $infractionId, $infractionId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindValue(':citation_id', $citationId, $citationId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(':sanction_id', $sanctionId, $sanctionId === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 return (int)$this->conn->lastInsertId();
@@ -95,7 +100,7 @@ class NotificationModel {
         $i = 0;
 
         foreach ($notificationsData as $data) {
-            $values[] = "(:sender_$i, :recipient_$i, :type_$i, :subject_$i, :message_$i, :complaint_$i, :alert_$i, :infraction_$i, :citation_$i, :role_$i, :dept_$i, :global_$i, NOW(), 0)";
+            $values[] = "(:sender_$i, :recipient_$i, :type_$i, :subject_$i, :message_$i, :complaint_$i, :alert_$i, :infraction_$i, :citation_$i, :sanction_$i, :role_$i, :dept_$i, :global_$i, NOW(), 0)";
             
             $params[":sender_$i"] = $data['sender_user_id'] ?? null;
             $params[":recipient_$i"] = $data['recipient_user_id'] ?? null;
@@ -107,6 +112,7 @@ class NotificationModel {
             $params[":alert_$i"] = $data['alert_id'] ?? null;
             $params[":infraction_$i"] = $data['infraction_id'] ?? null;
             $params[":citation_$i"] = $data['citation_id'] ?? null;
+            $params[":sanction_$i"] = $data['sanction_id'] ?? null;
 
             // Extra metadata columns
             $params[":role_$i"] = $data['target_role_id'] ?? null;
@@ -118,7 +124,7 @@ class NotificationModel {
 
         $sql = "INSERT INTO notifications (
             sender_user_id, recipient_user_id, notification_type, notification_subject, notification_message, 
-            complaint_id, alert_id, infraction_id, citation_id, target_role_id, target_department_id, is_global, notification_datetime, read_status
+            complaint_id, alert_id, infraction_id, citation_id, sanction_id, target_role_id, target_department_id, is_global, notification_datetime, read_status
         ) VALUES " . implode(', ', $values);
 
         try {
@@ -156,11 +162,11 @@ class NotificationModel {
         }
     }
 
-    public function markAllAsRead(int $userId): bool {
-        $sql = "UPDATE notifications SET read_status = 1 WHERE recipient_user_id = :uid AND read_status = 0";
+    public function markAsRead(int $notificationId): bool {
+        $sql = "UPDATE notifications SET read_status = 1 WHERE notification_id = :nid";
         try {
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindValue(':uid', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':nid', $notificationId, PDO::PARAM_INT);
             return $stmt->execute();
         } catch (PDOException $e) {
             return false;

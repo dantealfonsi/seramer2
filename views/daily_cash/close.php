@@ -45,8 +45,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <?php if (empty($installments)): ?>
                             <div class="alert alert-info">No se registraron movimientos en este turno.</div>
                         <?php else: ?>
-                            <table class="table table-sm">
-                                <thead>
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Hora</th>
                                         <th>Ref</th>

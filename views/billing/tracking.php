@@ -24,7 +24,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <?php else: ?>
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead>
+                                    <thead class="table-dark">
                                         <tr>
                                             <th>Adjudicatario</th>
                                             <th>Identificación</th>

@@ -4,6 +4,12 @@
 // 1. Obtener los parámetros de la URL de forma segura
 $entity_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $entity_type_raw = filter_input(INPUT_GET, 'type', FILTER_DEFAULT);
+$notif_id = filter_input(INPUT_GET, 'notif_id', FILTER_VALIDATE_INT);
+
+if ($notif_id) {
+    require_once __DIR__ . '/../../../models/NotificationModel.php';
+    (new NotificationModel())->markAsRead($notif_id);
+}
 
 // Normalizar el tipo a la entidad base (ej: 'infraction_new' -> 'infraction')
 $entity_type = null;
@@ -16,8 +22,8 @@ if ($entity_type_raw) {
 
 // 2. Validar Parámetros
 if (!$entity_id || $entity_id <= 0 || !$entity_type) {
-    // Si falta el ID o el tipo, o son inválidos
-    header("Location: /404.php"); // Redirigir a una página de error
+    // Si falta el ID o el tipo, o son inválidos, redirigir al index del dashboard
+    header("Location: /seramer2/views/dashboard/index.php?error=invalid_notification");
     exit;
 }
 
@@ -28,7 +34,7 @@ $routes = [
     'complaint' => '/seramer2/views/complaints/view.php',
     'alert'     => '/seramer2/views/alerts/view.php',
     'citation'  => '/seramer2/views/citations/view.php',
-    // Agrega más entidades según las necesites
+    'sanction'  => '/seramer2/views/billing/fine_details.php',
 ];
 
 // 4. Determinar la URL de destino
@@ -41,8 +47,8 @@ if (isset($routes[$entity_type])) {
     exit;
 
 } else {
-    // Si el tipo de entidad no está mapeado
-    header("Location: /404.php"); // O a una página de error
+    // Si el tipo de entidad no está mapeado, volver al dashboard
+    header("Location: /seramer2/views/dashboard/index.php?error=unknown_type");
     exit;
 }
 ?>

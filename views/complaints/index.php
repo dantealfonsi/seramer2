@@ -213,21 +213,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 <small class="text-muted"><?php echo htmlspecialchars($complaint['client_email']); ?></small>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary"><?php echo htmlspecialchars($allowed_tipo[$complaint['complaint_type']]); ?></span>
+                                                <span class="badge bg-secondary"><?php echo htmlspecialchars($allowed_tipo[$complaint['complaint_type']] ?? $complaint['complaint_type']); ?></span>
                                             </td>
                                             <td>
                                                 <?php
                                                 $priority_colors = ['Low' => 'secondary', 'Medium' => 'info', 'High' => 'warning', 'Urgent' => 'danger'];
                                                 $p_color = $priority_colors[$complaint['complaint_priority']] ?? 'light';
                                                 ?>
-                                                <span class="badge bg-<?php echo $p_color; ?>"><?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']]); ?></span>
+                                                <span class="badge bg-<?php echo $p_color; ?>"><?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']] ?? $complaint['complaint_priority']); ?></span>
                                             </td>
                                             <td>
                                                 <?php
                                                 $status_colors = ['Received' => 'primary', 'In Process' => 'warning', 'Resolved' => 'success', 'Closed' => 'dark'];
                                                 $s_color = $status_colors[$complaint['complaint_status']] ?? 'light';
                                                 ?>
-                                                <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']]); ?></span>
+                                                <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']] ?? $complaint['complaint_status']); ?></span>
                                             </td>
                                             <td>
                                                 <?php 
@@ -334,40 +334,66 @@ $(document).ready(function() {
                         columns: exportColumns 
                     },
                     customize: function (doc) {
-                        // Agregar logo y encabezados personalizados
-                        doc.content.splice(0, 0, {
-                            image: commonPdfLogo,
-                            width: 150,
-                            alignment: 'center',
+                        // 1. Remover título por defecto
+                        doc.content.splice(0, 1);
+
+                        // 2. Agregar Encabezado Institucional (Logo + Texto)
+                        doc.content.unshift({
+                            columns: [
+                                {
+                                    image: commonPdfLogo,
+                                    width: 50
+                                },
+                                {
+                                    text: [
+                                        { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
                             margin: [0, 0, 0, 10]
                         });
-                        doc.content.splice(1, 0, { 
-                            text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ', 
-                            alignment: 'center', 
-                            style: 'header1',
-                            margin: [0, 0, 0, 5]
+
+                        // 3. Agregar Línea Horizontal
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                            margin: [0, 0, 0, 20]
                         });
-                        doc.content.splice(2, 0, { 
-                            text: 'Listado de Quejas', 
-                            alignment: 'center', 
-                            style: 'header2',
+
+                        // 4. Agregar Título Centrado
+                        doc.content.splice(2, 0, {
+                            text: 'Listado de Quejas',
+                            style: 'header',
+                            alignment: 'center',
                             margin: [0, 0, 0, 15]
                         });
 
-                        doc.styles.header1 = { fontSize: 14, bold: true };
-                        doc.styles.header2 = { fontSize: 12, bold: true };
-
+                        // 5. Estilo de la Tabla
                         const table = doc.content.find(content => content.table);
-                        if (table && table.table.body.length > 0) {
-                            const headerRow = table.table.body[0];
-                            headerRow.forEach(cell => {
-                                cell.fillColor = '#343a40'; 
-                                cell.color = '#ffffff';
+                        if (table) {
+                            // Estilo de la cabecera
+                            table.table.body[0].forEach(function(cell) {
+                                cell.fillColor = '#2d4154';
+                                cell.color = 'white';
                                 cell.bold = true;
-                                cell.alignment = 'left'; 
+                                cell.alignment = 'center';
                             });
+
+                            // Zebra striping
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(function(cell) {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
+                            
+                            // Ajustar anchos
+                            table.table.widths = Array(table.table.body[0].length).fill('*');
                         }
-                        table.table.widths = Array(table.table.body[0].length).fill('*');
                     }
                 },
                 {
@@ -391,6 +417,7 @@ $(document).ready(function() {
                         $(win.document.body).find('table').addClass('w-100').css('width', '100%');
                         $(win.document.body).find('head').append(
                             '<style>' +
+                                '@media print { @page { size: letter; margin: 1cm; } } ' +
                                 'table thead th { ' + 
                                 '   background-color: #343a40 !important; ' + 
                                 '   color: white !important; ' + 
@@ -445,6 +472,8 @@ $(document).ready(function() {
         console.error("DataTables no está cargado.");
     }
 });
+</script>
+
 <!-- Modal para Agregar Seguimiento -->
 <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -534,6 +563,4 @@ document.getElementById('historyForm').addEventListener('submit', function(e) {
         });
     });
 });
-</script>
-
 </script>

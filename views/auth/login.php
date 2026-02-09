@@ -55,6 +55,7 @@ session_start();
 
     <!-- Vendor -->
     <link rel="stylesheet" href="<?php echo vendor('libs/@form-validation/form-validation.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo vendor('libs/sweetalert2/sweetalert2.css'); ?>" />
 
     <!-- Page CSS -->
     <!-- Page -->
@@ -185,6 +186,7 @@ session_start();
     <script src="<?php echo vendor('libs/@form-validation/popular.js'); ?>"></script>
     <script src="<?php echo vendor('libs/@form-validation/bootstrap5.js'); ?>"></script>
     <script src="<?php echo vendor('libs/@form-validation/auto-focus.js'); ?>"></script>
+    <script src="<?php echo vendor('libs/sweetalert2/sweetalert2.js'); ?>"></script>
 
     <!-- Main JS -->
 
