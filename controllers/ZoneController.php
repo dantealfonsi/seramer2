@@ -9,10 +9,15 @@ class ZoneController {
     }
 
     public function index() {
-        $zones = $this->zoneModel->getAll();
+        $filters = [
+            'name' => $_GET['name'] ?? ''
+        ];
+
+        $zones = $this->zoneModel->getAll($filters);
         return [
             'page_title' => 'Gestión de Zonas',
-            'zones' => $zones
+            'zones' => $zones,
+            'filters' => $filters
         ];
     }
 

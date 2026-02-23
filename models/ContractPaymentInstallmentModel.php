@@ -12,16 +12,13 @@ class ContractPaymentInstallmentModel extends Model {
                   LEFT JOIN payment_methods pm ON cpi.payment_method_id = pm.id
                   WHERE cpi.contract_payment_id = :contract_payment_id
                   ORDER BY cpi.date DESC";
-        
         return $this->query($query, ['contract_payment_id' => $contractPaymentId]);
     }
     
     public function create(array $data) {
         try {
             $this->beginTransaction();
-            
             if (empty($data['daily_cash_register_id'])) {
-                error_log("Error: daily_cash_register_id es requerido para registrar un abono");
                 $this->rollback();
                 return false;
             }
@@ -45,18 +42,13 @@ class ContractPaymentInstallmentModel extends Model {
                 return false;
             }
             
-            $installmentId = $this->lastInsertId();
-            
-            Audit::logInsert('contract_payment_installments', $installmentId, $data);
-            
+            $id = $this->lastInsertId();
+            Audit::logInsert('contract_payment_installments', $id, $data);
             $this->checkAndUpdatePaymentStatus($data['contract_payment_id']);
-            
             $this->commit();
-            return $installmentId;
-            
-        } catch (\PDOException $e) {
+            return $id;
+        } catch (\Exception $e) {
             $this->rollback();
-            error_log("Error al crear abono: " . $e->getMessage());
             return false;
         }
     }
@@ -64,51 +56,28 @@ class ContractPaymentInstallmentModel extends Model {
     private function checkAndUpdatePaymentStatus(int $contractPaymentId): bool {
         $paymentModel = new ContractPaymentModel();
         $paymentWithRate = $paymentModel->getPaymentWithRateInfo($contractPaymentId);
-        
-        if (!$paymentWithRate || empty($paymentWithRate['amount_bs'])) {
-            return false;
-        }
+        if (!$paymentWithRate || empty($paymentWithRate['amount_bs'])) return false;
         
         $totalAmountBs = (float) $paymentWithRate['amount_bs'];
-        
-        $installmentsQuery = "SELECT SUM(amount) as total_paid 
-                              FROM {$this->table} 
-                              WHERE contract_payment_id = :contract_payment_id";
-        
-        $result = $this->queryOne($installmentsQuery, ['contract_payment_id' => $contractPaymentId]);
-        $totalPaid = (float) ($result['total_paid'] ?? 0);
+        $totalPaid = $this->getTotalPaid($contractPaymentId);
         
         if ($totalPaid >= ($totalAmountBs - 0.01)) {
-            $updateQuery = "UPDATE contract_payments 
-                            SET status = 'paid' 
-                            WHERE id = :id";
-            
-            return $this->execute($updateQuery, ['id' => $contractPaymentId]);
+            $query = "UPDATE contract_payments SET status = 'paid' WHERE id = :id";
+            return $this->execute($query, ['id' => $contractPaymentId]);
         }
-        
         return true;
     }
     
     public function getTotalPaid(int $contractPaymentId): float {
-        $query = "SELECT SUM(amount) as total_paid 
-                  FROM {$this->table} 
-                  WHERE contract_payment_id = :contract_payment_id";
-        
+        $query = "SELECT SUM(amount) as total_paid FROM {$this->table} WHERE contract_payment_id = :contract_payment_id";
         $result = $this->queryOne($query, ['contract_payment_id' => $contractPaymentId]);
         return (float) ($result['total_paid'] ?? 0);
     }
     
     public function getRemainingBalance(int $contractPaymentId): float {
         $paymentModel = new ContractPaymentModel();
-        $paymentWithRate = $paymentModel->getPaymentWithRateInfo($contractPaymentId);
-        
-        if (!$paymentWithRate || empty($paymentWithRate['amount_bs'])) {
-            return 0;
-        }
-        
-        $totalAmountBs = (float) $paymentWithRate['amount_bs'];
-        $totalPaid = $this->getTotalPaid($contractPaymentId);
-        
-        return max(0, $totalAmountBs - $totalPaid);
+        $info = $paymentModel->getPaymentWithRateInfo($contractPaymentId);
+        if (!$info) return 0;
+        return max(0, (float)$info['amount_bs'] - $this->getTotalPaid($contractPaymentId));
     }
 }

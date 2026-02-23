@@ -9,10 +9,15 @@ class InternalCategoryController {
     }
 
     public function index() {
-        $categories = $this->model->getAll();
+        $filters = [
+            'name' => $_GET['name'] ?? ''
+        ];
+        
+        $categories = $this->model->getAll($filters);
         return [
             'page_title' => 'Rubros Internos',
-            'categories' => $categories
+            'categories' => $categories,
+            'filters' => $filters
         ];
     }
 

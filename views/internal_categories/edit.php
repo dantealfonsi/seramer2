@@ -54,8 +54,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <input type="number" name="payment_count" class="form-control" value="<?php echo htmlspecialchars($category['payment_count']); ?>" required>
                             </div>
                             <div class="text-end">
-                                <a href="index.php" class="btn btn-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                                <a href="index.php" class="btn btn-secondary">
+                                    <i class="ri-close-line me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-refresh-line me-1"></i> Actualizar
+                                </button>
                             </div>
                         </form>
                     </div>

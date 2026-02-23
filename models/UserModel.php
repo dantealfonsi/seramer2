@@ -513,9 +513,45 @@ class UserModel {
             ],
             'Liquidacion' => [
                 [
+                    'title' => 'Adjudicatarios',
+                    'icon' => 'ri-group-line',
+                    'url' => 'views/awardees/index.php'
+                ],
+                [
+                    'title' => 'Gestión de Contratos',
+                    'icon' => 'ri-file-text-line',
+                    'submenu' => [
+                        ['title' => 'Crear Contrato', 'url' => 'views/contracts/create.php'],
+                        ['title' => 'Buscar Contratos', 'url' => 'views/contracts/index.php'],
+                        ['title' => 'Planificación', 'url' => 'views/contracts/planning.php']
+                    ]
+                ],
+                [
+                    'title' => 'Año Fiscal',
+                    'icon' => 'ri-calendar-event-line',
+                    'submenu' => [
+                        ['title' => 'Configuración de Año', 'url' => 'views/fiscal_year/index.php'],
+                        ['title' => 'Tasa del Euro', 'url' => 'views/rates/index.php']
+                    ]
+                ],
+                [
+                    'title' => 'Catálogo',
+                    'icon' => 'ri-menu-line',
+                    'submenu' => [
+                        ['title' => 'Rubros Internos', 'url' => 'views/internal_categories/index.php'],
+                        ['title' => 'Zonas', 'url' => 'views/zones/index.php'],
+                        ['title' => 'Sectores', 'url' => 'views/sectors/index.php'],
+                        ['title' => 'Locales', 'url' => 'views/market_stalls/index.php'],
+                        ['title' => 'Métodos de Pago', 'url' => 'views/payment_methods/index.php']
+                    ]
+                ],
+                [
                     'title' => 'Reportes Liquidación',
-                    'icon' => 'ri-file-list-3-line',
-                    'url' => 'views/reports/liquidacion.php'
+                    'icon' => 'ri-file-chart-line',
+                    'submenu' => [
+                        ['title' => 'Ingresos por Zona', 'url' => 'views/reports/liquidacion.php'],
+                        ['title' => 'Deudores Morosos', 'url' => 'views/reports/billing.php']
+                    ]
                 ]
             ],
             'Fiscalizacion' => [
@@ -571,38 +607,7 @@ class UserModel {
                     ]
                 ]
             ],
-            'Liquidacion' => [
-                [
-                    'title' => 'Gestión de Contratos',
-                    'icon' => 'ri-file-text-line',
-                    'submenu' => [
-                        ['title' => 'Crear Contrato', 'url' => 'views/contracts/create.php'],
-                        ['title' => 'Buscar Contratos', 'url' => 'views/contracts/index.php'],
-                        ['title' => 'Planificación', 'url' => 'views/contracts/planning.php']
-                    ]
-                ],
-                [
-                    'title' => 'Maestros y Catálogos',
-                    'icon' => 'ri-database-2-line',
-                    'submenu' => [
-                        ['title' => 'Adjudicatarios', 'url' => 'views/awardees/index.php'],
-                        ['title' => 'Locales', 'url' => 'views/market_stalls/index.php'],
-                        ['title' => 'Zonas', 'url' => 'views/zones/index.php'],
-                        ['title' => 'Sectores', 'url' => 'views/sectors/index.php'],
-                        ['title' => 'Rubros Internos', 'url' => 'views/internal_categories/index.php'],
-                        ['title' => 'Rubros Externos', 'url' => 'views/external_categories/index.php'],
-                        ['title' => 'Tasas de Cambio', 'url' => 'views/rates/index.php']
-                    ]
-                ],
-                [
-                    'title' => 'Reportes Liquidación',
-                    'icon' => 'ri-file-chart-line',
-                    'submenu' => [
-                        ['title' => 'Ingresos por Zona', 'url' => 'views/reports/liquidacion.php'],
-                        ['title' => 'Deudores Morosos', 'url' => 'views/reports/billing.php']
-                    ]
-                ]
-            ],
+
             // Keeping Cobranza for now in case other depts need it, but reducing it or commenting if User implies removal.
             // User said "group... under a single menu department called Liquidacion".
             // Since User's prompt implies moving everything to Liquidacion, I will remove/minimize Cobranza or just keep it as legacy if needed.

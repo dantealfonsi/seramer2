@@ -14,11 +14,13 @@ class AwardeeController {
         $this->paymentModel = new ContractPaymentModel();
     }
 
-    public function index() {
-        $awardees = $this->awardeeModel->getAll();
+    public function index($params = []) {
+        $filters = $params['filters'] ?? [];
+        $awardees = $this->awardeeModel->getAll($filters);
         return [
             'page_title' => 'Gestión de Adjudicatarios',
-            'awardees' => $awardees
+            'awardees' => $awardees,
+            'search' => $params['search'] ?? ''
         ];
     }
 

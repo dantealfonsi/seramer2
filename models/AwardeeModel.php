@@ -5,9 +5,42 @@ require_once __DIR__ . '/Audit.php';
 class AwardeeModel extends Model {
     protected $table = 'awardees';
     
-    public function getAll(): array {
-        $query = "SELECT * FROM {$this->table} ORDER BY last_name, first_name";
-        return $this->query($query);
+    public function getAll(array $filters = []): array {
+        $query = "SELECT * FROM {$this->table} WHERE 1=1";
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $query .= " AND (first_name LIKE :search OR last_name LIKE :search OR id_number LIKE :search)";
+            $params['search'] = "%{$filters['search']}%";
+        }
+        
+        if (!empty($filters['id_number'])) {
+            $query .= " AND id_number LIKE :id_number";
+            $params['id_number'] = "%{$filters['id_number']}%";
+        }
+        
+        if (!empty($filters['name'])) {
+            $query .= " AND (first_name LIKE :name OR last_name LIKE :name)";
+            $params['name'] = "%{$filters['name']}%";
+        }
+
+        if (!empty($filters['phone'])) {
+            $query .= " AND phone LIKE :phone";
+            $params['phone'] = "%{$filters['phone']}%";
+        }
+
+        if (!empty($filters['email'])) {
+            $query .= " AND email LIKE :email";
+            $params['email'] = "%{$filters['email']}%";
+        }
+
+        if (!empty($filters['address'])) {
+            $query .= " AND address LIKE :address";
+            $params['address'] = "%{$filters['address']}%";
+        }
+        
+        $query .= " ORDER BY last_name, first_name";
+        return $this->query($query, $params);
     }
     
     public function getById(int $id): ?array {

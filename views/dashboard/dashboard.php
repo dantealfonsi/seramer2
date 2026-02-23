@@ -26,6 +26,13 @@ if (isset($_SESSION['selected_department']) && $_SESSION['selected_department'] 
     exit();
 }
 
+// Redireccionar si es el departamento de Liquidacion
+if (isset($_SESSION['selected_department']) && $_SESSION['selected_department'] === 'Liquidacion') {
+    $settlementDashboardUrl = url('views/dashboard/settlement.php');
+    header("Location: $settlementDashboardUrl");
+    exit();
+}
+
 // Verificar si la sesión es válida (no expirada)
 $session_timeout = 1800; // 30 minutos
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $session_timeout) {

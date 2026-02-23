@@ -15,10 +15,23 @@ class MarketStallController {
     }
 
     public function index() {
-        $stalls = $this->stallModel->getAll();
+        $filters = [
+            'stall_number' => $_GET['stall_number'] ?? '',
+            'sector_id' => $_GET['sector_id'] ?? '',
+            'zone_id' => $_GET['zone_id'] ?? '',
+            'status' => $_GET['status'] ?? ''
+        ];
+
+        $stalls = $this->stallModel->getAll($filters);
+        $zones = $this->zoneModel->getAll();
+        $sectors = $this->sectorModel->getAll();
+
         return [
             'page_title' => 'Gestión de Locales',
-            'stalls' => $stalls
+            'stalls' => $stalls,
+            'zones' => $zones,
+            'sectors' => $sectors,
+            'filters' => $filters
         ];
     }
 

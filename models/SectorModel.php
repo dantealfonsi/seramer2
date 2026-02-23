@@ -5,12 +5,25 @@ require_once __DIR__ . '/Audit.php';
 class SectorModel extends Model {
     protected $table = 'sectors';
     
-    public function getAll(): array {
+    public function getAll(array $filters = []): array {
         $query = "SELECT s.*, z.name as zone_name 
                   FROM {$this->table} s
                   LEFT JOIN zones z ON s.zone_id = z.id
-                  ORDER BY z.name, s.name";
-        return $this->query($query);
+                  WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $query .= " AND s.name LIKE :name";
+            $params['name'] = "%{$filters['name']}%";
+        }
+
+        if (!empty($filters['zone_id'])) {
+            $query .= " AND s.zone_id = :zone_id";
+            $params['zone_id'] = $filters['zone_id'];
+        }
+
+        $query .= " ORDER BY z.name, s.name";
+        return $this->query($query, $params);
     }
     
     public function getById(int $id): ?array {

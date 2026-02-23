@@ -5,13 +5,36 @@ require_once __DIR__ . '/Audit.php';
 class MarketStallModel extends Model {
     protected $table = 'market_stalls';
     
-    public function getAll(): array {
+    public function getAll(array $filters = []): array {
         $query = "SELECT ms.*, s.name as sector_name, z.name as zone_name 
                   FROM {$this->table} ms
                   LEFT JOIN sectors s ON ms.sector_id = s.id
                   LEFT JOIN zones z ON s.zone_id = z.id
-                  ORDER BY z.name, s.name, ms.stall_number";
-        return $this->query($query);
+                  WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['stall_number'])) {
+            $query .= " AND ms.stall_number LIKE :stall_number";
+            $params['stall_number'] = "%{$filters['stall_number']}%";
+        }
+
+        if (!empty($filters['sector_id'])) {
+            $query .= " AND ms.sector_id = :sector_id";
+            $params['sector_id'] = $filters['sector_id'];
+        }
+
+        if (!empty($filters['zone_id'])) {
+            $query .= " AND s.zone_id = :zone_id";
+            $params['zone_id'] = $filters['zone_id'];
+        }
+
+        if (!empty($filters['status'])) {
+            $query .= " AND ms.status = :status";
+            $params['status'] = $filters['status'];
+        }
+
+        $query .= " ORDER BY z.name, s.name, ms.stall_number";
+        return $this->query($query, $params);
     }
     
     public function getById(int $id): ?array {

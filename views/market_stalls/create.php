@@ -71,8 +71,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                             </div>
                             <div class="text-end">
-                                <a href="index.php" class="btn btn-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
+                                <a href="index.php" class="btn btn-secondary">
+                                    <i class="ri-close-line me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-save-line me-1"></i> Guardar
+                                </button>
                             </div>
                         </form>
                     </div>
