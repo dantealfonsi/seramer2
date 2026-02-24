@@ -550,12 +550,9 @@ class UserModel {
                     ]
                 ],
                 [
-                    'title' => 'Reportes Liquidación',
+                    'title' => 'Reportes',
                     'icon' => 'ri-file-chart-line',
-                    'submenu' => [
-                        ['title' => 'Ingresos por Zona', 'url' => 'views/reports/liquidacion.php'],
-                        ['title' => 'Deudores Morosos', 'url' => 'views/reports/billing.php']
-                    ]
+                    'url' => 'views/liquidacion_reports/index.php'
                 ]
             ],
             'Fiscalizacion' => [
