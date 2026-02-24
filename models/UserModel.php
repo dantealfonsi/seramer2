@@ -518,12 +518,16 @@ class UserModel {
                     'url' => 'views/awardees/index.php'
                 ],
                 [
-                    'title' => 'Gestión de Contratos',
+                    'title' => 'Contratos',
                     'icon' => 'ri-file-text-line',
+                    'url' => 'views/contracts/index.php'
+                ],
+                [
+                    'title' => 'Planificación',
+                    'icon' => 'ri-calendar-check-line',
                     'submenu' => [
-                        ['title' => 'Crear Contrato', 'url' => 'views/contracts/create.php'],
-                        ['title' => 'Buscar Contratos', 'url' => 'views/contracts/index.php'],
-                        ['title' => 'Planificación', 'url' => 'views/contracts/planning.php']
+                        ['title' => 'Simultáneos', 'url' => 'views/contracts/planning_simultaneos.php'],
+                        ['title' => 'Anticipados', 'url' => 'views/contracts/planning_anticipados.php']
                     ]
                 ],
                 [

@@ -53,8 +53,8 @@ $months = [
                         <!-- Header -->
                         <div class="d-flex justify-content-between align-items-center mb-5">
                             <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff4de !important;">
-                                    <i class="ri-money-euro-box-line" style="color: #ffab00; font-size: 1.5rem;"></i>
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                    <i class="ri-money-euro-box-line" style="color: #696cff; font-size: 1.5rem;"></i>
                                 </div>
                                 <?php echo htmlspecialchars($page_title); ?>
                             </h5>
@@ -134,32 +134,87 @@ $months = [
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
-<script>
-    function confirmDelete(id) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "Esta acción no se puede deshacer.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff3e1d',
-            cancelButtonColor: '#8592a3',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('deleteId').value = id;
-                document.getElementById('deleteForm').submit();
-            }
-        });
-    }
+ <!-- DataTables Dependencies (CDN for full Buttons support) -->
+ <script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+ <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+ <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
+ <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
 
-    $(document).ready(function() {
-        if ($.fn.DataTable) {
-            $('#ratesTable').DataTable({
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-                }
-            });
-        }
-    });
-</script>
+ <script>
+     function confirmDelete(id) {
+         Swal.fire({
+             title: '¿Estás seguro?',
+             text: "Esta acción no se puede deshacer.",
+             icon: 'warning',
+             showCancelButton: true,
+             confirmButtonColor: '#ff3e1d',
+             cancelButtonColor: '#8592a3',
+             confirmButtonText: 'Sí, eliminar',
+             cancelButtonText: 'Cancelar'
+         }).then((result) => {
+             if (result.isConfirmed) {
+                 document.getElementById('deleteId').value = id;
+                 document.getElementById('deleteForm').submit();
+             }
+         });
+     }
+
+     $(document).ready(function() {
+         if ($.fn.DataTable) {
+             $('#ratesTable').DataTable({
+                 responsive: true,
+                 dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+                 buttons: [
+                     {
+                         extend: 'pdfHtml5',
+                         text: '<i class="ri-file-pdf-line me-1"></i> PDF',
+                         className: 'btn btn-danger btn-sm me-1',
+                         exportOptions: { columns: [0, 1, 2] },
+                         customize: function (doc) {
+                             doc.content.splice(0, 1);
+                             doc.content.unshift({
+                                 columns: [
+                                     { image: commonPdfLogo, width: 50 },
+                                     {
+                                         text: [
+                                             { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                             { text: 'HISTORIAL DE TASA DEL EURO', fontSize: 12, bold: true }
+                                         ],
+                                         margin: [10, 0, 0, 0]
+                                     }
+                                 ],
+                                 margin: [0, 0, 0, 10]
+                             });
+                         }
+                     },
+                     {
+                         extend: 'excelHtml5',
+                         text: '<i class="ri-file-excel-line me-1"></i> Excel',
+                         className: 'btn btn-success btn-sm me-1',
+                         exportOptions: { columns: [0, 1, 2] },
+                         title: 'Tasas_Euro'
+                     },
+                     {
+                         extend: 'print',
+                         text: '<i class="ri-printer-line me-1"></i> Imprimir',
+                         className: 'btn btn-info btn-sm',
+                         exportOptions: { columns: [0, 1, 2] }
+                     }
+                 ],
+                 language: {
+                     url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                 },
+                 order: [[2, 'desc']]
+             });
+         }
+     });
+ </script>

@@ -219,7 +219,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             $('#categoriesTable').DataTable({
                 responsive: true,
-                dom: '<"d-flex justify-content-between align-items-center mb-3"B>frtip',
+                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',

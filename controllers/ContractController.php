@@ -39,7 +39,7 @@ class ContractController {
         $fiscalYears = $this->fiscalYearModel->getAll();
         
         return [
-            'page_title' => 'Gestión de Contratos',
+            'page_title' => 'Contratos',
             'contracts' => $contracts,
             'metrics' => $metrics,
             'filters' => $filters,

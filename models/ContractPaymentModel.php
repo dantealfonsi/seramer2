@@ -293,4 +293,140 @@ class ContractPaymentModel extends Model {
         }
         return $success;
     }
+
+    /**
+     * Obtiene los pagos del mes actual con información de contratos
+     */
+    public function getMonthlyPayments(?int $month = null, ?int $year = null, array $filters = []): array {
+        $month = $month ?? (int)date('m');
+        $year = $year ?? (int)date('Y');
+        
+        $query = "SELECT 
+                    cp.id as payment_id,
+                    cp.contract_id,
+                    cp.payment_reference,
+                    cp.payment_date,
+                    cp.status as payment_status,
+                    cp.euro_rate_id,
+                    c.type as contract_type,
+                    c.status as contract_status,
+                    a.id as awardee_id,
+                    a.first_name,
+                    a.last_name,
+                    a.id_number as awardee_id_number,
+                    CONCAT(a.first_name, ' ', a.last_name) as awardee_name,
+                    fy.year as fiscal_year,
+                    z.id as zone_id,
+                    z.name as zone_name,
+                    s.id as sector_id,
+                    s.name as sector_name,
+                    er.bs_value as euro_rate_value,
+                    (SELECT SUM(COALESCE(ic.payment_count, 0) + COALESCE(ec.payment_count, 0))
+                     FROM contract_business_categories cbc
+                     LEFT JOIN internal_business_categories ic ON cbc.internal_category_id = ic.id
+                     LEFT JOIN external_business_categories ec ON cbc.external_category_id = ec.id
+                     WHERE cbc.contract_id = cp.contract_id
+                    ) as multiplier_factor,
+                    (SELECT COUNT(DISTINCT cbc2.id)
+                     FROM contract_business_categories cbc2
+                     WHERE cbc2.contract_id = cp.contract_id
+                    ) as total_categories,
+                    (SELECT COUNT(DISTINCT cl.stall_id)
+                     FROM contract_locations cl
+                     WHERE cl.contract_id = cp.contract_id
+                    ) as total_locations,
+                    ((SELECT SUM(COALESCE(ic2.payment_count, 0) + COALESCE(ec2.payment_count, 0))
+                      FROM contract_business_categories cbc3
+                      LEFT JOIN internal_business_categories ic2 ON cbc3.internal_category_id = ic2.id
+                      LEFT JOIN external_business_categories ec2 ON cbc3.external_category_id = ec2.id
+                      WHERE cbc3.contract_id = cp.contract_id
+                     ) * COALESCE(er.bs_value, 0)) as calculated_amount
+                  FROM {$this->table} cp
+                  INNER JOIN contracts c ON cp.contract_id = c.id
+                  INNER JOIN awardees a ON c.awardee_id = a.id
+                  LEFT JOIN fiscal_year fy ON c.fiscal_year_id = fy.id
+                  LEFT JOIN euro_rates er ON cp.euro_rate_id = er.id
+                  LEFT JOIN contract_locations cl ON c.id = cl.contract_id
+                  LEFT JOIN market_stalls ms ON cl.stall_id = ms.id
+                  LEFT JOIN sectors s ON ms.sector_id = s.id
+                  LEFT JOIN zones z ON s.zone_id = z.id
+                  WHERE DATE_FORMAT(cp.payment_date, '%Y-%m') = :month_year
+                    AND c.status != 'canceled'";
+        
+        $params = ['month_year' => sprintf('%04d-%02d', $year, $month)];
+        
+        if (!empty($filters['contract_type'])) {
+            $query .= " AND c.type = :contract_type";
+            $params['contract_type'] = $filters['contract_type'];
+        }
+        
+        if (!empty($filters['zone_id'])) {
+            $query .= " AND z.id = :zone_id";
+            $params['zone_id'] = $filters['zone_id'];
+        }
+        
+        if (!empty($filters['sector_id'])) {
+            $query .= " AND s.id = :sector_id";
+            $params['sector_id'] = $filters['sector_id'];
+        }
+        
+        if (!empty($filters['show_delinquent']) && $filters['show_delinquent'] == '1') {
+            $query .= " AND cp.status = 'pending' AND cp.payment_date < CURDATE()";
+        }
+        
+        $query .= " GROUP BY cp.id, cp.contract_id, cp.payment_reference, cp.payment_date, cp.status, c.type, c.status,
+                    a.id, a.first_name, a.last_name, a.id_number, fy.year, z.id, z.name, s.id, s.name,
+                    er.bs_value
+                  ORDER BY cp.payment_date ASC, a.last_name ASC";
+        
+        return $this->query($query, $params);
+    }
+
+    /**
+     * Obtiene estadísticas de pagos del mes
+     */
+    public function getMonthlyStatistics(?int $month = null, ?int $year = null, array $filters = []): array {
+        $month = $month ?? (int)date('m');
+        $year = $year ?? (int)date('Y');
+        
+        $monthYear = sprintf('%04d-%02d', $year, $month);
+        
+        $query = "SELECT 
+                    COUNT(DISTINCT cp.contract_id) as total_contracts,
+                    SUM(cp.amount) as total_amount,
+                    COUNT(CASE WHEN cp.status = 'pending' THEN 1 END) as pending_payments,
+                    COUNT(CASE WHEN cp.status = 'pending' AND cp.payment_date < CURDATE() THEN 1 END) as delinquent_payments
+                  FROM {$this->table} cp
+                  INNER JOIN contracts c ON cp.contract_id = c.id
+                  LEFT JOIN contract_locations cl ON c.id = cl.contract_id
+                  LEFT JOIN market_stalls ms ON cl.stall_id = ms.id
+                  LEFT JOIN sectors s ON ms.sector_id = s.id
+                  LEFT JOIN zones z ON s.zone_id = z.id
+                  WHERE DATE_FORMAT(cp.payment_date, '%Y-%m') = :month_year
+                    AND c.status != 'canceled'";
+        
+        $params = ['month_year' => $monthYear];
+        
+        if (!empty($filters['contract_type'])) {
+            $query .= " AND c.type = :contract_type";
+            $params['contract_type'] = $filters['contract_type'];
+        }
+        
+        if (!empty($filters['zone_id'])) {
+            $query .= " AND z.id = :zone_id";
+            $params['zone_id'] = $filters['zone_id'];
+        }
+        
+        if (!empty($filters['sector_id'])) {
+            $query .= " AND s.id = :sector_id";
+            $params['sector_id'] = $filters['sector_id'];
+        }
+        
+        return $this->queryOne($query, $params) ?? [
+            'total_contracts' => 0,
+            'total_amount' => 0,
+            'pending_payments' => 0,
+            'delinquent_payments' => 0
+        ];
+    }
 }

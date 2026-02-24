@@ -354,7 +354,7 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         const table = $('#contractsTable').DataTable({
             responsive: true,
-            dom: 'Bfrtip',
+            dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',

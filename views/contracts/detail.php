@@ -29,12 +29,42 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
+<style>
+    /* Estilo para que solo el header de la tabla de pagos sea negro */
+    #paymentsTable thead th {
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+    
+    #paymentsTable {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    #paymentsTable thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+
+    #paymentsTable thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+</style>
+
 <div class="main-content">
     <div class="container-fluid">
         <!-- Header con Resumen -->
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
             <div>
-                <h4 class="mb-1">Detalle del Contrato #<?= $contract['id'] ?></h4>
+                <h4 class="mb-1 d-flex align-items-center">
+                    <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                        <i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                    </div>
+                    Detalle del Contrato #<?= $contract['id'] ?>
+                </h4>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item"><a href="index.php">Contratos</a></li>
@@ -43,98 +73,96 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 </nav>
             </div>
             <div class="d-flex gap-2">
-                <a href="edit.php?id=<?= $contract['id'] ?>" class="btn btn-outline-warning d-flex align-items-center justify-content-center">
-                    <i class="ri-edit-line me-1"></i> Editar
-                </a>
+                <!-- Botón de Editar movido a la información del contrato como se solicitó, 
+                     pero dejamos un botón de Ver Pagos o Volver aquí -->
                 <a href="index.php" class="btn btn-outline-secondary d-flex align-items-center justify-content-center">
                     <i class="ri-arrow-left-line me-1"></i> Volver al Listado
                 </a>
             </div>
         </div>
 
-        <div class="row">
-            <!-- Columna Izquierda: Tarjetas de Información -->
-            <div class="col-xl-4">
-                <!-- Info Adjudicatario -->
-                <div class="card mb-4 border-primary border-top border-4">
+        <!-- Fila Superior: Info, Categorías y Locales -->
+        <div class="row g-4 mb-4">
+            <!-- Columna 1: Información del Contrato -->
+            <div class="col-xl-4 col-md-6">
+                <div class="card h-100 border-primary border-top border-4">
+                    <div class="card-header d-flex justify-content-between align-items-center pb-2">
+                        <h6 class="mb-0 fw-bold"><i class="ri-information-line me-1"></i> Información del Contrato</h6>
+                        <a href="edit.php?id=<?= $contract['id'] ?>" class="btn btn-sm btn-outline-warning" title="Editar Contrato">
+                            <i class="ri-edit-line"></i> Editar
+                        </a>
+                    </div>
                     <div class="card-body">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="avatar avatar-lg bg-label-primary rounded p-2 me-3">
-                                <i class="ri-user-star-line ri-24px"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-0"><?= htmlspecialchars($contract['awardee_first_name'] . ' ' . $contract['awardee_last_name']) ?></h5>
-                                <span class="badge bg-label-secondary">CI: <?= htmlspecialchars($contract['awardee_id_number']) ?></span>
-                            </div>
+                        <!-- Identificación -->
+                        <div class="mb-4">
+                            <h6 class="text-primary mb-1 fw-bold">Contrato #<?= $contract['id'] ?></h6>
+                            <h5 class="mb-0 fw-bold"><?= htmlspecialchars($contract['awardee_first_name'] . ' ' . $contract['awardee_last_name']) ?></h5>
+                            <span class="text-muted d-block mt-1">C.I.: <?= htmlspecialchars($contract['awardee_id_number']) ?></span>
                         </div>
-                        <ul class="list-unstyled">
-                            <li class="mb-3 d-flex align-items-center">
-                                <i class="ri-calendar-event-line me-2 text-primary"></i>
-                                <span><strong>Año Fiscal:</strong> <?= $contract['fiscal_year'] ?></span>
-                            </li>
-                            <li class="mb-3 d-flex align-items-center">
-                                <i class="ri-calendar-line me-2 text-primary"></i>
-                                <span><strong>Vigencia:</strong> <?= date('d/m/Y', strtotime($contract['start_date'])) ?> - <?= date('d/m/Y', strtotime($contract['end_date'])) ?></span>
-                            </li>
-                            <li class="mb-3 d-flex align-items-center">
-                                <i class="ri-file-info-line me-2 text-primary"></i>
-                                <span><strong>Tipo:</strong> 
-                                    <span class="badge bg-label-<?= $contract['type'] === 'simultaneous' ? 'info' : 'warning' ?>">
-                                        <?= $contract['type'] === 'simultaneous' ? 'Simultáneo' : 'Anticipado' ?>
-                                    </span>
-                                </span>
-                            </li>
-                            <li class="d-flex align-items-center">
-                                <i class="ri-checkbox-circle-line me-2 text-primary"></i>
-                                <span><strong>Estado:</strong> 
-                                    <span class="badge bg-<?= $contract['status'] === 'active' ? 'success' : 'danger' ?>"><?= ucfirst($contract['status']) ?></span>
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Lista de Locales -->
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold"><i class="ri-store-2-line me-1"></i> Locales Asignados</h6>
-                        <button class="btn btn-sm btn-icon btn-label-primary" data-bs-toggle="modal" data-bs-target="#addLocationModal"><i class="ri-add-line"></i></button>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <?php if (empty($locations)): ?>
-                                <div class="p-3 text-center text-muted">Sin locales asignados</div>
-                            <?php else: ?>
-                                <?php foreach ($locations as $loc): ?>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold">Local <?= $loc['stall_number'] ?></h6>
-                                        <small class="text-muted"><?= $loc['zone_name'] ?> - <?= $loc['sector_name'] ?></small>
-                                    </div>
-                                    <button class="btn btn-sm btn-icon btn-text-danger" onclick="removeLocation(<?= $loc['stall_id'] ?>)"><i class="ri-delete-bin-line"></i></button>
+                        
+                        <!-- Detalles: Fechas y Modalidades -->
+                        <div class="row text-sm g-3 mt-2 border-top pt-3">
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Año Fiscal</small></div>
+                                <div class="fw-bold"><?= $contract['fiscal_year'] ?></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Tipo</small></div>
+                                <div><span class="badge bg-label-<?= $contract['type'] === 'simultaneous' ? 'info' : 'warning' ?>">
+                                    <?= $contract['type'] === 'simultaneous' ? 'Simultáneo' : 'Anticipado' ?>
+                                </span></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Fecha Inicio</small></div>
+                                <div class="fw-bold"><?= date('d/m/Y', strtotime($contract['start_date'])) ?></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Fecha Fin</small></div>
+                                <div class="fw-bold"><?= date('d/m/Y', strtotime($contract['end_date'])) ?></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Modalidad</small></div>
+                                <div class="fw-bold"><?= isset($contract['contract_mode']) && $contract['contract_mode'] == 'weekly' ? 'Semanal' : 'Mensual' ?></div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-muted mb-1"><small>Estado</small></div>
+                                <div>
+                                    <?php
+                                    $cStatusMap = ['active' => 'success', 'renewed' => 'info', 'canceled' => 'danger'];
+                                    $cStatusLabels = ['active' => 'Activo', 'renewed' => 'Renovado', 'canceled' => 'Cancelado'];
+                                    $cColor = $cStatusMap[$contract['status']] ?? 'secondary';
+                                    $cLabel = $cStatusLabels[$contract['status']] ?? ucfirst($contract['status']);
+                                    ?>
+                                    <span class="badge bg-label-<?= $cColor ?> w-100"><?= $cLabel ?></span>
                                 </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Lista de Categorías -->
-                <div class="card mb-4">
+            <!-- Columna 2: Categorías de Negocio -->
+            <div class="col-xl-4 col-md-6">
+                <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0 fw-bold"><i class="ri-price-tag-3-line me-1"></i> Rubros</h6>
-                        <button class="btn btn-sm btn-icon btn-label-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal"><i class="ri-add-line"></i></button>
+                        <h6 class="mb-0 fw-bold"><i class="ri-price-tag-3-line me-1"></i> Categorías de Negocio</h6>
+                        <button class="btn btn-sm btn-icon btn-label-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal" title="Agregar Rubro"><i class="ri-add-line"></i></button>
                     </div>
                     <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
+                        <div class="list-group list-group-flush h-100 overflow-auto" style="max-height: 400px;">
                             <?php if (empty($categories)): ?>
-                                <div class="p-3 text-center text-muted">Sin rubros asignados</div>
+                                <div class="p-4 text-center text-muted">Aún no hay rubros asignados</div>
                             <?php else: ?>
                                 <?php foreach ($categories as $cat): ?>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0 small fw-bold"><?= htmlspecialchars($cat['internal_category_name'] ?? $cat['external_category_name']) ?></h6>
-                                        <small class="badge bg-label-<?= $cat['type'] === 'internal' ? 'primary' : 'info' ?> mt-1"><?= $cat['type'] === 'internal' ? 'Interno' : 'Externo' ?></small>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar bg-label-<?= $cat['type'] === 'internal' ? 'primary' : 'info' ?> rounded p-2 me-3 d-flex align-items-center justify-content-center">
+                                            <i class="ri-price-tag-3-line ri-20px"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold"><?= htmlspecialchars($cat['internal_category_name'] ?? $cat['external_category_name']) ?></h6>
+                                            <small class="text-muted">Rubro <?= $cat['type'] === 'internal' ? 'Interno' : 'Externo' ?></small>
+                                        </div>
                                     </div>
                                     <button class="btn btn-sm btn-icon btn-text-danger" onclick="removeCategory('<?= $cat['type'] ?>', <?= $cat['internal_category_id'] ?? $cat['external_category_id'] ?>)"><i class="ri-delete-bin-line"></i></button>
                                 </div>
@@ -145,11 +173,45 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 </div>
             </div>
 
-            <!-- Columna Derecha: Pagos -->
-            <div class="col-xl-8">
+            <!-- Columna 3: Locales Asignados -->
+            <div class="col-xl-4 col-md-12">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-bold"><i class="ri-store-2-line me-1"></i> Locales Asignados</h6>
+                        <button class="btn btn-sm btn-icon btn-label-primary" data-bs-toggle="modal" data-bs-target="#addLocationModal" title="Agregar Local"><i class="ri-add-line"></i></button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush h-100 overflow-auto" style="max-height: 400px;">
+                            <?php if (empty($locations)): ?>
+                                <div class="p-4 text-center text-muted">Aún no hay locales asignados</div>
+                            <?php else: ?>
+                                <?php foreach ($locations as $loc): ?>
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar bg-label-success rounded p-2 me-3 d-flex align-items-center justify-content-center">
+                                            <i class="ri-store-2-line ri-20px"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">Local <?= htmlspecialchars($loc['stall_number']) ?></h6>
+                                            <small class="text-muted"><?= htmlspecialchars($loc['zone_name']) ?> - <?= htmlspecialchars($loc['sector_name']) ?></small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-icon btn-text-danger" onclick="removeLocation(<?= $loc['stall_id'] ?>)"><i class="ri-delete-bin-line"></i></button>
+                                </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila Inferior: Datatable de Pagos -->
+        <div class="row">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                        <h5 class="mb-0">Historial de Pagos</h5>
+                        <h5 class="mb-0"><i class="ri-money-dollar-circle-line me-1 text-primary"></i> Pagos del Contrato</h5>
                         <div class="d-flex gap-2 align-items-center">
                             <span id="bulkPaymentsAction" class="d-none">
                                 <button class="btn btn-sm btn-outline-danger me-2" onclick="bulkDeletePayments()">Eliminar Seleccionados</button>
@@ -187,8 +249,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <td>Bs. <?= number_format($payment['euro_rate_value'] ?? 0, 2) ?></td>
                                     <td><strong>Bs. <?= number_format($payment['calculated_amount'] ?? 0, 2) ?></strong></td>
                                     <td>
-                                        <span class="badge bg-<?= match($payment['status']) { 'paid' => 'success', 'pending' => 'warning', 'cancelled' => 'danger', default => 'secondary' } ?>">
-                                            <?= ucfirst($payment['status']) ?>
+                                        <?php 
+                                            $pStatusMap = [
+                                                'paid' => ['label' => 'Pagado', 'class' => 'success'],
+                                                'pending' => ['label' => 'Pendiente', 'class' => 'warning'],
+                                                'cancelled' => ['label' => 'Cancelado', 'class' => 'danger'],
+                                                'refunded' => ['label' => 'Reembolsado', 'class' => 'info']
+                                            ];
+                                            $pStatus = $payment['status'];
+                                            // Lógica para marcar como Moroso si está pendiente y vencido
+                                            $isOverdue = ($pStatus === 'pending' && strtotime($payment['payment_date']) < strtotime(date('Y-m-d')));
+                                            $pLabel = $isOverdue ? 'Moroso' : ($pStatusMap[$pStatus]['label'] ?? ucfirst($pStatus));
+                                            $pClass = $isOverdue ? 'danger' : ($pStatusMap[$pStatus]['class'] ?? 'secondary');
+                                        ?>
+                                        <span class="badge bg-label-<?= $pClass ?> w-100">
+                                            <?= $pLabel ?>
                                         </span>
                                     </td>
                                     <td>
@@ -283,11 +358,71 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
+<!-- DataTables Dependencies -->
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
+<script type="text/javascript" src="../../public/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+
 <script>
+const contractId = <?= $contract['id'] ?>;
+
 $(document).ready(function() {
     $('#paymentsTable').DataTable({
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="ri-file-pdf-line me-1"></i> PDF',
+                className: 'btn btn-danger btn-sm me-1 mb-3',
+                pageSize: 'LETTER',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                customize: function (doc) {
+                    if (typeof commonPdfLogo !== 'undefined') {
+                        doc.content.splice(0, 1);
+                        doc.content.unshift({
+                            columns: [
+                                { image: commonPdfLogo, width: 50 },
+                                {
+                                    text: [
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                        { text: 'HISTORIAL DE PAGOS DEL CONTRATO #' + contractId, fontSize: 12, bold: true }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        });
+                    }
+                }
+            },
+            {
+                extend: 'excelHtml5',
+                text: '<i class="ri-file-excel-line me-1"></i> Excel',
+                className: 'btn btn-success btn-sm me-1 mb-3',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                title: 'Pagos del Contrato #' + contractId
+            },
+            {
+                extend: 'print',
+                text: '<i class="ri-printer-line me-1"></i> Imprimir',
+                className: 'btn btn-outline-light btn-sm mb-3',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                title: 'Pagos del Contrato #' + contractId,
+                customize: function (win) {
+                    $(win.document.body).css('font-size', '10pt').css('color', '#000').css('background', '#fff');
+                    $(win.document.body).find('table').css('color', '#000');
+                }
+            }
+        ],
         order: [[2, 'desc']],
-        columnDefs: [ { targets: 0, orderable: false } ]
+        columnDefs: [ { targets: [0, 7], orderable: false } ],
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+        }
     });
 
     $('.payment-checkbox, #selectAllPayments').on('change', function() {
@@ -297,7 +432,6 @@ $(document).ready(function() {
     });
 });
 
-const contractId = <?= $contract['id'] ?>;
 
 function loadSectors(zoneId) {
     const el = $('#sector_id');

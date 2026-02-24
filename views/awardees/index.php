@@ -258,14 +258,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
-<!-- DataTables Dependencies -->
+<!-- DataTables Dependencies (CDN for full Buttons support) -->
 <script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
-<script type="text/javascript" src="../../public/datatables/jszip.min.js"></script>
-<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
-<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
-<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
-<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
-<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
 
 <script>
     $(document).ready(function() {
@@ -299,7 +305,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             const table = $('#awardeesTable').DataTable({
                 responsive: true,
-                dom: '<"d-flex justify-content-between align-items-center mb-3"B>frtip',
+                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',

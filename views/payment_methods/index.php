@@ -63,8 +63,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <!-- Header -->
                         <div class="d-flex justify-content-between align-items-center mb-5">
                             <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8fadf !important;">
-                                    <i class="ri-bank-card-line" style="color: #71dd37; font-size: 1.5rem;"></i>
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                    <i class="ri-bank-card-line" style="color: #696cff; font-size: 1.5rem;"></i>
                                 </div>
                                 <?php echo htmlspecialchars($page_title); ?>
                             </h5>
@@ -239,7 +239,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             $('#methodsTable').DataTable({
                 responsive: true,
-                dom: '<"d-flex justify-content-between align-items-center mb-3"B>frtip',
+                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',

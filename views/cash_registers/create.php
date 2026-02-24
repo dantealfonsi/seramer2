@@ -34,10 +34,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 </nav>
             </div>
             
-            <div class="col-md-6 mx-auto">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                         <h5 class="card-title mb-0"><i class="ri-add-circle-line me-2"></i><?php echo htmlspecialchars($page_title); ?></h5>
+                    <div class="card-header border-bottom py-3">
+                        <h4 class="card-title mb-1 d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-add-circle-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="index.php">Gestión de Cajas</a></li>
+                                <li class="breadcrumb-item active">Nueva</li>
+                            </ol>
+                        </nav>
                     </div>
                     <div class="card-body">
                         <?php if (isset($error)): ?>

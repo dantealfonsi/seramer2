@@ -28,10 +28,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xl-8 mx-auto">
+            <div class="col-12">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Editar Contrato #<?= $contract['id'] ?></h5>
+                        <h5 class="mb-0 d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-file-edit-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            Editar Contrato #<?= $contract['id'] ?>
+                        </h5>
                         <a href="detail.php?id=<?= $contract['id'] ?>" class="btn btn-sm btn-outline-secondary">
                             <i class="ri-arrow-left-line"></i> Volver al Detalle
                         </a>

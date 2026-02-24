@@ -22,7 +22,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="card shadow-sm border-0">
                 <div class="card-header d-flex justify-content-between align-items-center border-bottom py-3">
                     <h5 class="mb-0 d-flex align-items-center">
-                        <i class="ri-file-add-line me-2 text-primary ri-24px"></i>
+                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                            <i class="ri-file-add-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                        </div>
                         Información Detallada del Contrato
                     </h5>
                     <span class="badge bg-label-primary px-3">Nuevo Registro</span>
