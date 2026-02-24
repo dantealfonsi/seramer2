@@ -5,9 +5,22 @@ require_once __DIR__ . '/Audit.php';
 class PaymentMethodModel extends Model {
     protected $table = 'payment_methods';
     
-    public function getAll(): array {
-        $query = "SELECT * FROM {$this->table} ORDER BY name";
-        return $this->query($query);
+    public function getAll(array $filters = []): array {
+        $query = "SELECT * FROM {$this->table} WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $query .= " AND name LIKE :name";
+            $params['name'] = "%{$filters['name']}%";
+        }
+
+        if (isset($filters['status']) && $filters['status'] !== '') {
+            $query .= " AND is_active = :status";
+            $params['status'] = ($filters['status'] === 'active') ? 1 : 0;
+        }
+
+        $query .= " ORDER BY name";
+        return $this->query($query, $params);
     }
     
     public function getActive(): array {

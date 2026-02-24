@@ -24,10 +24,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-8 mx-auto">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><?php echo htmlspecialchars($page_title); ?></h5>
+                    <div class="card-header border-bottom">
+                        <h4 class="card-title mb-1 d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-money-euro-box-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="index.php">Tasa del Euro</a></li>
+                                <li class="breadcrumb-item active">Nueva</li>
+                            </ol>
+                        </nav>
                     </div>
                     <div class="card-body">
                          <?php if (isset($error)): ?>
@@ -54,11 +65,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Año</label>
-                                    <input type="number" name="year" class="form-control" value="<?php echo date('Y'); ?>" required>
+                                    <input type="number" name="year" class="form-control" value="<?php echo date('Y'); ?>" min="2000" max="<?php echo date('Y') + 1; ?>" required>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Valor (Bs)</label>
-                                    <input type="number" step="0.000001" name="bs_value" class="form-control" placeholder="0.00" required>
+                                    <input type="number" step="0.000001" name="bs_value" class="form-control" placeholder="0.00" min="0.000001" required>
                                 </div>
                             </div>
                             <div class="text-end">

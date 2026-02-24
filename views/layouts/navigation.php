@@ -52,7 +52,7 @@ if (!empty($current_department)) {
 
             <ul class="menu-inner py-1">
                 <!-- Dashboard -->
-                <li class="menu-item <?php echo (basename($_SERVER['PHP_SELF']) == 'dashboard.php') ? 'active' : ''; ?>" >
+                <li class="menu-item <?php echo (in_array(basename($_SERVER['PHP_SELF']), ['dashboard.php', 'settlement.php', 'collection.php'])) ? 'active' : ''; ?>" >
                     <a href="<?php echo url('views/dashboard/dashboard.php'); ?>" class="menu-link"  style="color:black">
                         <i class="menu-icon icon-base ri ri-home-smile-line"></i>
                         <div data-i18n="Dashboard">Dashboard</div>

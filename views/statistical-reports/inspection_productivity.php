@@ -21,7 +21,7 @@ $report_title = "Productividad de la Inspección (Últimos 12 meses)";
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="<?php echo vendor('libs/chartjs/chartjs.js'); ?>"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const ctx = document.getElementById('inspectionProdChart');

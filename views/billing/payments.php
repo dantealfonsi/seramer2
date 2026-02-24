@@ -104,7 +104,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card shadow-sm border-0">
                     <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
                         <h5 class="mb-0 card-title-premium d-flex align-items-center">
-                            <i class="ri-file-list-3-line icon-premium"></i>
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
+                                <i class="ri-file-list-3-line" style="color: #696cff; font-size: 2rem;"></i>
+                            </div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                     </div>
@@ -247,7 +249,7 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         $('#paymentsTable').DataTable({ 
             responsive: true,
-            dom: 'Bfrtip',
+            dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',

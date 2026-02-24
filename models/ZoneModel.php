@@ -5,9 +5,17 @@ require_once __DIR__ . '/Audit.php';
 class ZoneModel extends Model {
     protected $table = 'zones';
     
-    public function getAll(): array {
-        $query = "SELECT * FROM {$this->table} ORDER BY name";
-        return $this->query($query);
+    public function getAll(array $filters = []): array {
+        $query = "SELECT * FROM {$this->table} WHERE 1=1";
+        $params = [];
+
+        if (!empty($filters['name'])) {
+            $query .= " AND name LIKE :name";
+            $params['name'] = "%{$filters['name']}%";
+        }
+
+        $query .= " ORDER BY name";
+        return $this->query($query, $params);
     }
     
     public function getById(int $id): ?array {

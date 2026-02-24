@@ -192,7 +192,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <!-- Campo Fecha y Hora -->
                                 <div class="col-md-6">
                                     <label for="citation_datetime" class="form-label">Fecha y Hora <span class="text-danger">*</span></label>
-                                    <input type="datetime-local" class="form-control <?php echo isset($errors['citation_datetime']) ? 'is-invalid' : ''; ?>" id="citation_datetime" name="citation_datetime" value="<?php echo htmlspecialchars($formData['citation_datetime']); ?>" required>
+                                    <input type="datetime-local" class="form-control <?php echo isset($errors['citation_datetime']) ? 'is-invalid' : ''; ?>" id="citation_datetime" name="citation_datetime" value="<?php echo htmlspecialchars($formData['citation_datetime']); ?>" min="<?php echo date('Y-m-d\TH:i'); ?>" required>
                                     <?php if (isset($errors['citation_datetime'])): ?>
                                         <div class="invalid-feedback"><?php echo $errors['citation_datetime']; ?></div>
                                     <?php endif; ?>

@@ -86,7 +86,7 @@ $subtitle = $error_message ?: "Período analizado: " . date('d/m/Y', strtotime($
     <?php endif; ?>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="<?php echo vendor('libs/chartjs/chartjs.js'); ?>"></script>
 
 <script>
 $(document).ready(function() {

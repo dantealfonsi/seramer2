@@ -29,7 +29,7 @@ $data = json_encode($chartData['data']);
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="<?php echo vendor('libs/chartjs/chartjs.js'); ?>"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     const ctx = document.getElementById('revenueChart');

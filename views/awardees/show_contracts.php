@@ -24,11 +24,31 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <div class="main-content">
     <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="mb-1 d-flex align-items-center">
+                    <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                        <i class="ri-user-search-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                    </div>
+                    Detalle del Adjudicatario
+                </h4>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="index.php">Adjudicatarios</a></li>
+                        <li class="breadcrumb-item active">Contratos</li>
+                    </ol>
+                </nav>
+            </div>
+            <a href="index.php" class="btn btn-outline-secondary">
+                <i class="ri-arrow-left-line me-1"></i> Volver
+            </a>
+        </div>
+
         <div class="row">
             <div class="col-12">
                 <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="card-title">Información del Adjudicatario</h5>
+                    <div class="card-header border-bottom py-3">
+                        <h5 class="card-title mb-0">Información General</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">

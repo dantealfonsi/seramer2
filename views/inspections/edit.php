@@ -191,7 +191,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <h6 class="text-success mb-3"><i class="ri-calendar-check-line"></i> Detalles de la Cita Programada</h6>
                                     <div class="col-md-6">
                                         <label for="scheduled_date" class="form-label">Fecha Programada <span class="text-danger">*</span></label>
-                                        <input value="<?php echo htmlspecialchars($report['scheduled_date']); ?>" type="date" class="form-control" id="scheduled_date" name="scheduled_date" required>
+                                        <input value="<?php echo htmlspecialchars($report['scheduled_date']); ?>" type="date" class="form-control" id="scheduled_date" name="scheduled_date" min="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="inspection_status" class="form-label">Estado de la Inspección <span class="text-danger">*</span></label>

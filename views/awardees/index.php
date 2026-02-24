@@ -1,69 +1,367 @@
 <?php
+// Vista de listado de adjudicatarios
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Incluir controladores necesarios
 require_once __DIR__ . '/../../controllers/AwardeeController.php';
+require_once __DIR__ . '/../../controllers/RolesController.php';
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
 
-$controller = new AwardeeController();
-$data = $controller->index();
-$awardees = $data['awardees'];
-$page_title = $data['page_title'];
+$awardeeController = new AwardeeController();
+$rol = new RolesController();
+$statsModel = new StatisticalReportModel();
 
+// Obtener estadísticas para el dashboard superior
+$dashboardStats = $statsModel->getDashboardStats();
+$totalAwardees = $dashboardStats['awardees'] ?? 0;
+
+// Configurar filtros
+$filters = [
+    'search' => $_GET['search'] ?? null,
+    'id_number' => $_GET['id_number'] ?? null,
+    'name' => $_GET['name'] ?? null,
+    'phone' => $_GET['phone'] ?? null,
+    'email' => $_GET['email'] ?? null,
+    'address' => $_GET['address'] ?? null,
+];
+
+// Limpiar el arreglo eliminando valores nulos o vacíos
+$activeFilters = array_filter($filters);
+
+$params = [
+    'filters' => $activeFilters,
+    'search' => $_GET['search'] ?? '' 
+];
+
+// Obtener datos del controlador
+$result = $awardeeController->index($params);
+$awardees = $result['awardees'];
+$page_title = $result['page_title'];
+$search = $result['search'];
+$has_search = !empty($activeFilters) || !empty($search);
+
+// Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<div class="main-content">
-    <div class="container-fluid">
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #71dd37 0%, #32c682 100%);
+        color: white;
+    }
+    .main-container {
+        padding: 1.5rem;
+        background-color: #f5f5f9; /* Fondo gris claro suave como el resto del sistema */
+    }
+    /* Estilo de la tabla con header negro */
+    #awardeesTable {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    #awardeesTable thead th {
+        background-color: #000000 !important;
+        color: white !important;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1.25rem 1rem;
+    }
+    #awardeesTable thead th:first-child {
+        border-top-left-radius: 8px;
+    }
+    #awardeesTable thead th:last-child {
+        border-top-right-radius: 8px;
+    }
+    .card-inside {
+        box-shadow: none !important;
+        border: 1px solid #d9dee3 !important;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="main-content main-container">
+    <div class="container-xxl">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0"><?php echo htmlspecialchars($page_title); ?></h5>
-                        <a href="create.php" class="btn btn-primary btn-sm">
-                            <i class="ri-user-add-line"></i> Registrar Adjudicatario
-                        </a>
-                    </div>
-                    <div class="card-body">
-                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
+                <!-- Contenedor Blanco Principal -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        
+                        <!-- 1. Encabezado (Título y Botón) -->
+                        <div class="d-flex justify-content-between align-items-center mb-5">
+                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                    <i class="ri-group-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                                </div>
+                                Gestión de Adjudicatarios
+                            </h5>
+                            <a href="create.php" class="btn btn-primary px-4 shadow-sm" style="background-color: #696cff; border-color: #696cff; font-weight: 500;">
+                                <i class="ri-add-line me-1"></i> Registrar Adjudicatario
+                            </a>
+                        </div>
+
+                        <!-- 2. Filtros Avanzados -->
+                        <div class="card card-inside">
+                            <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0">
+                                <h6 class="card-title mb-0" style="font-weight: 600; color: #43495b;">
+                                    <i class="ri-filter-2-line me-1 text-muted"></i> Opciones de Filtrado Avanzado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase">Búsqueda General</label>
+                                            <input type="text" class="form-control" name="search" placeholder="Buscar..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase">Cédula</label>
+                                            <input type="text" class="form-control" name="id_number" placeholder="Cédula" value="<?php echo htmlspecialchars($_GET['id_number'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase">Nombre</label>
+                                            <input type="text" class="form-control" name="name" placeholder="Nombre/Apellido" value="<?php echo htmlspecialchars($_GET['name'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small text-muted text-uppercase">Teléfono</label>
+                                            <input type="text" class="form-control" name="phone" placeholder="Teléfono" value="<?php echo htmlspecialchars($_GET['phone'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small text-muted text-uppercase">Email</label>
+                                            <input type="text" class="form-control" name="email" placeholder="Correo electrónico" value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted text-uppercase">Dirección</label>
+                                            <input type="text" class="form-control" name="address" placeholder="Dirección" value="<?php echo htmlspecialchars($_GET['address'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <div class="d-flex gap-2 w-100">
+                                                <a href="index.php" class="btn btn-outline-secondary w-50" title="Limpiar"><i class="ri-refresh-line"></i></a>
+                                                <button type="submit" class="btn btn-info w-50" style="background-color: #03c3ec; border-color: #03c3ec; color: #fff;">
+                                                    <i class="ri-search-line"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- 3. Tarjeta de Métrica (Total) -->
+                        <div class="card border-0 bg-gradient-success overflow-hidden mb-4" style="border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(113, 221, 55, 0.2);">
+                            <div class="card-body p-4 position-relative">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
+                                        <i class="ri-group-line ri-2x text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="mb-0 text-white fw-bold"><?php echo number_format($totalAwardees); ?></h3>
+                                        <p class="mb-0 text-white-50 fw-semibold">Adjudicatarios Registrados</p>
+                                    </div>
+                                </div>
+                                <div class="position-absolute" style="right: -10px; bottom: -20px; opacity: 0.1;">
+                                    <i class="ri-group-line text-white" style="font-size: 6rem;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mensajes Flash -->
+                        <?php if (isset($_SESSION['flash_message'])): ?>
+                        <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mb-4" role="alert">
+                            <?php echo $_SESSION['flash_message']['message']; ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        <?php unset($_SESSION['flash_message']); ?>
+                        <?php endif; ?>
+
+                        <!-- 4. Tabla de Datos -->
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle w-100" id="awardeesTable">
                                 <thead>
                                     <tr>
                                         <th>Cédula</th>
                                         <th>Nombre Completo</th>
                                         <th>Contacto</th>
-                                        <th>Acciones</th>
+                                        <th>Dirección</th>
+                                        <th class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php foreach ($awardees as $awardee): ?>
                                         <tr>
-                                            <td><?php echo htmlspecialchars($awardee['id_number']); ?></td>
                                             <td>
-                                                <?php echo htmlspecialchars($awardee['first_name'] . ' ' . $awardee['last_name']); ?>
+                                                <span class="badge bg-label-secondary px-3 py-2" style="background-color: #f2f2f7; color: #43495b; font-size: 0.9rem; font-weight: 600;">
+                                                    <?php echo htmlspecialchars($awardee['id_number']); ?>
+                                                </span>
                                             </td>
                                             <td>
-                                                <small>
-                                                    T: <?php echo htmlspecialchars($awardee['phone'] ?? '-'); ?><br>
-                                                    E: <?php echo htmlspecialchars($awardee['email'] ?? '-'); ?>
-                                                </small>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm bg-label-primary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #e7e7ff !important; color: #696cff !important;">
+                                                        <span class="fw-bold"><?php echo strtoupper(substr($awardee['first_name'], 0, 1)); ?></span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold text-dark" style="font-size: 0.95rem;"><?php echo htmlspecialchars($awardee['first_name'] . ' ' . $awardee['last_name']); ?></div>
+                                                        <small class="text-muted">Adjudicatario</small>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
-                                                <a href="edit.php?id=<?php echo $awardee['id']; ?>" class="btn btn-sm btn-info" title="Editar">
-                                                    <i class="ri-pencil-line"></i>
-                                                </a>
-                                                <a href="show_contracts.php?id=<?php echo $awardee['id']; ?>" class="btn btn-sm btn-success" title="Ver Contratos">
-                                                    <i class="ri-file-search-line"></i>
-                                                </a>
+                                                <div class="d-flex flex-column small">
+                                                    <span class="mb-1"><i class="ri-phone-line me-1" style="color: #696cff;"></i> <?php echo htmlspecialchars($awardee['phone'] ?? 'N/A'); ?></span>
+                                                    <span class="text-muted"><i class="ri-mail-line me-1"></i> <?php echo htmlspecialchars($awardee['email'] ?? 'N/A'); ?></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted small" title="<?php echo htmlspecialchars($awardee['address'] ?? ''); ?>">
+                                                    <?php echo htmlspecialchars(strlen($awardee['address'] ?? '') > 40 ? substr($awardee['address'], 0, 40) . '...' : ($awardee['address'] ?? 'N/A')); ?>
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <a href="show_contracts.php?id=<?php echo $awardee['id']; ?>" class="btn btn-sm btn-outline-info" style="padding: 0.4rem; border-radius: 0.5rem;" title="Ver Expediente">
+                                                        <i class="ri-eye-line"></i>
+                                                    </a>
+                                                    <a href="edit.php?id=<?php echo $awardee['id']; ?>" class="btn btn-sm btn-outline-warning" style="padding: 0.4rem; border-radius: 0.5rem;" title="Editar">
+                                                        <i class="ri-pencil-line"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete" 
+                                                            style="padding: 0.4rem; border-radius: 0.5rem;" 
+                                                            title="Eliminar" 
+                                                            data-id="<?php echo $awardee['id']; ?>" 
+                                                            data-name="<?php echo htmlspecialchars($awardee['first_name'] . ' ' . $awardee['last_name']); ?>">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
+
+                    </div> <!-- End Main Card Body -->
+                </div> <!-- End Main Card -->
             </div>
         </div>
     </div>
 </div>
 
+<!-- Formulario oculto para eliminación -->
+<form id="deleteForm" method="POST" action="delete.php" style="display: none;">
+    <input type="hidden" name="id" id="deleteAwardeeId">
+</form>
+
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<!-- DataTables Dependencies (CDN for full Buttons support) -->
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
+
+<script>
+    $(document).ready(function() {
+        // Manejador para el botón eliminar con SweetAlert2
+        $(document).on('click', '.btn-delete', function() {
+            const id = $(this).data('id');
+            const name = $(this).data('name');
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: `Vas a eliminar al adjudicatario: ${name}. Esta acción no se puede deshacer si tiene registros vinculados.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff3e1d',
+                cancelButtonColor: '#8592a3',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    confirmButton: 'btn btn-danger me-3',
+                    cancelButton: 'btn btn-label-secondary'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#deleteAwardeeId').val(id);
+                    $('#deleteForm').submit();
+                }
+            });
+        });
+
+        if ($.fn.DataTable) {
+            const table = $('#awardeesTable').DataTable({
+                responsive: true,
+                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+                buttons: [
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="ri-file-pdf-line me-1"></i> PDF',
+                        className: 'btn btn-danger btn-sm me-1',
+                        pageSize: 'LETTER',
+                        exportOptions: { columns: [0, 1, 2, 3] },
+                        customize: function (doc) {
+                            doc.content.splice(0, 1);
+                            doc.content.unshift({
+                                columns: [
+                                    { image: commonPdfLogo, width: 50 },
+                                    {
+                                        text: [
+                                            { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                            { text: 'LISTADO DE ADJUDICATARIOS', fontSize: 12, bold: true }
+                                        ],
+                                        margin: [10, 0, 0, 0]
+                                    }
+                                ],
+                                margin: [0, 0, 0, 10]
+                            });
+                        }
+                    },
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="ri-file-excel-line me-1"></i> Excel',
+                        className: 'btn btn-success btn-sm me-1',
+                        exportOptions: { columns: [0, 1, 2, 3] },
+                        title: 'Listado de Adjudicatarios'
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="ri-printer-line me-1"></i> Imprimir',
+                        className: 'btn btn-info btn-sm me-1',
+                        exportOptions: { columns: [0, 1, 2, 3] }
+                    },
+                    {
+                        extend: 'colvis',
+                        text: '<i class="ri-eye-line me-1"></i> Visibilidad',
+                        className: 'btn btn-outline-secondary btn-sm'
+                    }
+                ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                order: [[1, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: 4 }
+                ]
+            });
+
+            const initialSearchValue = '<?php echo addslashes($search); ?>';
+            if (initialSearchValue) {
+                table.search(initialSearchValue).draw();
+            }
+        }
+    });
+</script>

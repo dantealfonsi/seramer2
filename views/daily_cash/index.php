@@ -105,7 +105,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3">
                          <h5 class="card-title mb-0 d-flex align-items-center" style="font-weight: 600;">
-                             <i class="ri-file-list-3-line mr-2" style="font-size: 1.5rem;background: #837aff;color: white;padding: .4rem;border-radius: .7rem;"></i>
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
                              Historial de Actividad por Caja
                         </h5>
                     </div>
@@ -164,7 +166,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 $(document).ready(function() {
     $('#dailyReportTable').DataTable({
         responsive: true,
-        dom: 'Bfrtip',
+        dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
         buttons: [
             {
                 extend: 'excelHtml5',

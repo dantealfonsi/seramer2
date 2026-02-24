@@ -34,10 +34,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-md-8 mx-auto">
+            <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title"><?php echo htmlspecialchars($page_title); ?></h5>
+                    <div class="card-header border-bottom">
+                        <h4 class="card-title mb-1 d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-map-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="index.php">Zonas</a></li>
+                                <li class="breadcrumb-item active">Editar</li>
+                            </ol>
+                        </nav>
                     </div>
                     <div class="card-body">
                          <?php if (isset($error)): ?>
@@ -54,8 +65,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <textarea name="description" class="form-control" rows="3"><?php echo htmlspecialchars($zone['description']); ?></textarea>
                             </div>
                             <div class="text-end">
-                                <a href="index.php" class="btn btn-secondary">Cancelar</a>
-                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                                <a href="index.php" class="btn btn-secondary">
+                                    <i class="ri-close-line me-1"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-refresh-line me-1"></i> Actualizar
+                                </button>
                             </div>
                         </form>
                     </div>

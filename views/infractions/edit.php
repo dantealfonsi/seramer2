@@ -36,7 +36,7 @@ $awardees = $infractionsModel->getAwardeesList();
 $awardees_js = array_map(function($a){
     return [
         'id' => (int)($a['id'] ?? 0),
-        'name' => trim(($a['first_name'] ?? '') . ' ' . ($a['last_name'] ?? ''))
+        'name' => trim($a['full_name'] ?? '')
     ];
 }, $awardees);
 
@@ -47,7 +47,8 @@ $stalls_js = array_map(function($s){
     return [
         'id' => (int)($s['id'] ?? 0),
         'stall_number' => $s['stall_number'] ?? '',
-        'awardee_id' => (int)($s['awardee_id'] ?? 0)
+        'awardee_id' => (int)($s['awardee_id'] ?? 0),
+        'awardee_name' => trim($s['awardee_full_name'] ?? '')
     ];
 }, $stalls);
 
@@ -227,39 +228,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <!-- Stall and Awardee - Side by Side -->
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="stall_id" class="form-label">
-                                            Puesto <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select" id="stall_id" name="stall_id" onchange="autoSelectAwardeeByStall()" required>
-                                            <option value="">Seleccione un puesto</option>
-                                            <?php foreach ($stalls as $stall): ?>
-                                                <option value="<?php echo htmlspecialchars($stall['id']); ?>"
-                                                    data-awardee-id="<?php echo htmlspecialchars($stall['awardee_id'] ?? ''); ?>"
-                                                    <?php echo ((int)$form_data['stall_id'] == (int)$stall['id']) ? ' selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($stall['stall_number']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="awardee_id_display" class="form-label">
-                                            Adjudicatario <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-select" id="awardee_id_display" disabled>
-                                            <option value="">Se seleccionará automáticamente</option>
-                                            <?php foreach ($awardees as $adj): ?>
-                                            <option value="<?php echo htmlspecialchars($adj['id']); ?>" 
-                                                     <?php echo ($form_data['awardee_id'] == $adj['id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($adj['full_name'] ?? $adj['first_name']); ?>
-                                            </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
-                                    </div>
-                                </div>
+                                     <div class="mb-3">
+                                         <label for="stall_search" class="form-label">
+                                             Puesto <span class="text-danger">*</span>
+                                         </label>
+                                         <input list="stalls_datalist" id="stall_search" class="form-control" placeholder="Escriba el número de puesto..." oninput="autoSelectAwardeeByStall()" onchange="autoSelectAwardeeByStall()" required>
+                                         <input type="hidden" name="stall_id" id="stall_id" value="<?php echo htmlspecialchars($form_data['stall_id']); ?>">
+                                         <datalist id="stalls_datalist">
+                                             <?php foreach ($stalls as $stall): ?>
+                                                 <option value="<?php echo htmlspecialchars($stall['stall_number']); ?>" data-id="<?php echo $stall['id']; ?>">
+                                             <?php endforeach; ?>
+                                         </datalist>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <div class="mb-3">
+                                         <label for="awardee_name_display" class="form-label">
+                                             Adjudicatario <span class="text-danger">*</span>
+                                         </label>
+                                         <input type="text" id="awardee_name_display" class="form-control" readonly placeholder="Se seleccionará automáticamente">
+                                         <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
+                                     </div>
+                                 </div>
                             </div>
 
                             <!-- Infraction Type and Date - Side by Side -->
@@ -290,6 +280,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                id="infraction_datetime"
                                                name="infraction_datetime"
                                                value="<?php echo htmlspecialchars($form_data['infraction_datetime']); ?>"
+                                               max="<?php echo date('Y-m-d'); ?>"
                                                required>
                                     </div>
                                 </div>
@@ -357,7 +348,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="col-md-6">
                                     <div class="mb-3" id="box_effect_end_date" style="display: none;">
                                         <label for="effect_end_date" class="form-label">Fecha limite del Efecto de la Sancion</label>
-                                        <input type="date" class="form-control" id="effect_end_date" name="effect_end_date">
+                                        <input type="date" class="form-control" id="effect_end_date" name="effect_end_date" min="<?php echo date('Y-m-d'); ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -455,25 +446,49 @@ function getInfractionTypeName(id) {
  * Selecciona automáticamente el adjudicatario basado en el puesto seleccionado
  */
 function autoSelectAwardeeByStall() {
-    const stallSelect = document.getElementById('stall_id');
-    const awardeeSelect = document.getElementById('awardee_id_display');
+    const searchValue = document.getElementById('stall_search').value.trim();
+    if (!searchValue) {
+        resetAwardeeFields();
+        return;
+    }
+
+    const stall = STALLS.find(s => s.stall_number.trim() === searchValue);
+    
+    const stallIdHidden = document.getElementById('stall_id');
     const awardeeHidden = document.getElementById('awardee_id');
+    const awardeeDisplay = document.getElementById('awardee_name_display');
     
-    // Obtener la opción seleccionada
-    const selectedOption = stallSelect.options[stallSelect.selectedIndex];
-    const awardeeId = selectedOption.getAttribute('data-awardee-id');
-    
-    if (awardeeId) {
-        awardeeSelect.value = awardeeId;
-        awardeeHidden.value = awardeeId;
-        
-        // Recalcular conteo de infecciones ya que el adjudicatario cambió
-        loadInfractionCount(); 
+    if (stall) {
+        stallIdHidden.value = stall.id;
+        if (stall.awardee_id) {
+            awardeeHidden.value = stall.awardee_id;
+            awardeeDisplay.value = stall.awardee_name || getAwardeeName(stall.awardee_id);
+            loadInfractionCount(); 
+        } else {
+            resetAwardeeFields();
+        }
     } else {
-        awardeeSelect.value = "";
-        awardeeHidden.value = "";
+        stallIdHidden.value = "";
+        resetAwardeeFields();
     }
 }
+
+function resetAwardeeFields() {
+    document.getElementById('awardee_id').value = "";
+    document.getElementById('awardee_name_display').value = "";
+}
+
+// Inicialización si ya hay un stall_id al cargar (e.g. edición)
+document.addEventListener('DOMContentLoaded', function() {
+    const initialStallId = document.getElementById('stall_id').value;
+    if (initialStallId) {
+        const stall = STALLS.find(s => s.id == initialStallId);
+        if (stall) {
+            document.getElementById('stall_search').value = stall.stall_number;
+            autoSelectAwardeeByStall();
+        }
+    }
+});
 
 function getInfractionTypeName(id) {
     return infractionTypeById.get(String(id)) || 'N/A';

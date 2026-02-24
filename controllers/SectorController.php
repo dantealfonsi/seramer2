@@ -12,10 +12,19 @@ class SectorController {
     }
 
     public function index() {
-        $sectors = $this->sectorModel->getAll();
+        $filters = [
+            'name' => $_GET['name'] ?? '',
+            'zone_id' => $_GET['zone_id'] ?? ''
+        ];
+
+        $sectors = $this->sectorModel->getAll($filters);
+        $zones = $this->zoneModel->getAll();
+        
         return [
             'page_title' => 'Gestión de Sectores',
-            'sectors' => $sectors
+            'sectors' => $sectors,
+            'zones' => $zones,
+            'filters' => $filters
         ];
     }
 
