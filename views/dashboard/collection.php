@@ -215,7 +215,7 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="<?php echo vendor('libs/chartjs/chartjs.js'); ?>"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     
