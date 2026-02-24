@@ -84,7 +84,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Valor (Bs)</label>
-                                    <input type="number" step="0.000001" name="bs_value" class="form-control" value="<?php echo $rate['bs_value']; ?>" required>
+                                    <input type="number" step="0.000001" name="bs_value" class="form-control" value="<?php echo $rate['bs_value']; ?>" min="0.000001" required>
                                 </div>
                             </div>
                             <div class="text-end">

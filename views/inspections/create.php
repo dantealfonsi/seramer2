@@ -169,33 +169,38 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </div>
 
                                         <div class="mb-3">
-                                            <label for="stall_id" class="form-label">
+                                            <label for="stall_search" class="form-label">
                                                 Puesto del Mercado <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select" id="stall_id" name="stall_id" required>
-                                                <option value="">Seleccione un puesto</option>
+                                            <input list="stalls_datalist" id="stall_search" class="form-control" placeholder="Escriba el número de puesto..." oninput="onStallSelected()" onchange="onStallSelected()" required>
+                                            <input type="hidden" name="stall_id" id="stall_id" value="<?php echo htmlspecialchars($form_data['stall_id']); ?>">
+                                            <datalist id="stalls_datalist">
                                                 <?php foreach ($stalls as $stall): ?>
-                                                    <option value="<?php echo htmlspecialchars($stall['id']); ?>"
-                                                             <?php echo ((int)$form_data['stall_id'] == (int)$stall['id']) ? 'selected' : ''; ?>>
-                                                         <?php echo htmlspecialchars($stall['stall_number']); ?>
-                                                     </option>
+                                                    <option value="<?php echo htmlspecialchars($stall['stall_number']); ?>" data-id="<?php echo $stall['id']; ?>">
                                                 <?php endforeach; ?>
-                                            </select>
+                                            </datalist>
                                         </div>
+                                        
+                                        <!-- Preparar datos de puestos para JS -->
+                                        <?php
+                                            $stalls_json = [];
+                                            foreach ($stalls as $s) {
+                                                $mapping = $stallAwardeeMapping[$s['id']] ?? null;
+                                                $stalls_json[] = [
+                                                    'id' => $s['id'],
+                                                    'stall_number' => $s['stall_number'],
+                                                    'awardee_id' => $mapping ? $mapping['id'] : '',
+                                                    'awardee_name' => $mapping ? $mapping['name'] : ''
+                                                ];
+                                            }
+                                        ?>
+                                        <script>const STALLS_LIST = <?php echo json_encode($stalls_json); ?>;</script>
 
                                         <div class="mb-3">
-                                            <label for="awardee_id_display" class="form-label">
+                                            <label for="awardee_name_display" class="form-label">
                                                 Adjudicatario <span class="text-danger">*</span>
                                             </label>
-                                            <select class="form-select" id="awardee_id_display" disabled>
-                                                <option value="">Seleccione un adjudicatario</option>
-                                                <?php foreach ($awardees as $awardee): ?>
-                                                    <option value="<?php echo htmlspecialchars($awardee['id']); ?>"
-                                                             <?php echo ((int)$form_data['awardee_id'] == (int)$awardee['id']) ? 'selected' : ''; ?>>
-                                                         <?php echo htmlspecialchars($awardee['full_name']); ?>
-                                                     </option>
-                                                <?php endforeach; ?>
-                                            </select>
+                                            <input type="text" id="awardee_name_display" class="form-control" readonly placeholder="Se autocompletará al seleccionar el puesto">
                                             <input type="hidden" name="awardee_id" id="awardee_id" value="<?php echo htmlspecialchars($form_data['awardee_id']); ?>">
                                             <small class="text-muted">Se asigna automáticamente al seleccionar el puesto.</small>
                                         </div>
@@ -234,7 +239,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="scheduled_date" class="form-label">Fecha Programada <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" value="<?php echo htmlspecialchars($form_data['scheduled_date']); ?>" required>
+                                        <input type="date" class="form-control" id="scheduled_date" name="scheduled_date" value="<?php echo htmlspecialchars($form_data['scheduled_date']); ?>" min="<?php echo date('Y-m-d'); ?>" required>
                                     </div>
 
                                     <div class="col-md-6">
@@ -287,19 +292,41 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <script>
 // Mapeo de Puesto -> Adjudicatario
 const stallAwardeeMapping = <?php echo json_encode($stallAwardeeMapping); ?>;
+// Mapeo ID -> Nombre Adjudicatario (para mostrarlo)
+const awardeesList = <?php 
+    $awJS = [];
+    foreach($awardees as $aw) $awJS[$aw['id']] = $aw['full_name'];
+    echo json_encode($awJS); 
+?>;
 
-document.getElementById('stall_id').addEventListener('change', function() {
-    const stallId = this.value;
-    const awardeeIdDisplay = document.getElementById('awardee_id_display');
-    const awardeeIdHidden = document.getElementById('awardee_id');
+function onStallSelected() {
+    const searchValue = document.getElementById('stall_search').value.trim();
+    const stall = STALLS_LIST.find(s => s.stall_number.trim() === searchValue);
     
-    if (stallId && stallAwardeeMapping[stallId]) {
-        const mapping = stallAwardeeMapping[stallId];
-        awardeeIdDisplay.value = mapping.id;
-        awardeeIdHidden.value = mapping.id;
+    const stallIdHidden = document.getElementById('stall_id');
+    const awardeeIdHidden = document.getElementById('awardee_id');
+    const awardeeDisplay = document.getElementById('awardee_name_display');
+    
+    if (stall) {
+        stallIdHidden.value = stall.id;
+        awardeeIdHidden.value = stall.awardee_id;
+        awardeeDisplay.value = stall.awardee_name || "N/A";
     } else {
-        awardeeIdDisplay.value = "";
+        stallIdHidden.value = "";
         awardeeIdHidden.value = "";
+        awardeeDisplay.value = "";
+    }
+}
+
+// Inicialización si ya hay un stall_id al cargar (e.g. error de validación)
+document.addEventListener('DOMContentLoaded', function() {
+    const initialStallId = document.getElementById('stall_id').value;
+    if (initialStallId) {
+        const stall = STALLS_LIST.find(s => s.id == initialStallId);
+        if (stall) {
+            document.getElementById('stall_search').value = stall.stall_number;
+            onStallSelected();
+        }
     }
 });
 </script>

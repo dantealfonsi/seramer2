@@ -65,11 +65,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Año</label>
-                                    <input type="number" name="year" class="form-control" value="<?php echo date('Y'); ?>" required>
+                                    <input type="number" name="year" class="form-control" value="<?php echo date('Y'); ?>" min="2000" max="<?php echo date('Y') + 1; ?>" required>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Valor (Bs)</label>
-                                    <input type="number" step="0.000001" name="bs_value" class="form-control" placeholder="0.00" required>
+                                    <input type="number" step="0.000001" name="bs_value" class="form-control" placeholder="0.00" min="0.000001" required>
                                 </div>
                             </div>
                             <div class="text-end">

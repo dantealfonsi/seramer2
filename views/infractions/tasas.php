@@ -60,7 +60,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="mb-3">
                                 <label for="ut_value" class="form-label">Valor de la Unidad Tributaria (UT)</label>
                                 <input type="number" step="0.000001" class="form-control" id="ut_value" name="ut_value" 
-                                       placeholder="Ej: 0.400000" required>
+                                       placeholder="Ej: 0.400000" min="0.000001" required>
                                 <div class="form-text">Usar punto como separador decimal.</div>
                             </div>
 

@@ -87,9 +87,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
-                                <div class="col-12 mb-3">
+                                <div class="col-md-6 mb-3">
                                     <label class="form-label">Número de Local</label>
                                     <input type="text" name="stall_number" class="form-control" value="<?php echo htmlspecialchars($stall['stall_number']); ?>" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Estado</label>
+                                    <select name="status" class="form-select">
+                                        <option value="vacant" <?php echo $stall['status'] === 'vacant' ? 'selected' : ''; ?>>Disponible</option>
+                                        <option value="occupied" <?php echo $stall['status'] === 'occupied' ? 'selected' : ''; ?>>Ocupado</option>
+                                        <option value="maintenance" <?php echo $stall['status'] === 'maintenance' ? 'selected' : ''; ?>>Mantenimiento</option>
+                                        <option value="closed" <?php echo $stall['status'] === 'closed' ? 'selected' : ''; ?>>Clausurado</option>
+                                    </select>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Descripción / Ubicación</label>

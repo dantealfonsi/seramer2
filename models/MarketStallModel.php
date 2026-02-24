@@ -119,14 +119,16 @@ class MarketStallModel extends Model {
     
     public function create(array $data) {
         $query = "INSERT INTO {$this->table} 
-                  (sector_id, stall_number, location_description) 
+                  (sector_id, stall_number, location_description, status, awardee_id) 
                   VALUES 
-                  (:sector_id, :stall_number, :location_description)";
+                  (:sector_id, :stall_number, :location_description, :status, :awardee_id)";
         
         $success = $this->execute($query, [
             'sector_id' => $data['sector_id'],
             'stall_number' => $data['stall_number'],
-            'location_description' => $data['location_description'] ?? null
+            'location_description' => $data['location_description'] ?? null,
+            'status' => $data['status'] ?? 'vacant',
+            'awardee_id' => $data['awardee_id'] ?? null
         ]);
         
         if ($success) {
@@ -145,13 +147,17 @@ class MarketStallModel extends Model {
         $query = "UPDATE {$this->table} 
                   SET sector_id = :sector_id,
                       stall_number = :stall_number,
-                      location_description = :location_description
+                      location_description = :location_description,
+                      status = :status,
+                      awardee_id = :awardee_id
                   WHERE id = :id";
         
         $success = $this->execute($query, [
             'sector_id' => $data['sector_id'],
             'stall_number' => $data['stall_number'],
             'location_description' => $data['location_description'] ?? null,
+            'status' => $data['status'] ?? 'vacant',
+            'awardee_id' => $data['awardee_id'] ?? null,
             'id' => $id
         ]);
         
