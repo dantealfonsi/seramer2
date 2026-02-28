@@ -13,7 +13,6 @@ return [
     'views/vacations' => ['Recursos Humanos'],
     'views/departments' => ['Recursos Humanos'],
     'views/reports/hr.php' => ['Recursos Humanos'],
-    'views/users/index.php' => ['Recursos Humanos', 'Fiscalizacion'], // Jefes de Fisc también ven usuarios? Según menú, tienen "users-fisc"
 
     // === FISCALIZACION ===
     'views/inspections' => ['Fiscalizacion'],
@@ -48,6 +47,7 @@ return [
     'views/reports/index.php' => ['Fiscalizacion'], 
     
     // Rutas protegidas genéricas
-    'views/users' => ['Recursos Humanos'], 
+    'views/users' => ['Recursos Humanos', 'Fiscalizacion', 'Liquidacion', 'Cobranza'],
+    'views/roles' => ['Recursos Humanos', 'Fiscalizacion', 'Liquidacion', 'Cobranza'],
     'views/profile' => ['Recursos Humanos', 'Fiscalizacion', 'Liquidacion', 'Cobranza'], // Acceso universal al perfil
 ];

@@ -172,7 +172,7 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         $('#departmentsTable').DataTable({
             responsive: true,
-            dom: 'Bfrtip',
+            dom: '<"row d-flex justify-content-between align-items-center mb-3"<"col-md-6"B><"col-md-6"f>>t<"row"<"col-md-6"i><"col-md-6"p>>',
             buttons: [
                 {
                     extend: 'pdfHtml5',

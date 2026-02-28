@@ -124,7 +124,7 @@ class UserModel {
                 // Actualizar último login
                 $this->updateLastLogin($user['id']);
                 
-                // Obtener departamentos del usuario
+                // Obtener departamentos y roles del usuario
                 $user['departments'] = $this->getUserDepartments($user['id']);
                 
                 return $user;
@@ -138,15 +138,34 @@ class UserModel {
     }
 
     /**
-     * Obtener departamentos asignados a un usuario
+     * Obtener todos los departamentos
+     * @return array
+     */
+    public function getAllDepartments() {
+        try {
+            $query = "SELECT * FROM departments ORDER BY name";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error obteniendo departamentos: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Obtener departamentos y roles asignados a un usuario
      * @param int $user_id
      * @return array
      */
     public function getUserDepartments($user_id) {
         try {
-            $query = "SELECT d.*, ud.status as assignment_status 
+            $query = "SELECT d.*, ud.status as assignment_status, 
+                             r.name as role_name, r.can_read, r.can_write, 
+                             r.can_modify, r.can_delete, r.id as role_id, r.menu_json
                       FROM departments d 
                       INNER JOIN user_departments ud ON d.id = ud.department_id 
+                      LEFT JOIN roles r ON ud.role_id = r.id 
                       WHERE ud.user_id = :user_id AND ud.status = 'active'
                       ORDER BY d.name";
             
@@ -308,7 +327,7 @@ class UserModel {
      * @param string $department_filter
      * @return array
      */
-        public function getAll($page = 1, $limit = 10, $department_filter = '') {
+    public function getAll($page = 1, $limit = 10, $department_filter = '', $status_filter = '', $role_filter = '') {
         try {
             $offset = ($page - 1) * $limit;
 
@@ -316,12 +335,31 @@ class UserModel {
             $params = [];
 
             if (!empty($department_filter)) {
-                $where_clause .= " AND d.name = :department";
-                $params[':department'] = $department_filter;
+                if (is_numeric($department_filter)) {
+                    $where_clause .= " AND (d.id = :dept_id OR s.department_id = :dept_id)";
+                    $params[':dept_id'] = $department_filter;
+                } else {
+                    $where_clause .= " AND d.name = :department";
+                    $params[':department'] = $department_filter;
+                }
+            }
+
+            if (!empty($status_filter)) {
+                $where_clause .= " AND u.status = :status";
+                $params[':status'] = $status_filter;
+            }
+
+            if (!empty($role_filter)) {
+                $where_clause .= " AND u.id IN (SELECT user_id FROM user_departments WHERE role_id = :role_id AND status = 'active')";
+                $params[':role_id'] = $role_filter;
             }
 
             $query = "SELECT u.*, s.first_name as staff_first_name, s.last_name as staff_last_name, s.id_number,
-                             d.name as department_name, d.id as department_id, jp.name as staff_job_position
+                             d.name as department_name, d.id as department_id, jp.name as staff_job_position,
+                             (SELECT GROUP_CONCAT(DISTINCT r.name SEPARATOR ', ') 
+                              FROM user_departments ud2 
+                              INNER JOIN roles r ON ud2.role_id = r.id 
+                              WHERE ud2.user_id = u.id AND ud2.status = 'active') as role_names
                       FROM " . $this->table . " u
                       LEFT JOIN staff s ON u.staff_id = s.id
                       LEFT JOIN departments d ON s.department_id = d.id
@@ -333,11 +371,11 @@ class UserModel {
             $stmt = $this->conn->prepare($query);
             
             foreach ($params as $key => $value) {
-                $stmt->bindParam($key, $value);
+                $stmt->bindValue($key, $value);
             }
             
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
             $stmt->execute();
             
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -348,12 +386,13 @@ class UserModel {
     }
 
     /**
-     * Asignar departamento a usuario
+     * Asignar departamento y rol a usuario
      * @param int $user_id
      * @param int $department_id
+     * @param int|null $role_id
      * @return bool
      */
-    public function assignDepartment($user_id, $department_id) {
+    public function assignDepartment($user_id, $department_id, $role_id = null) {
         try {
             // Verificar si ya existe la asignación
             $check_query = "SELECT id FROM user_departments 
@@ -364,18 +403,19 @@ class UserModel {
             $check_stmt->execute();
             
             if ($check_stmt->fetch()) {
-                // Si existe, actualizar status
-                $query = "UPDATE user_departments SET status = 'active' 
+                // Si existe, actualizar status y role
+                $query = "UPDATE user_departments SET status = 'active', role_id = :role_id 
                          WHERE user_id = :user_id AND department_id = :department_id";
             } else {
                 // Si no existe, crear nueva asignación
-                $query = "INSERT INTO user_departments (user_id, department_id, status) 
-                         VALUES (:user_id, :department_id, 'active')";
+                $query = "INSERT INTO user_departments (user_id, department_id, role_id, status) 
+                         VALUES (:user_id, :department_id, :role_id, 'active')";
             }
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':user_id', $user_id);
             $stmt->bindParam(':department_id', $department_id);
+            $stmt->bindParam(':role_id', $role_id, PDO::PARAM_INT);
             
             return $stmt->execute();
         } catch (PDOException $e) {
@@ -407,15 +447,67 @@ class UserModel {
     }
 
     /**
-     * Verificar si usuario tiene acceso a un departamento específico
+     * Verificar si un usuario pertenece a un departamento (vía staff o user_departments)
+     * @param int $user_id
+     * @param int $department_id
+     * @return bool
+     */
+    public function isUserInDepartment($user_id, $department_id) {
+        try {
+            // Check in user_departments (New system)
+            $query = "SELECT COUNT(*) FROM user_departments 
+                      WHERE user_id = :user_id AND department_id = :department_id AND status = 'active'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':department_id', $department_id);
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) return true;
+
+            // Check in staff (Legacy/Fallback)
+            $query = "SELECT COUNT(*) FROM " . $this->table . " u
+                      JOIN staff s ON u.staff_id = s.id
+                      WHERE u.id = :user_id AND s.department_id = :department_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->bindParam(':department_id', $department_id);
+            $stmt->execute();
+            return $stmt->fetchColumn() > 0;
+            
+        } catch (PDOException $e) {
+            error_log("Error verificando pertenencia a departamento: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Remover todos los departamentos de un usuario
+     * @param int $user_id
+     * @return bool
+     */
+    public function removeAllDepartments($user_id) {
+        try {
+            $query = "DELETE FROM user_departments WHERE user_id = :user_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error eliminando departamentos: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Verificar si usuario tiene acceso a un departamento específico y retornar sus permisos si los tiene
      * @param int $user_id
      * @param string $department_name
-     * @return bool
+     * @return array|bool false si no tiene acceso, arreglo con acceso y permisos si lo tiene
      */
     public function hasAccessToDepartment($user_id, $department_name) {
         try {
-            $query = "SELECT ud.id FROM user_departments ud
+            $query = "SELECT ud.id, r.name as role_name, r.can_read, r.can_write, r.can_modify, r.can_delete 
+                      FROM user_departments ud
                       INNER JOIN departments d ON ud.department_id = d.id
+                      LEFT JOIN roles r ON ud.role_id = r.id
                       WHERE ud.user_id = :user_id 
                       AND d.name = :department_name 
                       AND ud.status = 'active'";
@@ -425,10 +517,59 @@ class UserModel {
             $stmt->bindParam(':department_name', $department_name);
             $stmt->execute();
             
-            return $stmt->fetch() !== false;
+            // Si es superadmin, tiene acceso total a todos los departamentos automáticamente
+            if ($this->isSuperadmin($user_id)) {
+                return [
+                    'id' => 0,
+                    'role_name' => 'admin',
+                    'can_read' => 1,
+                    'can_write' => 1,
+                    'can_modify' => 1,
+                    'can_delete' => 1
+                ];
+            }
+
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($res !== false) {
+                return $res;
+            }
+            return false;
         } catch (PDOException $e) {
             error_log("Error verificando acceso: " . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Verificar si es el superadmin global
+     */
+    public function isSuperadmin($user_id) {
+        try {
+            $query = "SELECT is_superadmin FROM {$this->table} WHERE id = :user_id AND status = 'active'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $user && $user['is_superadmin'] == 1;
+        } catch (PDOException $e) {
+            error_log("Error verificando superadmin: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Obtener todos los IDs de los superadmins activos.
+     */
+    public function getSuperadminsIds() {
+        try {
+            $query = "SELECT id FROM {$this->table} WHERE is_superadmin = 1 AND status = 'active'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+            $users = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            return $users ? $users : [];
+        } catch (PDOException $e) {
+            error_log("Error obteniendo superadmins: " . $e->getMessage());
+            return [];
         }
     }
 
@@ -495,12 +636,13 @@ class UserModel {
     }
 
     /**
-     * Obtener menús por departamento
+     * Obtener menús por departamento filtrados por los permisos del rol del usuario (si está en sesión)
      * @param string $department_name
+     * @param array $user_departments Lista de departamentos del usuario desde la sesión
      * @return array
      */
-    public function getMenusByDepartment($department_name) {
-        $menus = [
+    public function getMasterMenus() {
+        return [
             'Recursos Humanos' => [
                 [
                     'title' => 'Quejas',
@@ -508,6 +650,14 @@ class UserModel {
                     'submenu' => [
                         ['title' => 'Quejas (Registrar)', 'url' => 'views/complaints/create.php'],
                         ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
+                    ]
+                ],
+                [
+                    'title' => 'Control de Acceso',
+                    'icon' => 'ri-lock-line',
+                    'submenu' => [
+                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
                     ]
                 ],
             ],
@@ -553,7 +703,15 @@ class UserModel {
                     'title' => 'Reportes',
                     'icon' => 'ri-file-chart-line',
                     'url' => 'views/liquidacion_reports/index.php'
-                ]
+                ],
+                [
+                    'title' => 'Control de Acceso',
+                    'icon' => 'ri-lock-line',
+                    'submenu' => [
+                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
+                    ]
+                ],
             ],
             'Fiscalizacion' => [
                 [
@@ -603,23 +761,12 @@ class UserModel {
                     'title' => 'Control de Acceso',
                     'icon' => 'ri-lock-line',
                     'submenu' => [
-                        ['title' => 'Gestión de Roles', 'url' => 'views/users-fisc/indexRoles.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users-fisc/index.php']
+                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
+                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
                     ]
                 ]
             ],
-
-            // Keeping Cobranza for now in case other depts need it, but reducing it or commenting if User implies removal.
-            // User said "group... under a single menu department called Liquidacion".
-            // Since User's prompt implies moving everything to Liquidacion, I will remove/minimize Cobranza or just keep it as legacy if needed.
-            // But strict interpreted: These items move TO Liquidacion.
-            // I will comment out the old Cobranza to avoid duplication/confusion, or just leave it if they claim "Cobranza" is a separate department for someone else.
-            // For safety, I'll leave 'Cobranza' with basic items but 'Liquidacion' gets the full suite as requested.
-            // Actually, I'll replace the *content* of Cobranza or just leave it. The User specifically asked to "group... under Liquidacion".
-            // I'll leave Cobranza as is (or removed) but focus on Liquidacion.
-            // Let's assume Liquidacion is the new main one.
             'Cobranza' => [
-
                  [
                     'title' => 'Gestión de Cobros',
                     'icon' => 'ri-money-cny-circle-line',
@@ -647,9 +794,73 @@ class UserModel {
                 ]
             ]
         ];
+    }
 
+    public function getMenusByDepartment($department_name, $user_departments = null) {
+        if ($user_departments === null && isset($_SESSION['user_id'])) {
+            $user_departments = $this->getUserDepartments($_SESSION['user_id']);
+        }
+        
+        $menus = $this->getMasterMenus();
 
-        return isset($menus[$department_name]) ? $menus[$department_name] : [];
+        $dept_menus = isset($menus[$department_name]) ? $menus[$department_name] : [];
+
+        // Si somos superadmin, vemos todo el de ese departamento sin bloqueos (usualmente lo saltamos pero por si acaso)
+        if (!empty($_SESSION['is_superadmin'])) {
+            return $dept_menus;
+        }
+
+        // Si tenemos un arreglo de departamentos en sesión, filtramos por menu_json
+        if ($user_departments && is_array($user_departments)) {
+            $current_role_menu = null;
+            // Buscar la configuración json del rol para el departamento actual
+            foreach ($user_departments as $ud) {
+                if ($ud['name'] === $department_name && isset($ud['role_id'])) {
+                    // Si el rol es admin, forzamos a ver todo
+                    if ($ud['role_name'] === 'admin') {
+                        return $dept_menus;
+                    }
+                    
+                    if (!empty($ud['menu_json'])) {
+                        $current_role_menu = json_decode($ud['menu_json'], true);
+                    }
+                    break;
+                }
+            }
+
+            // Si el rol tiene un menu_json definido, filtramos el master
+            if (is_array($current_role_menu)) {
+                $filtered_menus = [];
+                foreach ($dept_menus as $menu) {
+                    // Si el titulo del menu principal está en el array permitido
+                    if (in_array($menu['title'], $current_role_menu)) {
+                        $filtered_menu = $menu;
+                        
+                        // Si tiene submenú, verificar si algún submenú también está permitido
+                        if (isset($menu['submenu'])) {
+                            $filtered_submenu = [];
+                            foreach ($menu['submenu'] as $sub) {
+                                // Guardamos con un prefijo para identificar submenus, ej: "Infracciones - Historial de Infracciones"
+                                $submenu_key = $menu['title'] . '::' . $sub['title'];
+                                if (in_array($submenu_key, $current_role_menu)) {
+                                    $filtered_submenu[] = $sub;
+                                }
+                            }
+                            // Si no hay submenus permitidos, pasamos (a menos que quieras mostrar el padre vacío)
+                            if (empty($filtered_submenu)) {
+                                continue;
+                            }
+                            $filtered_menu['submenu'] = $filtered_submenu;
+                        }
+                        
+                        $filtered_menus[] = $filtered_menu;
+                    }
+                }
+                return $filtered_menus;
+            }
+        }
+
+        return $dept_menus;
     }
 
     /**
@@ -696,6 +907,7 @@ class UserModel {
      */
     public function isManager($user_id) {
         try {
+            // First check legacy manager field in departments
             $query = "SELECT d.*, s.first_name, s.last_name 
                       FROM departments d
                       INNER JOIN staff s ON d.manager_id = s.id
@@ -706,7 +918,25 @@ class UserModel {
             $stmt->bindParam(':user_id', $user_id);
             $stmt->execute();
             
+            $manager = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($manager) return $manager;
+
+            // Then check new user_departments for 'admin' role
+            $query = "SELECT d.*, r.name as role_name
+                      FROM user_departments ud
+                      INNER JOIN departments d ON ud.department_id = d.id
+                      INNER JOIN roles r ON ud.role_id = r.id
+                      WHERE ud.user_id = :user_id 
+                      AND (r.name = 'admin' OR r.name = 'administrador')
+                      AND ud.status = 'active'
+                      LIMIT 1";
+            
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            
             return $stmt->fetch(PDO::FETCH_ASSOC);
+
         } catch (PDOException $e) {
             error_log("Error verificando si es jefe: " . $e->getMessage());
             return false;
@@ -720,7 +950,7 @@ class UserModel {
      * @param int $limit
      * @return array
      */
-    public function getUsersByManagerDepartment($manager_user_id, $page = 1, $limit = 10) {
+    public function getUsersByManagerDepartment($manager_user_id, $page = 1, $limit = 10, $status_filter = '', $role_filter = '') {
         try {
             // Primero verificar que es jefe y obtener su departamento
             $manager_info = $this->isManager($manager_user_id);
@@ -729,21 +959,44 @@ class UserModel {
             }
 
             $offset = ($page - 1) * $limit;
+            $params = [
+                ':dept_id1' => $manager_info['id'],
+                ':dept_id2' => $manager_info['id']
+            ];
             
-                        $query = "SELECT u.*, s.first_name as staff_first_name, s.last_name as staff_last_name, s.id_number,
-                             d.name as department_name, d.id as department_id, jp.name as staff_job_position
+            $extra_where = "";
+            if (!empty($status_filter)) {
+                $extra_where .= " AND u.status = :status";
+                $params[':status'] = $status_filter;
+            }
+            if (!empty($role_filter)) {
+                $extra_where .= " AND u.id IN (SELECT user_id FROM user_departments WHERE role_id = :role_id AND status = 'active')";
+                $params[':role_id'] = $role_filter;
+            }
+
+            $query = "SELECT DISTINCT u.id, u.username, u.email, u.status, u.created_at, u.is_superadmin,
+                             s.first_name as staff_first_name, s.last_name as staff_last_name, s.id_number,
+                             d_list.name as department_name, d_list.id as department_id, jp.name as staff_job_position,
+                             (SELECT GROUP_CONCAT(DISTINCT r.name SEPARATOR ', ') 
+                              FROM user_departments ud2 
+                              INNER JOIN roles r ON ud2.role_id = r.id 
+                              WHERE ud2.user_id = u.id AND ud2.status = 'active') as role_names
                       FROM " . $this->table . " u
                       LEFT JOIN staff s ON u.staff_id = s.id
-                      LEFT JOIN departments d ON s.department_id = d.id
                       LEFT JOIN job_positions jp ON s.job_position_id = jp.id
-                      WHERE d.id = :department_id
+                      LEFT JOIN user_departments ud ON u.id = ud.user_id
+                      JOIN departments d_list ON (s.department_id = d_list.id OR (ud.department_id = d_list.id AND ud.status = 'active'))
+                      WHERE (d_list.id = :dept_id1 OR (ud.department_id = :dept_id2 AND ud.status = 'active'))
+                      $extra_where
                       ORDER BY u.created_at DESC
                       LIMIT :limit OFFSET :offset";
             
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':department_id', $manager_info['id']);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
             $stmt->execute();
             
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -766,14 +1019,15 @@ class UserModel {
                 return 0;
             }
             
-            $query = "SELECT COUNT(*) as total 
+            $query = "SELECT COUNT(DISTINCT u.id) as total 
                      FROM " . $this->table . " u 
                      LEFT JOIN staff s ON u.staff_id = s.id 
-                     LEFT JOIN departments d ON s.department_id = d.id 
-                     WHERE d.id = :department_id";
+                     LEFT JOIN user_departments ud ON u.id = ud.user_id
+                     WHERE (s.department_id = :dept_id1 OR (ud.department_id = :dept_id2 AND ud.status = 'active'))";
             
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':department_id', $manager_info['id']);
+            $stmt->bindParam(':dept_id1', $manager_info['id']);
+            $stmt->bindParam(':dept_id2', $manager_info['id']);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -922,9 +1176,10 @@ class UserModel {
      * @param string $username
      * @param string $password
      * @param string $email
+     * @param array $department_roles Array format [ dept_id => role_id ]
      * @return array
      */
-    public function createUserForStaff($staff_id, $username, $password, $email) {
+    public function createUserForStaff($staff_id, $username, $password, $email, $department_roles = []) {
         try {
             // Verificar que el staff existe y no tiene usuario
             $staff_query = "SELECT s.*, u.staff_id as existing_user 
@@ -980,14 +1235,27 @@ class UserModel {
             if ($stmt->execute()) {
                 $user_id = $this->conn->lastInsertId();
                 
-                // Asignar automáticamente el departamento del staff al usuario
-                $dept_query = "INSERT INTO user_departments (user_id, department_id, status, created_at) 
-                              VALUES (:user_id, :department_id, 'active', NOW())";
-                
-                $stmt = $this->conn->prepare($dept_query);
-                $stmt->bindParam(':user_id', $user_id);
-                $stmt->bindParam(':department_id', $staff['department_id']);
-                $stmt->execute();
+                // Asignar los departamentos y roles seleccionados
+                if (!empty($department_roles)) {
+                    $dept_query = "INSERT INTO user_departments (user_id, department_id, role_id, status, created_at) 
+                                   VALUES (:user_id, :department_id, :role_id, 'active', NOW())";
+                    $stmt = $this->conn->prepare($dept_query);
+                    foreach ($department_roles as $dept_id => $r_id) {
+                        if (empty($r_id)) continue;
+                        $stmt->bindParam(':user_id', $user_id);
+                        $stmt->bindParam(':department_id', $dept_id);
+                        $stmt->bindParam(':role_id', $r_id, PDO::PARAM_INT);
+                        $stmt->execute();
+                    }
+                } else {
+                    // Fallback to staff department if nothing selected (should be blocked by validation but safe is better)
+                    $dept_query = "INSERT INTO user_departments (user_id, department_id, status, created_at) 
+                                  VALUES (:user_id, :department_id, 'active', NOW())";
+                    $stmt = $this->conn->prepare($dept_query);
+                    $stmt->bindParam(':user_id', $user_id);
+                    $stmt->bindParam(':department_id', $staff['department_id']);
+                    $stmt->execute();
+                }
                 
                 return [
                     'success' => true, 

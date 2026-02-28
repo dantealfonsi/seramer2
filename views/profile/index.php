@@ -21,7 +21,7 @@ $user = $controller->getUserProfileData();
                         <div class="flex-grow-1 p-4">
                             <div class="d-flex align-items-md-end align-items-sm-start align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                                 <div class="user-profile-info">
-                                    <h4 class="mb-2"><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></h4>
+                                    <h4 class="mb-2"><?php echo htmlspecialchars(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['username']); ?></h4>
                                     <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                         <li class="list-inline-item fw-semibold">
                                             <i class="ri-user-star-line me-1"></i> <?php echo htmlspecialchars($user['job_position_name'] ?? 'Cargo no definido'); ?>
@@ -55,7 +55,7 @@ $user = $controller->getUserProfileData();
                         <ul class="list-unstyled mb-4 mt-2">
                             <li class="d-flex align-items-center mb-3">
                                 <i class="ri-user-line icon-lg text-primary me-2"></i>
-                                <span class="fw-bold me-2">Nombre Completo:</span> <span><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></span>
+                                <span class="fw-bold me-2">Nombre Completo:</span> <span><?php echo htmlspecialchars(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['username']); ?></span>
                             </li>
                              <li class="d-flex align-items-center mb-3">
                                 <i class="ri-id-card-line icon-lg text-primary me-2"></i>

@@ -24,6 +24,11 @@ function checkDepartmentAccess() {
         return; // O manejar como error
     }
 
+    // Los Superadmins tienen acceso universal, saltar validación estricta de contexto
+    if (!empty($_SESSION['is_superadmin'])) {
+        return;
+    }
+
     // 3. Obtener la ruta relativa actual
     // Ejemplo: /seramer2/views/complaints/index.php -> views/complaints/index.php
     $requestUri = $_SERVER['PHP_SELF']; 

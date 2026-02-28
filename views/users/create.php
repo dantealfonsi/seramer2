@@ -30,6 +30,7 @@ $email = $data['email'];
 $is_manager = $data['is_manager'];
 $is_rrhh = $data['is_rrhh'];
 $available_staff = $data['available_staff'] ?? [];
+$available_roles = $data['available_roles'] ?? [];
 
 // Determinar el título de la página
 $page_title = $is_manager && !$is_rrhh ? 
@@ -138,6 +139,76 @@ $page_title = $is_manager && !$is_rrhh ?
                                 </select>
                                 <div class="form-text">Selecciona el personal para el cual crear el usuario del sistema</div>
                             </div>
+
+                            <!-- Selección de Departamentos y Roles -->
+                            <div class="col-12 mt-4">
+                                <h6 class="border-bottom pb-2">Asignación de Departamentos y Roles</h6>
+                                <p class="text-muted small mb-3">Marque los departamentos a los que pertenecerá el usuario y seleccione el rol correspondiente.</p>
+                                <div class="row">
+                                    <?php 
+                                    // Make sure we have the full list of departments to show
+                                    $all_depts = isset($all_departments) ? $all_departments : (isset($departments) ? $departments : []);
+                                    // Group roles by department id for easy access
+                                    $roles_by_dept = [];
+                                    if(isset($available_roles)) {
+                                        foreach($available_roles as $r) {
+                                            $roles_by_dept[$r['department_id']][] = $r;
+                                        }
+                                    }
+                                    
+                                    if(empty($all_depts)): ?>
+                                        <div class="alert alert-warning">No hay departamentos disponibles.</div>
+                                    <?php else:
+                                        foreach($all_depts as $dept):
+                                            $dept_roles = $roles_by_dept[$dept['id']] ?? [];
+                                            // Only show departments that have available roles for this user to assign
+                                            if (empty($dept_roles) && !$is_rrhh && !isset($_SESSION['is_superadmin'])) continue; 
+                                    ?>
+                                        <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="card h-100 shadow-none border">
+                                                <div class="card-body p-3">
+                                                    <div class="form-check fw-bold mb-2">
+                                                        <input class="form-check-input dept-checkbox" type="checkbox" id="dept_<?php echo $dept['id']; ?>">
+                                                        <label class="form-check-label" for="dept_<?php echo $dept['id']; ?>">
+                                                            <?php echo htmlspecialchars($dept['name']); ?>
+                                                        </label>
+                                                    </div>
+                                                    <select name="department_roles[<?php echo $dept['id']; ?>]" id="role_select_<?php echo $dept['id']; ?>" class="form-select form-select-sm role-select" disabled>
+                                                        <option value="">Seleccione un Rol...</option>
+                                                        <?php foreach($dept_roles as $role): ?>
+                                                            <option value="<?php echo $role['id']; ?>">
+                                                                <?php echo htmlspecialchars($role['name']); ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php 
+                                        endforeach; 
+                                    endif; ?>
+                                </div>
+                            </div>
+                            
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const deptCheckboxes = document.querySelectorAll('.dept-checkbox');
+                                deptCheckboxes.forEach(cb => {
+                                    cb.addEventListener('change', function() {
+                                        const deptId = this.id.split('_')[1];
+                                        const roleSelect = document.getElementById('role_select_' + deptId);
+                                        if (this.checked) {
+                                            roleSelect.disabled = false;
+                                            roleSelect.required = true;
+                                        } else {
+                                            roleSelect.disabled = true;
+                                            roleSelect.required = false;
+                                            roleSelect.value = '';
+                                        }
+                                    });
+                                });
+                            });
+                            </script>
 
                             <!-- Datos del Usuario -->
                             <div class="col-md-6">

@@ -40,8 +40,37 @@ class AuthMiddleware {
      * @return array|null Datos del usuario o null si no está autenticado
      */
     public static function getCurrentUser() {
-        $auth = self::getAuthController();
-        return $auth->getCurrentUser();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+
+        // Si ya tenemos el usuario en sesión, lo devolvemos
+        // Pero siempre validamos el estado súper crítico de is_superadmin contra la BD en tiempo real
+        if (isset($_SESSION['user']) && !empty($_SESSION['user']['departments'])) {
+            require_once __DIR__ . '/../models/UserModel.php';
+            $userModel = new UserModel();
+            $dbUser = $userModel->getById($_SESSION['user_id']);
+            if ($dbUser) {
+                $_SESSION['is_superadmin'] = !empty($dbUser['is_superadmin']) ? 1 : 0;
+            }
+            return $_SESSION['user'];
+        }
+
+        // Si no está en sesión o está incompleto, forzamos recarga
+        require_once __DIR__ . '/../models/UserModel.php';
+        $userModel = new UserModel();
+        $user = $userModel->getById($_SESSION['user_id']);
+        if ($user) {
+            $_SESSION['user'] = $user; // Actualizar sesión
+            $_SESSION['is_superadmin'] = !empty($user['is_superadmin']); // Sincronizar flag global
+            return $user;
+        }
+        
+        return null;
     }
 
     /**
@@ -110,9 +139,61 @@ class AuthMiddleware {
      * @return bool
      */
     public static function hasAccessToDepartment($department_name) {
-        $departments = self::getUserDepartments();
+        $user = self::getCurrentUser();
+        if (!$user) return false;
+        
+        if (!empty($user['is_superadmin'])) {
+            return true;
+        }
+
+        $departments = $user['departments'] ?? [];
         $dept_names = array_column($departments, 'name');
         return in_array($department_name, $dept_names);
+    }
+
+    /**
+     * Verificar si el usuario actual tiene permisos específicos en un departamento
+     * 
+     * @param string $department_name Nombre del departamento o area
+     * @param string $permission 'can_read', 'can_write', 'can_modify', 'can_delete'
+     * @return bool
+     */
+    public static function hasPermission($department_name, $permission) {
+        $user = self::getCurrentUser();
+        if (!$user) return false;
+
+        // Si es superadmin global, tiene acceso a todo
+        if (!empty($user['is_superadmin'])) {
+            return true;
+        }
+
+        $departments = $user['departments'] ?? [];
+        foreach ($departments as $dept) {
+            if ($dept['name'] === $department_name) {
+                // Verificar si tiene el permiso (1)
+                if (isset($dept[$permission]) && $dept[$permission] == 1) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Middleware para requerir un permiso específico en un departamento
+     * 
+     * @param string $department_name
+     * @param string $permission 'can_read', 'can_write', 'can_modify', 'can_delete'
+     * @param string $redirect_url URL de redirección
+     */
+    public static function requirePermission($department_name, $permission, $redirect_url = '../dashboard/dashboard.php') {
+        self::requireAuth();
+        
+        if (!self::hasPermission($department_name, $permission)) {
+            header("Location: $redirect_url");
+            exit;
+        }
     }
 
     /**
@@ -124,6 +205,12 @@ class AuthMiddleware {
         // Requerir autenticación básica
         self::requireAuth();
         
+        // Verificar si es superadmin (acceso global a RRHH / Usuarios)
+        $user = self::getCurrentUser();
+        if ($user && !empty($user['is_superadmin'])) {
+            return;
+        }
+
         // Verificar si tiene acceso a Recursos Humanos (acceso completo)
         if (self::hasAccessToDepartment('Recursos Humanos')) {
             return;
@@ -143,6 +230,7 @@ class AuthMiddleware {
         }
         
         // No tiene acceso ni como RRHH ni como jefe
+        error_log("Access Denied for user_id $user_id in requireUserManagementAccess. Redirecting to $redirect_url");
         header("Location: $redirect_url");
         exit;
     }
@@ -153,18 +241,15 @@ class AuthMiddleware {
      * @return array|false Información del departamento si es jefe, false si no
      */
     public static function isManager() {
-        require_once __DIR__ . '/../models/UserModel.php';
-        $userModel = new UserModel();
-        
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         
         $user_id = $_SESSION['user_id'] ?? null;
-        if (!$user_id) {
-            return false;
-        }
-        
+        if (!$user_id) return false;
+
+        require_once __DIR__ . '/../models/UserModel.php';
+        $userModel = new UserModel();
         return $userModel->isManager($user_id);
     }
 }

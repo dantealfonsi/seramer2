@@ -5,6 +5,15 @@ class DepartmentController {
     private $departmentModel;
 
     public function __construct() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (empty($_SESSION['is_superadmin'])) {
+            header('Location: ../dashboard/dashboard.php');
+            exit;
+        }
+
         $this->departmentModel = new DepartmentModel();
     }
 

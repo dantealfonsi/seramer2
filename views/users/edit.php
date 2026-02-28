@@ -1,130 +1,40 @@
 <?php
-// Verificar acceso - permitir RRHH y jefes de departamento
-require_once __DIR__ . '/../../middleware/AuthMiddleware.php';
-AuthMiddleware::requireUserManagementAccess();
+require_once __DIR__ . '/../../controllers/UserController.php';
 
-// Incluir header y configuración
-require_once __DIR__ . '/../layouts/header.php';
-require_once __DIR__ . '/../../models/UserModel.php';
-
-$userModel = new UserModel();
-$message = '';
-$messageType = '';
-$errors = [];
-
-// Verificar roles
-$is_manager = AuthMiddleware::isManager();
-$is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
-
-// Obtener ID del usuario a editar
+$userController = new UserController();
 $user_id = $_GET['id'] ?? null;
 
-if (!$user_id) {
-    header('Location: index.php');
-    exit;
-}
-
-// Obtener datos del usuario
-$user = $userModel->getUserWithStaffDetails($user_id);
-
-if (!$user) {
-    header('Location: index.php?error=user_not_found');
-    exit;
-}
-
-// Verificar permisos: RRHH puede editar cualquiera, jefes solo de su departamento
-if ($is_manager && !$is_rrhh) {
-    if ($user['department_id'] != $is_manager['id']) {
-        header('Location: index.php?error=no_permission');
-        exit;
-    }
-}
-
-// Procesar formulario si se envió
+$params = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $status = $_POST['status'] ?? '';
-    $change_password = isset($_POST['change_password']);
-    $password = $_POST['password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-    
-    // Validaciones
-    if (empty($username)) {
-        $errors[] = 'El nombre de usuario es requerido';
-    } elseif (strlen($username) < 3) {
-        $errors[] = 'El nombre de usuario debe tener al menos 3 caracteres';
-    }
-    
-    if (empty($email)) {
-        $errors[] = 'El email es requerido';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'El email no tiene un formato válido';
-    }
-    
-    if (!in_array($status, ['active', 'inactive'])) {
-        $errors[] = 'Estado inválido';
-    }
-    
-    // Validar cambio de contraseña si se solicita
-    if ($change_password) {
-        if (empty($password)) {
-            $errors[] = 'La nueva contraseña es requerida';
-        } elseif (strlen($password) < 6) {
-            $errors[] = 'La nueva contraseña debe tener al menos 6 caracteres';
-        }
-        
-        if ($password !== $confirm_password) {
-            $errors[] = 'Las nuevas contraseñas no coinciden';
-        }
-    }
-    
-    // Verificar que username y email no estén en uso por otro usuario
-    if (empty($errors)) {
-        $existing_user = $userModel->getByUsername($username);
-        if ($existing_user && $existing_user['id'] != $user_id) {
-            $errors[] = 'El nombre de usuario ya está en uso';
-        }
-        
-        $existing_email = $userModel->getByEmail($email);
-        if ($existing_email && $existing_email['id'] != $user_id) {
-            $errors[] = 'El email ya está en uso';
-        }
-    }
-    
-    // Si no hay errores, actualizar el usuario
-    if (empty($errors)) {
-        try {
-            $update_data = [
-                'username' => $username,
-                'email' => $email,
-                'status' => $status
-            ];
-            
-            if ($change_password) {
-                $update_data['password'] = $password;
-            }
-            
-            $result = $userModel->update($user_id, $update_data);
-            
-            if ($result) {
-                $message = 'Usuario actualizado exitosamente';
-                $messageType = 'success';
-                // Recargar datos del usuario
-                $user = $userModel->getUserWithStaffDetails($user_id);
-            } else {
-                $message = 'Error al actualizar el usuario';
-                $messageType = 'danger';
-            }
-        } catch (Exception $e) {
-            $message = 'Error interno del servidor';
-            $messageType = 'danger';
-        }
-    }
+    $params = $_POST;
+    $params['_method'] = 'POST';
 }
 
-$page_title = $is_manager && !$is_rrhh ? 
-    'Editar Usuario' : 'Editar Usuario';
+$data = $userController->edit($user_id, $params);
+
+if (!$data['success'] && isset($data['redirect'])) {
+    header('Location: ' . $data['redirect']);
+    exit;
+}
+
+$user = $data['user'];
+$message = $data['message'];
+$messageType = $data['messageType'];
+$errors = $data['errors'];
+$is_manager = $data['is_manager'];
+$is_rrhh = $data['is_rrhh'];
+$available_roles = $data['available_roles'] ?? [];
+$all_departments = $data['all_departments'] ?? [];
+$all_roles = $data['all_roles'] ?? [];
+
+// Determine current user role if any
+$current_role_id = null;
+if (!empty($user['departments'])) {
+    // Assuming we edit the role of the primary/first department the user has
+    $current_role_id = $user['departments'][0]['role_id'] ?? null;
+}
+
+$page_title = 'Editar Usuario';
 ?>
 
 <?php include __DIR__ . '/../layouts/header.php'; ?>
@@ -145,7 +55,7 @@ $page_title = $is_manager && !$is_rrhh ?
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <small class="text-muted">
-                            Editando: <?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?>
+                            Editando: <?php echo htmlspecialchars(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['username']); ?>
                             (<?php echo htmlspecialchars($user['username']); ?>)
                         </small>
                     </div>
@@ -189,19 +99,19 @@ $page_title = $is_manager && !$is_rrhh ?
                                     <div class="row">
                                         <div class="col-md-3">
                                             <strong>Nombre Completo:</strong><br>
-                                            <span><?php echo htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></span>
+                                            <span><?php echo htmlspecialchars(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['username']); ?></span>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>Cédula:</strong><br>
-                                            <span><?php echo htmlspecialchars($user['id_number']); ?></span>
+                                            <span><?php echo htmlspecialchars($user['id_number'] ?? 'N/A'); ?></span>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>Departamento:</strong><br>
-                                            <span class="badge bg-info"><?php echo htmlspecialchars($user['department_name']); ?></span>
+                                            <span class="badge bg-info"><?php echo htmlspecialchars($user['department_name'] ?? 'N/A'); ?></span>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>Cargo:</strong><br>
-                                            <span><?php echo htmlspecialchars($user['job_position_name']); ?></span>
+                                            <span><?php echo htmlspecialchars($user['job_position_name'] ?? 'N/A'); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -247,6 +157,87 @@ $page_title = $is_manager && !$is_rrhh ?
                                 </option>
                             </select>
                         </div>
+
+                        <!-- Selección de Departamentos y Roles -->
+                        <div class="col-12 mt-4">
+                            <h6 class="border-bottom pb-2">Asignación de Departamentos y Roles</h6>
+                            <p class="text-muted small mb-3">Marque los departamentos a los que pertenecerá el usuario y seleccione el rol correspondiente.</p>
+                            <div class="row">
+                                <?php 
+                                // Make sure we have the full list of departments to show
+                                $all_depts = isset($all_departments) ? $all_departments : (isset($departments) ? $departments : []);
+                                // Group roles by department id for easy access
+                                $roles_by_dept = [];
+                                if(isset($all_roles)) {
+                                    foreach($all_roles as $r) {
+                                        $roles_by_dept[$r['department_id']][] = $r;
+                                    }
+                                }
+                                
+                                // Map user's current departments for easier checking
+                                $user_depts_map = [];
+                                if (isset($user['departments'])) {
+                                    foreach ($user['departments'] as $ud) {
+                                        $user_depts_map[$ud['id']] = $ud['role_id'];
+                                    }
+                                }
+                                
+                                if(empty($all_depts)): ?>
+                                    <div class="alert alert-warning">No hay departamentos disponibles.</div>
+                                <?php else:
+                                    foreach($all_depts as $dept):
+                                        $dept_roles = $roles_by_dept[$dept['id']] ?? [];
+                                        $has_dept = isset($user_depts_map[$dept['id']]);
+                                        $current_role_in_dept = $has_dept ? $user_depts_map[$dept['id']] : null;
+                                        
+                                        // Only show departments that have available roles for this user to assign
+                                        if (empty($dept_roles) && !$is_rrhh && !isset($_SESSION['is_superadmin']) && !$has_dept) continue; 
+                                ?>
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="card h-100 shadow-none border">
+                                            <div class="card-body p-3">
+                                                <div class="form-check fw-bold mb-2">
+                                                    <input class="form-check-input dept-checkbox" type="checkbox" id="dept_<?php echo $dept['id']; ?>" <?php echo $has_dept ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label" for="dept_<?php echo $dept['id']; ?>">
+                                                        <?php echo htmlspecialchars($dept['name']); ?>
+                                                    </label>
+                                                </div>
+                                                <select name="department_roles[<?php echo $dept['id']; ?>]" id="role_select_<?php echo $dept['id']; ?>" class="form-select form-select-sm role-select" <?php echo !$has_dept ? 'disabled' : ''; ?>>
+                                                    <option value="">Seleccione un Rol...</option>
+                                                    <?php foreach($dept_roles as $role): ?>
+                                                        <option value="<?php echo $role['id']; ?>" <?php echo ($current_role_in_dept == $role['id']) ? 'selected' : ''; ?>>
+                                                            <?php echo htmlspecialchars($role['name']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php 
+                                    endforeach; 
+                                endif; ?>
+                            </div>
+                        </div>
+                        
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const deptCheckboxes = document.querySelectorAll('.dept-checkbox');
+                            deptCheckboxes.forEach(cb => {
+                                cb.addEventListener('change', function() {
+                                    const deptId = this.id.split('_')[1];
+                                    const roleSelect = document.getElementById('role_select_' + deptId);
+                                    if (this.checked) {
+                                        roleSelect.disabled = false;
+                                        roleSelect.required = true;
+                                    } else {
+                                        roleSelect.disabled = true;
+                                        roleSelect.required = false;
+                                        roleSelect.value = '';
+                                    }
+                                });
+                            });
+                        });
+                        </script>
 
                         <!-- Información adicional -->
                         <div class="col-md-6">

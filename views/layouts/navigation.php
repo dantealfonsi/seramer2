@@ -16,9 +16,26 @@ $current_department = $current_user['selected_department'] ?? '';
 $department_menus = [];
 
 // Obtener menús específicos del departamento si hay uno seleccionado
-if (!empty($current_department)) {
-    $userModel = new UserModel();
-    $department_menus = $userModel->getMenusByDepartment($current_department);
+$userModel = new UserModel();
+$all_master_menus = $userModel->getMasterMenus();
+
+if (!empty($_SESSION['is_superadmin'])) {
+    // Si es superadmin, mostramos un selector para elegir qué departamento ver
+    $superadmin_selected_department = $_GET['superadmin_dept'] ?? ($_SESSION['superadmin_dept'] ?? 'Recursos Humanos');
+    // Save to session
+    $_SESSION['superadmin_dept'] = $superadmin_selected_department;
+    
+    // Obtener las llaves del master menu como los departamentos disponibles
+    $available_master_depts = array_keys($all_master_menus);
+    
+    $department_menus = isset($all_master_menus[$superadmin_selected_department]) ? $all_master_menus[$superadmin_selected_department] : [];
+} else {
+    // Usuario normal
+    if (!empty($current_department)) {
+        $department_menus = $userModel->getMenusByDepartment($current_department);
+    } else {
+        $department_menus = [];
+    }
 }
 ?>
 <style>
@@ -76,16 +93,34 @@ if (!empty($current_department)) {
                 </li>
                 <?php endif; ?>
 
-                <?php if (!empty($current_department)): ?>
-                <!-- Título del departamento actual -->
-                <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text"><?php echo htmlspecialchars($current_department); ?></span>
-                </li>
+                <!-- Solo mostrar Título de Departamento Actual si no es superadmin -->
+                <?php if (empty($_SESSION['is_superadmin'])): ?>
+                    <?php if (!empty($current_department)): ?>
+                    <li class="menu-header small text-uppercase">
+                        <span class="menu-header-text"><?php echo htmlspecialchars($current_department); ?></span>
+                    </li>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <li class="menu-header small text-uppercase mt-3">
+                        <span class="menu-header-text">Zona del Sistema (Superadmin)</span>
+                    </li>
+                    <li class="menu-item px-3 mb-2" style="color:black">
+                        <form id="superadminDeptForm" method="GET" action="">
+                            <select class="form-select form-select-sm border-primary shadow-sm" name="superadmin_dept" onchange="document.getElementById('superadminDeptForm').submit();" style="font-weight: bold; background-color: #f8f9fa;">
+                                <?php foreach ($available_master_depts as $deptName): ?>
+                                    <option value="<?php echo htmlspecialchars($deptName); ?>" <?php echo ($superadmin_selected_department === $deptName) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($deptName); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </form>
+                    </li>
                 <?php endif; ?>
 
-                <!-- Menús específicos del departamento -->
+                <!-- Menús -->
                 <?php if (!empty($department_menus)): ?>
                     <?php foreach ($department_menus as $menu): ?>
+                        
                         <?php if (isset($menu['submenu'])): ?>
                             <!-- Menú con submenús -->
                             <li class="menu-item"  style="color:black">
@@ -112,6 +147,7 @@ if (!empty($current_department)) {
                                 </a>
                             </li>
                         <?php endif; ?>
+                        
                     <?php endforeach; ?>
                 <?php endif; ?>
 
@@ -132,18 +168,45 @@ if (!empty($current_department)) {
                 if (isset($_SESSION['user_id'])) {
                     $is_manager = $userModel->isManager($_SESSION['user_id']);
                 }
+                $is_superadmin = !empty($_SESSION['is_superadmin']);
                 
-                // Mostrar menú si es RRHH, admin o jefe de departamento
-                if ($is_rrhh_or_admin || $is_manager): 
+                // Mostrar menú si es RRHH, admin de la sesión actual, jefe de departamento o SUPERADMIN
+                if ($is_rrhh_or_admin || $is_manager || $is_superadmin): 
                 ?>
                 <li class="menu-item 
-                    <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">
+                    <?php echo (strpos($_SERVER['PHP_SELF'], '/users/') !== false) ? 'active' : ''; ?>">
                     <a href="<?php echo url('views/users/index.php'); ?>" class="menu-link">
                         <i class="menu-icon icon-base ri ri-user-settings-line"></i>
                         <div data-i18n="Usuarios">Usuarios</div>
                     </a>
                 </li>
-                
+                <?php endif; ?>
+
+                <?php 
+                // Verificar si es Superadmin o manager para Roles
+                $is_superadmin = !empty($_SESSION['is_superadmin']);
+                if ($is_superadmin || $is_manager): 
+                ?>
+                <li class="menu-item 
+                    <?php echo (strpos($_SERVER['PHP_SELF'], '/roles/') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/roles/index.php'); ?>" class="menu-link">
+                        <i class="menu-icon icon-base ri ri-shield-keyhole-line"></i>
+                        <div data-i18n="Roles">Roles</div>
+                    </a>
+                </li>
+                <?php endif; ?>
+
+                <?php 
+                // Añadir departamentos aquí también por acceso rápido para Superadmin
+                if ($is_superadmin): 
+                ?>
+                <li class="menu-item 
+                    <?php echo (strpos($_SERVER['PHP_SELF'], '/departments/') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/departments/index.php'); ?>" class="menu-link">
+                        <i class="menu-icon icon-base ri ri-building-3-line"></i>
+                        <div data-i18n="Departamentos">Departamentos</div>
+                    </a>
+                </li>
                 <?php endif; ?>
 
                
