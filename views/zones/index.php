@@ -101,20 +101,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         </div>
 
-                        <!-- Métrica Rápida -->
-                        <div class="card border-0 bg-gradient-warning overflow-hidden mb-4" style="border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(255, 171, 0, 0.2);">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-map-pin-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold"><?php echo number_format($totalZones); ?></h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Zonas Registradas</p>
-                                    </div>
+                        <!-- Métrica Rápida Estilo Metro -->
+                        <div class="card card-status-warning mb-4" style="background-color: var(--metro-warning-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                    <i class="ri-map-2-line"></i>
                                 </div>
-                                <div class="position-absolute" style="right: -10px; bottom: -20px; opacity: 0.1;">
-                                    <i class="ri-map-2-line text-white" style="font-size: 6rem;"></i>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($totalZones); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">ZONAS REGISTRADAS</p>
                                 </div>
                             </div>
                         </div>

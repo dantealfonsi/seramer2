@@ -57,17 +57,24 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </a>
                         </div>
 
-                        <!-- Info Card -->
-                        <div class="card border-0 bg-gradient-primary overflow-hidden mb-4" style="border-radius: 0.5rem;">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-calendar-check-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold">Gestión Fiscal</h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Control de períodos fiscales y facturación anual.</p>
-                                    </div>
+                        <?php
+                        $currentFY = 'No establecido';
+                        foreach ($fiscalYears as $fy) {
+                            if ($fy['status'] === 'active') {
+                                $currentFY = $fy['year'];
+                                break;
+                            }
+                        }
+                        ?>
+                        <!-- Info Card Estilo Metro -->
+                        <div class="card card-status-primary mb-4" style="background-color: var(--metro-primary-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important; background-color: transparent !important;">
+                                    <i class="ri-calendar-check-line"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo htmlspecialchars($currentFY); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">AÑO FISCAL ACTUAL</p>
                                 </div>
                             </div>
                         </div>

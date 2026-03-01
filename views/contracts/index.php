@@ -136,59 +136,48 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         </div>
 
-                        <!-- Métricas Rápidas -->
+                        <!-- Métricas Rápidas Estilo Metro (Estandarizadas con Awardees) -->
                         <div class="row g-4 mb-4">
-                            <!-- Total -->
+                            <!-- Contratos Activos -->
                             <div class="col-md-4">
-                                <div class="card border-0 bg-gradient-primary h-100 shadow-sm" style="border-radius: 0.5rem;">
-                                    <div class="card-body p-4 position-relative">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                                <i class="ri-file-copy-2-line ri-2x text-white"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="mb-0 text-white fw-bold"><?php echo number_format($metrics['total']); ?></h3>
-                                                <p class="mb-0 text-white-50 fw-semibold">Total Contratos</p>
-                                            </div>
+                                <div class="card card-status-success h-100" style="background-color: var(--metro-success-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important; background-color: transparent !important;">
+                                            <i class="ri-checkbox-circle-line"></i>
                                         </div>
-                                        <div class="position-absolute" style="right: 15px; bottom: 10px; opacity: 0.1;">
-                                            <i class="ri-file-text-line text-white" style="font-size: 4rem;"></i>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-success);"><?php echo number_format($metrics['active']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Activos</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Activos -->
+                            
+                            <!-- Contratos Simultáneos -->
                             <div class="col-md-4">
-                                <div class="card border-0 h-100 shadow-sm" style="border-radius: 0.5rem; background-color: #e8fadf;">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                                <i class="ri-checkbox-circle-line ri-2x text-success"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="mb-0 text-success fw-bold"><?php echo number_format($metrics['active']); ?></h3>
-                                                <p class="mb-0 text-muted fw-semibold">Contratos Activos</p>
-                                            </div>
+                                <div class="card card-status-primary h-100" style="background-color: var(--metro-primary-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important; background-color: transparent !important;">
+                                            <i class="ri-refresh-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($metrics['simultaneous']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Simultáneos</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Detalles por Tipo -->
+
+                            <!-- Contratos Anticipados -->
                             <div class="col-md-4">
-                                <div class="card border-0 h-100 shadow-sm" style="border-radius: 0.5rem; background-color: #f0f2f4;">
-                                    <div class="card-body p-3 d-flex flex-column justify-content-center">
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="text-muted small fw-bold text-uppercase">Tipos de Contrato</span>
+                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                            <i class="ri-history-line"></i>
                                         </div>
-                                        <div class="d-flex gap-2">
-                                            <div class="flex-grow-1 bg-white p-2 rounded-2 text-center border">
-                                                <h6 class="mb-0 fw-bold text-primary"><?php echo $metrics['simultaneous']; ?></h6>
-                                                <small class="text-muted" style="font-size: 0.65rem;">Simultáneos</small>
-                                            </div>
-                                            <div class="flex-grow-1 bg-white p-2 rounded-2 text-center border">
-                                                <h6 class="mb-0 fw-bold text-warning"><?php echo $metrics['advance']; ?></h6>
-                                                <small class="text-muted" style="font-size: 0.65rem;">Anticipados</small>
-                                            </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($metrics['advance']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Anticipados</p>
                                         </div>
                                     </div>
                                 </div>
