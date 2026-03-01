@@ -256,6 +256,32 @@ class ContractPaymentModel extends Model {
         return $result;
     }
 
+    public function getAllPaymentsWithRateByAwardee(int $awardeeId): array {
+        $query = "SELECT cp.*, 
+                         er.bs_value as euro_rate_value,
+                         (SELECT SUM(COALESCE(ic.payment_count, 0) + COALESCE(ec.payment_count, 0))
+                          FROM contract_business_categories cbc
+                          LEFT JOIN internal_business_categories ic ON cbc.internal_category_id = ic.id
+                          LEFT JOIN external_business_categories ec ON cbc.external_category_id = ec.id
+                          WHERE cbc.contract_id = cp.contract_id
+                         ) as amount_eur,
+                         ((SELECT SUM(COALESCE(ic.payment_count, 0) + COALESCE(ec.payment_count, 0))
+                          FROM contract_business_categories cbc
+                          LEFT JOIN internal_business_categories ic ON cbc.internal_category_id = ic.id
+                          LEFT JOIN external_business_categories ec ON cbc.external_category_id = ec.id
+                          WHERE cbc.contract_id = cp.contract_id
+                         ) * er.bs_value) as amount_bs,
+                         COALESCE((SELECT SUM(cpi.amount) 
+                                   FROM contract_payment_installments cpi 
+                                   WHERE cpi.contract_payment_id = cp.id), 0) as total_paid
+                  FROM {$this->table} cp
+                  INNER JOIN contracts c ON cp.contract_id = c.id
+                  LEFT JOIN euro_rates er ON cp.euro_rate_id = er.id
+                  WHERE c.awardee_id = :awardee_id
+                  ORDER BY cp.payment_date ASC";
+        return $this->query($query, ['awardee_id' => $awardeeId]);
+    }
+
     public function canDeletePayment(int $id): array {
         $query = "SELECT COUNT(*) as installments_count
                   FROM contract_payment_installments

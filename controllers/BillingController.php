@@ -64,8 +64,14 @@ class BillingController {
         switch ($searchType) {
             case 'id_number':
                 $prefix = $params['id_prefix'] ?? '';
-                $fullId = $prefix . $searchTerm;
-                $awardee = $this->awardeeModel->getByIdNumber($fullId);
+                // IDs are stored with a dash separator in the DB (e.g. V-12345678)
+                // Build both formats to handle whatever is stored
+                $fullIdWithDash = $prefix . '-' . $searchTerm;
+                $fullIdNoDash   = $prefix . $searchTerm;
+                $awardee = $this->awardeeModel->getByIdNumber($fullIdWithDash);
+                if (!$awardee) {
+                    $awardee = $this->awardeeModel->getByIdNumber($fullIdNoDash);
+                }
                 break;
             
             case 'name':
