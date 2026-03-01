@@ -62,8 +62,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title dani-title">
-                            <i class="ri-alert-line me-1 dani-icon"></i>
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-alert-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars("Gestión de Tipos de Infracción") ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">

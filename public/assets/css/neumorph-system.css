@@ -107,7 +107,7 @@
     /* Gris Carbón Oscuro para cabeceras */
     --metro-thead-text: #ffffff;
     --metro-tbody-bg: #ffffff;
-    --metro-tbody-alt: #f8f9fb;
+    --metro-tbody-alt: rgba(0, 0, 0, 0.05);
     /* Stripe alternativo (opcional) */
     --metro-tbody-hover: #eef4fb;
     --metro-tbody-border: #e2e8f0;

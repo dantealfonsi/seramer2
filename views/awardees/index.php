@@ -69,14 +69,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-body p-4">
                         
                         <!-- 1. Encabezado (Título y Botón) -->
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 700;">
-                                <div class="page-icon me-3">
-                                    <i class="ri-group-line"></i>
-                                </div>
+                        <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-group-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                                 Gestión de Adjudicatarios
                             </h5>
-                            <a href="create.php" class="btn btn-primary btn-page-action">
+                            <a href="create.php" class="btn btn-primary">
                                 <i class="ri-add-line"></i> Registrar Adjudicatario
                             </a>
                         </div>
@@ -154,8 +152,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- 4. Tabla de Datos -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="awardeesTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="awardeesTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Cédula</th>
                                         <th>Nombre Completo</th>
@@ -245,6 +243,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
     $(document).ready(function() {
@@ -278,7 +277,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             const table = $('#awardeesTable').DataTable({
                 responsive: true,
-                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+                dom: 'Bfrtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',
@@ -293,14 +292,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     { image: commonPdfLogo, width: 50 },
                                     {
                                         text: [
+                                            { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                            { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
                                             { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
-                                            { text: 'LISTADO DE ADJUDICATARIOS', fontSize: 12, bold: true }
+                                            { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
                                         ],
                                         margin: [10, 0, 0, 0]
                                     }
                                 ],
                                 margin: [0, 0, 0, 10]
                             });
+
+                            doc.content.splice(1, 0, {
+                                canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                                margin: [0, 0, 0, 20]
+                            });
+
+                            doc.content.splice(2, 0, {
+                                text: 'Listado de Adjudicatarios',
+                                style: 'header',
+                                alignment: 'center',
+                                margin: [0, 0, 0, 15]
+                            });
+
+                            const table = doc.content.find(content => content.table);
+                            if (table) {
+                                table.table.body[0].forEach(function(cell) {
+                                    cell.fillColor = '#2d4154';
+                                    cell.color = 'white';
+                                    cell.bold = true;
+                                    cell.alignment = 'center';
+                                });
+
+                                for (let i = 1; i < table.table.body.length; i++) {
+                                    if (i % 2 === 0) {
+                                        table.table.body[i].forEach(function(cell) {
+                                            cell.fillColor = '#f2f2f2';
+                                        });
+                                    }
+                                }
+                                table.table.widths = Array(table.table.body[0].length).fill('*');
+                            }
                         }
                     },
                     {

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../controllers/BillingController.php';
 
 $controller = new BillingController();
@@ -20,10 +20,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-    .card-title-premium {
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-    }
     .kpi-card {
         border: none;
         border-radius: 12px;
@@ -55,15 +51,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
         font-size: 0.8rem;
         margin-top: 5px;
         opacity: 0.8;
-    }
-    .icon-premium {
-        font-size: 2rem !important;
-        background: #837aff;
-        color: white;
-        font-weight: 100 !important;
-        padding: .24rem;
-        border-radius: .7rem;
-        margin-right: 1rem;
     }
 </style>
 
@@ -103,7 +90,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card shadow-sm border-0">
                     <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
+                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
                                 <i class="ri-file-list-3-line" style="color: #696cff; font-size: 2rem;"></i>
                             </div>

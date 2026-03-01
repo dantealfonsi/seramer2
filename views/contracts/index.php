@@ -24,21 +24,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
         padding: 1.5rem;
         background-color: #f5f5f9;
     }
-    #contractsTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #contractsTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #contractsTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
     .card-inside {
         background-color: #fff;
         border: 1px solid #d9dee3;
@@ -57,11 +42,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-body p-4">
                         
                         <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-file-text-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
+                        <div class="card-header d-flex justify-content-between align-items-center mb-5">
+                            <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-text-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                                 <?php echo htmlspecialchars($page_title); ?>
                             </h5>
                             <div class="d-flex gap-2">
@@ -218,8 +201,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="contractsTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="contractsTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th style="width: 40px !important;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
                                         <th>Adjudicatario</th>
@@ -348,13 +331,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
 <link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
 $(document).ready(function() {
     if ($.fn.DataTable) {
         const table = $('#contractsTable').DataTable({
             responsive: true,
-            dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+            dom: 'Bfrtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',
@@ -371,22 +355,44 @@ $(document).ready(function() {
                                 {
                                     text: [
                                         { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
                                         { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
-                                        { text: 'LISTADO DE CONTRATOS REGISTRADOS', fontSize: 12, bold: true }
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
                                     ],
                                     margin: [10, 0, 0, 0]
                                 }
                             ],
                             margin: [0, 0, 0, 10]
                         });
+
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                            margin: [0, 0, 0, 20]
+                        });
+
+                        doc.content.splice(2, 0, {
+                            text: 'Listado de Contratos Registrados',
+                            style: 'header',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 15]
+                        });
+
                         const table = doc.content.find(content => content.table);
                         if (table) {
-                            table.table.widths = ['25%', '15%', '30%', '15%', '15%'];
-                            table.table.body[0].forEach(cell => {
+                            table.table.body[0].forEach(function(cell) {
                                 cell.fillColor = '#2d4154';
                                 cell.color = 'white';
                                 cell.bold = true;
+                                cell.alignment = 'center';
                             });
+
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(function(cell) {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
                         }
                     }
                 },

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de listado de infracciones
 session_start();
 
@@ -86,8 +86,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-alert-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-alert-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <?php if ($can_create_infraction && $rol->hasPermission('INFRACTIONS', 'w')): ?>

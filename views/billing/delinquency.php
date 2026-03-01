@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../models/BillingReportModel.php';
 require_once __DIR__ . '/../../models/SectorModel.php';
 require_once __DIR__ . '/../../models/ZoneModel.php';
@@ -32,19 +32,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-    .card-title-premium {
-        font-size: 2rem !important;
-        font-weight: 600 !important;
-    }
-    .icon-premium {
-        font-size: 2rem !important;
-        background: #837aff;
-        color: white;
-        font-weight: 100 !important;
-        padding: .24rem;
-        border-radius: .7rem;
-        margin-right: 1rem;
-    }
     .overdue-low { background-color: rgba(255, 249, 196, 0.4); }
     .overdue-medium { background-color: rgba(255, 224, 178, 0.4); }
     .overdue-high { background-color: rgba(255, 205, 210, 0.4); }
@@ -56,7 +43,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
+                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
                                 <i class="ri-alarm-warning-line" style="color: #696cff; font-size: 2rem;"></i>
                             </div>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Verificar acceso - permitir RRHH y jefes de departamento
 require_once __DIR__ . '/../../middleware/AuthMiddleware.php';
 AuthMiddleware::requireUserManagementAccess();
@@ -64,7 +64,7 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
     <!-- Alerta si faltan datos de personal -->
     <?php if (!$has_staff_data): ?>
         <div class="alert alert-warning alert-dismissible" role="alert">
-            <i class="ri-alert-line me-2" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-alert-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
             <strong>Información Incompleta:</strong> Este usuario no tiene datos de personal completos asociados. 
             Se muestra la información disponible del sistema de usuarios.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
