@@ -56,6 +56,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
         background-color: var(--metro-surface-alt) !important;
         margin-bottom: 1.5rem;
     }
+    .dataTables_wrapper .dt-buttons {
+        margin-bottom: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_filter {
+        margin-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 0.5rem !important;
+    }
 </style>
 
 
@@ -116,10 +125,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <div class="col-md-2 d-flex align-items-end">
                                             <div class="d-flex gap-2 w-100">
                                                 <a href="index.php" class="btn btn-filter-clear w-50" title="Limpiar Filtros">
-                                                    <i class="ri-refresh-line"></i>
+                                                    <i class="ri-refresh-line me-1"></i> Limpiar
                                                 </a>
                                                 <button type="submit" class="btn btn-filter-apply w-50" title="Aplicar Filtros">
-                                                    <i class="ri-search-line"></i>
+                                                    <i class="ri-search-line me-1"></i> Filtrar
                                                 </button>
                                             </div>
                                         </div>
@@ -277,7 +286,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             const table = $('#awardeesTable').DataTable({
                 responsive: true,
-                dom: 'Bfrtip',
+                dom: '<"d-flex justify-content-between align-items-center mb-4"Bf>rtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',
