@@ -151,58 +151,31 @@ if (!empty($_SESSION['is_superadmin'])) {
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <!-- Módulos Generales -->
+                <?php 
+                $is_superadmin = !empty($_SESSION['is_superadmin']);
+                if ($is_superadmin): 
+                ?>
+                <!-- Módulos Generales (Solo Superadmin) -->
                 <li class="menu-header small text-uppercase">
-                    <span class="menu-header-text">Configuraciones</span>
+                    <span class="menu-header-text">Configuraciones Globales</span>
                 </li>
 
-                <!-- Gestión de Usuarios (para RRHH, administradores y jefes de departamento) -->
-                <?php 
-                // Verificar si es RRHH o administrador (acceso completo)
-                $is_rrhh_or_admin = ($current_department == 'Recursos Humanos' || (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'admin') ||  $userModel->isManager($_SESSION['user_id']));
-                
-                // Verificar si es jefe de departamento
-                require_once __DIR__ . '/../../models/UserModel.php';
-                $userModel = new UserModel();
-                $is_manager = false;
-                if (isset($_SESSION['user_id'])) {
-                    $is_manager = $userModel->isManager($_SESSION['user_id']);
-                }
-                $is_superadmin = !empty($_SESSION['is_superadmin']);
-                
-                // Mostrar menú si es RRHH, admin de la sesión actual, jefe de departamento o SUPERADMIN
-                if ($is_rrhh_or_admin || $is_manager || $is_superadmin): 
-                ?>
-                <li class="menu-item 
-                    <?php echo (strpos($_SERVER['PHP_SELF'], '/users/') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo url('views/users/index.php'); ?>" class="menu-link">
+                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/users/') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/users/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-user-settings-line"></i>
                         <div data-i18n="Usuarios">Usuarios</div>
                     </a>
                 </li>
-                <?php endif; ?>
 
-                <?php 
-                // Verificar si es Superadmin o manager para Roles
-                $is_superadmin = !empty($_SESSION['is_superadmin']);
-                if ($is_superadmin || $is_manager): 
-                ?>
-                <li class="menu-item 
-                    <?php echo (strpos($_SERVER['PHP_SELF'], '/roles/') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo url('views/roles/index.php'); ?>" class="menu-link">
+                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/roles/') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/roles/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-shield-keyhole-line"></i>
                         <div data-i18n="Roles">Roles</div>
                     </a>
                 </li>
-                <?php endif; ?>
 
-                <?php 
-                // Añadir departamentos aquí también por acceso rápido para Superadmin
-                if ($is_superadmin): 
-                ?>
-                <li class="menu-item 
-                    <?php echo (strpos($_SERVER['PHP_SELF'], '/departments/') !== false) ? 'active' : ''; ?>">
-                    <a href="<?php echo url('views/departments/index.php'); ?>" class="menu-link">
+                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/departments/') !== false) ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/departments/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-building-3-line"></i>
                         <div data-i18n="Departamentos">Departamentos</div>
                     </a>

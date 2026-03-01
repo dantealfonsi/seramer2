@@ -58,8 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get the master menu nodes for this role's department
-$master_menu = $rolesController->getMasterMenuNodes($role['department_id']);
+// Get all master menu nodes for the whole system to support mixed roles
+$all_menus = $userModel->getMasterMenus();
 $current_permissions = !empty($role['menu_json']) ? json_decode($role['menu_json'], true) : [];
 if (!is_array($current_permissions)) $current_permissions = [];
 
@@ -164,62 +164,79 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <p class="text-muted small mb-3">Seleccione a qué módulos y apartados del sistema tendrá acceso este rol.</p>
                             
                             <div class="row">
-                                <?php if (empty($master_menu)): ?>
-                                    <div class="col-12"><div class="alert alert-warning">No hay menús registrados para este departamento.</div></div>
+                                <?php 
+                                $is_mixto = (isset($role['department_name']) && strtolower($role['department_name']) === 'mixto');
+                                $filtered_menus = [];
+                                foreach ($all_menus as $deptName => $nodes) {
+                                    if ($is_mixto || $deptName === ($role['department_name'] ?? '')) {
+                                        $filtered_menus[$deptName] = $nodes;
+                                    }
+                                }
+                                
+                                if (empty($filtered_menus)): 
+                                ?>
+                                    <div class="col-12"><div class="alert alert-warning">No hay menús disponibles o aplicables para este departamento.</div></div>
                                 <?php else: ?>
                                     <div class="col-12">
                                         <div class="accordion" id="menuAccordion">
-                                            <?php foreach ($master_menu as $index => $node): ?>
-                                                <?php 
+                                            <?php 
+                                            $index = 0;
+                                            foreach ($filtered_menus as $deptName => $nodes): 
+                                                if (empty($nodes)) continue;
+                                            ?>
+                                                <h6 class="mt-3 mb-2 text-primary fw-bold" style="font-size: 0.9rem; text-transform: uppercase;">Módulo: <?php echo htmlspecialchars($deptName); ?></h6>
+                                                <?php foreach ($nodes as $node): 
+                                                    $index++;
                                                     $is_node_checked = in_array($node['title'], $current_permissions);
                                                 ?>
-                                                <div class="accordion-item shadow-none border mb-2 rounded">
-                                                    <h2 class="accordion-header" id="heading<?php echo $index; ?>">
-                                                        <div class="d-flex align-items-center w-100 px-3 py-2 bg-light">
-                                                            <div class="form-check me-3">
-                                                                <input class="form-check-input parent-checkbox" type="checkbox" 
-                                                                       name="menu_permissions[]" 
-                                                                       value="<?php echo htmlspecialchars($node['title']); ?>" 
-                                                                       id="parent_<?php echo $index; ?>"
-                                                                       <?php echo $is_node_checked ? 'checked' : ''; ?>
-                                                                       <?php echo ($is_admin_role) ? 'disabled checked' : ''; ?>>
+                                                    <div class="accordion-item shadow-none border mb-2 rounded">
+                                                        <h2 class="accordion-header" id="heading<?php echo $index; ?>">
+                                                            <div class="d-flex align-items-center w-100 px-3 py-2 bg-light">
+                                                                <div class="form-check me-3">
+                                                                    <input class="form-check-input parent-checkbox" type="checkbox" 
+                                                                           name="menu_permissions[]" 
+                                                                           value="<?php echo htmlspecialchars($node['title']); ?>" 
+                                                                           id="parent_<?php echo $index; ?>"
+                                                                           <?php echo $is_node_checked ? 'checked' : ''; ?>
+                                                                           <?php echo ($is_admin_role) ? 'disabled checked' : ''; ?>>
+                                                                </div>
+                                                                <button class="accordion-button collapsed p-0 bg-light flex-grow-1 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="false" aria-controls="collapse<?php echo $index; ?>">
+                                                                    <i class="me-2 <?php echo htmlspecialchars($node['icon'] ?? 'ri-folder-line'); ?>"></i>
+                                                                    <?php echo htmlspecialchars($node['title']); ?>
+                                                                </button>
                                                             </div>
-                                                            <button class="accordion-button collapsed p-0 bg-light flex-grow-1 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?php echo $index; ?>" aria-expanded="false" aria-controls="collapse<?php echo $index; ?>">
-                                                                <i class="me-2 <?php echo htmlspecialchars($node['icon'] ?? 'ri-folder-line'); ?>"></i>
-                                                                <?php echo htmlspecialchars($node['title']); ?>
-                                                            </button>
-                                                        </div>
-                                                    </h2>
-                                                    
-                                                    <?php if (isset($node['submenu'])): ?>
-                                                    <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse" aria-labelledby="heading<?php echo $index; ?>">
-                                                        <div class="accordion-body pt-1 pb-3 px-4">
-                                                            <div class="row ms-4">
-                                                                <?php foreach ($node['submenu'] as $subIndex => $subNode): ?>
-                                                                    <?php 
-                                                                        $sub_value = $node['title'] . '::' . $subNode['title'];
-                                                                        $is_sub_checked = in_array($sub_value, $current_permissions);
-                                                                    ?>
-                                                                    <div class="col-md-6 mb-2">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input child-checkbox" type="checkbox" 
-                                                                                   name="menu_permissions[]" 
-                                                                                   value="<?php echo htmlspecialchars($sub_value); ?>" 
-                                                                                   id="child_<?php echo $index; ?>_<?php echo $subIndex; ?>"
-                                                                                   data-parent="parent_<?php echo $index; ?>"
-                                                                                   <?php echo $is_sub_checked ? 'checked' : ''; ?>
-                                                                                   <?php echo ($is_admin_role) ? 'disabled checked' : ''; ?>>
-                                                                            <label class="form-check-label" for="child_<?php echo $index; ?>_<?php echo $subIndex; ?>">
-                                                                                <?php echo htmlspecialchars($subNode['title']); ?>
-                                                                            </label>
+                                                        </h2>
+                                                        
+                                                        <?php if (isset($node['submenu'])): ?>
+                                                        <div id="collapse<?php echo $index; ?>" class="accordion-collapse collapse" aria-labelledby="heading<?php echo $index; ?>">
+                                                            <div class="accordion-body pt-1 pb-3 px-4">
+                                                                <div class="row ms-4">
+                                                                    <?php foreach ($node['submenu'] as $subIndex => $subNode): ?>
+                                                                        <?php 
+                                                                            $sub_value = $node['title'] . '::' . $subNode['title'];
+                                                                            $is_sub_checked = in_array($sub_value, $current_permissions);
+                                                                        ?>
+                                                                        <div class="col-md-6 mb-2">
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input child-checkbox" type="checkbox" 
+                                                                                       name="menu_permissions[]" 
+                                                                                       value="<?php echo htmlspecialchars($sub_value); ?>" 
+                                                                                       id="child_<?php echo $index; ?>_<?php echo $subIndex; ?>"
+                                                                                       data-parent="parent_<?php echo $index; ?>"
+                                                                                       <?php echo $is_sub_checked ? 'checked' : ''; ?>
+                                                                                       <?php echo ($is_admin_role) ? 'disabled checked' : ''; ?>>
+                                                                                <label class="form-check-label" for="child_<?php echo $index; ?>_<?php echo $subIndex; ?>">
+                                                                                    <?php echo htmlspecialchars($subNode['title']); ?>
+                                                                                </label>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                <?php endforeach; ?>
+                                                                    <?php endforeach; ?>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        <?php endif; ?>
                                                     </div>
-                                                    <?php endif; ?>
-                                                </div>
+                                                <?php endforeach; ?>
                                             <?php endforeach; ?>
                                         </div>
                                     </div>

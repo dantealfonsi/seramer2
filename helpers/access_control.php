@@ -29,6 +29,12 @@ function checkDepartmentAccess() {
         return;
     }
 
+    // Los usuarios bajo el departamento 'Mixto' han sido configurados para poder cruzar 
+    // contextos y ser controlados de forma granular por su menu_json, no por bloqueos de directorio genéricos.
+    if (strtolower($currentDept) === 'mixto') {
+        return;
+    }
+
     // 3. Obtener la ruta relativa actual
     // Ejemplo: /seramer2/views/complaints/index.php -> views/complaints/index.php
     $requestUri = $_SERVER['PHP_SELF']; 

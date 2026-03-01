@@ -803,11 +803,20 @@ class UserModel {
         
         $menus = $this->getMasterMenus();
 
-        $dept_menus = isset($menus[$department_name]) ? $menus[$department_name] : [];
+        // Si el departamento no tiene menús propios (como "Mixto"), consolidamos todos para que
+        // los permisos granulares puedan hacer match a través de todo el sistema.
+        if (isset($menus[$department_name])) {
+            $dept_menus_raw = $menus[$department_name];
+        } else {
+            $dept_menus_raw = [];
+            foreach ($menus as $m) {
+                $dept_menus_raw = array_merge($dept_menus_raw, $m);
+            }
+        }
 
-        // Si somos superadmin, vemos todo el de ese departamento sin bloqueos (usualmente lo saltamos pero por si acaso)
+        // Si somos superadmin, vemos todo
         if (!empty($_SESSION['is_superadmin'])) {
-            return $dept_menus;
+            return $dept_menus_raw;
         }
 
         // Si tenemos un arreglo de departamentos en sesión, filtramos por menu_json
@@ -816,9 +825,8 @@ class UserModel {
             // Buscar la configuración json del rol para el departamento actual
             foreach ($user_departments as $ud) {
                 if ($ud['name'] === $department_name && isset($ud['role_id'])) {
-                    // Si el rol es admin, forzamos a ver todo
                     if ($ud['role_name'] === 'admin') {
-                        return $dept_menus;
+                        return $dept_menus_raw;
                     }
                     
                     if (!empty($ud['menu_json'])) {
@@ -828,10 +836,9 @@ class UserModel {
                 }
             }
 
-            // Si el rol tiene un menu_json definido, filtramos el master
             if (is_array($current_role_menu)) {
                 $filtered_menus = [];
-                foreach ($dept_menus as $menu) {
+                foreach ($dept_menus_raw as $menu) {
                     // Si el titulo del menu principal está en el array permitido
                     if (in_array($menu['title'], $current_role_menu)) {
                         $filtered_menu = $menu;
@@ -860,7 +867,7 @@ class UserModel {
             }
         }
 
-        return $dept_menus;
+        return $dept_menus_raw;
     }
 
     /**

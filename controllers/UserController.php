@@ -124,11 +124,15 @@ class UserController {
             $password = $params['password'] ?? '';
             $confirm_password = $params['confirm_password'] ?? '';
             $email = trim($params['email'] ?? '');
-            $role_id = $params['role_id'] ?? null;
+            $department_roles = $params['department_roles'] ?? [];
             
             // Validaciones
             $errors = $this->validateUserCreation($staff_id, $username, $password, $confirm_password, $email);
             
+            if (empty($department_roles)) {
+                $errors[] = 'Debe asignar al menos un rol de departamento.';
+            }
+
             if (!empty($errors)) {
                 $result['errors'] = $errors;
                 $result['staff_id'] = $staff_id;
@@ -148,7 +152,7 @@ class UserController {
                 }
                 
                 if ($result['success']) {
-                    $creation_result = $this->userModel->createUserForStaff($staff_id, $username, $password, $email, $role_id);
+                    $creation_result = $this->userModel->createUserForStaff($staff_id, $username, $password, $email, $department_roles);
                     
                     if ($creation_result['success']) {
                         $result['message'] = $creation_result['message'];
@@ -164,14 +168,15 @@ class UserController {
             }
         }
         
-        // Obtener personal disponible según el rol
-        // Obtener personal disponible según el rol
+        // Cargar roles y departamentos disponibles para el UI
         if ($is_rrhh || !empty($_SESSION['is_superadmin'])) {
             $result['available_staff'] = $this->userModel->getAllStaffWithoutUser();
             $result['available_roles'] = $this->roleModel->getAll();
+            $result['all_departments'] = $this->userModel->getAllDepartments();
         } else if ($is_manager) {
             $result['available_staff'] = $this->userModel->getStaffWithoutUserByDepartment($is_manager['id']);
             $result['available_roles'] = $this->roleModel->getAll($is_manager['id']);
+            $result['all_departments'] = [['id' => $is_manager['id'], 'name' => $is_manager['name']]];
         }
         
         return $result;
