@@ -120,7 +120,7 @@ $page_title = 'Editar Usuario';
                     </div>
 
                     <!-- Formulario de edición -->
-                    <form method="POST" class="row g-3">
+                    <form method="POST" class="row g-3 user-form-exception">
                         <!-- Datos básicos del usuario -->
                         <div class="col-md-6">
                             <label for="username" class="form-label">

@@ -26,43 +26,43 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <?php endif; ?>
 
 
-                <!-- Summary Cards -->
-                <div class="row mb-4">
+                  <!-- Summary Cards Metro UI -->
+                <div class="row mb-4 g-3">
                     <div class="col-md-4">
-                        <div class="card bg-primary text-white h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white opacity-75 small text-uppercase fw-bold">Primeros Pagos (Total)</h6>
-                                        <h3 class="text-white mb-0">Bs. <?php echo number_format($summary['total_initial'], 2, ',', '.'); ?></h3>
-                                    </div>
-                                    <i class="ri-skip-back-line fs-1 opacity-50"></i>
+                        <div class="card card-status-primary h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;">
+                                    <i class="ri-skip-back-line"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Primeros Pagos (Total)</p>
+                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-primary);">Bs. <?php echo number_format($summary['total_initial'], 2, ',', '.'); ?></h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card bg-success text-white h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white opacity-75 small text-uppercase fw-bold">Total Recaudado</h6>
-                                        <h3 class="text-white mb-0">Bs. <?php echo number_format($summary['total_final'], 2, ',', '.'); ?></h3>
-                                    </div>
-                                    <i class="ri-money-dollar-circle-line fs-1 opacity-50"></i>
+                        <div class="card card-status-success h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;background-color:var(--metro-success-light);color:var(--metro-success);">
+                                    <i class="ri-money-dollar-circle-line"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Total Recaudado</p>
+                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-success);">Bs. <?php echo number_format($summary['total_final'], 2, ',', '.'); ?></h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card bg-warning text-white h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="text-white opacity-75 small text-uppercase fw-bold">Pago más Alto</h6>
-                                        <h3 class="text-white mb-0">Bs. <?php echo number_format($summary['total_max'], 2, ',', '.'); ?></h3>
-                                    </div>
-                                    <i class="ri-funds-line fs-1 opacity-50"></i>
+                        <div class="card card-status-warning h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;background-color:var(--metro-warning-light);color:var(--metro-warning);">
+                                    <i class="ri-funds-line"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Pago más Alto</p>
+                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-warning);">Bs. <?php echo number_format($summary['total_max'], 2, ',', '.'); ?></h4>
                                 </div>
                             </div>
                         </div>
@@ -70,46 +70,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 </div>
 
                 <!-- Filters -->
-                <div class="card mb-4 border-0 shadow-sm">
+                <div class="card mb-4 filter-section">
                     <div class="card-body">
-                        <form method="GET" class="row g-3">
+                        <form method="GET" class="row g-3 align-items-end">
                             <div class="col-md-3">
-                                <label class="form-label small text-muted text-uppercase fw-bold">Desde</label>
+                                <label class="form-label">Desde</label>
                                 <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small text-muted text-uppercase fw-bold">Hasta</label>
+                                <label class="form-label">Hasta</label>
                                 <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label small text-muted text-uppercase fw-bold">Estatus Caja</label>
+                                <label class="form-label">Estatus Caja</label>
                                 <select name="status" class="form-select">
                                     <option value="">Todas</option>
                                     <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activas</option>
                                     <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactivas</option>
                                 </select>
                             </div>
-                                <div class="col-12 d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-primary" style="background-color: #837aff; border-color: #837aff;">
-                                        <i class="ri-search-line me-1"></i> Filtrar 
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" onclick="window.location.href='index.php'">
-                                        <i class="ri-refresh-line"></i> Limpiar
-                                    </button>
-                                </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-filter-apply flex-grow-1">
+                                    <i class="ri-search-line"></i> Filtrar
+                                </button>
+                                <a href="index.php" class="btn btn-filter-clear">
+                                    <i class="ri-refresh-line"></i> Limpiar
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
 
                 <!-- Report Table -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3">
-                         <h5 class="card-title mb-0 d-flex align-items-center" style="font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                <i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                            </div>
-                             Historial de Actividad por Caja
-                        </h5>
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <div class="page-icon me-3">
+                            <i class="ri-file-list-3-line"></i>
+                        </div>
+                        <h5 class="card-title mb-0">Historial de Actividad por Caja</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">

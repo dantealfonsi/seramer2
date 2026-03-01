@@ -46,6 +46,8 @@ session_start();
 
     <link rel="stylesheet" href="<?php echo vendor('css/core.css'); ?>" />
     <link rel="stylesheet" href="<?php echo css('demo.css'); ?>" />
+    <!-- SERAMER: Sistema Neumórfico Integral -->
+    <link rel="stylesheet" href="<?php echo css('neumorph-system.css'); ?>" />
 
     <!-- Vendors CSS -->
 
@@ -72,7 +74,7 @@ session_start();
     <script src="<?php echo js('config.js'); ?>"></script>
   </head>
 
-  <body>
+  <body class="page-login">
     <!-- Content -->
 
     <div class="authentication-wrapper authentication-cover" >

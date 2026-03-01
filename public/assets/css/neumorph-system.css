@@ -1,0 +1,1298 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ *  SERAMER — SISTEMA METRO UI
+ *  Versión: 3.0  |  Fecha: 2026-03
+ *  Cumple: WCAG 2.1 AA (ratio ≥ 4.5:1), ISO 9241-171
+ *
+ *  Estética: Modern Metro UI
+ *  → Colores planos y profesionales (NO neón)
+ *  → Bordes redondeados sutiles (4px–8px)
+ *  → Alta legibilidad y contraste
+ *  → Menú lateral oscuro vs. fondo claro del contenido
+ *  → Tablas y botones estandarizados
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ *  SECCIONES:
+ *  1.  Variables CSS — Paleta Metro
+ *  2.  Reset y Base
+ *  3.  Menú Lateral — Metro Oscuro
+ *  4.  Navbar Superior
+ *  5.  Tarjetas (Cards)
+ *  6.  Botones — Estandarizados Metro
+ *  7.  Badges / Etiquetas
+ *  8.  Tablas — Cabecera Sólida + Cuerpo Limpio
+ *  9.  Formularios / Inputs
+ * 10.  Regla Global: text-transform uppercase
+ * 11.  Excepciones: Login + Usuarios
+ * 12.  Fix Responsive: Toggle duplicado
+ * 13.  Dark Mode
+ * 14.  Filtros y Botonera Global
+ * 15.  Cards de Estado con Borde Lateral
+ * 16.  Fondo General y Layouts
+ * 17.  Footer
+ * 18.  Animaciones
+ * 19.  Print
+ * ═══════════════════════════════════════════════════════════════════
+ */
+
+/* ───────────────────────────────────────────────────────────────────
+   §1  VARIABLES CSS — PALETA METRO PROFESIONAL
+   ─────────────────────────────────────────────────────────────────── */
+:root {
+    /* --- Fondo General --- */
+    --metro-bg: #f5f5f7;
+    /* Gris Apple muy claro */
+    --metro-surface: #ffffff;
+    /* Superficie blanca pura */
+    --metro-surface-alt: #f0f1f5;
+    /* Superficie alternativa suave */
+
+    /* --- Menú Lateral (oscuro para contraste) --- */
+    --metro-sidebar-bg: #1e2a3a;
+    /* Azul marino oscuro */
+    --metro-sidebar-text: #c8d3e0;
+    /* Texto claro en sidebar */
+    --metro-sidebar-text-muted: #7a8fa6;
+    /* Texto apagado sidebar */
+    --metro-sidebar-hover: #2a3d55;
+    /* Hover en sidebar */
+    --metro-sidebar-active: #1e6091;
+    /* Item activo */
+    --metro-sidebar-active-text: #ffffff;
+    --metro-sidebar-border: #253650;
+    /* Borde separador sidebar */
+    --metro-sidebar-brand-bg: #162030;
+    /* Fondo encabezado sidebar */
+
+    /* --- Paleta Metro — NO NEÓN --- */
+    --metro-primary: #1e6091;
+    /* Azul Acero Oscuro */
+    --metro-primary-light: #e8f4fd;
+    /* Azul muy claro (bg-label) */
+    --metro-primary-hover: #155278;
+    /* Hover primary */
+
+    --metro-success: #2d7a4f;
+    /* Verde Bosque */
+    --metro-success-light: #e8f5ee;
+
+    --metro-warning: #b8860b;
+    /* Ámbar/Ocre */
+    --metro-warning-light: #fdf3dc;
+
+    --metro-danger: #c0392b;
+    /* Carmesí / Rojo Ladrillo */
+    --metro-danger-light: #fde8e6;
+
+    --metro-info: #2980b9;
+    /* Azul Acero Medio */
+    --metro-info-light: #e8f4fd;
+
+    --metro-secondary: #5d6778;
+    /* Gris Carbón */
+    --metro-secondary-light: #eef0f3;
+
+    /* --- Texto (WCAG 2.1 AA ≥ 4.5:1) --- */
+    --metro-text-primary: #1a202c;
+    /* Casi negro azulado */
+    --metro-text-secondary: #4a5568;
+    /* Gris oscuro */
+    --metro-text-muted: #718096;
+    /* Gris medio */
+    --metro-text-on-dark: #f7fafc;
+    /* Texto sobre fondos oscuros */
+
+    /* --- Tabla --- */
+    --metro-thead-bg: #2c3e50;
+    /* Gris Carbón Oscuro para cabeceras */
+    --metro-thead-text: #ffffff;
+    --metro-tbody-bg: #ffffff;
+    --metro-tbody-alt: #f8f9fb;
+    /* Stripe alternativo (opcional) */
+    --metro-tbody-hover: #eef4fb;
+    --metro-tbody-border: #e2e8f0;
+
+    /* --- Bordes --- */
+    --metro-border: #e2e8f0;
+    --metro-border-dark: #cbd5e0;
+    --metro-radius: 8px;
+    --metro-radius-sm: 5px;
+    --metro-radius-xs: 4px;
+
+    /* --- Sombras (planas, limpias) --- */
+    --metro-shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --metro-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.10);
+    --metro-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --metro-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.14);
+
+    /* --- Transición --- */
+    --metro-transition: all 0.2s ease;
+}
+
+/* Dark Mode tokens */
+.dark-style,
+[data-bs-theme="dark"] {
+    --metro-bg: #111827;
+    --metro-surface: #1f2937;
+    --metro-surface-alt: #263040;
+
+    --metro-sidebar-bg: #0d1520;
+    --metro-sidebar-hover: #182535;
+    --metro-sidebar-active: #1e6091;
+    --metro-sidebar-border: #1a2840;
+    --metro-sidebar-brand-bg: #080e18;
+
+    --metro-text-primary: #f1f5f9;
+    --metro-text-secondary: #cbd5e1;
+    --metro-text-muted: #94a3b8;
+
+    --metro-tbody-bg: #1f2937;
+    --metro-tbody-alt: #243040;
+    --metro-tbody-hover: #1e3a5f;
+    --metro-tbody-border: #2d3748;
+
+    --metro-border: #2d3748;
+    --metro-border-dark: #374151;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §2  RESET Y BASE
+   ─────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 14px;
+}
+
+body {
+    background-color: var(--metro-bg) !important;
+    color: var(--metro-text-primary) !important;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §3  MENÚ LATERAL — METRO OSCURO (Contraste vs. fondo claro)
+   ─────────────────────────────────────────────────────────────────── */
+#layout-menu {
+    background-color: var(--metro-sidebar-bg) !important;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.25) !important;
+    border-right: 1px solid var(--metro-sidebar-border) !important;
+    transition: var(--metro-transition);
+}
+
+/* App Brand / Logo */
+#layout-menu .app-brand.demo {
+    background-color: var(--metro-sidebar-brand-bg) !important;
+    border-bottom: 1px solid var(--metro-sidebar-border) !important;
+    padding: 0 !important;
+}
+
+#layout-menu .app-brand-text {
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.2rem !important;
+    letter-spacing: 0.05em;
+    text-transform: uppercase !important;
+}
+
+/* Icono de toggle (colapsar sidebar) — override SVG hardcoded colors */
+#layout-menu .layout-menu-toggle svg path {
+    fill: var(--metro-sidebar-text) !important;
+}
+
+#layout-menu .layout-menu-toggle:hover svg path {
+    fill: #ffffff !important;
+}
+
+/* Encabezados de sección */
+#layout-menu .menu-header-text {
+    color: var(--metro-sidebar-text-muted) !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.1em;
+    text-transform: uppercase !important;
+}
+
+/* Links del menú */
+#layout-menu .menu-link {
+    color: var(--metro-sidebar-text) !important;
+    border-radius: var(--metro-radius-xs) !important;
+    margin: 1px 8px !important;
+    padding: 0.6rem 0.9rem !important;
+    transition: var(--metro-transition);
+}
+
+#layout-menu .menu-link:hover {
+    background-color: var(--metro-sidebar-hover) !important;
+    color: #ffffff !important;
+}
+
+#layout-menu .menu-item.active>.menu-link,
+#layout-menu .menu-item.open>.menu-link {
+    background-color: var(--metro-sidebar-active) !important;
+    color: var(--metro-sidebar-active-text) !important;
+    font-weight: 600;
+}
+
+/* Iconos del menú */
+#layout-menu .menu-icon {
+    color: var(--metro-sidebar-text-muted) !important;
+    transition: color 0.2s ease;
+}
+
+#layout-menu .menu-link:hover .menu-icon,
+#layout-menu .menu-item.active>.menu-link .menu-icon {
+    color: #ffffff !important;
+}
+
+/* Sub-menús */
+#layout-menu .menu-sub {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+    border-radius: var(--metro-radius-xs);
+}
+
+#layout-menu .menu-sub .menu-link {
+    padding-left: 2.8rem !important;
+    font-size: 0.83rem !important;
+    color: var(--metro-sidebar-text) !important;
+}
+
+#layout-menu .menu-sub .menu-item.active>.menu-link {
+    background-color: var(--metro-sidebar-active) !important;
+    color: #ffffff !important;
+}
+
+/* Selector de departamento en el sidebar */
+#layout-menu .form-select {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid var(--metro-sidebar-border) !important;
+    border-radius: var(--metro-radius-sm) !important;
+    color: var(--metro-sidebar-text) !important;
+    font-size: 0.83rem;
+}
+
+#layout-menu .form-select option {
+    background-color: var(--metro-sidebar-bg);
+    color: var(--metro-sidebar-text);
+}
+
+/* Separadores de sección */
+#layout-menu .menu-divider {
+    border-color: var(--metro-sidebar-border) !important;
+}
+
+/* Dark mode: el sidebar ya es oscuro, mantenemos colores */
+.dark-style #layout-menu,
+[data-bs-theme="dark"] #layout-menu {
+    background-color: var(--metro-sidebar-bg) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §4  NAVBAR SUPERIOR
+   ─────────────────────────────────────────────────────────────────── */
+#layout-navbar,
+.layout-navbar {
+    background-color: var(--metro-surface) !important;
+    border-bottom: 1px solid var(--metro-border) !important;
+    box-shadow: var(--metro-shadow-xs) !important;
+    transition: var(--metro-transition);
+}
+
+/* Ícono hamburguesa del navbar (visible en móvil) */
+.layout-menu-toggle .icon-base,
+.layout-menu-toggle i,
+#layout-navbar .layout-menu-toggle i {
+    color: var(--metro-text-primary) !important;
+}
+
+/* Dark mode navbar */
+.dark-style #layout-navbar,
+[data-bs-theme="dark"] #layout-navbar {
+    background-color: var(--metro-surface) !important;
+    border-bottom-color: var(--metro-border) !important;
+}
+
+.dark-style .layout-navbar .nav-link,
+[data-bs-theme="dark"] .layout-navbar .nav-link {
+    color: var(--metro-text-primary) !important;
+}
+
+/* Dropdown del usuario */
+.dropdown-menu {
+    background-color: var(--metro-surface) !important;
+    border: 1px solid var(--metro-border) !important;
+    border-radius: var(--metro-radius) !important;
+    box-shadow: var(--metro-shadow-md) !important;
+}
+
+.dropdown-item {
+    color: var(--metro-text-primary) !important;
+    font-size: 0.875rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--metro-primary-light) !important;
+    color: var(--metro-primary) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §5  TARJETAS
+   ─────────────────────────────────────────────────────────────────── */
+.card {
+    background-color: var(--metro-surface) !important;
+    border: 1px solid var(--metro-border) !important;
+    border-radius: var(--metro-radius) !important;
+    box-shadow: var(--metro-shadow-sm) !important;
+    transition: var(--metro-transition);
+}
+
+.card:hover {
+    box-shadow: var(--metro-shadow-md) !important;
+}
+
+.card-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--metro-border) !important;
+    padding: 1rem 1.25rem !important;
+}
+
+.card-footer {
+    background-color: var(--metro-surface-alt) !important;
+    border-top: 1px solid var(--metro-border) !important;
+}
+
+/* Tarjetas sin hover extra para listados internos */
+.card.shadow-none,
+.card.card-inside {
+    box-shadow: none !important;
+    border: 1px solid var(--metro-border) !important;
+}
+
+/* Dark mode cards */
+.dark-style .card,
+[data-bs-theme="dark"] .card {
+    background-color: var(--metro-surface) !important;
+    border-color: var(--metro-border) !important;
+}
+
+/* --- Cards de Estado con Borde Lateral --- */
+.card-status-success {
+    border-left: 4px solid var(--metro-success) !important;
+}
+
+.card-status-warning {
+    border-left: 4px solid var(--metro-warning) !important;
+}
+
+.card-status-danger {
+    border-left: 4px solid var(--metro-danger) !important;
+}
+
+.card-status-info {
+    border-left: 4px solid var(--metro-info) !important;
+}
+
+.card-status-primary {
+    border-left: 4px solid var(--metro-primary) !important;
+}
+
+/* Eliminar cards fluorescentes — reemplazar bg-gradient-success */
+.bg-gradient-success {
+    background: var(--metro-success) !important;
+    color: #ffffff !important;
+}
+
+.bg-gradient-primary {
+    background: var(--metro-primary) !important;
+    color: #ffffff !important;
+}
+
+/* Tarjetas de métricas (KPI) */
+.card.shadow-sm {
+    box-shadow: var(--metro-shadow-sm) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §6  BOTONES — ESTANDARIZADOS METRO
+   ─────────────────────────────────────────────────────────────────── */
+.btn {
+    border-radius: var(--metro-radius-sm) !important;
+    font-weight: 600 !important;
+    font-size: 0.825rem !important;
+    letter-spacing: 0.03em;
+    text-transform: uppercase !important;
+    padding: 0.5rem 1.1rem !important;
+    transition: var(--metro-transition) !important;
+    border-width: 1.5px !important;
+    /* Garantizar margen entre ícono y texto */
+}
+
+/* Íconos dentro de botones: espaciado obligatorio */
+.btn i,
+.btn .ri,
+.btn [class^="ri-"],
+.btn [class*=" ri-"] {
+    margin-right: 0.35rem !important;
+}
+
+/* Remove right margin when icon is alone (icon-only buttons) */
+.btn.btn-icon-only i,
+.btn.btn-icon-only .ri {
+    margin-right: 0 !important;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+/* ── Primary ── */
+.btn-primary {
+    background-color: var(--metro-primary) !important;
+    border-color: var(--metro-primary) !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--metro-primary-hover) !important;
+    border-color: var(--metro-primary-hover) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(30, 96, 145, 0.35) !important;
+}
+
+.btn-outline-primary {
+    background-color: transparent !important;
+    border-color: var(--metro-primary) !important;
+    color: var(--metro-primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--metro-primary) !important;
+    color: #ffffff !important;
+}
+
+/* ── Success ── */
+.btn-success {
+    background-color: var(--metro-success) !important;
+    border-color: var(--metro-success) !important;
+    color: #ffffff !important;
+}
+
+.btn-success:hover {
+    background-color: #236040 !important;
+    border-color: #236040 !important;
+    box-shadow: 0 4px 12px rgba(45, 122, 79, 0.35) !important;
+}
+
+.btn-outline-success {
+    background-color: transparent !important;
+    border-color: var(--metro-success) !important;
+    color: var(--metro-success) !important;
+}
+
+.btn-outline-success:hover {
+    background-color: var(--metro-success) !important;
+    color: #ffffff !important;
+}
+
+/* ── Warning ── */
+.btn-warning {
+    background-color: var(--metro-warning) !important;
+    border-color: var(--metro-warning) !important;
+    color: #ffffff !important;
+}
+
+.btn-warning:hover {
+    background-color: #956d08 !important;
+    border-color: #956d08 !important;
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.35) !important;
+}
+
+.btn-outline-warning {
+    border-color: var(--metro-warning) !important;
+    color: var(--metro-warning) !important;
+    background: transparent !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: var(--metro-warning) !important;
+    color: #ffffff !important;
+}
+
+/* ── Danger ── */
+.btn-danger {
+    background-color: var(--metro-danger) !important;
+    border-color: var(--metro-danger) !important;
+    color: #ffffff !important;
+}
+
+.btn-danger:hover {
+    background-color: #a93226 !important;
+    border-color: #a93226 !important;
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.35) !important;
+}
+
+.btn-outline-danger {
+    border-color: var(--metro-danger) !important;
+    color: var(--metro-danger) !important;
+    background: transparent !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--metro-danger) !important;
+    color: #ffffff !important;
+}
+
+/* ── Info ── */
+.btn-info {
+    background-color: var(--metro-info) !important;
+    border-color: var(--metro-info) !important;
+    color: #ffffff !important;
+}
+
+.btn-info:hover {
+    background-color: #1f6494 !important;
+    border-color: #1f6494 !important;
+    box-shadow: 0 4px 12px rgba(41, 128, 185, 0.35) !important;
+}
+
+.btn-outline-info {
+    border-color: var(--metro-info) !important;
+    color: var(--metro-info) !important;
+    background: transparent !important;
+}
+
+.btn-outline-info:hover {
+    background-color: var(--metro-info) !important;
+    color: #ffffff !important;
+}
+
+/* ── Secondary ── */
+.btn-secondary {
+    background-color: var(--metro-secondary) !important;
+    border-color: var(--metro-secondary) !important;
+    color: #ffffff !important;
+}
+
+.btn-secondary:hover {
+    background-color: #4a5468 !important;
+    border-color: #4a5468 !important;
+}
+
+.btn-outline-secondary {
+    border-color: var(--metro-secondary) !important;
+    color: var(--metro-secondary) !important;
+    background: transparent !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--metro-secondary) !important;
+    color: #ffffff !important;
+}
+
+/* ── Botones pequeños: mismo estilo sólido ── */
+.btn-sm {
+    font-size: 0.775rem !important;
+    padding: 0.35rem 0.75rem !important;
+    border-radius: var(--metro-radius-xs) !important;
+}
+
+/* Label style (para acciones de tabla icon-only) */
+.btn.btn-label-primary {
+    background-color: var(--metro-primary-light) !important;
+    color: var(--metro-primary) !important;
+    border-color: transparent !important;
+}
+
+.btn.btn-label-success {
+    background-color: var(--metro-success-light) !important;
+    color: var(--metro-success) !important;
+    border-color: transparent !important;
+}
+
+.btn.btn-label-warning {
+    background-color: var(--metro-warning-light) !important;
+    color: var(--metro-warning) !important;
+    border-color: transparent !important;
+}
+
+.btn.btn-label-danger {
+    background-color: var(--metro-danger-light) !important;
+    color: var(--metro-danger) !important;
+    border-color: transparent !important;
+}
+
+.btn.btn-label-info {
+    background-color: var(--metro-info-light) !important;
+    color: var(--metro-info) !important;
+    border-color: transparent !important;
+}
+
+.btn.btn-label-secondary {
+    background-color: var(--metro-secondary-light) !important;
+    color: var(--metro-secondary) !important;
+    border-color: transparent !important;
+}
+
+/* ── Focus Accesibilidad (WCAG 2.4.7) ── */
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 3px solid var(--metro-primary) !important;
+    outline-offset: 2px !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §7  BADGES / ETIQUETAS — ESTANDARIZADAS METRO
+   ─────────────────────────────────────────────────────────────────── */
+.badge {
+    border-radius: var(--metro-radius-xs) !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase !important;
+    padding: 0.3em 0.65em !important;
+}
+
+/* Todos en estilo "label" (soft) estandarizado */
+.badge.bg-label-primary {
+    background-color: var(--metro-primary-light) !important;
+    color: var(--metro-primary) !important;
+}
+
+.badge.bg-label-success {
+    background-color: var(--metro-success-light) !important;
+    color: var(--metro-success) !important;
+}
+
+.badge.bg-label-warning {
+    background-color: var(--metro-warning-light) !important;
+    color: var(--metro-warning) !important;
+}
+
+.badge.bg-label-danger {
+    background-color: var(--metro-danger-light) !important;
+    color: var(--metro-danger) !important;
+}
+
+.badge.bg-label-info {
+    background-color: var(--metro-info-light) !important;
+    color: var(--metro-info) !important;
+}
+
+.badge.bg-label-secondary {
+    background-color: var(--metro-secondary-light) !important;
+    color: var(--metro-secondary) !important;
+}
+
+/* Badges sólidos */
+.badge.bg-primary {
+    background-color: var(--metro-primary) !important;
+    color: #fff !important;
+}
+
+.badge.bg-success {
+    background-color: var(--metro-success) !important;
+    color: #fff !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--metro-warning) !important;
+    color: #fff !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--metro-danger) !important;
+    color: #fff !important;
+}
+
+.badge.bg-info {
+    background-color: var(--metro-info) !important;
+    color: #fff !important;
+}
+
+.badge.bg-secondary {
+    background-color: var(--metro-secondary) !important;
+    color: #fff !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §8  TABLAS — CABECERA SÓLIDA + CUERPO LIMPIO
+   ─────────────────────────────────────────────────────────────────── */
+.table {
+    color: var(--metro-text-primary) !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin-bottom: 0 !important;
+}
+
+/* ── THEAD: Color sólido oscuro en TODAS las tablas del sistema ── */
+.table>thead>tr>th,
+.table thead th {
+    background-color: var(--metro-thead-bg) !important;
+    color: var(--metro-thead-text) !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.07em;
+    padding: 13px 15px !important;
+    border: none !important;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Primer y último th: bordes redondeados arriba */
+.table>thead>tr>th:first-child {
+    border-radius: var(--metro-radius) 0 0 0 !important;
+}
+
+.table>thead>tr>th:last-child {
+    border-radius: 0 var(--metro-radius) 0 0 !important;
+}
+
+/* Anular table-dark que ponga otro color */
+.table.table-dark thead th {
+    background-color: var(--metro-thead-bg) !important;
+    color: var(--metro-thead-text) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ── TBODY: Fondo consistente, sin mezclas ── */
+.table>tbody>tr>td,
+.table tbody td {
+    background-color: var(--metro-tbody-bg) !important;
+    color: var(--metro-text-primary) !important;
+    padding: 12px 15px !important;
+    border-bottom: 1px solid var(--metro-tbody-border) !important;
+    border-right: none !important;
+    border-left: none !important;
+    vertical-align: middle;
+    text-transform: uppercase !important;
+    font-size: 0.82rem;
+}
+
+/* Hover en filas */
+.table-hover>tbody>tr:hover>td,
+.table tbody tr:hover td {
+    background-color: var(--metro-tbody-hover) !important;
+}
+
+/* Última fila: sin borde inferior */
+.table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* ── DataTables ── */
+/* Wrapper sin fondos extra */
+.dataTables_wrapper {
+    padding: 0 !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    background-color: var(--metro-surface) !important;
+    border: 1px solid var(--metro-border) !important;
+    border-radius: var(--metro-radius-xs) !important;
+    color: var(--metro-text-primary) !important;
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.825rem;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus {
+    border-color: var(--metro-primary) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(30, 96, 145, 0.15) !important;
+}
+
+.dataTables_wrapper .dataTables_info {
+    color: var(--metro-text-muted) !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+    font-weight: 500;
+}
+
+/* Paginación */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: var(--metro-radius-xs) !important;
+    font-size: 0.8rem !important;
+    padding: 0.3rem 0.65rem !important;
+    color: var(--metro-text-secondary) !important;
+    border: 1px solid var(--metro-border) !important;
+    margin: 0 2px !important;
+    background: var(--metro-surface) !important;
+    transition: var(--metro-transition);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--metro-primary-light) !important;
+    border-color: var(--metro-primary) !important;
+    color: var(--metro-primary) !important;
+    box-shadow: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--metro-primary) !important;
+    border-color: var(--metro-primary) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+    color: var(--metro-text-muted) !important;
+    background: var(--metro-surface-alt) !important;
+    cursor: not-allowed;
+}
+
+/* Botones de export DataTables — mismo estilo sólido */
+.dt-buttons .btn,
+.dt-button,
+div.dt-buttons a.dt-button,
+div.dt-buttons button.dt-button {
+    border-radius: var(--metro-radius-xs) !important;
+    font-size: 0.775rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    padding: 0.38rem 0.85rem !important;
+    border-width: 1.5px !important;
+    box-shadow: none !important;
+    transition: var(--metro-transition) !important;
+}
+
+/* Dark mode tablas */
+.dark-style .table>tbody>tr>td,
+[data-bs-theme="dark"] .table tbody td {
+    background-color: var(--metro-tbody-bg) !important;
+    border-bottom-color: var(--metro-tbody-border) !important;
+    color: var(--metro-text-primary) !important;
+}
+
+.dark-style .table-hover>tbody>tr:hover>td,
+[data-bs-theme="dark"] .table tbody tr:hover td {
+    background-color: var(--metro-tbody-hover) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §9  FORMULARIOS / INPUTS
+   ─────────────────────────────────────────────────────────────────── */
+.form-control,
+.form-select {
+    background-color: var(--metro-surface) !important;
+    border: 1px solid var(--metro-border) !important;
+    border-radius: var(--metro-radius-sm) !important;
+    color: var(--metro-text-primary) !important;
+    padding: 0.5rem 0.85rem !important;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    transition: var(--metro-transition);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--metro-primary) !important;
+    box-shadow: 0 0 0 3px rgba(30, 96, 145, 0.15) !important;
+    outline: none !important;
+}
+
+.form-label {
+    font-size: 0.775rem !important;
+    font-weight: 700 !important;
+    color: var(--metro-text-secondary) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem !important;
+}
+
+.form-text,
+.form-hint {
+    font-size: 0.75rem !important;
+    color: var(--metro-text-muted) !important;
+}
+
+/* Input groups */
+.input-group-text {
+    background-color: var(--metro-surface-alt) !important;
+    border: 1px solid var(--metro-border) !important;
+    color: var(--metro-text-secondary) !important;
+}
+
+/* Dark mode inputs */
+.dark-style .form-control,
+[data-bs-theme="dark"] .form-control,
+.dark-style .form-select,
+[data-bs-theme="dark"] .form-select {
+    background-color: var(--metro-surface) !important;
+    border-color: var(--metro-border) !important;
+    color: var(--metro-text-primary) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §10  REGLA GLOBAL: TEXT-TRANSFORM UPPERCASE
+   ─────────────────────────────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.card-title,
+.page-title,
+.dani-title {
+    text-transform: uppercase !important;
+    letter-spacing: 0.02em;
+}
+
+#layout-menu .menu-link div[data-i18n] {
+    text-transform: uppercase !important;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+}
+
+/* Selectores heredan uppercase por defecto (form-control ya lo hace)  */
+select option {
+    text-transform: uppercase;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §11  EXCEPCIONES TEXT-TRANSFORM
+   Login + Gestión de Usuarios        
+   ─────────────────────────────────────────────────────────────────── */
+input[type="email"],
+input[type="password"],
+input[autocomplete="email"],
+input[autocomplete="current-password"],
+input[autocomplete="new-password"] {
+    text-transform: none !important;
+}
+
+body.page-login h1,
+body.page-login h2,
+body.page-login h3,
+body.page-login h4,
+body.page-login h5,
+body.page-login h6,
+body.page-login .form-control,
+body.page-login input,
+body.page-forgot .form-control,
+body.page-forgot input {
+    text-transform: none !important;
+}
+
+.user-form-exception .form-control,
+.user-form-exception input,
+.user-form-exception .form-select {
+    text-transform: none !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §12  FIX RESPONSIVE: TOGGLE DUPLICADO EN MÓVIL
+   El .menu-mobile-toggler del aside se oculta SIEMPRE.
+   Solo el toggle del navbar superior (#layout-navbar) actúa.
+   ─────────────────────────────────────────────────────────────────── */
+.menu-mobile-toggler {
+    display: none !important;
+}
+
+@media (max-width: 1199.98px) {
+    #layout-menu .layout-menu-toggle {
+        display: none !important;
+    }
+
+    #layout-navbar .layout-menu-toggle {
+        display: flex !important;
+        align-items: center;
+    }
+}
+
+/* Overlay menú móvil */
+.layout-overlay {
+    background-color: rgba(0, 0, 0, 0.55) !important;
+    backdrop-filter: blur(2px);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §13  DARK MODE — CORRECCIONES GLOBALES
+   ─────────────────────────────────────────────────────────────────── */
+.dark-style body,
+[data-bs-theme="dark"] body {
+    background-color: var(--metro-bg) !important;
+    color: var(--metro-text-primary) !important;
+}
+
+.dark-style .card-header,
+[data-bs-theme="dark"] .card-header {
+    border-bottom-color: var(--metro-border) !important;
+}
+
+.dark-style .text-muted,
+[data-bs-theme="dark"] .text-muted {
+    color: var(--metro-text-muted) !important;
+}
+
+.dark-style .dropdown-menu,
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: var(--metro-surface) !important;
+    border-color: var(--metro-border) !important;
+}
+
+.dark-style .form-control::placeholder,
+[data-bs-theme="dark"] .form-control::placeholder {
+    color: var(--metro-text-muted) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §14  FILTROS Y BOTONERA GLOBAL — ESTANDARIZADOS
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Contenedor de filtros */
+.filter-section,
+.card.card-inside {
+    border-radius: var(--metro-radius) !important;
+    border: 1px solid var(--metro-border) !important;
+    box-shadow: none !important;
+    background-color: var(--metro-surface-alt) !important;
+}
+
+/* Botón "Aplicar Filtros" — primario, robusto */
+.btn-filter-apply {
+    background-color: var(--metro-primary) !important;
+    border-color: var(--metro-primary) !important;
+    color: #ffffff !important;
+    padding: 0.5rem 1.1rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--metro-radius-sm) !important;
+    text-transform: uppercase !important;
+}
+
+.btn-filter-apply i {
+    margin-right: 0.35rem !important;
+}
+
+/* Botón "Limpiar Filtros" — outline secondary */
+.btn-filter-clear {
+    background-color: transparent !important;
+    border-color: var(--metro-secondary) !important;
+    color: var(--metro-secondary) !important;
+    padding: 0.5rem 1.1rem !important;
+    font-weight: 600 !important;
+    border-radius: var(--metro-radius-sm) !important;
+    text-transform: uppercase !important;
+}
+
+.btn-filter-clear i {
+    margin-right: 0.35rem !important;
+}
+
+.btn-filter-clear:hover {
+    background-color: var(--metro-secondary) !important;
+    color: #ffffff !important;
+}
+
+/* Botones de acción en la cabecera de las páginas (Crear nuevo, etc.) */
+.btn-page-action {
+    padding: 0.55rem 1.3rem !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §15  ALERTAS METRO
+   ─────────────────────────────────────────────────────────────────── */
+.alert {
+    border-radius: var(--metro-radius) !important;
+    border-left-width: 4px !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    font-size: 0.875rem;
+}
+
+.alert-success {
+    background-color: var(--metro-success-light) !important;
+    border-left-color: var(--metro-success) !important;
+    color: #1a4731 !important;
+}
+
+.alert-warning {
+    background-color: var(--metro-warning-light) !important;
+    border-left-color: var(--metro-warning) !important;
+    color: #5c4306 !important;
+}
+
+.alert-danger {
+    background-color: var(--metro-danger-light) !important;
+    border-left-color: var(--metro-danger) !important;
+    color: #6b1515 !important;
+}
+
+.alert-info {
+    background-color: var(--metro-info-light) !important;
+    border-left-color: var(--metro-info) !important;
+    color: #0f3d60 !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §16  FONDO GENERAL Y LAYOUTS
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Forzar container-fluid para páginas de listado */
+.main-content .container-xxl,
+.main-content .container-fluid {
+    max-width: 100% !important;
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+}
+
+/* Eliminar fondos blancos residuales en wrappers */
+.main-content,
+.content-wrapper>.container-p-y {
+    background-color: transparent !important;
+}
+
+/* Page header: título + botón de acción */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--metro-border);
+}
+
+.page-header .page-title {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    color: var(--metro-text-primary) !important;
+    margin: 0;
+}
+
+/* Íconos de encabezado — reemplazar colores neón */
+.page-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: var(--metro-radius) !important;
+    background-color: var(--metro-primary-light) !important;
+    color: var(--metro-primary) !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+/* Eliminar icono neón #e7e7ff → reemplazar globalmente */
+[style*="background-color: #e7e7ff"],
+[style*="background-color:#e7e7ff"] {
+    background-color: var(--metro-primary-light) !important;
+}
+
+[style*="color: #696cff"],
+[style*="color:#696cff"] {
+    color: var(--metro-primary) !important;
+}
+
+[style*="background-color: #03c3ec"],
+[style*="border-color: #03c3ec"] {
+    background-color: var(--metro-info) !important;
+    border-color: var(--metro-info) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §17  FOOTER
+   ─────────────────────────────────────────────────────────────────── */
+.content-footer {
+    background-color: var(--metro-surface) !important;
+    border-top: 1px solid var(--metro-border) !important;
+    color: var(--metro-text-muted) !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em;
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §18  ANIMACIONES SUTILES
+   ─────────────────────────────────────────────────────────────────── */
+.container-xxl,
+.container-fluid,
+.main-content {
+    animation: metro-fade-in 0.25s ease-out;
+}
+
+@keyframes metro-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Transición de filas de tabla */
+.table tbody tr {
+    transition: background-color 0.12s ease;
+}
+
+/* Scrollbar limpio */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--metro-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--metro-border-dark);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--metro-secondary);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §19  PRINT
+   ─────────────────────────────────────────────────────────────────── */
+@media print {
+    body {
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+    #layout-menu,
+    #layout-navbar,
+    .content-footer,
+    .dt-buttons {
+        display: none !important;
+    }
+
+    .table thead th {
+        background-color: #2c3e50 !important;
+        color: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .btn {
+        box-shadow: none !important;
+    }
+}

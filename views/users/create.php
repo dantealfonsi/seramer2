@@ -97,7 +97,7 @@ $page_title = $is_manager && !$is_rrhh ?
                         <a href="index.php" class="btn btn-primary">Volver a la Lista</a>
                     <?php else: ?>
                         <!-- Formulario de creación -->
-                        <form method="POST" class="row g-3">
+                        <form method="POST" class="row g-3 user-form-exception">
                             <!-- Selección de Personal -->
                             <div class="col-12">
                                 <label for="staff_id" class="form-label">
