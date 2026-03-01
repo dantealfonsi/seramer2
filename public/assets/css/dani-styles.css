@@ -20,6 +20,7 @@
 /* Ensure navbar stays below */
 .layout-navbar {
     z-index: 1000 !important;
+    padding: 0 2em !important;
 }
 
 /* Custom styles for alert-info icons */

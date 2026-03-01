@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de listado de locales
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -126,7 +126,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+                                <div class="col-12 filter-card-actions">
                                     <a href="index.php" class="btn btn-outline-secondary px-4" title="Limpiar"><i class="ri-refresh-line me-1"></i> Limpiar</a>
                                     <button type="submit" class="btn btn-info px-4 text-white" title="Buscar"><i class="ri-search-line me-1"></i> Buscar</button>
                                 </div>

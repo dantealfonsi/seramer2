@@ -328,6 +328,7 @@ body {
     border-bottom: 1px solid var(--metro-border) !important;
     box-shadow: var(--metro-shadow-xs) !important;
     transition: var(--metro-transition);
+    padding: 0 2em !important;
 }
 
 /* Ícono hamburguesa del navbar (visible en móvil) */
@@ -1329,6 +1330,107 @@ body.page-forgot input {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--metro-secondary);
 }
+
+/* ───────────────────────────────────────────────────────────────────
+   §18.5  PANEL DE FILTROS GLOBAL — Todas las páginas de índice
+   Estructura esperada:
+   <div class="filter-card">
+     <div class="filter-card-title">...</div>
+     <div class="filter-card-body">
+       <form>
+         <div class="row g-3">
+           <!-- inputs col-md-* -->
+           <div class="col-12 filter-card-actions">
+             <a class="btn btn-filter-clear">Limpiar</a>
+             <button class="btn btn-filter-apply">Filtrar</button>
+           </div>
+         </div>
+       </form>
+     </div>
+   </div>
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Contenedor principal del panel de filtros */
+.filter-card {
+    background-color: var(--metro-surface-alt) !important;
+    border: 1px solid var(--metro-border) !important;
+    border-radius: var(--metro-radius) !important;
+    box-shadow: none !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Encabezado del panel */
+.filter-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em;
+    color: var(--metro-text-muted) !important;
+    padding: 0.85rem 1.25rem 0 1.25rem;
+    border-bottom: none;
+}
+
+.filter-card-title i {
+    font-size: 1rem;
+    color: var(--metro-primary) !important;
+    margin-right: 0 !important;
+    /* evitar double-margin con gap */
+}
+
+/* Cuerpo del panel */
+.filter-card-body {
+    padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+}
+
+/* Fila de botones — siempre al final, ancho completo */
+.filter-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid var(--metro-border);
+    margin-top: 0.5rem;
+}
+
+/* Botón Limpiar */
+.btn-filter-clear {
+    background-color: transparent !important;
+    border-color: var(--metro-border-dark) !important;
+    color: var(--metro-text-secondary) !important;
+    min-width: 110px;
+}
+
+.btn-filter-clear:hover {
+    background-color: var(--metro-surface) !important;
+    border-color: var(--metro-secondary) !important;
+    color: var(--metro-text-primary) !important;
+}
+
+/* Botón Filtrar / Aplicar */
+.btn-filter-apply {
+    background-color: var(--metro-primary) !important;
+    border-color: var(--metro-primary) !important;
+    color: #ffffff !important;
+    min-width: 110px;
+}
+
+.btn-filter-apply:hover {
+    background-color: var(--metro-primary-hover) !important;
+    border-color: var(--metro-primary-hover) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(30, 96, 145, 0.30) !important;
+}
+
+/* Dark mode */
+.dark-style .filter-card,
+[data-bs-theme="dark"] .filter-card {
+    background-color: var(--metro-surface) !important;
+    border-color: var(--metro-border) !important;
+}
+
 
 /* ───────────────────────────────────────────────────────────────────
    §19  PRINT

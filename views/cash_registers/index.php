@@ -42,39 +42,42 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <!-- Filters -->
                     <div class="card-body border-bottom">
-                        <form method="GET" action="" class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label small">Nombre de Caja</label>
-                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label small">Usuario Asignado</label>
-                                <select name="user_id" class="form-select">
-                                    <option value="">-- Todos los Usuarios --</option>
-                                    <?php foreach ($users as $user): ?>
-                                        <option value="<?php echo $user['id']; ?>" <?php echo (string)$filters['user_id'] === (string)$user['id'] ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($user['username'] . ' (' . ($user['staff_first_name'] ?? 'Sin nombre') . ')'); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label small">Nombre de Caja</label>
+                                        <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small">Usuario Asignado</label>
+                                        <select name="user_id" class="form-select">
+                                            <option value="">-- Todos los Usuarios --</option>
+                                            <?php foreach ($users as $user): ?>
+                                                <option value="<?php echo $user['id']; ?>" <?php echo (string)$filters['user_id'] === (string)$user['id'] ? 'selected' : ''; ?>>
+                                                    <?php echo htmlspecialchars($user['username'] . ' (' . ($user['staff_first_name'] ?? 'Sin nombre') . ')'); ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small">Estatus</label>
+                                        <select name="status" class="form-select">
+                                            <option value="">-- Todos --</option>
+                                            <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activa</option>
+                                            <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactiva</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 filter-card-actions">
+                                        <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                        <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label small">Estatus</label>
-                                <select name="status" class="form-select">
-                                    <option value="">-- Todos --</option>
-                                    <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activa</option>
-                                    <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactiva</option>
-                                </select>
-                            </div>
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
-                                    <i class="ri-search-line me-1"></i> Filtrar 
-                                </button>
-                                <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='index.php'">
-                                    <i class="ri-refresh-line"></i> Limpiar
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
 
                     <div class="card-body">

@@ -92,14 +92,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 
                         <?php if ($is_superadmin): ?>
-                        <div class="card-body mb-0 pb-0">
-                            <form action="index.php" method="GET" class="card shadow-sm mb-3 border-0">
-                                <div class="card-body">
-                                    <h6 class="card-title mb-3 d-flex align-items-center">
-                                        <i class="ri-filter-2-line me-2 text-primary"></i> Filtros de Búsqueda
-                                    </h6>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
                                     <div class="row g-3">
                                         <div class="col-md-9">
+                                            <label for="department" class="form-label small">Filtrar por Departamento</label>
                                             <select class="form-select" id="department" name="department">
                                                 <option value="">-- Todos los Departamentos --</option>
                                                 <?php foreach ($all_departments as $dept): ?>
@@ -110,15 +111,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
-                                        <div class="col-md-3 d-flex gap-2">
-                                            <a href="index.php" class="btn btn-outline-secondary w-50">Limpiar</a>
-                                            <button type="submit" class="btn btn-primary w-50">
-                                                <i class="ri-filter-3-line"></i> Filtrar
-                                            </button>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
                                         </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                         <?php endif; ?>
 

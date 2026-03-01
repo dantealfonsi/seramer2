@@ -114,73 +114,71 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                <input type="hidden" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-                                
-                                <!-- Filtro por Adjudicatario -->
-                                <div class="col-md-3">
-                                    <label for="awardee_name" class="form-label small">Adjudicatario</label>
-                                    <input class="form-control" list="awardee_names" id="awardee_name" name="awardee_name" 
-                                           placeholder="Buscar por Nombre..." value="<?php echo htmlspecialchars($_GET['awardee_name'] ?? ''); ?>">
-                                    <datalist id="awardee_names">
-                                        <?php foreach ($awardees as $aw): ?>
-                                            <option value="<?php echo htmlspecialchars($aw['first_name'] . ' ' . $aw['last_name']); ?>">
-                                        <?php endforeach; ?>
-                                    </datalist>
-                                </div>
-
-                                <!-- Filtro por Cédula -->
-                                <div class="col-md-3">
-                                    <label for="awardee_cedula_number" class="form-label small">Cédula / RIF</label>
-                                    <div class="input-group">
-                                        <select class="form-select" name="awardee_cedula_prefix" style="max-width: 70px;">
-                                            <option value="V" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'V' ? 'selected' : ''; ?>>V</option>
-                                            <option value="E" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'E' ? 'selected' : ''; ?>>E</option>
-                                            <option value="J" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'J' ? 'selected' : ''; ?>>J</option>
-                                            <option value="G" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'G' ? 'selected' : ''; ?>>G</option>
-                                            <option value="P" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'P' ? 'selected' : ''; ?>>P</option>
-                                        </select>
-                                        <input type="number" class="form-control" id="awardee_cedula_number" name="awardee_cedula_number" 
-                                               placeholder="Solo números" value="<?php echo htmlspecialchars($_GET['awardee_cedula_number'] ?? ''); ?>">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-2">
-                                    <label for="sanction_status" class="form-label small">Estado</label>
-                                    <select class="form-select" id="sanction_status" name="sanction_status">
-                                        <option value="">-- Todos --</option>
-                                        <?php 
-                                        $current_status = $_GET['sanction_status'] ?? '';
-                                        foreach ($allowed_sanction_status as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo htmlspecialchars($key); ?>" 
-                                                <?php echo $current_status === $key ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($value); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="date_from" class="form-label small">Fecha Desde</label>
-                                    <input type="date" class="form-control" id="date_from" name="date_from" 
-                                        value="<?php echo htmlspecialchars($_GET['date_from'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="date_to" class="form-label small">Fecha Hasta</label>
-                                    <input type="date" class="form-control" id="date_to" name="date_to" 
-                                        value="<?php echo htmlspecialchars($_GET['date_to'] ?? ''); ?>">
-                                </div>
-                                
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                        <div class="col-md-3">
+                                            <label for="awardee_name" class="form-label small">Adjudicatario</label>
+                                            <input class="form-control" list="awardee_names" id="awardee_name" name="awardee_name" 
+                                                   placeholder="Buscar por Nombre..." value="<?php echo htmlspecialchars($_GET['awardee_name'] ?? ''); ?>">
+                                            <datalist id="awardee_names">
+                                                <?php foreach ($awardees as $aw): ?>
+                                                    <option value="<?php echo htmlspecialchars($aw['first_name'] . ' ' . $aw['last_name']); ?>">
+                                                <?php endforeach; ?>
+                                            </datalist>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="awardee_cedula_number" class="form-label small">Cédula / RIF</label>
+                                            <div class="input-group">
+                                                <select class="form-select" name="awardee_cedula_prefix" style="max-width: 70px;">
+                                                    <option value="V" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'V' ? 'selected' : ''; ?>>V</option>
+                                                    <option value="E" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'E' ? 'selected' : ''; ?>>E</option>
+                                                    <option value="J" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'J' ? 'selected' : ''; ?>>J</option>
+                                                    <option value="G" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'G' ? 'selected' : ''; ?>>G</option>
+                                                    <option value="P" <?php echo ($_GET['awardee_cedula_prefix'] ?? '') === 'P' ? 'selected' : ''; ?>>P</option>
+                                                </select>
+                                                <input type="number" class="form-control" id="awardee_cedula_number" name="awardee_cedula_number" 
+                                                       placeholder="Solo números" value="<?php echo htmlspecialchars($_GET['awardee_cedula_number'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="sanction_status" class="form-label small">Estado</label>
+                                            <select class="form-select" id="sanction_status" name="sanction_status">
+                                                <option value="">-- Todos --</option>
+                                                <?php 
+                                                $current_status = $_GET['sanction_status'] ?? '';
+                                                foreach ($allowed_sanction_status as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo htmlspecialchars($key); ?>" 
+                                                        <?php echo $current_status === $key ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($value); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="date_from" class="form-label small">Fecha Desde</label>
+                                            <input type="date" class="form-control" id="date_from" name="date_from" 
+                                                value="<?php echo htmlspecialchars($_GET['date_from'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="date_to" class="form-label small">Fecha Hasta</label>
+                                            <input type="date" class="form-control" id="date_to" name="date_to" 
+                                                value="<?php echo htmlspecialchars($_GET['date_to'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">

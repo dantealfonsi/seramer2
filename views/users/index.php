@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Ejemplo de cómo usar el UserController en la vista de listado
 
 // Incluir el controlador
@@ -63,70 +63,68 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <div class="card-body">
-                        <div class="card-body">
-                            <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                                <h6 class="card-title mb-3 d-flex align-items-center">
-                                    <i class="ri-filter-2-line me-2 text-primary"></i> Opciones de Filtrado
-                                </h6>
-                                <div class="row g-3">
-                                    <div class="col-md-3">
-                                        <label for="search" class="form-label small">Búsqueda Rápida</label>
-                                        <input type="text" class="form-control" id="search" name="search" 
-                                            placeholder="Nombre, Usuario..." 
-                                            value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-                                    </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="search" class="form-label small">Búsqueda Rápida</label>
+                                            <input type="text" class="form-control" id="search" name="search" 
+                                                placeholder="Nombre, Usuario..." 
+                                                value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                        </div>
 
-                                    <?php if ($is_rrhh || !empty($_SESSION['is_superadmin'])): ?>
-                                    <div class="col-md-3">
-                                        <label for="department" class="form-label small">Departamento</label>
-                                        <select class="form-select" id="department" name="department">
-                                            <option value="">-- Todos los Departamentos --</option>
-                                            <?php foreach ($departments as $dept): ?>
-                                                <?php 
-                                                    $d_id = is_array($dept) ? $dept['id'] : $dept;
-                                                    $d_name = is_array($dept) ? $dept['name'] : $dept;
-                                                ?>
-                                                <option value="<?php echo htmlspecialchars($d_id); ?>" 
-                                                        <?php echo ($department_filter == $d_id) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($d_name); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <?php endif; ?>
+                                        <?php if ($is_rrhh || !empty($_SESSION['is_superadmin'])): ?>
+                                        <div class="col-md-3">
+                                            <label for="department" class="form-label small">Departamento</label>
+                                            <select class="form-select" id="department" name="department">
+                                                <option value="">-- Todos los Departamentos --</option>
+                                                <?php foreach ($departments as $dept): ?>
+                                                    <?php 
+                                                        $d_id = is_array($dept) ? $dept['id'] : $dept;
+                                                        $d_name = is_array($dept) ? $dept['name'] : $dept;
+                                                    ?>
+                                                    <option value="<?php echo htmlspecialchars($d_id); ?>" 
+                                                            <?php echo ($department_filter == $d_id) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($d_name); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <?php endif; ?>
 
-                                    <div class="col-md-3">
-                                        <label for="status" class="form-label small">Estado</label>
-                                        <select class="form-select" id="status" name="status">
-                                            <option value="">-- Todos los Estados --</option>
-                                            <option value="active" <?php echo ($status_filter === 'active') ? 'selected' : ''; ?>>Activo</option>
-                                            <option value="inactive" <?php echo ($status_filter === 'inactive') ? 'selected' : ''; ?>>Inactivo</option>
-                                        </select>
-                                    </div>
+                                        <div class="col-md-3">
+                                            <label for="status" class="form-label small">Estado</label>
+                                            <select class="form-select" id="status" name="status">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <option value="active" <?php echo ($status_filter === 'active') ? 'selected' : ''; ?>>Activo</option>
+                                                <option value="inactive" <?php echo ($status_filter === 'inactive') ? 'selected' : ''; ?>>Inactivo</option>
+                                            </select>
+                                        </div>
 
-                                    <div class="col-md-3">
-                                        <label for="role" class="form-label small">Rol Asignado</label>
-                                        <select class="form-select" id="role" name="role">
-                                            <option value="">-- Todos los Roles --</option>
-                                            <?php foreach ($all_roles as $role): ?>
-                                                <option value="<?php echo $role['id']; ?>" 
-                                                        <?php echo ($role_filter == $role['id']) ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($role['name'] . ($is_rrhh ? " ({$role['department_name']})" : "")); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                                        <div class="col-md-3">
+                                            <label for="role" class="form-label small">Rol Asignado</label>
+                                            <select class="form-select" id="role" name="role">
+                                                <option value="">-- Todos los Roles --</option>
+                                                <?php foreach ($all_roles as $role): ?>
+                                                    <option value="<?php echo $role['id']; ?>" 
+                                                            <?php echo ($role_filter == $role['id']) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($role['name'] . ($is_rrhh ? " ({$role['department_name']})" : "")); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
 
-                                    <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-                                        <a href="index.php" class="btn btn-outline-secondary">
-                                            <i class="ri-refresh-line"></i> Limpiar
-                                        </a>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="ri-search-line"></i> Filtrar Usuarios
-                                        </button>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Mensajes de estado -->

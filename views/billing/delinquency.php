@@ -56,45 +56,48 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body">
                         <!-- Filters -->
-                        <form method="GET" action="" id="filterForm" class="mb-4">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Zona</label>
-                                    <select name="zone_id" class="form-select">
-                                        <option value="">Todas las Zonas</option>
-                                        <?php foreach ($zones as $zone): ?>
-                                            <option value="<?php echo $zone['id']; ?>" <?php echo $zoneFilter == $zone['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($zone['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Sector</label>
-                                    <select name="sector_id" class="form-select">
-                                        <option value="">Todos los Sectores</option>
-                                        <?php foreach ($sectors as $sector): ?>
-                                            <option value="<?php echo $sector['id']; ?>" <?php echo $sectorFilter == $sector['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($sector['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Antigüedad (Días)</label>
-                                    <select name="min_days" class="form-select">
-                                        <option value="1" <?php echo $minDaysOverdue == '1' ? 'selected' : ''; ?>>Cualquier retraso</option>
-                                        <option value="30" <?php echo $minDaysOverdue == '30' ? 'selected' : ''; ?>>30+ días</option>
-                                        <option value="60" <?php echo $minDaysOverdue == '60' ? 'selected' : ''; ?>>60+ días</option>
-                                        <option value="90" <?php echo $minDaysOverdue == '90' ? 'selected' : ''; ?>>90+ días</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
-                                        <i class="ri-search-line me-1"></i> Filtrar Morosos
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='delinquency.php'">
-                                        <i class="ri-refresh-line"></i> Limpiar
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" id="filterForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Zona</label>
+                                            <select name="zone_id" class="form-select">
+                                                <option value="">Todas las Zonas</option>
+                                                <?php foreach ($zones as $zone): ?>
+                                                    <option value="<?php echo $zone['id']; ?>" <?php echo $zoneFilter == $zone['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($zone['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Sector</label>
+                                            <select name="sector_id" class="form-select">
+                                                <option value="">Todos los Sectores</option>
+                                                <?php foreach ($sectors as $sector): ?>
+                                                    <option value="<?php echo $sector['id']; ?>" <?php echo $sectorFilter == $sector['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($sector['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Antigüedad (Días)</label>
+                                            <select name="min_days" class="form-select">
+                                                <option value="1" <?php echo $minDaysOverdue == '1' ? 'selected' : ''; ?>>Cualquier retraso</option>
+                                                <option value="30" <?php echo $minDaysOverdue == '30' ? 'selected' : ''; ?>>30+ días</option>
+                                                <option value="60" <?php echo $minDaysOverdue == '60' ? 'selected' : ''; ?>>60+ días</option>
+                                                <option value="90" <?php echo $minDaysOverdue == '90' ? 'selected' : ''; ?>>90+ días</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="delinquency.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
                         <!-- Summary -->
                         <div class="row mb-4">

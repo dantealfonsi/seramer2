@@ -74,24 +74,31 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Filtros Avanzados -->
-                        <div class="card-inside p-4 mb-4">
-                            <form method="GET" action="index.php" class="row g-3">
-                                <div class="col-md-10">
-                                    <label class="form-label fw-bold small text-uppercase">Nombre del Rubro</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-price-tag-3-line text-muted"></i></span>
-                                        <input type="text" name="name" class="form-control border-start-0" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="index.php">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label fw-bold small text-uppercase">Nombre del Rubro</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-price-tag-3-line text-muted"></i></span>
+                                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end gap-2">
-                                    <a href="index.php" class="btn btn-outline-secondary w-50 d-flex align-items-center justify-content-center" title="Limpiar">
-                                        <i class="ri-refresh-line me-1"></i> Limpiar
-                                    </a>
-                                    <button type="submit" class="btn btn-info w-50 text-white d-flex align-items-center justify-content-center" title="Buscar">
-                                        <i class="ri-search-line me-1"></i> Buscar
-                                    </button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Métrica Rápida -->

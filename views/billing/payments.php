@@ -100,27 +100,26 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body">
                         <!-- Filters -->
-                         <div class="bg-light p-3 rounded mb-4">
-                            <form method="GET" action="" class="row align-items-end g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Desde</label>
-                                    <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Hasta</label>
-                                    <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="ri-filter-3-line me-1"></i> Filtrar
-                                    </button>
-                                </div>
-                                <div class="col-md-2">
-                                     <a href="payments.php" class="btn btn-outline-secondary w-100">
-                                        <i class="ri-refresh-line me-1"></i> Limpiar
-                                    </a>
-                                </div>
-                            </form>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-uppercase">Desde</label>
+                                        <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-uppercase">Hasta</label>
+                                        <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
+                                    </div>
+                                    <div class="col-12 filter-card-actions">
+                                        <a href="payments.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                        <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Data Table -->

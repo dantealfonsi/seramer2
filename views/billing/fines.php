@@ -75,38 +75,41 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body">
                         <!-- Filters -->
-                        <form method="GET" action="" id="filterForm" class="mb-4">
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Búsqueda Rápida</label>
-                                    <input type="text" name="search_term" class="form-control" placeholder="Cédula, Nombre o Puesto..." value="<?php echo htmlspecialchars($searchTerm); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Estado</label>
-                                    <select name="status" class="form-select">
-                                        <option value="all" <?php echo $statusFilter === 'all' ? 'selected' : ''; ?>>Todos</option>
-                                        <option value="pending" <?php echo $statusFilter === 'pending' ? 'selected' : ''; ?>>Pendientes</option>
-                                        <option value="paid" <?php echo $statusFilter === 'paid' ? 'selected' : ''; ?>>Pagadas</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Desde</label>
-                                    <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($dateFrom); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-semibold">Hasta</label>
-                                    <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($dateTo); ?>">
-                                </div>
-                                <div class="col-12 d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
-                                        <i class="ri-filter-3-line me-1"></i> Filtrar Multas
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='fines.php'">
-                                        <i class="ri-refresh-line"></i> Limpiar
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" id="filterForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Búsqueda Rápida</label>
+                                            <input type="text" name="search_term" class="form-control" placeholder="Cédula, Nombre o Puesto..." value="<?php echo htmlspecialchars($searchTerm); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Estado</label>
+                                            <select name="status" class="form-select">
+                                                <option value="all" <?php echo $statusFilter === 'all' ? 'selected' : ''; ?>>Todos</option>
+                                                <option value="pending" <?php echo $statusFilter === 'pending' ? 'selected' : ''; ?>>Pendientes</option>
+                                                <option value="paid" <?php echo $statusFilter === 'paid' ? 'selected' : ''; ?>>Pagadas</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Desde</label>
+                                            <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($dateFrom); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label small">Hasta</label>
+                                            <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($dateTo); ?>">
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="fines.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
                         <!-- Sanctions Table -->
                         <div class="table-responsive">

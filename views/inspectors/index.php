@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de listado de inspectores
 
 session_start();
@@ -83,44 +83,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label for="inspector_code" class="form-label small">Código Inspector</label>
-                                    <input type="text" class="form-control" id="inspector_code" name="inspector_code" 
-                                        placeholder="Ej: I-001" 
-                                        value="<?php echo htmlspecialchars($_GET['inspector_code'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="email" class="form-label small">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                        placeholder="ejemplo@correo.com" 
-                                        value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="is_active" class="form-label small">Estado</label>
-                                    <select class="form-select" id="is_active" name="is_active">
-                                        <option value="">-- Todos los Estados --</option>
-                                        <?php 
-                                        $current_status = $_GET['is_active'] ?? '';
-                                        foreach ($status_translations as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo (string)$current_status === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="inspector_code" class="form-label small">Código Inspector</label>
+                                            <input type="text" class="form-control" id="inspector_code" name="inspector_code" 
+                                                placeholder="Ej: I-001" 
+                                                value="<?php echo htmlspecialchars($_GET['inspector_code'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="email" class="form-label small">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                placeholder="ejemplo@correo.com" 
+                                                value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="is_active" class="form-label small">Estado</label>
+                                            <select class="form-select" id="is_active" name="is_active">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <?php 
+                                                $current_status = $_GET['is_active'] ?? '';
+                                                foreach ($status_translations as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo (string)$current_status === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">

@@ -91,90 +91,95 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label for="search" class="form-label small">Búsqueda General</label>
-                                    <input type="text" class="form-control" id="search" name="search" 
-                                        placeholder="Inspector, Puesto, Estado..." 
-                                        value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="inspection_status" class="form-label small">Estado</label>
-                                    <select class="form-select" id="inspection_status" name="inspection_status">
-                                        <option value="">-- Todos los Estados --</option>
-                                        <?php 
-                                        // Usamos el mapa de traducción para llenar las opciones del filtro
-                                        $allowed_status = $status_translations; 
-                                        $current_status = $_GET['inspection_status'] ?? '';
-                                        foreach ($allowed_status as $key => $value): // $key es 'Pending', $value es 'Pendiente'
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo ($current_status === $key) ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="inspection_type_id" class="form-label small">Tipo de Inspección</label>
-                                    <select class="form-select" id="inspection_type_id" name="inspection_type_id">
-                                        <option value="">-- Todos los Tipos --</option>
-                                        <?php 
-                                        $current_type = $_GET['inspection_type_id'] ?? '';
-                                        if (isset($inspection_types) && is_array($inspection_types)) {
-                                            foreach ($inspection_types as $type) {
-                                                // Nota: Asumo que el valor del filtro debe ser el ID/nombre que entiende el backend.
-                                                // Aquí se deja como estaba, usando el nombre o el ID.
-                                                $value = htmlspecialchars($type['name'] ?? $type['inspection_type_id']);
-                                                $display = htmlspecialchars($type['name'] ?? 'N/A'); 
-                                                echo "<option value=\"$value\" " . (($current_type == $value) ? 'selected' : '') . ">$display</option>";
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="inspection_date" class="form-label small">Fecha Específica</label>
-                                    <input type="date" class="form-control" id="inspection_date" name="inspection_date" 
-                                        value="<?php echo htmlspecialchars($_GET['inspection_date'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="stall_id" class="form-label small">Puesto</label>
-                                    <select class="form-select" id="stall_id" name="stall_id">
-                                        <option value="">-- Todos los Puestos --</option>
-                                        <?php 
-                                        $current_stall = $_GET['stall_id'] ?? '';
-                                        foreach ($stalls_list as $stall): 
-                                        ?>
-                                            <option value="<?php echo $stall['id']; ?>" <?php echo ($current_stall == $stall['id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($stall['stall_number']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="inspector_id" class="form-label small">Inspector</label>
-                                    <select class="form-select" id="inspector_id" name="inspector_id">
-                                        <option value="">-- Todos los Inspectores --</option>
-                                        <?php 
-                                        $current_inspector = $_GET['inspector_id'] ?? '';
-                                        foreach ($inspectors_list as $inspector): 
-                                        ?>
-                                            <option value="<?php echo $inspector['inspector_id']; ?>" <?php echo ($current_inspector == $inspector['inspector_id']) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($inspector['full_name']); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="search" class="form-label small">Búsqueda General</label>
+                                            <input type="text" class="form-control" id="search" name="search" 
+                                                placeholder="Inspector, Puesto, Estado..." 
+                                                value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="inspection_status" class="form-label small">Estado</label>
+                                            <select class="form-select" id="inspection_status" name="inspection_status">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <?php 
+                                                $allowed_status = $status_translations; 
+                                                $current_status = $_GET['inspection_status'] ?? '';
+                                                foreach ($allowed_status as $key => $value):
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo ($current_status === $key) ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="inspection_type_id" class="form-label small">Tipo de Inspección</label>
+                                            <select class="form-select" id="inspection_type_id" name="inspection_type_id">
+                                                <option value="">-- Todos los Tipos --</option>
+                                                <?php 
+                                                $current_type = $_GET['inspection_type_id'] ?? '';
+                                                if (isset($inspection_types) && is_array($inspection_types)) {
+                                                    foreach ($inspection_types as $type) {
+                                                        $value = htmlspecialchars($type['name'] ?? $type['inspection_type_id']);
+                                                        $display = htmlspecialchars($type['name'] ?? 'N/A'); 
+                                                        echo "<option value=\"$value\" " . (($current_type == $value) ? 'selected' : '') . ">$display</option>";
+                                                    }
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="inspection_date" class="form-label small">Fecha Específica</label>
+                                            <input type="date" class="form-control" id="inspection_date" name="inspection_date" 
+                                                value="<?php echo htmlspecialchars($_GET['inspection_date'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="stall_id" class="form-label small">Puesto</label>
+                                            <select class="form-select" id="stall_id" name="stall_id">
+                                                <option value="">-- Todos los Puestos --</option>
+                                                <?php 
+                                                $current_stall = $_GET['stall_id'] ?? '';
+                                                foreach ($stalls_list as $stall): 
+                                                ?>
+                                                    <option value="<?php echo $stall['id']; ?>" <?php echo ($current_stall == $stall['id']) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($stall['stall_number']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="inspector_id" class="form-label small">Inspector</label>
+                                            <select class="form-select" id="inspector_id" name="inspector_id">
+                                                <option value="">-- Todos los Inspectores --</option>
+                                                <?php 
+                                                $current_inspector = $_GET['inspector_id'] ?? '';
+                                                foreach ($inspectors_list as $inspector): 
+                                                ?>
+                                                    <option value="<?php echo $inspector['inspector_id']; ?>" <?php echo ($current_inspector == $inspector['inspector_id']) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($inspector['full_name']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">

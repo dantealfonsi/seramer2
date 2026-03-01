@@ -10,7 +10,17 @@ $rol = new RolesController();
 
 // Si no vienen datos del controlador (acceso directo), redireccionar a través del controlador
 // Aunque en este proyecto las vistas parecen ser puntos de entrada que instancian controladores.
-$departments = (new DepartmentModel())->getAllWithManager();
+$all_departments_raw = (new DepartmentModel())->getAllWithManager();
+
+// Filtro simple de búsqueda por nombre
+$search_name = trim($_GET['name'] ?? '');
+if ($search_name !== '') {
+    $departments = array_filter($all_departments_raw, function($d) use ($search_name) {
+        return stripos($d['name'], $search_name) !== false;
+    });
+} else {
+    $departments = $all_departments_raw;
+}
 
 $page_title = 'Gestión de Departamentos';
 
@@ -43,6 +53,30 @@ include __DIR__ . '/../../views/layouts/navigation-top.php';
                     <?php endif; ?>
 
                     <div class="card-body">
+                        <!-- Filtro por Nombre -->
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="index.php">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label small fw-bold text-uppercase">Nombre del Departamento</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-building-line text-muted"></i></span>
+                                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($_GET['name'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
                         <?php if (empty($departments)): ?>
                             <div class="text-center py-4">
                                 <i class="ri-building-line text-muted" style="font-size: 3rem;"></i>

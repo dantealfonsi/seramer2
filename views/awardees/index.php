@@ -89,15 +89,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- 2. Filtros Avanzados -->
-                        <div class="card card-inside">
-                            <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0">
-                                <h6 class="card-title mb-0" style="font-weight: 600; color: #43495b;">
-                                    <i class="ri-filter-2-line me-1 text-muted"></i> Opciones de Filtrado Avanzado
-                                </h6>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                            <div class="card-body">
+                            <div class="filter-card-body">
                                 <form action="index.php" method="GET">
-                                    <div class="row g-3 align-items-end">
+                                    <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label">Búsqueda General</label>
                                             <input type="text" class="form-control" name="search" placeholder="BUSCAR..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
@@ -110,11 +108,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <label class="form-label">Nombre</label>
                                             <input type="text" class="form-control" name="name" placeholder="NOMBRE/APELLIDO" value="<?php echo htmlspecialchars($_GET['name'] ?? ''); ?>">
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="form-label">Teléfono</label>
                                             <input type="text" class="form-control" name="phone" placeholder="TELÉFONO" value="<?php echo htmlspecialchars($_GET['phone'] ?? ''); ?>">
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <label class="form-label">Email</label>
                                             <input type="text" class="form-control" name="email" placeholder="CORREO ELECTRÓNICO" value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
                                         </div>
@@ -122,15 +120,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <label class="form-label">Dirección</label>
                                             <input type="text" class="form-control" name="address" placeholder="DIRECCIÓN" value="<?php echo htmlspecialchars($_GET['address'] ?? ''); ?>">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-end">
-                                            <div class="d-flex gap-2 w-100">
-                                                <a href="index.php" class="btn btn-filter-clear w-50" title="Limpiar Filtros">
-                                                    <i class="ri-refresh-line me-1"></i> Limpiar
-                                                </a>
-                                                <button type="submit" class="btn btn-filter-apply w-50" title="Aplicar Filtros">
-                                                    <i class="ri-search-line me-1"></i> Filtrar
-                                                </button>
-                                            </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
                                         </div>
                                     </div>
                                 </form>

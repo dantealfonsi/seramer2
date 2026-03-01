@@ -109,63 +109,63 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                
-                                <div class="col-md-4">
-                                    <label for="complaint_type" class="form-label small">Tipo de Queja</label>
-                                    <select class="form-select" id="complaint_type" name="complaint_type">
-                                        <option value="">-- Todos los Tipos --</option>
-                                        <?php 
-                                        $current_type = $activeFilters['complaint_type'] ?? '';
-                                        foreach ($allowed_tipo as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_type === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label for="complaint_priority" class="form-label small">Prioridad</label>
-                                    <select class="form-select" id="complaint_priority" name="complaint_priority">
-                                        <option value="">-- Todas las Prioridades --</option>
-                                        <?php 
-                                        $current_priority = $activeFilters['complaint_priority'] ?? '';
-                                        foreach ($allowed_priority as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_priority === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-4">
-                                    <label for="complaint_status" class="form-label small">Estado</label>
-                                    <select class="form-select" id="complaint_status" name="complaint_status">
-                                        <option value="">-- Todos los Estados --</option>
-                                        <?php 
-                                        $current_status = $activeFilters['complaint_status'] ?? '';
-                                        foreach ($allowed_status as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_status === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="complaint_type" class="form-label small">Tipo de Queja</label>
+                                            <select class="form-select" id="complaint_type" name="complaint_type">
+                                                <option value="">-- Todos los Tipos --</option>
+                                                <?php 
+                                                $current_type = $activeFilters['complaint_type'] ?? '';
+                                                foreach ($allowed_tipo as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_type === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="complaint_priority" class="form-label small">Prioridad</label>
+                                            <select class="form-select" id="complaint_priority" name="complaint_priority">
+                                                <option value="">-- Todas las Prioridades --</option>
+                                                <?php 
+                                                $current_priority = $activeFilters['complaint_priority'] ?? '';
+                                                foreach ($allowed_priority as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_priority === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="complaint_status" class="form-label small">Estado</label>
+                                            <select class="form-select" id="complaint_status" name="complaint_status">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <?php 
+                                                $current_status = $activeFilters['complaint_status'] ?? '';
+                                                foreach ($allowed_status as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_status === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">
