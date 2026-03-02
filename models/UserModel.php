@@ -652,14 +652,6 @@ class UserModel {
                         ['title' => 'Historial de Quejas', 'url' => 'views/complaints/index.php'],
                     ]
                 ],
-                [
-                    'title' => 'Control de Acceso',
-                    'icon' => 'ri-lock-line',
-                    'submenu' => [
-                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
-                    ]
-                ],
             ],
             'Liquidacion' => [
                 [
@@ -704,14 +696,6 @@ class UserModel {
                     'icon' => 'ri-file-chart-line',
                     'url' => 'views/liquidacion_reports/index.php'
                 ],
-                [
-                    'title' => 'Control de Acceso',
-                    'icon' => 'ri-lock-line',
-                    'submenu' => [
-                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
-                    ]
-                ],
             ],
             'Fiscalizacion' => [
                 [
@@ -750,20 +734,9 @@ class UserModel {
                     'url' => 'views/complaints/index.php'
                 ],
                 [
-                    'title' => 'Reportes',
+                    'title' => 'Reportes Estadísticos',
                     'icon' => 'ri-bar-chart-box-line',
-                    'submenu' => [
-                        ['title' => 'Editor de Reportes', 'url' => 'views/reports/index.php'],
-                        ['title' => 'Reportes Estadisticos', 'url' => 'views/statistical-reports/index.php']
-                    ]
-                ],
-                [
-                    'title' => 'Control de Acceso',
-                    'icon' => 'ri-lock-line',
-                    'submenu' => [
-                        ['title' => 'Gestión de Roles', 'url' => 'views/roles/index.php'],
-                        ['title' => 'Usuarios y Permisos', 'url' => 'views/users/index.php']
-                    ]
+                    'url' => 'views/statistical-reports/index.php'
                 ]
             ],
             'Cobranza' => [
@@ -786,11 +759,9 @@ class UserModel {
                     ]
                 ],
                 [
-                    'title' => 'Reportes',
+                    'title' => 'Reportes de Cobranza',
                     'icon' => 'ri-bar-chart-box-line',
-                    'submenu' => [
-                         ['title' => 'Reportes de Cobranza', 'url' => 'views/collection-reports/index.php']
-                    ]
+                    'url' => 'views/collection-reports/index.php'
                 ]
             ]
         ];

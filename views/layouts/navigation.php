@@ -228,6 +228,14 @@ if (!empty($_SESSION['is_superadmin'])) {
                         <div data-i18n="Departamentos">Departamentos</div>
                     </a>
                 </li>
+
+                <!-- Feature Oculta: Editor de Reportes -->
+                <li class="menu-item <?php echo isMenuItemActive('views/reports/index.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo url('views/reports/index.php'); ?>" class="menu-link" style="color:black">
+                        <i class="menu-icon icon-base ri ri-file-edit-line"></i>
+                        <div data-i18n="Editor de Reportes">Editor de Reportes</div>
+                    </a>
+                </li>
                 <?php endif; ?>
 
                
