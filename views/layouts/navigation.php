@@ -13,6 +13,7 @@ $authController->requireAuth();
 $current_user = $authController->getCurrentUser();
 $user_departments = $current_user['departments'] ?? [];
 $current_department = $current_user['selected_department'] ?? '';
+$is_superadmin = !empty($_SESSION['is_superadmin']);
 $department_menus = [];
 
 // Obtener menús específicos del departamento
@@ -24,16 +25,29 @@ $all_master_menus = $userModel->getMasterMenus();
  */
 function isMenuItemActive($itemUrl) {
     if (empty($itemUrl)) return false;
-    $currentUri = $_SERVER['REQUEST_URI'];
-    // Normalizar la URL del ítem para que coincida con la URI
-    $itemPath = '/' . ltrim($itemUrl, '/');
-    return (strpos($currentUri, $itemPath) !== false);
+    
+    // Obtener solo la ruta del script actual (sin query params)
+    $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    
+    // Obtener la ruta del ítem (ej: /seramer2/views/users/index.php)
+    $itemPath = parse_url(url($itemUrl), PHP_URL_PATH);
+    
+    return ($currentPath === $itemPath);
 }
 
 function isMenuGroupActive($menu) {
     if (!isset($menu['submenu'])) return false;
+    
+    // Si estamos en una página de configuración global, no queremos que el menú de departamento
+    // "reclame" la apertura si el usuario es superadmin (para evitar doble resaltado)
+    $globalPages = ['views/users/index.php', 'views/roles/index.php', 'views/departments/index.php'];
+    
     foreach ($menu['submenu'] as $submenu) {
-        if (isMenuItemActive($submenu['url'])) return true;
+        if (isMenuItemActive($submenu['url'])) {
+            // Prioridad: Si es una página global y el ítem está en un submenú,
+            // devolvemos true pero el loop principal decidirá si lo abre.
+            return true;
+        }
     }
     return false;
 }
@@ -145,6 +159,19 @@ if (!empty($_SESSION['is_superadmin'])) {
                         <?php if (isset($menu['submenu'])): ?>
                             <?php 
                             $isMenuOpen = isMenuGroupActive($menu); 
+                            
+                            // Prioridad Global: Si el usuario es superadmin y estamos en una sección 
+                            // que suele ser global (como Control de Acceso), bajamos el flag de apertura
+                            // para que se resalte abajo en "Configuraciones Globales"
+                            if ($isMenuOpen && $is_superadmin) {
+                                $globalPages = ['views/users/index.php', 'views/roles/index.php', 'views/departments/index.php'];
+                                foreach ($menu['submenu'] as $sub) {
+                                    if (in_array($sub['url'], $globalPages) && isMenuItemActive($sub['url'])) {
+                                        $isMenuOpen = false;
+                                        break;
+                                    }
+                                }
+                            }
                             ?>
                             <!-- Menú con submenús -->
                             <li class="menu-item <?php echo $isMenuOpen ? 'active open' : ''; ?>" style="color:black">
@@ -175,30 +202,27 @@ if (!empty($_SESSION['is_superadmin'])) {
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <?php 
-                $is_superadmin = !empty($_SESSION['is_superadmin']);
-                if ($is_superadmin): 
-                ?>
+                <?php if ($is_superadmin): ?>
                 <!-- Módulos Generales (Solo Superadmin) -->
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">Configuraciones Globales</span>
                 </li>
 
-                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/users/') !== false) ? 'active' : ''; ?>">
+                <li class="menu-item <?php echo isMenuItemActive('views/users/index.php') ? 'active' : ''; ?>">
                     <a href="<?php echo url('views/users/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-user-settings-line"></i>
                         <div data-i18n="Usuarios">Usuarios</div>
                     </a>
                 </li>
 
-                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/roles/') !== false) ? 'active' : ''; ?>">
+                <li class="menu-item <?php echo isMenuItemActive('views/roles/index.php') ? 'active' : ''; ?>">
                     <a href="<?php echo url('views/roles/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-shield-keyhole-line"></i>
                         <div data-i18n="Roles">Roles</div>
                     </a>
                 </li>
 
-                <li class="menu-item <?php echo (strpos($_SERVER['PHP_SELF'], '/departments/') !== false) ? 'active' : ''; ?>">
+                <li class="menu-item <?php echo isMenuItemActive('views/departments/index.php') ? 'active' : ''; ?>">
                     <a href="<?php echo url('views/departments/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-building-3-line"></i>
                         <div data-i18n="Departamentos">Departamentos</div>

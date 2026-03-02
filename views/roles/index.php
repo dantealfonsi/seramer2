@@ -186,25 +186,25 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="<?php echo ($role['name'] !== 'admin' || $is_superadmin) ? 'edit.php?id=' . $role['id'] : 'javascript:void(0);'; ?>" 
-                                                       class="btn btn-sm btn-outline-warning <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'disabled' : ''; ?>" 
-                                                       title="<?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'No Editable' : 'Editar'; ?>"
-                                                       <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'aria-disabled="true"' : ''; ?>>
-                                                        <i class="ri ri-edit-line"></i>
-                                                    </a>
-                                                    
-                                                    <?php if ($is_superadmin && $role['name'] !== 'admin'): ?>
-                                                        <a href="delete.php?id=<?php echo $role['id']; ?>" 
-                                                           class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                                           onclick="return confirm('¿Está seguro de eliminar este rol? Los usuarios asignados a este rol perderán sus permisos.')">
-                                                            <i class="ri ri-delete-bin-line"></i>
-                                                        </a>
-                                                    <?php endif; ?>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                                     <a href="<?php echo ($role['name'] !== 'admin' || $is_superadmin) ? 'edit.php?id=' . $role['id'] : 'javascript:void(0);'; ?>" 
+                                                        class="btn btn-sm btn-outline-warning <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'disabled' : ''; ?>" 
+                                                        title="<?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'No Editable' : 'Editar'; ?>"
+                                                        <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'aria-disabled="true"' : ''; ?>>
+                                                         <i class="ri-edit-line"></i>
+                                                     </a>
+                                                     
+                                                     <?php if ($is_superadmin && $role['name'] !== 'admin'): ?>
+                                                         <a href="delete.php?id=<?php echo $role['id']; ?>" 
+                                                            class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                                            onclick="return confirm('¿Está seguro de eliminar este rol? Los usuarios asignados a este rol perderán sus permisos.')">
+                                                             <i class="ri-delete-bin-line"></i>
+                                                         </a>
+                                                     <?php endif; ?>
+                                                 </td>
+                                             </tr>
+                                         <?php endforeach; ?>
+                                     </tbody>
+                                 </table>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -227,22 +227,30 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         $('#rolesTable').DataTable({
             responsive: true,
-            dom: '<"row d-flex justify-content-between align-items-center mb-3"<"col-md-6"B><"col-md-6"f>>t<"row"<"col-md-6"i><"col-md-6"p>>',
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
-                {
-                    extend: 'print',
-                    text: '<i class="ri-printer-line me-1"></i> Imprimir',
-                    className: 'btn btn-outline-secondary btn-sm',
-                    exportOptions: {
-                        columns: ':visible:not(:last-child)' // Exclude last column (Actions)
-                    }
-                },
                 {
                     extend: 'pdfHtml5',
                     text: '<i class="ri-file-pdf-line"></i> PDF',
-                    className: 'btn btn-outline-danger btn-sm',
+                    className: 'btn btn-danger btn-sm me-1',
                     exportOptions: {
                         columns: ':visible:not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)' // Exclude last column (Actions)
                     }
                 }
             ],

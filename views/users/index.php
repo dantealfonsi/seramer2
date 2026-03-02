@@ -255,7 +255,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     
                                                         <a href="view.php?id=<?php echo $user['id']; ?>" 
                                                            class="btn btn-sm btn-outline-primary" title="Ver detalles">
-                                                            <i class="ri ri-eye-line"></i>
+                                                            <i class="ri-eye-line"></i>
                                                         </a>
                                                         <?php 
                                                             $is_target_admin = !empty($user['is_superadmin']) || (isset($user['role_names']) && strpos(strtolower($user['role_names']), 'admin') !== false);
@@ -266,7 +266,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                            class="btn btn-sm btn-outline-warning <?php echo !$can_modify ? 'disabled' : ''; ?>" 
                                                            title="<?php echo $can_modify ? 'Editar' : 'Usuario Protegido'; ?>"
                                                            <?php echo !$can_modify ? 'aria-disabled="true"' : ''; ?>>
-                                                            <i class="ri ri-edit-line"></i>
+                                                            <i class="ri-edit-line"></i>
                                                         </a>
 
                                                         <?php if ($user['status'] === 'active'): ?>
@@ -274,14 +274,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                                class="btn btn-sm btn-outline-danger <?php echo !$can_modify ? 'disabled' : ''; ?>" 
                                                                title="<?php echo $can_modify ? 'Desactivar' : 'Usuario Protegido'; ?>"
                                                                <?php echo $can_modify ? 'onclick="return confirm(\'¿Está seguro de desactivar este usuario?\')"' : 'aria-disabled="true"'; ?>>
-                                                                <i class="ri ri-user-line"></i>
+                                                                <i class="ri-user-unfollow-line"></i>
                                                             </a>
                                                         <?php else: ?>
                                                             <a href="<?php echo $can_modify ? 'reactivate.php?id=' . $user['id'] : 'javascript:void(0);'; ?>" 
                                                                class="btn btn-sm btn-outline-success <?php echo !$can_modify ? 'disabled' : ''; ?>" 
                                                                title="<?php echo $can_modify ? 'Reactivar' : 'Usuario Protegido'; ?>"
                                                                <?php echo $can_modify ? 'onclick="return confirm(\'¿Está seguro de reactivar este usuario?\')"' : 'aria-disabled="true"'; ?>>
-                                                                <i class="ri ri-user-line"></i>
+                                                                <i class="ri-user-received-line"></i>
                                                             </a>
                                                         <?php endif; ?>
                                                     
@@ -313,20 +313,28 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         const table = $('#usersTable').DataTable({
             responsive: true,
-            dom: '<"row d-flex justify-content-between align-items-center mb-3"<"col-md-6"B><"col-md-6"f>>t<"row"<"col-md-6"i><"col-md-6"p>>',
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
-                    extend: 'print',
-                    text: '<i class="ri-printer-line me-1"></i> Imprimir',
-                    className: 'btn btn-outline-secondary btn-sm',
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5]
                     }
                 },
                 {
-                    extend: 'pdfHtml5',
-                    text: '<i class="ri-file-pdf-line"></i> PDF',
-                    className: 'btn btn-outline-danger btn-sm',
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
                     exportOptions: {
                         columns: [0, 1, 2, 3, 4, 5]
                     }

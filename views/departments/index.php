@@ -206,7 +206,7 @@ $(document).ready(function() {
     if ($.fn.DataTable) {
         $('#departmentsTable').DataTable({
             responsive: true,
-            dom: '<"row d-flex justify-content-between align-items-center mb-3"<"col-md-6"B><"col-md-6"f>>t<"row"<"col-md-6"i><"col-md-6"p>>',
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',
