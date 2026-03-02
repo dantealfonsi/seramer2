@@ -100,21 +100,35 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Summary -->
-                        <div class="row mb-4">
+                        <div class="row mb-4 g-3">
                             <?php
                             $totalDebt = 0;
                             foreach ($delinquentAccounts as $acc) $totalDebt += $acc['total_debt'];
                             ?>
-                            <div class="col-md-6 mb-2">
-                                <div class="p-3 bg-label-warning rounded d-flex justify-content-between align-items-center h-100">
-                                    <span class="fw-semibold">Cuentas en Mora:</span>
-                                    <span class="h4 mb-0"><?php echo count($delinquentAccounts); ?></span>
+                            <div class="col-md-6">
+                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                            <i class="ri-alarm-warning-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo count($delinquentAccounts); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">CUENTAS EN MORA</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="p-3 bg-label-danger rounded d-flex justify-content-between align-items-center h-100">
-                                    <span class="fw-semibold">Deuda Total Acumulada:</span>
-                                    <span class="h4 mb-0 text-danger">Bs. <?php echo number_format($totalDebt, 2); ?></span>
+                            <div class="col-md-6">
+                                <div class="card card-status-danger h-100" style="background-color: var(--metro-danger-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-danger) !important; background-color: transparent !important;">
+                                            <i class="ri-money-dollar-circle-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-danger);">Bs. <?php echo number_format($totalDebt, 2); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">DEUDA TOTAL ACUMULADA</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

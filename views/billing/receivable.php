@@ -61,7 +61,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0 py-3">
                         <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
                                 <i class="ri-money-dollar-circle-line" style="color: #696cff; font-size: 2rem;"></i>
@@ -72,7 +72,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body pt-0">
                         <!-- Redesigned Search Form -->
-                        <div class="bg-light p-4 rounded-3 mb-4">
+                        <div class="bg-transparent border p-4 rounded-3 mb-4">
                             <form method="GET" action="" id="searchForm">
                                 <div class="row g-4">
                                     <div class="col-md-12">
@@ -86,7 +86,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <div class="col-md-12">
                                         <label class="form-label fw-bold text-muted small text-uppercase mb-2">Dato a Ingresar</label>
                                         <div class="input-group input-group-lg shadow-sm">
-                                            <select name="id_prefix" id="id_prefix" class="form-select border-0 bg-white" style="max-width: 80px; <?php echo $searchType !== 'id_number' ? 'display: none;' : ''; ?>">
+                                            <select name="id_prefix" id="id_prefix" class="form-select border-0 bg-transparent" style="max-width: 80px; <?php echo $searchType !== 'id_number' ? 'display: none;' : ''; ?>">
                                                 <option value="V" <?php echo $idPrefix === 'V' ? 'selected' : ''; ?>>V</option>
                                                 <option value="E" <?php echo $idPrefix === 'E' ? 'selected' : ''; ?>>E</option>
                                                 <option value="J" <?php echo $idPrefix === 'J' ? 'selected' : ''; ?>>J</option>
@@ -121,21 +121,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <div class="card bg-label-primary shadow-none border">
-                                        <div class="card-body">
-                                            <h6 class="card-title text-primary"><i class="ri-user-line me-2"></i>Datos del Contribuyente</h6>
-                                            <p class="mb-1"><strong>Nombre:</strong> <?php echo htmlspecialchars($awardee['first_name'] . ' ' . $awardee['last_name']); ?></p>
-                                            <p class="mb-1"><strong>Cédula/RIF:</strong> <?php echo htmlspecialchars($awardee['id_number']); ?></p>
-                                            <p class="mb-0"><strong>Teléfono:</strong> <?php echo htmlspecialchars($awardee['phone'] ?? 'N/A'); ?></p>
+                                    <div class="card card-status-primary h-100" style="background-color: var(--metro-primary-light);">
+                                        <div class="card-body p-3 d-flex align-items-center">
+                                            <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-primary) !important; background-color: transparent !important;">
+                                                <i class="ri-user-line"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fw-bold" style="color: var(--metro-primary);">DATOS DEL CONTRIBUYENTE</h6>
+                                                <p class="mb-0 text-dark small"><strong><?php echo htmlspecialchars($awardee['first_name'] . ' ' . $awardee['last_name']); ?></strong> (<?php echo htmlspecialchars($awardee['id_number']); ?>)</p>
+                                                <p class="mb-0 text-muted small">Telf: <?php echo htmlspecialchars($awardee['phone'] ?? 'N/A'); ?></p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="card bg-label-danger shadow-none border h-100 d-flex align-items-center justify-content-center">
-                                        <div class="card-body text-center">
-                                            <p class="mb-1 text-danger fw-semibold">DEUDA TOTAL PENDIENTE</p>
-                                            <div class="debt-amount-badge bg-danger text-white">
-                                                Bs. <?php echo number_format($totalDebt, 2); ?>
+                                    <div class="card card-status-danger h-100" style="background-color: var(--metro-danger-light);">
+                                        <div class="card-body p-3 d-flex align-items-center">
+                                            <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-danger) !important; background-color: transparent !important;">
+                                                <i class="ri-money-dollar-circle-line"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fw-bold" style="color: var(--metro-danger);">DEUDA TOTAL PENDIENTE</h6>
+                                                <h3 class="mb-0 fw-bold" style="color: var(--metro-danger);">Bs. <?php echo number_format($totalDebt, 2); ?></h3>
                                             </div>
                                         </div>
                                     </div>
