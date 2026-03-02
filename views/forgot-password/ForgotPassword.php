@@ -52,6 +52,9 @@ if (isset($data['success']) && $data['success']) {
     <link rel="stylesheet" href="<?php echo vendor('libs/pickr/pickr-themes.css'); ?>" />
     <link rel="stylesheet" href="<?php echo vendor('css/core.css'); ?>" />
     <link rel="stylesheet" href="<?php echo css('demo.css'); ?>" />
+    <!-- SERAMER: Sistema Neumórfico Integral -->
+    <link rel="stylesheet" href="<?php echo css('neumorph-system.css'); ?>" />
+    
     <link rel="stylesheet" href="<?php echo vendor('libs/perfect-scrollbar/perfect-scrollbar.css'); ?>" />
     <link rel="stylesheet" href="<?php echo vendor('libs/@form-validation/form-validation.css'); ?>" />
     <link rel="stylesheet" href="<?php echo vendor('css/pages/page-auth.css'); ?>" />
@@ -59,54 +62,85 @@ if (isset($data['success']) && $data['success']) {
     <script src="<?php echo vendor('js/template-customizer.js'); ?>"></script>
     <script src="<?php echo js('config.js'); ?>"></script>
 </head>
-<body>
+<body class="page-forgot-password">
     <div class="authentication-wrapper authentication-cover">
         <div class="authentication-inner row m-0">
-            <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2">
-                <img src="<?php echo img('illustrations/auth-login-illustration-light.png'); ?>" class="auth-cover-illustration w-100" alt="auth-illustration" data-app-light-img="illustrations/auth-login-illustration-light.png" data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
-                <img alt="mask" src="<?php echo img('illustrations/auth-basic-login-mask-light.png'); ?>" class="authentication-image d-none d-lg-block" data-app-light-img="illustrations/auth-basic-login-mask-light.png" data-app-dark-img="illustrations/auth-basic-login-mask-dark.png" />
+            <!-- Left Section (Text) -->
+            <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2" style="background-color: #1e2a3a;">
+                <div class="text-center p-5">
+                    <h1 class="display-3 fw-bold text-white mb-4" style="letter-spacing: -1px; text-transform: uppercase;">REESTABLEZCA SU<br>CONTRASEÑA</h1>
+                    <div style="width: 80px; height: 4px; background: var(--metro-primary); margin: 0 auto 2rem;"></div>
+                    <p class="lead text-white opacity-75" style="font-size: 1.25rem;">Proceso de recuperación de acceso al sistema SERAMER.</p>
+                </div>
             </div>
+            <!-- /Left Section -->
+
+            <!-- Form Section -->
             <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6">
                 <div class="w-px-400 mx-auto pt-12 pt-lg-0">
-                    <h4 class="mb-1">¿Olvidaste tu contraseña? 🔒</h4>
-                    <p class="mb-5">Ingresa tu correo electrónico y te enviaremos un enlace para restablecerla.</p>
+                    <!-- Logo centered -->
+                    <div style="display: flex;align-items: center;justify-content: center;margin-bottom: 2rem;">
+                        <img src="<?php echo img('logo.png'); ?>" style="width: 7rem; height: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 50%; padding: .4rem; background: white;" alt="Logo" class="logo" />   
+                    </div>
+
+                    <h4 class="mb-1 fw-bold" style="color: var(--metro-primary);">¿Olvidaste tu contraseña?</h4>
+                    <p class="mb-5 text-muted">Ingresa tu correo electrónico y te enviaremos un código para restablecerla.</p>
 
                     <?php if (!empty($data['message'])): ?>
-                        <div class="alert alert-<?php echo isset($data['success']) && $data['success'] ? 'success' : 'danger'; ?>" role="alert">
+                        <div class="alert alert-<?php echo isset($data['success']) && $data['success'] ? 'success' : 'danger'; ?> alert-dismissible fade show" role="alert">
                             <?php echo htmlspecialchars($data['message']); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     <?php endif; ?>
-                    <?php if (!empty($data['code'])): ?>
-                        <div class="alert alert-<?php echo isset($data['success']) && $data['success'] ? 'success' : 'info'; ?>" role="alert">
-                            Codigo Temp: <?php echo htmlspecialchars($data['code']); ?>
-                        </div>
-                    <?php endif; ?>                    
-
-                    <form id="formForgotPassword" class="mb-5" action="" method="POST">
+                    
+                    <form id="formForgotPassword" class="mb-4" action="" method="POST">
                         <input type="hidden" name="token" value="<?php echo htmlspecialchars($data['code'] ?? ''); ?>" />
-                        <div class="form-floating form-floating-outline mb-5">
-                            <input type="email" class="form-control" id="email" name="email" <?php if(isset($data['email'])) echo  "value='".htmlspecialchars($data['email'])."' readonly "; ?>placeholder="Ingresa tu correo electrónico" autofocus />
+                        
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="email" class="form-control" id="email" name="email" 
+                                <?php if(isset($data['email'])) echo "value='".htmlspecialchars($data['email'])."' readonly "; ?>
+                                placeholder="Ingresa tu correo electrónico" autofocus required />
                             <label for="email">Correo Electrónico</label>                            
                         </div>
-                        <?php if(isset($data['email'])){?>
-                        <div class="form-floating form-floating-outline mb-5">
-                            <input type="text" class="form-control" id="code" name="code" placeholder="Ingresa Codigo" />
-                            <label for="email">Codigo Recuperacion</label>                            
+
+                        <?php if (!empty($data['code'])): ?>
+                        <!-- Test Log Card -->
+                        <div class="card bg-label-info border-info mb-4 alert alert-dismissible fade show" role="alert" style="border-style: dashed !important; background-color: rgba(41, 128, 185, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="avatar flex-shrink-0 me-3">
+                                    <span class="avatar-initial rounded bg-info"><i class="ri-terminal-box-line"></i></span>
+                                </div>
+                                <div>
+                                    <small class="d-block text-info fw-bold mb-1">TEST LOG / DEPURE</small>
+                                    <span class="mb-0 text-dark">Tu código es: <code class="fw-bold fs-5 text-primary"><?php echo htmlspecialchars($data['code']); ?></code></span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="top: 0.5rem; right: 0.5rem;"></button>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(isset($data['email'])): ?>
+                        <div class="form-floating form-floating-outline mb-4">
+                            <input type="text" class="form-control" id="code" name="code" placeholder="Ingresa Código" required />
+                            <label for="code">Código de Recuperación</label>                            
                         </div>                            
-                        <?php
-                        } ?>                    
-                        <button class="btn btn-primary d-grid w-100" type="submit">Enviar Codigo de Recuperación</button>
+                        <?php endif; ?>                    
+
+                        <button class="btn btn-primary d-grid w-100 py-3 fw-bold" type="submit">
+                            <?php echo isset($data['email']) ? 'Validar Código' : 'Enviar Código de Recuperación'; ?>
+                        </button>
                     </form>
 
-                    <div class="text-center">
-                        <a href="../auth/login.php" class="d-flex align-items-center justify-content-center">
-                            <i class="ri-arrow-left-s-line ri-24px me-1"></i>
+                    <div class="text-center mt-4">
+                        <a href="../auth/login.php" class="d-flex align-items-center justify-content-center text-primary fw-semibold">
+                            <i class="ri-arrow-left-s-line ri-20px me-1"></i>
                             Volver al inicio de sesión
                         </a>
                     </div>
                 </div>
             </div>
-            </div>
+            <!-- /Form Section -->
+        </div>
     </div>
 
     <script src="<?php echo vendor('libs/jquery/jquery.js'); ?>"></script>

@@ -429,14 +429,34 @@ body {
     border-left: 4px solid var(--metro-primary) !important;
 }
 
-/* Eliminar cards fluorescentes — reemplazar bg-gradient-success */
-.bg-gradient-success {
-    background: var(--metro-success) !important;
+/* --- Premium Metro Gradients --- */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--metro-primary) 0%, #155278 100%) !important;
     color: #ffffff !important;
 }
 
-.bg-gradient-primary {
-    background: var(--metro-primary) !important;
+.bg-gradient-success {
+    background: linear-gradient(135deg, var(--metro-success) 0%, #1b4f32 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, var(--metro-warning) 0%, #8c6606 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, var(--metro-danger) 0%, #8c261c 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, var(--metro-info) 0%, #1c5f8c 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(135deg, var(--metro-secondary) 0%, #3e4552 100%) !important;
     color: #ffffff !important;
 }
 
@@ -1462,5 +1482,66 @@ body.page-forgot input {
 
     .btn {
         box-shadow: none !important;
+    }
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   §20  DATATABLES ALIGNMENT FIXES
+   ─────────────────────────────────────────────────────────────────── */
+/* Force buttons to the left and search to the right */
+.dataTables_wrapper .d-flex.flex-wrap.justify-content-between {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: flex-end !important;
+    gap: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Ensure buttons take horizontal space without wrapping if possible */
+.dt-buttons {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0 !important;
+}
+
+/* Align search input and label */
+.dataTables_filter {
+    margin-top: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    flex: 1 !important;
+    justify-content: flex-end !important;
+}
+
+.dataTables_filter label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0 !important;
+    white-space: nowrap !important;
+    width: 300px !important;
+}
+
+.dataTables_filter input {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
+/* Mobile responsive fallback */
+@media (max-width: 991.98px) {
+    .dataTables_wrapper .d-flex.flex-wrap.justify-content-between {
+        flex-wrap: wrap !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1rem !important;
+    }
+
+    .dataTables_filter {
+        justify-content: flex-start !important;
+    }
+
+    .dataTables_filter label {
+        width: 100% !important;
     }
 }

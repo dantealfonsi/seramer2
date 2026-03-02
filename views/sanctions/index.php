@@ -197,8 +197,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else : ?>
                             <div class="table-responsive">
-                                <table id="sanctionsTable" class="table table-striped table-hover w-100">
-                                    <thead class="table-dark">
+                                <table id="sanctionsTable" class="table table-striped table-hover align-middle w-100">
+                                    <thead>
                                         <tr>
                                             <th>Puesto</th>
                                             <th>Adjudicatario</th>
@@ -233,7 +233,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </td>
                                                 <td class="text-end">
                                                     <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
-                                                    <a href="view.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-info">
+                                                    <a href="view.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-outline-primary">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
                                                     <?php endif; ?>
@@ -338,8 +338,8 @@ $(document).ready(function() {
         $('#sanctionsTable').DataTable({ 
             responsive: true,
             
-            // Configuración de los botones de exportación
-            dom: 'Bfrtip',
+            // Configuración de los botones de exportación (Bf para botones y buscador en la misma linea)
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',

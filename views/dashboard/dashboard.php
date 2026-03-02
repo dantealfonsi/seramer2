@@ -86,9 +86,8 @@ $dashboardStats = $statsModel->getDashboardStats();
                         </div>
                     </div>
                     <div class="col-md-6 text-center text-md-end order-1 order-md-2">
-                        <div class="card-body pb-0 px-0 pt-2">
-                            <!-- Nota: Reemplazado con una imagen de placeholder para que el código sea autocontenido -->
-                            <img src="<?php echo img('illustrations/rocket.png'); ?>" height="186" class="scaleX-n1-rtl" alt="View Profile" style="visibility: visible;">
+                        <div class="card-body pb-0 px-0 pt-2" style="background: linear-gradient(270deg, #203565, transparent); height: 186px; border-radius: 0.5em;">
+                            <!-- Banner area without image -->
                         </div>
                     </div>
                 </div>
@@ -99,67 +98,75 @@ $dashboardStats = $statsModel->getDashboardStats();
         <div class="col-12 mt-4">
             <div class="row g-4">
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Infracciones Activas</h6>
-                                    <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Infracciones Activas</span>
+                                    <div class="d-flex align-items-end mt-2">
                                         <h4 class="mb-0 me-2"><?php echo $dashboardStats['active_infractions']; ?></h4>
                                         <small class="text-success fw-semibold"><i class="ri-arrow-up-s-line align-middle"></i>+5%</small>
                                     </div>
+                                    <small>Total activas</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-warning"><i class="ri-alert-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-warning rounded p-2">
+                                    <i class="ri-alert-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Infracciones Resueltas</h6>
-                                    <div class="d-flex align-items-center">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Infracciones Resueltas</span>
+                                    <div class="d-flex align-items-end mt-2">
                                         <h4 class="mb-0 me-2"><?php echo $dashboardStats['resolved_infractions']; ?></h4>
                                         <small class="text-success fw-semibold"><i class="ri-arrow-up-s-line align-middle"></i>+12%</small>
                                     </div>
+                                    <small>Total resueltas</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-success"><i class="ri-check-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-success rounded p-2">
+                                    <i class="ri-check-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Adjudicatarios</h6>
-                                    <h4 class="mb-0"><?php echo number_format($dashboardStats['awardees']); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Adjudicatarios</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo number_format($dashboardStats['awardees']); ?></h4>
+                                    </div>
+                                    <small>Usuarios registrados</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-info"><i class="ri-group-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-info rounded p-2">
+                                    <i class="ri-group-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Puestos de Mercado</h6>
-                                    <h4 class="mb-0"><?php echo number_format($dashboardStats['stalls']); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Puestos de Mercado</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo number_format($dashboardStats['stalls']); ?></h4>
+                                    </div>
+                                    <small>Total puestos</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-primary"><i class="ri-store-2-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-primary rounded p-2">
+                                    <i class="ri-store-2-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -241,6 +248,11 @@ $productivityCounts = json_encode($productivityData['data']);
 document.addEventListener('DOMContentLoaded', function () {
     
     // Gráfico de Infracciones por Mes (Barra)
+    const ctxMonthly = document.getElementById('monthlyInfractionsChart').getContext('2d');
+    const gradientMonthly = ctxMonthly.createLinearGradient(0, 0, 0, 400);
+    gradientMonthly.addColorStop(0, 'rgba(30, 96, 145, 0.9)'); // var(--metro-primary)
+    gradientMonthly.addColorStop(1, 'rgba(30, 96, 145, 0.2)');
+
     const monthlyInfractionsConfig = {
         type: 'bar',
         data: {
@@ -248,9 +260,10 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Número de Infracciones',
                 data: <?php echo $infractionsCounts; ?>,
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
+                backgroundColor: gradientMonthly,
+                borderColor: 'rgba(30, 96, 145, 1)',
+                borderWidth: 1,
+                borderRadius: 6
             }]
         },
         options: {
@@ -274,9 +287,12 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Empleados',
                 data: <?php echo $employeesCounts; ?>,
+                // Using the specific metro palette defined in PHP, or overriding if we want but PHP already provides colors.
+                // We'll keep the PHP-provided colors but increase borderWidth for contrast
                 backgroundColor: <?php echo $employeesBgColors; ?>,
-                borderColor: <?php echo $employeesBorderColors; ?>,
-                borderWidth: 1
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                hoverOffset: 4
             }]
         },
         options: {
@@ -292,6 +308,11 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('employeesByDepartmentChart'), employeesByDepartmentConfig);
 
     // Gráfico de Línea de Productividad de la Inspección
+    const ctxProd = document.getElementById('inspectionProductivityChart').getContext('2d');
+    const gradientProd = ctxProd.createLinearGradient(0, 0, 0, 400);
+    gradientProd.addColorStop(0, 'rgba(45, 122, 79, 0.6)'); // var(--metro-success)
+    gradientProd.addColorStop(1, 'rgba(45, 122, 79, 0.05)');
+
     const inspectionProductivityConfig = {
         type: 'line',
         data: {
@@ -299,10 +320,15 @@ document.addEventListener('DOMContentLoaded', function () {
             datasets: [{
                 label: 'Inspecciones Realizadas',
                 data: <?php echo $productivityCounts; ?>,
-                borderColor: '#424242',
-                backgroundColor: 'rgba(66, 66, 66, 0.2)',
+                borderColor: 'rgba(45, 122, 79, 1)',
+                backgroundColor: gradientProd,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: 'rgba(45, 122, 79, 1)',
+                pointBorderWidth: 2,
+                pointRadius: 4
             }]
         },
         options: {

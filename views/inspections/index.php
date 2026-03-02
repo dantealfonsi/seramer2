@@ -208,7 +208,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <?php else: ?>
                             <div class="table-responsive">
                                 <table id="inspectionsTable" class="table table-striped table-hover w-100">
-                                    <thead class="table-dark">
+                                    <thead>
                                         <tr>
                                             <th>Puesto</th>
                                             <th>Tipo</th>
@@ -352,8 +352,8 @@ $(document).ready(function() {
             // Habilita la extensión Responsive
             responsive: true,
             
-            // Configuración de los botones de exportación
-            dom: 'Bfrtip',
+            // Configuración de los botones de exportación (Bf para botones y buscador en la misma linea)
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',

@@ -155,8 +155,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table id="inspectorsTable" class="table table-striped table-hover w-100">
-                                    <thead class="table-dark">
+                                <table id="inspectorsTable" class="table table-striped table-hover align-middle w-100">
+                                    <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Código</th>
@@ -188,13 +188,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex gap-2 justify-content-center">
-                                                        <a href="view.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-info btn-sm" title="Ver">
+                                                        <a href="view.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-sm btn-outline-primary" title="Ver">
                                                             <i class="ri-eye-line"></i>
                                                         </a>
-                                                        <a href="edit.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-warning btn-sm" title="Editar">
+                                                        <a href="edit.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                             <i class="ri-edit-line"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>)">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>)">
                                                             <i class="ri-delete-bin-line"></i>
                                                         </button>
                                                     </div>
@@ -296,9 +296,8 @@ $(document).ready(function() {
         $('#inspectorsTable').DataTable({ 
             // Habilita la extensión Responsive
             responsive: true,
-            
-            // Configuración de los botones de exportación
-            dom: 'Bfrtip',
+            // Configuración de los botones de exportación (Bf para botones y buscador en la misma linea)
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',
