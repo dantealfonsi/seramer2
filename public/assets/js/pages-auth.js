@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
           const submitButton = formAuthentication.querySelector('[type="submit"]');
           if (submitButton) {
             submitButton.disabled = true;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Iniciando...';
+            submitButton.innerHTML = 'Iniciando...';
           }
 
           const formData = new FormData(formAuthentication);

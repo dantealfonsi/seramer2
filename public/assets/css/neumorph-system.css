@@ -499,31 +499,31 @@ body {
 }
 
 /* ── Primary ── */
-.btn-primary,
-a.btn-primary,
-button.btn-primary {
+/* Forced blue for all states to prevent theme's purple */
+html body .btn-primary,
+html body .btn-primary:disabled,
+html body .btn-primary.disabled {
     background-color: var(--metro-primary) !important;
     border-color: var(--metro-primary) !important;
     color: #ffffff !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:focus-visible,
-a.btn-primary:hover,
-button.btn-primary:hover {
+html body .btn-primary:hover,
+html body .btn-primary:focus {
     background-color: var(--metro-primary-hover) !important;
     border-color: var(--metro-primary-hover) !important;
     color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(30, 96, 145, 0.35) !important;
 }
 
-.btn-primary:not(:disabled):not(.disabled):active,
-.btn-primary.active,
-.show>.btn-primary.dropdown-toggle {
+html body .btn-primary:active {
     background-color: #124568 !important;
     border-color: #124568 !important;
-    color: #ffffff !important;
+}
+
+/* Opacity only for disabled, but maintaining blue */
+html body .btn-primary:disabled,
+html body .btn-primary.disabled {
+    opacity: 0.8 !important;
 }
 
 .btn-outline-primary {
