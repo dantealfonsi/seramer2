@@ -15,9 +15,28 @@ $user_departments = $current_user['departments'] ?? [];
 $current_department = $current_user['selected_department'] ?? '';
 $department_menus = [];
 
-// Obtener menús específicos del departamento si hay uno seleccionado
+// Obtener menús específicos del departamento
 $userModel = new UserModel();
 $all_master_menus = $userModel->getMasterMenus();
+
+/**
+ * Función helper para verificar si un enlace o submenú debe estar activo/abierto
+ */
+function isMenuItemActive($itemUrl) {
+    if (empty($itemUrl)) return false;
+    $currentUri = $_SERVER['REQUEST_URI'];
+    // Normalizar la URL del ítem para que coincida con la URI
+    $itemPath = '/' . ltrim($itemUrl, '/');
+    return (strpos($currentUri, $itemPath) !== false);
+}
+
+function isMenuGroupActive($menu) {
+    if (!isset($menu['submenu'])) return false;
+    foreach ($menu['submenu'] as $submenu) {
+        if (isMenuItemActive($submenu['url'])) return true;
+    }
+    return false;
+}
 
 if (!empty($_SESSION['is_superadmin'])) {
     // Si es superadmin, mostramos un selector para elegir qué departamento ver
@@ -124,15 +143,18 @@ if (!empty($_SESSION['is_superadmin'])) {
                     <?php foreach ($department_menus as $menu): ?>
                         
                         <?php if (isset($menu['submenu'])): ?>
+                            <?php 
+                            $isMenuOpen = isMenuGroupActive($menu); 
+                            ?>
                             <!-- Menú con submenús -->
-                            <li class="menu-item"  style="color:black">
+                            <li class="menu-item <?php echo $isMenuOpen ? 'active open' : ''; ?>" style="color:black">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle"  style="color:black">
                                     <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
                                     <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
                                 </a>
                                 <ul class="menu-sub">
                                     <?php foreach ($menu['submenu'] as $submenu): ?>
-                                        <li class="menu-item">
+                                        <li class="menu-item <?php echo isMenuItemActive($submenu['url']) ? 'active' : ''; ?>">
                                             <a href="<?php echo url($submenu['url']); ?>" class="menu-link"  style="color:black">
                                                 <div data-i18n="<?php echo $submenu['title']; ?>"><?php echo htmlspecialchars($submenu['title']); ?></div>
                                             </a>
@@ -142,8 +164,8 @@ if (!empty($_SESSION['is_superadmin'])) {
                             </li>
                         <?php else: ?>
                             <!-- Menú simple -->
-                            <li class="menu-item">
-                                <a href="<?php echo url($menu['url']); ?>" class="menu-link"  style="color:black">
+                            <li class="menu-item <?php echo isMenuItemActive($menu['url'] ?? '') ? 'active' : ''; ?>">
+                                <a href="<?php echo url($menu['url'] ?? '#'); ?>" class="menu-link"  style="color:black">
                                     <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
                                     <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
                                 </a>
