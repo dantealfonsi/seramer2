@@ -14,65 +14,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <div class="main-content" style="padding: 1.5rem;">
     <div class="container-fluid">
         
-        <!-- Estadísticas del mes Estilo Premium -->
-        <div class="row g-4 mb-4">
-            <div class="col-sm-6 col-xl-3">
-                <div class="card card-status-primary" style="background-color: var(--metro-primary-light);">
-                    <div class="card-body p-3 d-flex align-items-center">
-                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important;">
-                            <i class="ri-file-list-3-line"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?= number_format($statistics['total_contracts'] ?? 0) ?></h4>
-                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Total Contratos</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card card-status-success" style="background-color: var(--metro-success-light);">
-                    <div class="card-body p-3 d-flex align-items-center">
-                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important;">
-                            <i class="ri-money-dollar-circle-line"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 fw-bold" style="color: var(--metro-success);">Bs. <?= number_format($statistics['total_amount'] ?? 0, 2) ?></h4>
-                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Monto Proyectado</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card card-status-warning" style="background-color: var(--metro-warning-light);">
-                    <div class="card-body p-3 d-flex align-items-center">
-                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important;">
-                            <i class="ri-time-line"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?= number_format($statistics['pending_payments'] ?? 0) ?></h4>
-                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Pendientes</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card card-status-danger" style="background-color: var(--metro-danger-light);">
-                    <div class="card-body p-3 d-flex align-items-center">
-                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-danger) !important;">
-                            <i class="ri-error-warning-line"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 fw-bold" style="color: var(--metro-danger);"><?= number_format($statistics['delinquent_payments'] ?? 0) ?></h4>
-                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Morosos</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="card shadow-sm border-0">
             <!-- 1. Encabezado (Título y Botón) -->
-            <div class="card-header d-flex justify-content-between align-items-center mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center mb-0">
                 <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 600;">
                     <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
                         <i class="ri-calendar-check-line" style="color: #696cff; font-size: 1.5rem;"></i>
@@ -89,7 +33,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="card-body p-4 pt-0">
                 
                 <!-- Filtros Avanzados -->
-                <div class="filter-card mb-4">
+                <div class="filter-card mb-4 mt-4">
                     <div class="filter-card-title">
                         <i class="ri-filter-2-line"></i> Opciones de Filtrado de Planificación
                     </div>
@@ -173,6 +117,62 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </div>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Estadísticas del mes Estilo Premium -->
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-primary-light); border-color: rgba(105, 108, 255, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-primary) !important; background-color: rgba(105, 108, 255, 0.1) !important;">
+                                    <i class="ri-file-list-3-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?= number_format($statistics['total_contracts'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Total Contratos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-success-light); border-color: rgba(113, 221, 55, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-success) !important; background-color: rgba(113, 221, 55, 0.1) !important;">
+                                    <i class="ri-money-dollar-circle-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-success);">Bs. <?= number_format($statistics['total_amount'] ?? 0, 2) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Monto Proyectado</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-warning-light); border-color: rgba(255, 171, 0, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-warning) !important; background-color: rgba(255, 171, 0, 0.1) !important;">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?= number_format($statistics['pending_payments'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Pendientes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-danger-light); border-color: rgba(255, 62, 29, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-danger) !important; background-color: rgba(255, 62, 29, 0.1) !important;">
+                                    <i class="ri-error-warning-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-danger);"><?= number_format($statistics['delinquent_payments'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Morosos</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
