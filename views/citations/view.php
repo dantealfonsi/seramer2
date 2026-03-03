@@ -65,14 +65,26 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-eye-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-search-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="index.php">Citaciones</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+                                </ol>
+                            </nav>
+                        </div>
                         <div class="btn-group" role="group">
-                            <a href="edit.php?id=<?php echo htmlspecialchars($citation['citation_id']); ?>" class="btn btn-warning" title="Editar"><i class="ri-edit-line me-1"></i>Editar</a>
-                            <a href="index.php" class="btn btn-secondary" title="Volver a la lista"><i class="ri-arrow-left-line me-1"></i>Volver</a>
+                            <a href="index.php" class="btn btn-outline-secondary">
+                                <i class="ri-arrow-left-line"></i> Volver al listado
+                            </a>
+                            <a href="edit.php?id=<?php echo htmlspecialchars($citation['citation_id']); ?>" class="btn btn-warning">
+                                <i class="ri-edit-2-line"></i> Editar
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">

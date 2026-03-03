@@ -173,26 +173,27 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Infracciones</a></li>
-                        <?php if ($is_edit): ?>
-                        <li class="breadcrumb-item">
-                            <a href="view.php?id=<?php echo htmlspecialchars($idEdit); ?>">Infracción #<?php echo htmlspecialchars($idEdit); ?></a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">Editar</li>
-                        <?php else: ?>
-                        <li class="breadcrumb-item active" aria-current="page">Registrar Nuevo</li>
-                        <?php endif; ?>
-                    </ol>
-                </nav>
-                
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title d-flex align-items-center mb-0" style="font-size: 1.4rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-alert-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="<?php echo $is_edit ? 'ri-edit-2-line' : 'ri-alert-line'; ?>" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="index.php">Infracciones</a></li>
+                                    <?php if ($is_edit): ?>
+                                    <li class="breadcrumb-item">
+                                        <a href="view.php?id=<?php echo htmlspecialchars($idEdit); ?>">Infracción #<?php echo htmlspecialchars($idEdit); ?></a>
+                                    </li>
+                                    <li class="breadcrumb-item active" aria-current="page">Editar</li>
+                                    <?php else: ?>
+                                    <li class="breadcrumb-item active" aria-current="page">Registrar Nuevo</li>
+                                    <?php endif; ?>
+                                </ol>
+                            </nav>
+                        </div>
                         <div class="d-flex gap-2">
                             <?php if ($is_edit): ?>
                             <a href="../../index.php?report=infraction_invoice.rep&action=view&id=<?php echo htmlspecialchars($idEdit); ?>" 
@@ -202,7 +203,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 Ver Factura
                             </a>
                             <?php endif; ?>
-                            <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" class="btn btn-secondary">
+                            <a href="<?php echo $is_edit ? 'view.php?id=' . htmlspecialchars($idEdit) : 'index.php'; ?>" class="btn btn-outline-secondary">
                                 <i class="ri-arrow-left-line"></i> 
                                 <?php echo $is_edit ? 'Volver a detalles' : 'Volver al listado'; ?>
                             </a>

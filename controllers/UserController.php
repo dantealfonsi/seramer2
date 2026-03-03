@@ -111,6 +111,7 @@ class UserController {
             'messageType' => '',
             'errors' => [],
             'staff_id' => '',
+            'username' => '',
             'email' => '',
             'is_manager' => $is_manager,
             'is_rrhh' => $is_rrhh,

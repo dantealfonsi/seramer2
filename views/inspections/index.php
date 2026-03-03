@@ -80,11 +80,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-search-eye-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
-                            <?php echo htmlspecialchars("Gestion de Inspecciones") ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-0" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-search-eye-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars("Gestión de Inspecciones") ?>
+                            </h5>
+                        </div>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nuevo Reporte
                         </a>

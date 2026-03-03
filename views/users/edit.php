@@ -46,31 +46,32 @@ $page_title = 'Editar Usuario';
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <!-- Breadcrumbs y Título -->
+                <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div>
-                        <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 2rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
-                                <i class="ri-user-line" style="color: #696cff; font-size: 2rem;"></i>
+                        <h4 class="mb-1 d-flex align-items-center">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-edit-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
                             </div>
                             <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
-                        <small class="text-muted">
-                            Editando: <?php echo htmlspecialchars(trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) ?: $user['username']); ?>
-                            (<?php echo htmlspecialchars($user['username']); ?>)
-                        </small>
+                        </h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+                                <li class="breadcrumb-item active">Editar</li>
+                            </ol>
+                        </nav>
                     </div>
                     <div class="d-flex gap-2">
                         <a href="view.php?id=<?php echo $user['id']; ?>" class="btn btn-outline-info">
-                            <i class="ri-eye-line me-1"></i>Ver Detalles
+                            <i class="ri-eye-line me-1"></i> Ver Detalles
                         </a>
                         <a href="index.php" class="btn btn-outline-secondary">
-                            <i class="ri-arrow-left-line me-1"></i>Volver
+                            <i class="ri-arrow-left-line me-1"></i> Volver
                         </a>
                     </div>
                 </div>
-
                 <div class="card-body">
-                    <!-- Mensajes -->
                     <?php if (!empty($message)): ?>
                         <div class="alert alert-<?php echo $messageType; ?> alert-dismissible">
                             <?php echo htmlspecialchars($message); ?>
@@ -239,14 +240,6 @@ $page_title = 'Editar Usuario';
                         });
                         </script>
 
-                        <!-- Información adicional -->
-                        <div class="col-md-6">
-                            <label class="form-label"><strong>Último Login</strong></label>
-                            <input type="text" class="form-control" 
-                                   value="<?php echo $user['last_login'] ? date('d/m/Y H:i', strtotime($user['last_login'])) : 'Nunca'; ?>" 
-                                   readonly>
-                        </div>
-
                         <!-- Cambio de contraseña -->
                         <div class="col-12">
                             <hr>
@@ -286,9 +279,6 @@ $page_title = 'Editar Usuario';
                                 <button type="submit" class="btn btn-primary">
                                     <i class="ri-save-line me-1"></i>Guardar Cambios
                                 </button>
-                                <a href="view.php?id=<?php echo $user['id']; ?>" class="btn btn-outline-info">
-                                    <i class="ri-eye-line me-1"></i>Ver Detalles
-                                </a>
                                 <a href="index.php" class="btn btn-outline-secondary">
                                     <i class="ri-close-line me-1"></i>Cancelar
                                 </a>

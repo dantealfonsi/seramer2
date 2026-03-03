@@ -59,8 +59,36 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
 <?php include __DIR__ . '/../layouts/header.php'; ?>
 <?php include __DIR__ . '/../layouts/navigation.php'; ?>
 <?php include __DIR__ . '/../layouts/navigation-top.php'; ?>
+<div class="main-content">
+    <div class="container-fluid">
 
-<div class="container-xxl flex-grow-1 container-p-y">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-user-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                        <?php echo htmlspecialchars($page_title); ?>
+                    </h5>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="index.php">Usuarios</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Detalles del Usuario</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="btn-group">
+                    <?php if ($is_rrhh || ($is_manager && ($user['department_id'] ?? null) == $is_manager['id'])): ?>
+                        <a href="edit.php?id=<?php echo $user['id']; ?>" class="btn btn-warning">
+                            <i class="ri-edit-2-line me-1"></i> Editar
+                        </a>
+                    <?php endif; ?>
+                    <a href="index.php" class="btn btn-outline-secondary">
+                        <i class="ri-arrow-left-line me-1"></i> Volver al listado
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+
     <!-- Alerta si faltan datos de personal -->
     <?php if (!$has_staff_data): ?>
         <div class="alert alert-warning alert-dismissible" role="alert">
@@ -125,17 +153,7 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                                 <span><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></span>
                             </li>
                         </ul>
-                        
-                        <div class="d-flex justify-content-center pt-3 gap-2">
-                            <?php if ($is_rrhh || ($is_manager && ($user['department_id'] ?? null) == $is_manager['id'])): ?>
-                                <a href="edit.php?id=<?php echo $user['id']; ?>" class="btn btn-primary">
-                                    <i class="ri-edit-line me-1"></i>Editar
-                                </a>
-                            <?php endif; ?>
-                            <a href="index.php" class="btn btn-outline-secondary">
-                                <i class="ri-arrow-left-line me-1"></i>Volver
-                            </a>
-                        </div>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -201,7 +219,12 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                                 <dt class="col-sm-4 fw-medium text-nowrap">Estado del Personal:</dt>
                                 <dd class="col-sm-8">
                                     <span class="badge bg-<?php echo ($user['status'] == 'active') ? 'success' : 'warning'; ?>">
-                                        <?php echo ucfirst($user['status'] ?? 'desconocido'); ?>
+                                        <?php 
+                                            $estado = strtolower($user['status'] ?? 'desconocido');
+                                            if ($estado == 'active') echo 'Activo';
+                                            else if ($estado == 'inactive') echo 'Inactivo';
+                                            else echo ucfirst($estado);
+                                        ?>
                                     </span>
                                 </dd>
                                 
@@ -267,101 +290,9 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                 </div>
             </div>
 
-            <!-- Historial de Actividad -->
-            <div class="card">
-                <h5 class="card-header">
-                    <i class="ri-time-line me-2"></i>Historial de Actividad Reciente
-                </h5>
-                <div class="card-body">
-                    <?php if (!empty($user['activity_log'])): ?>
-                        <div class="timeline timeline-center">
-                            <?php foreach (array_slice($user['activity_log'], 0, 10) as $index => $activity): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-point timeline-point-<?php echo ($index % 2 == 0) ? 'primary' : 'info'; ?>">
-                                        <i class="ri-history-line"></i>
-                                    </div>
-                                    <div class="timeline-event">
-                                        <div class="timeline-header">
-                                            <h6 class="mb-0"><?php echo htmlspecialchars($activity['action']); ?></h6>
-                                            <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($activity['created_at'])); ?></small>
-                                        </div>
-                                        <?php if (!empty($activity['details'])): ?>
-                                            <p class="mb-0 text-muted"><?php echo htmlspecialchars($activity['details']); ?></p>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="text-center py-4">
-                            <i class="ri-history-line ri-48px text-muted mb-3 d-block"></i>
-                            <h6 class="text-muted">No hay actividad registrada</h6>
-                            <p class="text-muted mb-0">El historial de actividad aparecerá aquí cuando el usuario realice acciones en el sistema.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-.timeline {
-    position: relative;
-    padding: 0;
-}
-
-.timeline-item {
-    position: relative;
-    padding-left: 40px;
-    padding-bottom: 20px;
-}
-
-.timeline-item:not(:last-child):before {
-    content: '';
-    position: absolute;
-    left: 14px;
-    top: 30px;
-    height: calc(100% - 10px);
-    width: 2px;
-    background-color: #e9ecef;
-}
-
-.timeline-point {
-    position: absolute;
-    left: 0;
-    top: 5px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 12px;
-}
-
-.timeline-point-primary {
-    background-color: #8b5cf6;
-}
-
-.timeline-point-info {
-    background-color: #06b6d4;
-}
-
-.timeline-event {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 15px;
-    border-left: 3px solid #e9ecef;
-}
-
-.timeline-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-</style>
+            </div> <!-- End card-body -->
+        </div> <!-- End card -->
+    </div> <!-- End container-fluid -->
+</div> <!-- End main-content -->
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>

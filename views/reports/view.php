@@ -70,13 +70,33 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <button onclick="window.print()" class="print-button">
-                        &#91; 🖨️ Imprimir / Guardar como PDF &#93;
-                    </button>
-                    
-                    <div class="card">
-                        <div class="report-container">
-                            <pre><?php echo htmlspecialchars($finalReport); ?></pre>
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                    <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-search-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                    Vista de Impresión: <?php echo htmlspecialchars($_GET['report'] ?? 'Reporte'); ?>
+                                </h5>
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb mb-0">
+                                        <li class="breadcrumb-item"><a href="../dashboard/dashboard.php">Inicio</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Generar Reporte</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                                    <i class="ri-arrow-left-line"></i> Volver a detalles
+                                </a>
+                                <button onclick="window.print()" class="btn btn-primary">
+                                    <i class="ri-printer-line"></i> Imprimir Reporte
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body bg-light p-4">
+                            <div class="report-container shadow-sm p-5 bg-white mx-auto rounded">
+                                <pre><?php echo htmlspecialchars($finalReport); ?></pre>
+                            </div>
                         </div>
                     </div>
                 </div>
