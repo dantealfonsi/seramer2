@@ -6,7 +6,7 @@ require_once __DIR__ . '/../../helpers/access_control.php';
 ?>
 <!doctype html>
 
-<html lang="en" class="layout-navbar-fixed layout-compact layout-menu-fixed" dir="ltr" data-skin="default"
+<html lang="es" class="layout-navbar-fixed layout-compact layout-menu-fixed" dir="ltr" data-skin="default"
     data-bs-theme="light" data-assets-path="../../public/assets/" data-template="vertical-menu-template">
 
 <head>
@@ -31,6 +31,8 @@ require_once __DIR__ . '/../../helpers/access_control.php';
     <!-- build:css assets/vendor/css/theme.css -->
     <link rel="stylesheet" href="<?php echo vendor('css/core.css'); ?>" />
     <link rel="stylesheet" href="<?php echo css('demo.css'); ?>" />
+    <!-- SERAMER: Sistema Neumórfico Integral (v2.0) -->
+    <link rel="stylesheet" href="<?php echo css('neumorph-system.css'); ?>" />
     <link rel="stylesheet" href="<?php echo vendor('libs/node-waves/node-waves.css'); ?>" />
     <link rel="stylesheet" href="<?php echo vendor('libs/pickr/pickr-themes.css'); ?>" />
     <!-- Vendors CSS -->

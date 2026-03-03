@@ -11,177 +11,183 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<div class="main-content">
-    <div class="container-xxl flex-grow-1 container-p-y">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         
-        <!-- Estadísticas del mes -->
-        <div class="row g-4 mb-4">
-            <div class="col-sm-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span>Total Contratos</span>
-                                <div class="d-flex align-items-end mt-2">
-                                    <h4 class="mb-0 me-2"><?= number_format($statistics['total_contracts'] ?? 0) ?></h4>
-                                </div>
-                                <small>Registrados este mes</small>
-                            </div>
-                            <span class="badge bg-label-primary rounded p-2">
-                                <i class="ri-file-list-3-line ri-24px"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span>Monto Proyectado</span>
-                                <div class="d-flex align-items-end mt-2">
-                                    <h4 class="mb-0 me-2">Bs. <?= number_format($statistics['total_amount'] ?? 0, 2) ?></h4>
-                                </div>
-                                <small>Total a recaudar</small>
-                            </div>
-                            <span class="badge bg-label-success rounded p-2">
-                                <i class="ri-money-dollar-circle-line ri-24px"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span>Pendientes</span>
-                                <div class="d-flex align-items-end mt-2">
-                                    <h4 class="mb-0 me-2"><?= number_format($statistics['pending_payments'] ?? 0) ?></h4>
-                                </div>
-                                <small>Pagos por cobrar</small>
-                            </div>
-                            <span class="badge bg-label-warning rounded p-2">
-                                <i class="ri-time-line ri-24px"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-start justify-content-between">
-                            <div class="content-left">
-                                <span>Morosos</span>
-                                <div class="d-flex align-items-end mt-2">
-                                    <h4 class="mb-0 me-2"><?= number_format($statistics['delinquent_payments'] ?? 0) ?></h4>
-                                </div>
-                                <small>Pagos vencidos</small>
-                            </div>
-                            <span class="badge bg-label-danger rounded p-2">
-                                <i class="ri-error-warning-line ri-24px"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center border-bottom">
-                <h5 class="mb-0 d-flex align-items-center">
+        <div class="card shadow-sm border-0">
+            <!-- 1. Encabezado (Título y Botón) -->
+            <div class="card-header d-flex justify-content-between align-items-center mb-0">
+                <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 600;">
                     <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
                         <i class="ri-calendar-check-line" style="color: #696cff; font-size: 1.5rem;"></i>
                     </div>
                     <?= htmlspecialchars($page_title) ?> - <?= htmlspecialchars($current_month_spanish) ?> <?= $current_year ?>
                 </h5>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                    <button type="button" class="btn btn-outline-primary" onclick="location.reload()">
                         <i class="ri-refresh-line me-1"></i> Actualizar
                     </button>
                 </div>
             </div>
 
-            <div class="card-body pt-4">
-                <!-- Filtros -->
-                <form method="GET" class="row g-3 mb-4" id="filtersForm">
-                    <div class="col-md-2">
-                        <label class="form-label small text-uppercase">Año</label>
-                        <select class="form-select" name="year">
-                            <?php foreach ($fiscal_years as $fy): 
-                                $fyYear = date('Y', strtotime($fy['start_date'] ?? $fy['year'] . '-01-01'));
-                            ?>
-                                <option value="<?= $fyYear ?>" <?= ($current_year == $fyYear) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($fyYear) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
+            <div class="card-body p-4 pt-0">
+                
+                <!-- Filtros Avanzados -->
+                <div class="filter-card mb-4 mt-4">
+                    <div class="filter-card-title">
+                        <i class="ri-filter-2-line"></i> Opciones de Filtrado de Planificación
                     </div>
-                    
-                    <div class="col-md-2">
-                        <label class="form-label small text-uppercase">Mes</label>
-                        <select class="form-select" name="month">
-                            <?php foreach ($months as $num => $name): ?>
-                                <option value="<?= $num ?>" <?= ($current_month == $num) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($name) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <label class="form-label small text-uppercase">Zona</label>
-                        <select class="form-select" name="zone_id" id="zoneSelect" onchange="loadSectors()">
-                            <option value="">Todas</option>
-                            <?php foreach ($zones as $zone): ?>
-                                <option value="<?= $zone['id'] ?>" <?= ($filters['zone_id'] == $zone['id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($zone['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <div class="filter-card-body">
+                        <form method="GET" id="filtersForm">
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold small text-uppercase">Año</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-calendar-line text-muted"></i></span>
+                                        <select class="form-select" name="year">
+                                            <?php foreach ($fiscal_years as $fy): 
+                                                $fyYear = date('Y', strtotime($fy['start_date'] ?? $fy['year'] . '-01-01'));
+                                            ?>
+                                                <option value="<?= $fyYear ?>" <?= ($current_year == $fyYear) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($fyYear) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label class="form-label fw-bold small text-uppercase">Mes</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-calendar-event-line text-muted"></i></span>
+                                        <select class="form-select" name="month">
+                                            <?php foreach ($months as $num => $name): ?>
+                                                <option value="<?= $num ?>" <?= ($current_month == $num) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($name) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold small text-uppercase">Zona</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-map-pin-line text-muted"></i></span>
+                                        <select class="form-select" name="zone_id" id="zoneSelect" onchange="loadSectors()">
+                                            <option value="">Todas las Zonas</option>
+                                            <?php foreach ($zones as $zone): ?>
+                                                <option value="<?= $zone['id'] ?>" <?= ($filters['zone_id'] == $zone['id']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($zone['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label small text-uppercase">Sector</label>
-                        <select class="form-select" name="sector_id" id="sectorSelect">
-                            <option value="">Todos</option>
-                            <?php foreach ($sectors as $sector): ?>
-                                <option value="<?= $sector['id'] ?>" <?= ($filters['sector_id'] == $sector['id']) ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($sector['name']) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold small text-uppercase">Sector</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="ri-building-line text-muted"></i></span>
+                                        <select class="form-select" name="sector_id" id="sectorSelect">
+                                            <option value="">Todos los Sectores</option>
+                                            <?php foreach ($sectors as $sector): ?>
+                                                <option value="<?= $sector['id'] ?>" <?= ($filters['sector_id'] == $sector['id']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($sector['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                </div>
 
-                    <div class="col-md-2 d-flex align-items-end">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" name="show_delinquent" value="1" id="showDelinquent" <?= ($filters['show_delinquent'] == '1') ? 'checked' : '' ?>>
-                            <label class="form-check-label" for="showDelinquent">Solo morosos</label>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" name="show_delinquent" value="1" id="showDelinquent" <?= ($filters['show_delinquent'] == '1') ? 'checked' : '' ?>>
+                                        <label class="form-check-label fw-bold small text-uppercase" for="showDelinquent">Solo morosos</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 filter-card-actions">
+                                    <a href="planning_anticipados.php" class="btn btn-filter-clear">
+                                        <i class="ri-refresh-line me-1"></i> Limpiar
+                                    </a>
+                                    <button type="submit" class="btn btn-filter-apply">
+                                        <i class="ri-search-line me-1"></i> Filtrar Planificación
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Estadísticas del mes Estilo Premium -->
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-primary-light); border-color: rgba(105, 108, 255, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-primary) !important; background-color: rgba(105, 108, 255, 0.1) !important;">
+                                    <i class="ri-file-list-3-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?= number_format($statistics['total_contracts'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Total Contratos</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="ri-filter-line me-1"></i> Filtrar
-                        </button>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-success-light); border-color: rgba(113, 221, 55, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-success) !important; background-color: rgba(113, 221, 55, 0.1) !important;">
+                                    <i class="ri-money-dollar-circle-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-success);">Bs. <?= number_format($statistics['total_amount'] ?? 0, 2) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Monto Proyectado</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </form>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-warning-light); border-color: rgba(255, 171, 0, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-warning) !important; background-color: rgba(255, 171, 0, 0.1) !important;">
+                                    <i class="ri-time-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?= number_format($statistics['pending_payments'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Pendientes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="card h-100 shadow-none border" style="background-color: var(--metro-danger-light); border-color: rgba(255, 62, 29, 0.1) !important;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; color: var(--metro-danger) !important; background-color: rgba(255, 62, 29, 0.1) !important;">
+                                    <i class="ri-error-warning-line"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 fw-bold" style="color: var(--metro-danger);"><?= number_format($statistics['delinquent_payments'] ?? 0) ?></h5>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagos Morosos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Tabla de contratos -->
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle" id="planningTable">
+                    <table class="table table-striped table-hover align-middle w-100" id="planningTable">
                         <thead class="table-dark">
                             <tr>
                                 <th># Contrato</th>
                                 <th>Adjudicatario</th>
-                                <th>Zona/Sector</th>
+                                <th>Zona / Sector</th>
                                 <th class="text-center">Rubros</th>
                                 <th class="text-center">Locales</th>
-                                <th>Monto</th>
-                                <th>Estado</th>
+                                <th>Monto Proyectado</th>
+                                <th>Estado de Pago</th>
                                 <th class="text-center">Acciones</th>
                             </tr>
                         </thead>
@@ -197,38 +203,40 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     $badgeClass = $statusClass[$contract['payment_status_text']] ?? 'bg-label-secondary';
                                 ?>
                                 <tr>
-                                    <td><strong>#<?= $contract['contract_id'] ?></strong></td>
+                                    <td><span class="fw-bold text-primary">#<?= $contract['contract_id'] ?></span></td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <div class="avatar avatar-xs me-2">
+                                            <div class="avatar avatar-sm me-3">
                                                 <span class="avatar-initial rounded-circle bg-label-primary"><?= strtoupper(substr($contract['first_name'], 0, 1)) ?></span>
                                             </div>
                                             <div>
-                                                <div class="fw-bold"><?= htmlspecialchars($contract['awardee_name']) ?></div>
+                                                <div class="fw-bold text-dark"><?= htmlspecialchars($contract['awardee_name']) ?></div>
                                                 <small class="text-muted"><?= htmlspecialchars($contract['awardee_id_number']) ?></small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="fw-bold"><?= htmlspecialchars($contract['zone_name']) ?></div>
-                                        <small class="text-muted"><?= htmlspecialchars($contract['sector_name']) ?></small>
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-semibold text-dark small"><?= htmlspecialchars($contract['zone_name']) ?></span>
+                                            <small class="text-muted"><?= htmlspecialchars($contract['sector_name']) ?></small>
+                                        </div>
                                     </td>
-                                    <td class="text-center"><span class="badge rounded-pill bg-label-info"><?= $contract['total_categories'] ?></span></td>
-                                    <td class="text-center"><span class="badge rounded-pill bg-label-secondary"><?= $contract['total_locations'] ?></span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-label-info px-3"><?= $contract['total_categories'] ?></span></td>
+                                    <td class="text-center"><span class="badge rounded-pill bg-label-secondary px-3"><?= $contract['total_locations'] ?></span></td>
                                     <td>
-                                        <div class="fw-bold">Bs. <?= number_format($contract['calculated_amount'], 2) ?></div>
+                                        <div class="fw-bold text-dark">Bs. <?= number_format($contract['calculated_amount'], 2) ?></div>
                                         <?php if ($contract['multiplier_factor'] > 0): ?>
                                             <small class="text-muted"><?= number_format($contract['multiplier_factor'], 2) ?> × €<?= number_format($contract['euro_rate_value'], 2) ?></small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="badge <?= $badgeClass ?>"><?= $contract['payment_status_text'] ?></span>
+                                        <span class="badge <?= $badgeClass ?> px-3 py-2" style="font-size: 0.8rem; font-weight: 600;"><?= $contract['payment_status_text'] ?></span>
                                         <?php if ($contract['payment_date']): ?>
-                                            <div class="text-muted" style="font-size: 0.75rem;">Vence: <?= date('d/m/Y', strtotime($contract['payment_date'])) ?></div>
+                                            <div class="text-muted mt-1" style="font-size: 0.75rem;"><i class="ri-calendar-line me-1"></i>Vence: <?= date('d/m/Y', strtotime($contract['payment_date'])) ?></div>
                                         <?php endif; ?>
                                     </td>
                                     <td class="text-center">
-                                        <a href="detail.php?id=<?= $contract['contract_id'] ?>" class="btn btn-sm btn-icon btn-label-primary shadow-sm" title="Ver Detalle">
+                                        <a href="detail.php?id=<?= $contract['contract_id'] ?>" class="btn btn-sm btn-outline-primary" style="padding: 0.4rem; border-radius: 0.5rem;" title="Ver Detalle">
                                             <i class="ri-eye-line"></i>
                                         </a>
                                     </td>

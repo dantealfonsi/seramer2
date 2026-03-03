@@ -44,7 +44,7 @@
         <div class="authentication-inner row m-0">
             <!-- Left Section -->
             <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2" 
-                style="background-image: url('/seramer-local/public/assets/img/new_logo.png'); background-repeat: no-repeat;background-size: cover; background-position: center;"></div>
+                style="background-image: url('/seramer-local/public/assets/img/new_logo.jpg'); background-repeat: no-repeat;background-size: cover; background-position: center;"></div>
             <!-- /Left Section -->
             
             <!-- Login -->

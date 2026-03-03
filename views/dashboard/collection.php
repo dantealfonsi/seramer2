@@ -62,6 +62,11 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
                             <p class="mb-0">Bienvenido, <?php echo htmlspecialchars($current_user['full_name']); ?>. Aquí tienes el resumen financiero de hoy.</p>
                         </div>
                     </div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <div class="card-body pb-0 px-0 pt-2" style="background: linear-gradient(270deg, #203565, transparent); height: 186px; border-radius: 0.5em;">
+                            <!-- Banner area without image -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,16 +76,19 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
             <div class="row g-4">
                 <!-- Card 1: Revenue Today -->
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm h-100">
+                    <div class="card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Recaudado Hoy</h6>
-                                    <h4 class="mb-0 text-success"><?php echo 'Bs. ' . number_format($stats['today_revenue'], 2, ',', '.'); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Recaudado Hoy</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo 'Bs. ' . number_format($stats['today_revenue'], 2, ',', '.'); ?></h4>
+                                    </div>
+                                    <small>Ingresos del día</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-success"><i class="ri-money-dollar-circle-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-success rounded p-2">
+                                    <i class="ri-money-dollar-circle-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -88,16 +96,19 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
 
                 <!-- Card 2: Revenue This Month -->
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm h-100">
+                    <div class="card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Recaudado este Mes</h6>
-                                    <h4 class="mb-0 text-primary"><?php echo 'Bs. ' . number_format($stats['month_revenue'], 2, ',', '.'); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Recaudado este Mes</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo 'Bs. ' . number_format($stats['month_revenue'], 2, ',', '.'); ?></h4>
+                                    </div>
+                                    <small>Ingresos del mes</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-primary"><i class="ri-calendar-check-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-primary rounded p-2">
+                                    <i class="ri-calendar-check-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -105,16 +116,19 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
 
                 <!-- Card 3: Active Payers -->
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm h-100">
+                    <div class="card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Pagadores Únicos (Mes)</h6>
-                                    <h4 class="mb-0 text-info"><?php echo number_format($stats['active_payers']); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Pagadores Únicos</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo number_format($stats['active_payers']); ?></h4>
+                                    </div>
+                                    <small>En el mes actual</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-info"><i class="ri-user-follow-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-info rounded p-2">
+                                    <i class="ri-user-follow-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -122,16 +136,19 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
 
                 <!-- Card 4: Recent Transactions -->
                 <div class="col-lg-3 col-sm-6">
-                    <div class="card shadow-sm h-100">
+                    <div class="card h-100">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <h6 class="text-muted fw-normal">Transacciones (30d)</h6>
-                                    <h4 class="mb-0 text-warning"><?php echo number_format($stats['recent_transactions']); ?></h4>
+                            <div class="d-flex align-items-start justify-content-between">
+                                <div class="content-left">
+                                    <span>Transacciones</span>
+                                    <div class="d-flex align-items-end mt-2">
+                                        <h4 class="mb-0 me-2"><?php echo number_format($stats['recent_transactions']); ?></h4>
+                                    </div>
+                                    <small>Últimos 30 días</small>
                                 </div>
-                                <div class="avatar flex-shrink-0">
-                                    <span class="avatar-initial rounded-3 bg-label-warning"><i class="ri-file-list-3-line ri-2x"></i></span>
-                                </div>
+                                <span class="badge bg-label-warning rounded p-2">
+                                    <i class="ri-file-list-3-line ri-24px"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -220,8 +237,13 @@ $zoneBorder = json_encode($zoneRevenue['borderColor']);
 document.addEventListener("DOMContentLoaded", function() {
     
     // Bar Chart
-    const barCtx = document.getElementById('monthlyRevenueChart');
-    if (barCtx) {
+    const barElement = document.getElementById('monthlyRevenueChart');
+    if (barElement) {
+        const barCtx = barElement.getContext('2d');
+        const gradientRevenue = barCtx.createLinearGradient(0, 0, 0, 400);
+        gradientRevenue.addColorStop(0, 'rgba(30, 96, 145, 0.9)'); // var(--metro-primary)
+        gradientRevenue.addColorStop(1, 'rgba(30, 96, 145, 0.2)');
+
         new Chart(barCtx, {
             type: 'bar',
             data: {
@@ -229,10 +251,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 datasets: [{
                     label: 'Recaudación (Bs.)',
                     data: <?php echo $monthlyRevData; ?>,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)', // Standard Bootstrap Info/Primary
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: gradientRevenue,
+                    borderColor: 'rgba(30, 96, 145, 1)',
                     borderWidth: 1,
-                    borderRadius: 5
+                    borderRadius: 6
                 }]
             },
             options: {
@@ -269,8 +291,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 datasets: [{
                     data: <?php echo $zoneData; ?>,
                     backgroundColor: <?php echo $zoneBg; ?>,
-                    borderColor: <?php echo $zoneBorder; ?>,
-                    borderWidth: 1
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    hoverOffset: 4
                 }]
             },
             options: {

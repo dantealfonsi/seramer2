@@ -11,71 +11,49 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<style>
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #696cff 0%, #7172ff 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9;
-    }
-    #fiscalYearTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #fiscalYearTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #fiscalYearTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
-</style>
-
-<div class="main-content main-container">
-    <div class="container-xxl">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-calendar-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
-                                <?php echo htmlspecialchars($page_title); ?>
-                            </h5>
-                            <a href="create.php" class="btn btn-primary px-4 shadow-sm">
-                                <i class="ri-add-line me-1"></i> Nuevo Año Fiscal
-                            </a>
-                        </div>
+                    <!-- 1. Encabezado (Título y Botón) -->
+                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title d-flex align-items-center mb-0" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-calendar-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-primary">
+                            <i class="ri-add-line"></i> Nuevo Año Fiscal
+                        </a>
+                    </div>
 
-                        <!-- Info Card -->
-                        <div class="card border-0 bg-gradient-primary overflow-hidden mb-4" style="border-radius: 0.5rem;">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-calendar-check-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold">Gestión Fiscal</h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Control de períodos fiscales y facturación anual.</p>
-                                    </div>
+                    <div class="card-body p-4 pt-0">
+                        <?php
+                        $currentFY = 'No establecido';
+                        foreach ($fiscalYears as $fy) {
+                            if ($fy['status'] === 'active') {
+                                $currentFY = $fy['year'];
+                                break;
+                            }
+                        }
+                        ?>
+                        <!-- Info Card Estilo Metro -->
+                        <div class="card card-status-primary mb-4" style="background-color: var(--metro-primary-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important;">
+                                    <i class="ri-calendar-check-line"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo htmlspecialchars($currentFY); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">AÑO FISCAL ACTUAL</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="fiscalYearTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="fiscalYearTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Año</th>
                                         <th>Fecha Inicio</th>
@@ -99,11 +77,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             </td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
-                                                    <a href="edit.php?id=<?php echo $fy['id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <a href="edit.php?id=<?php echo $fy['id']; ?>" class="btn btn-sm btn-outline-warning" style="padding: 0.4rem; border-radius: 0.5rem;" title="Editar">
                                                         <i class="ri-pencil-line"></i>
                                                     </a>
                                                     <?php if ($fy['status'] !== 'active'): ?>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo $fy['id']; ?>, '<?php echo $fy['year']; ?>')">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            style="padding: 0.4rem; border-radius: 0.5rem;" 
+                                                            title="Eliminar" onclick="confirmDelete(<?php echo $fy['id']; ?>, '<?php echo $fy['year']; ?>')">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
                                                     <?php endif; ?>

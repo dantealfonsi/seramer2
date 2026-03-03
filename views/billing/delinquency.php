@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../models/BillingReportModel.php';
 require_once __DIR__ . '/../../models/SectorModel.php';
 require_once __DIR__ . '/../../models/ZoneModel.php';
@@ -32,19 +32,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-    .card-title-premium {
-        font-size: 2rem !important;
-        font-weight: 600 !important;
-    }
-    .icon-premium {
-        font-size: 2rem !important;
-        background: #837aff;
-        color: white;
-        font-weight: 100 !important;
-        padding: .24rem;
-        border-radius: .7rem;
-        margin-right: 1rem;
-    }
     .overdue-low { background-color: rgba(255, 249, 196, 0.4); }
     .overdue-medium { background-color: rgba(255, 224, 178, 0.4); }
     .overdue-high { background-color: rgba(255, 205, 210, 0.4); }
@@ -56,7 +43,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
+                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
                                 <i class="ri-alarm-warning-line" style="color: #696cff; font-size: 2rem;"></i>
                             </div>
@@ -69,62 +56,79 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body">
                         <!-- Filters -->
-                        <form method="GET" action="" id="filterForm" class="mb-4">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Zona</label>
-                                    <select name="zone_id" class="form-select">
-                                        <option value="">Todas las Zonas</option>
-                                        <?php foreach ($zones as $zone): ?>
-                                            <option value="<?php echo $zone['id']; ?>" <?php echo $zoneFilter == $zone['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($zone['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Sector</label>
-                                    <select name="sector_id" class="form-select">
-                                        <option value="">Todos los Sectores</option>
-                                        <?php foreach ($sectors as $sector): ?>
-                                            <option value="<?php echo $sector['id']; ?>" <?php echo $sectorFilter == $sector['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($sector['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label fw-semibold">Antigüedad (Días)</label>
-                                    <select name="min_days" class="form-select">
-                                        <option value="1" <?php echo $minDaysOverdue == '1' ? 'selected' : ''; ?>>Cualquier retraso</option>
-                                        <option value="30" <?php echo $minDaysOverdue == '30' ? 'selected' : ''; ?>>30+ días</option>
-                                        <option value="60" <?php echo $minDaysOverdue == '60' ? 'selected' : ''; ?>>60+ días</option>
-                                        <option value="90" <?php echo $minDaysOverdue == '90' ? 'selected' : ''; ?>>90+ días</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-info btn-sm text-white" style="background-color: #0dcaf0; border-color: #0dcaf0;">
-                                        <i class="ri-search-line me-1"></i> Filtrar Morosos
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='delinquency.php'">
-                                        <i class="ri-refresh-line"></i> Limpiar
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" id="filterForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Zona</label>
+                                            <select name="zone_id" class="form-select">
+                                                <option value="">Todas las Zonas</option>
+                                                <?php foreach ($zones as $zone): ?>
+                                                    <option value="<?php echo $zone['id']; ?>" <?php echo $zoneFilter == $zone['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($zone['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Sector</label>
+                                            <select name="sector_id" class="form-select">
+                                                <option value="">Todos los Sectores</option>
+                                                <?php foreach ($sectors as $sector): ?>
+                                                    <option value="<?php echo $sector['id']; ?>" <?php echo $sectorFilter == $sector['id'] ? 'selected' : ''; ?>><?php echo htmlspecialchars($sector['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small">Antigüedad (Días)</label>
+                                            <select name="min_days" class="form-select">
+                                                <option value="1" <?php echo $minDaysOverdue == '1' ? 'selected' : ''; ?>>Cualquier retraso</option>
+                                                <option value="30" <?php echo $minDaysOverdue == '30' ? 'selected' : ''; ?>>30+ días</option>
+                                                <option value="60" <?php echo $minDaysOverdue == '60' ? 'selected' : ''; ?>>60+ días</option>
+                                                <option value="90" <?php echo $minDaysOverdue == '90' ? 'selected' : ''; ?>>90+ días</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="delinquency.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
                         <!-- Summary -->
-                        <div class="row mb-4">
+                        <div class="row mb-4 g-3">
                             <?php
                             $totalDebt = 0;
                             foreach ($delinquentAccounts as $acc) $totalDebt += $acc['total_debt'];
                             ?>
-                            <div class="col-md-6 mb-2">
-                                <div class="p-3 bg-label-warning rounded d-flex justify-content-between align-items-center h-100">
-                                    <span class="fw-semibold">Cuentas en Mora:</span>
-                                    <span class="h4 mb-0"><?php echo count($delinquentAccounts); ?></span>
+                            <div class="col-md-6">
+                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                            <i class="ri-alarm-warning-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo count($delinquentAccounts); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">CUENTAS EN MORA</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="p-3 bg-label-danger rounded d-flex justify-content-between align-items-center h-100">
-                                    <span class="fw-semibold">Deuda Total Acumulada:</span>
-                                    <span class="h4 mb-0 text-danger">Bs. <?php echo number_format($totalDebt, 2); ?></span>
+                            <div class="col-md-6">
+                                <div class="card card-status-danger h-100" style="background-color: var(--metro-danger-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-danger) !important; background-color: transparent !important;">
+                                            <i class="ri-money-dollar-circle-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-danger);">Bs. <?php echo number_format($totalDebt, 2); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">DEUDA TOTAL ACUMULADA</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

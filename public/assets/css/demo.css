@@ -11,14 +11,38 @@
   height: 64px;
 }
 
-.app-brand-logo.demo svg {
-  width: 38px;
-  height: 20px;
+.app-brand-logo.demo,
+.layout-menu-collapsed .app-brand.demo .app-brand-logo.demo {
+  background: linear-gradient(45deg, #ffffff, #ceeffb);
+  border-radius: 50%;
+  margin-left: 0.8em;
+  width: 3em;
+  height: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-brand-logo.demo img,
+.app-brand-logo.demo svg,
+.layout-menu-collapsed .app-brand.demo .app-brand-logo.demo img {
+  width: 3em;
+  height: 3em;
 }
 
 .app-brand-text.demo {
   font-size: 1.25rem;
   letter-spacing: 0.15px;
+}
+
+@media (min-width: 1200px) {
+
+  .layout-menu-collapsed:not(.layout-menu-hover):not(.layout-menu-offcanvas):not(.layout-menu-fixed-offcanvas) .layout-menu .app-brand-logo,
+  .layout-menu-collapsed:not(.layout-menu-hover):not(.layout-menu-offcanvas):not(.layout-menu-fixed-offcanvas) .layout-menu .app-brand-link,
+  .layout-menu-collapsed:not(.layout-menu-hover):not(.layout-menu-offcanvas):not(.layout-menu-fixed-offcanvas) .layout-menu .app-brand-text {
+    margin-right: auto !important;
+    margin-left: 0.3em !important;
+  }
 }
 
 /* ! For .layout-navbar-fixed added fix padding top tpo .layout-page */

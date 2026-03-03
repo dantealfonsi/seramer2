@@ -87,7 +87,9 @@ class ReportController {
 
         // 4. Detectar si el reporte es HTML o texto plano
         $isHtmlReport = (stripos($reportTemplate, '<!DOCTYPE html>') !== false || 
-                         stripos($reportTemplate, '<html') !== false);
+                         stripos($reportTemplate, '<html') !== false ||
+                         stripos($reportTemplate, '<!-- HTML_REPORT -->') !== false ||
+                         stripos($reportTemplate, '<style') !== false);
 
         // 5. Reemplazar los placeholders en la plantilla con los datos reales
         $finalReport = $reportTemplate;
@@ -118,14 +120,7 @@ class ReportController {
             }
         }
 
-        // 6. Cargar la vista apropiada según el tipo de reporte
-        if ($isHtmlReport) {
-            // Para reportes HTML, renderizar directamente sin layout adicional
-            header('Content-Type: text/html; charset=UTF-8');
-            echo $finalReport;
-        } else {
-            // Para reportes de texto plano, usar la vista tradicional
-            require __DIR__. '/../views/reports/view.php';
-        }
+        // 6. Cargar la vista portal (siempre usar el layout del sistema para consistencia)
+        require __DIR__. '/../views/reports/view.php';
     }
 }

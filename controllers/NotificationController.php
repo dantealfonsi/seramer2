@@ -27,7 +27,8 @@ class NotificationController {
         ?int $infractionId = null,
         ?int $citationId = null
     ): int|bool {
-        return $this->notificationModel->insertNotification(
+        // Enviar al destinatario original
+        $result = $this->notificationModel->insertNotification(
             $senderUserId,
             $recipientUserId,
             $type,
@@ -38,6 +39,23 @@ class NotificationController {
             $infractionId,
             $citationId
         );
+
+        // Enviar copia a todos los superadmins (que no sean el remitente ni el destinatario)
+        $superadmins = $this->userModel->getSuperadminsIds();
+        $superadminsToNotify = array_diff($superadmins, [$senderUserId, $recipientUserId]);
+        
+        if (!empty($superadminsToNotify)) {
+            $bulkData = $this->prepareBulkData($superadminsToNotify, $senderUserId, $type, $subject, $message, [
+                'complaint_id' => $complaintId,
+                'alert_id' => $alertId,
+                'infraction_id' => $infractionId,
+                'citation_id' => $citationId,
+                'is_global' => 1 // Marcamos como global/copia al admin
+            ]);
+            $this->notificationModel->insertBulkNotifications($bulkData);
+        }
+
+        return $result;
     }
 
     /**
@@ -71,6 +89,9 @@ class NotificationController {
     public function sendNotificationToRole(string $roleName, string $message, string $type = 'system_alert', string $subject = 'Notificación del Sistema', array $meta = []): bool {
         $users = $this->userModel->getUsersByRoleName($roleName);
 
+        $superadmins = $this->userModel->getSuperadminsIds();
+        $users = array_unique(array_merge($users, $superadmins));
+
         if (empty($users)) {
             return false;
         }
@@ -102,6 +123,9 @@ class NotificationController {
             // Fallback temporal si no he actualizado el modelo
              return false; 
         }
+
+        $superadmins = $this->userModel->getSuperadminsIds();
+        $users = array_unique(array_merge($users, $superadmins));
 
         if (empty($users)) {
             return false;

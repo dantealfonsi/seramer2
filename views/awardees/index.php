@@ -49,43 +49,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-    .bg-gradient-success {
-        background: linear-gradient(135deg, #71dd37 0%, #32c682 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9; /* Fondo gris claro suave como el resto del sistema */
-    }
-    /* Estilo de la tabla con header negro */
-    #awardeesTable {
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-    #awardeesTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #awardeesTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #awardeesTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
+    /* Estilos específicos de adjudicatarios — el sistema Metro UI global lo maneja */
     .card-inside {
         box-shadow: none !important;
-        border: 1px solid #d9dee3 !important;
-        margin-bottom: 2rem;
+        border: 1px solid var(--metro-border) !important;
+        background-color: var(--metro-surface-alt) !important;
+        margin-bottom: 1.5rem;
+    }
+    .dataTables_wrapper .dt-buttons {
+        margin-bottom: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_filter {
+        margin-top: 0 !important;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 0.5rem !important;
     }
 </style>
 
-<div class="main-content main-container">
-    <div class="container-xxl">
+
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
+
         <div class="row">
             <div class="col-12">
                 <!-- Contenedor Blanco Principal -->
@@ -93,59 +78,55 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-body p-4">
                         
                         <!-- 1. Encabezado (Título y Botón) -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-group-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
+                        <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-group-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                                 Gestión de Adjudicatarios
                             </h5>
-                            <a href="create.php" class="btn btn-primary px-4 shadow-sm" style="background-color: #696cff; border-color: #696cff; font-weight: 500;">
-                                <i class="ri-add-line me-1"></i> Registrar Adjudicatario
+                            <a href="create.php" class="btn btn-primary">
+                                <i class="ri-add-line"></i> Registrar Adjudicatario
                             </a>
                         </div>
 
                         <!-- 2. Filtros Avanzados -->
-                        <div class="card card-inside">
-                            <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0">
-                                <h6 class="card-title mb-0" style="font-weight: 600; color: #43495b;">
-                                    <i class="ri-filter-2-line me-1 text-muted"></i> Opciones de Filtrado Avanzado
-                                </h6>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                            <div class="card-body">
+                            <div class="filter-card-body">
                                 <form action="index.php" method="GET">
                                     <div class="row g-3">
                                         <div class="col-md-4">
-                                            <label class="form-label small text-muted text-uppercase">Búsqueda General</label>
-                                            <input type="text" class="form-control" name="search" placeholder="Buscar..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
+                                            <label class="form-label">Búsqueda General</label>
+                                            <input type="text" class="form-control" name="search" placeholder="BUSCAR..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label small text-muted text-uppercase">Cédula</label>
-                                            <input type="text" class="form-control" name="id_number" placeholder="Cédula" value="<?php echo htmlspecialchars($_GET['id_number'] ?? ''); ?>">
+                                            <label class="form-label">Cédula</label>
+                                            <input type="text" class="form-control" name="id_number" placeholder="CéDULA" value="<?php echo htmlspecialchars($_GET['id_number'] ?? ''); ?>">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label small text-muted text-uppercase">Nombre</label>
-                                            <input type="text" class="form-control" name="name" placeholder="Nombre/Apellido" value="<?php echo htmlspecialchars($_GET['name'] ?? ''); ?>">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small text-muted text-uppercase">Teléfono</label>
-                                            <input type="text" class="form-control" name="phone" placeholder="Teléfono" value="<?php echo htmlspecialchars($_GET['phone'] ?? ''); ?>">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small text-muted text-uppercase">Email</label>
-                                            <input type="text" class="form-control" name="email" placeholder="Correo electrónico" value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+                                            <label class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" name="name" placeholder="NOMBRE/APELLIDO" value="<?php echo htmlspecialchars($_GET['name'] ?? ''); ?>">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label small text-muted text-uppercase">Dirección</label>
-                                            <input type="text" class="form-control" name="address" placeholder="Dirección" value="<?php echo htmlspecialchars($_GET['address'] ?? ''); ?>">
+                                            <label class="form-label">Teléfono</label>
+                                            <input type="text" class="form-control" name="phone" placeholder="TELÉFONO" value="<?php echo htmlspecialchars($_GET['phone'] ?? ''); ?>">
                                         </div>
-                                        <div class="col-md-2 d-flex align-items-end">
-                                            <div class="d-flex gap-2 w-100">
-                                                <a href="index.php" class="btn btn-outline-secondary w-50" title="Limpiar"><i class="ri-refresh-line"></i></a>
-                                                <button type="submit" class="btn btn-info w-50" style="background-color: #03c3ec; border-color: #03c3ec; color: #fff;">
-                                                    <i class="ri-search-line"></i>
-                                                </button>
-                                            </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Email</label>
+                                            <input type="text" class="form-control" name="email" placeholder="CORREO ELECTRÓNICO" value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label">Dirección</label>
+                                            <input type="text" class="form-control" name="address" placeholder="DIRECCIÓN" value="<?php echo htmlspecialchars($_GET['address'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -153,19 +134,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- 3. Tarjeta de Métrica (Total) -->
-                        <div class="card border-0 bg-gradient-success overflow-hidden mb-4" style="border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(113, 221, 55, 0.2);">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-group-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold"><?php echo number_format($totalAwardees); ?></h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Adjudicatarios Registrados</p>
-                                    </div>
+                        <div class="card card-status-success mb-4" style="background-color: var(--metro-primary-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem;">
+                                    <i class="ri-group-line"></i>
                                 </div>
-                                <div class="position-absolute" style="right: -10px; bottom: -20px; opacity: 0.1;">
-                                    <i class="ri-group-line text-white" style="font-size: 6rem;"></i>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($totalAwardees); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">ADJUDICATARIOS REGISTRADOS</p>
                                 </div>
                             </div>
                         </div>
@@ -181,8 +157,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- 4. Tabla de Datos -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="awardeesTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="awardeesTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Cédula</th>
                                         <th>Nombre Completo</th>
@@ -272,6 +248,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
     $(document).ready(function() {
@@ -305,7 +282,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
         if ($.fn.DataTable) {
             const table = $('#awardeesTable').DataTable({
                 responsive: true,
-                dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+                dom: '<"d-flex justify-content-between align-items-center mb-4"Bf>rtip',
                 buttons: [
                     {
                         extend: 'pdfHtml5',
@@ -320,14 +297,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     { image: commonPdfLogo, width: 50 },
                                     {
                                         text: [
+                                            { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                            { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
                                             { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
-                                            { text: 'LISTADO DE ADJUDICATARIOS', fontSize: 12, bold: true }
+                                            { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
                                         ],
                                         margin: [10, 0, 0, 0]
                                     }
                                 ],
                                 margin: [0, 0, 0, 10]
                             });
+
+                            doc.content.splice(1, 0, {
+                                canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                                margin: [0, 0, 0, 20]
+                            });
+
+                            doc.content.splice(2, 0, {
+                                text: 'Listado de Adjudicatarios',
+                                style: 'header',
+                                alignment: 'center',
+                                margin: [0, 0, 0, 15]
+                            });
+
+                            const table = doc.content.find(content => content.table);
+                            if (table) {
+                                table.table.body[0].forEach(function(cell) {
+                                    cell.fillColor = '#2d4154';
+                                    cell.color = 'white';
+                                    cell.bold = true;
+                                    cell.alignment = 'center';
+                                });
+
+                                for (let i = 1; i < table.table.body.length; i++) {
+                                    if (i % 2 === 0) {
+                                        table.table.body[i].forEach(function(cell) {
+                                            cell.fillColor = '#f2f2f2';
+                                        });
+                                    }
+                                }
+                                table.table.widths = Array(table.table.body[0].length).fill('*');
+                            }
                         }
                     },
                     {

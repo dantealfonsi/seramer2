@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 // Asegúrate de que esta ruta es correcta
 require_once __DIR__ . '/../../controllers/CitationsController.php';
@@ -86,82 +86,77 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 <?php endif; ?>
 
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title dani-title">
-                            <i class="ri-calendar-event-line me-1 dani-icon-lg dani-bg-purple" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-0" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-calendar-event-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                        </div>
                         <a href="create.php" class="btn btn-primary">
                             <i class="ri-add-line"></i> Nueva Citación
                         </a>
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm" id="filterForm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado</h6>
-                            <div class="row g-3 align-items-end">
-                                
-                                <!-- Filtro por Fecha -->
-                                <div class="col-md-2">
-                                    <label for="filterDate" class="form-label small">Fecha:</label>
-                                    <input type="date" id="filterDate" name="filterDate" class="form-control" 
-                                           value="<?php echo htmlspecialchars($_GET['filterDate'] ?? ''); ?>">
-                                </div>
-                                
-                                <!-- Filtro por Estado -->
-                                <div class="col-md-2">
-                                    <label for="filterStatus" class="form-label small">Estado:</label>
-                                    <select id="filterStatus" name="filterStatus" class="form-select">
-                                        <?php foreach ($allowed_status as $key => $value): ?>
-                                            <option value="<?php echo htmlspecialchars($key); ?>" 
-                                                <?php echo ($filter_params['status'] === $key) ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars($value); ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <!-- Filtro por Puesto -->
-                                <div class="col-md-2">
-                                    <label for="filterStall" class="form-label small">Puesto:</label>
-                                    <input type="text" id="filterStall" name="filterStall" class="form-control" 
-                                           placeholder="Ej: L-001" value="<?php echo htmlspecialchars($_GET['filterStall'] ?? ''); ?>">
-                                </div>
-
-                                <!-- Filtro por Adjudicatario -->
-                                <div class="col-md-2">
-                                    <label for="filterAwardee" class="form-label small">Adjudicatario:</label>
-                                    <input type="text" id="filterAwardee" name="filterAwardee" class="form-control" 
-                                           placeholder="Nombre" value="<?php echo htmlspecialchars($_GET['filterAwardee'] ?? ''); ?>">
-                                </div>
-
-                                <!-- Filtro por Cédula/RIF -->
-                                <div class="col-md-3">
-                                    <label for="filterIdNumber" class="form-label small">Cédula/RIF:</label>
-                                    <div class="input-group">
-                                        <select id="filterIdPrefix" name="filterIdPrefix" class="form-select" style="max-width: 70px;">
-                                            <option value="">-</option>
-                                            <?php 
-                                            $prefixes = ['V', 'E', 'J', 'G', 'P'];
-                                            $selectedPrefix = $_GET['filterIdPrefix'] ?? '';
-                                            foreach ($prefixes as $prefix): ?>
-                                                <option value="<?php echo $prefix; ?>" <?php echo ($selectedPrefix === $prefix) ? 'selected' : ''; ?>>
-                                                    <?php echo $prefix; ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <input type="text" id="filterIdNumber" name="filterIdNumber" class="form-control" 
-                                               placeholder="Número" pattern="[0-9]*" value="<?php echo htmlspecialchars($_GET['filterIdNumber'] ?? ''); ?>">
-                                    </div>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                                <div class="col-md-2 d-flex justify-content-end" style="align-self: end;width: auto;margin-top: 1em;">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET" id="filterForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-2">
+                                            <label for="filterDate" class="form-label small">Fecha:</label>
+                                            <input type="date" id="filterDate" name="filterDate" class="form-control" 
+                                                   value="<?php echo htmlspecialchars($_GET['filterDate'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="filterStatus" class="form-label small">Estado:</label>
+                                            <select id="filterStatus" name="filterStatus" class="form-select">
+                                                <?php foreach ($allowed_status as $key => $value): ?>
+                                                    <option value="<?php echo htmlspecialchars($key); ?>" 
+                                                        <?php echo ($filter_params['status'] === $key) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($value); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="filterStall" class="form-label small">Puesto:</label>
+                                            <input type="text" id="filterStall" name="filterStall" class="form-control" 
+                                                   placeholder="Ej: L-001" value="<?php echo htmlspecialchars($_GET['filterStall'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="filterAwardee" class="form-label small">Adjudicatario:</label>
+                                            <input type="text" id="filterAwardee" name="filterAwardee" class="form-control" 
+                                                   placeholder="Nombre" value="<?php echo htmlspecialchars($_GET['filterAwardee'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="filterIdNumber" class="form-label small">Cédula/RIF:</label>
+                                            <div class="input-group">
+                                                <select id="filterIdPrefix" name="filterIdPrefix" class="form-select" style="max-width: 70px;">
+                                                    <option value="">-</option>
+                                                    <?php 
+                                                    $prefixes = ['V', 'E', 'J', 'G', 'P'];
+                                                    $selectedPrefix = $_GET['filterIdPrefix'] ?? '';
+                                                    foreach ($prefixes as $prefix): ?>
+                                                        <option value="<?php echo $prefix; ?>" <?php echo ($selectedPrefix === $prefix) ? 'selected' : ''; ?>>
+                                                            <?php echo $prefix; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <input type="text" id="filterIdNumber" name="filterIdNumber" class="form-control" 
+                                                       placeholder="Número" pattern="[0-9]*" value="<?php echo htmlspecialchars($_GET['filterIdNumber'] ?? ''); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                     <div class="card-body">

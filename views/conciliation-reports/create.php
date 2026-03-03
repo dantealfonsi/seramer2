@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/../../controllers/ConciliationReportsController.php';
 
@@ -52,14 +52,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-add-box-line me-1"
-                                style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
-                        <a href="../citations/index.php" class="btn btn-secondary">
-                            <i class="ri-arrow-left-line"></i> Volver
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-add-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="../citations/index.php">Citaciones</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Registrar Informe</li>
+                                </ol>
+                            </nav>
+                        </div>
+                        <a href="../citations/index.php" class="btn btn-outline-secondary">
+                            <i class="ri-arrow-left-line"></i> Volver al listado
                         </a>
                     </div>
 
@@ -124,9 +131,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <div id="errorTextAgreementDetails" style="color: red;"></div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary">
-                                <i class="ri-save-line"></i> Guardar Informe
-                            </button>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a href="../citations/index.php" class="btn btn-outline-secondary">
+                                    <i class="ri-close-line"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-save-line"></i> Guardar Informe
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>

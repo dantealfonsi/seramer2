@@ -21,93 +21,64 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<style>
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #696cff 0%, #32c682 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9;
-    }
-    #categoriesTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #categoriesTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #categoriesTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
-    .card-inside {
-        background-color: #fff;
-        border: 1px solid #d9dee3;
-        border-radius: 0.5rem;
-    }
-</style>
-
-<div class="main-content main-container">
-    <div class="container-xxl">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <!-- Contenedor Blanco Principal -->
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
+                    <!-- 1. Encabezado (Título y Botón) -->
+                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-menu-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-primary">
+                            <i class="ri-add-line"></i> Nuevo Rubro
+                        </a>
+                    </div>
+
+                    <div class="card-body p-4 pt-0">
                         
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-menu-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
-                                <?php echo htmlspecialchars($page_title); ?>
-                            </h5>
-                            <a href="create.php" class="btn btn-primary px-4 shadow-sm" style="background-color: #696cff; border-color: #696cff; font-weight: 500;">
-                                <i class="ri-add-line me-1"></i> Nuevo Rubro
-                            </a>
-                        </div>
-
                         <!-- Filtros Avanzados -->
-                        <div class="card-inside p-4 mb-4">
-                            <form method="GET" action="index.php" class="row g-3">
-                                <div class="col-md-10">
-                                    <label class="form-label fw-bold small text-uppercase">Nombre del Rubro</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-price-tag-3-line text-muted"></i></span>
-                                        <input type="text" name="name" class="form-control border-start-0" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                        <div class="filter-card mb-4">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="index.php">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label fw-bold small text-uppercase">Nombre del Rubro</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-price-tag-3-line text-muted"></i></span>
+                                                <input type="text" name="name" class="form-control" placeholder="Buscar por nombre..." value="<?php echo htmlspecialchars($filters['name']); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end gap-2">
-                                    <a href="index.php" class="btn btn-outline-secondary w-50 d-flex align-items-center justify-content-center" title="Limpiar">
-                                        <i class="ri-refresh-line me-1"></i> Limpiar
-                                    </a>
-                                    <button type="submit" class="btn btn-info w-50 text-white d-flex align-items-center justify-content-center" title="Buscar">
-                                        <i class="ri-search-line me-1"></i> Buscar
-                                    </button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
-                        <!-- Métrica Rápida -->
-                        <div class="card border-0 bg-gradient-primary overflow-hidden mb-4" style="border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(105, 108, 255, 0.2);">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-price-tag-3-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold"><?php echo number_format($totalCategories); ?></h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Rubros Internos Registrados</p>
-                                    </div>
+                        <!-- Métrica Rápida Estilo Metro -->
+                        <div class="card card-status-primary mb-4" style="background-color: var(--metro-primary-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important;">
+                                    <i class="ri-price-tag-3-line"></i>
                                 </div>
-                                <div class="position-absolute" style="right: -10px; bottom: -20px; opacity: 0.1;">
-                                    <i class="ri-price-tag-3-line text-white" style="font-size: 6rem;"></i>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($totalCategories); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">RUBROS INTERNOS REGISTRADOS</p>
                                 </div>
                             </div>
                         </div>
@@ -123,8 +94,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="categoriesTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="categoriesTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Nombre del Rubro</th>
                                         <th class="text-center">Pagos Anuales</th>
@@ -136,14 +107,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm bg-label-info rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background-color: #d7f5fc !important; color: #03c3ec !important;">
+                                                    <div class="avatar avatar-sm bg-label-info rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
                                                         <i class="ri-price-tag-3-line"></i>
                                                     </div>
                                                     <span class="fw-bold text-dark"><?php echo htmlspecialchars($cat['name']); ?></span>
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge bg-label-primary px-3 py-2" style="background-color: #e7e7ff; color: #696cff; font-size: 0.9rem; font-weight: 600;">
+                                                <span class="badge bg-label-primary px-3 py-2" style="font-size: 0.9rem; font-weight: 600;">
                                                     <?php echo $cat['payment_count']; ?>
                                                 </span>
                                             </td>

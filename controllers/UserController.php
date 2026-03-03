@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../models/RoleModel.php';
 require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../public/libs/phpmailer/src/PHPMailer.php';
 require_once __DIR__ . '/../public/libs/phpmailer/src/SMTP.php';
@@ -8,9 +9,11 @@ require_once __DIR__ . '/../public/libs/phpmailer/src/Exception.php';
 
 class UserController {
     private $userModel;
+    private $roleModel;
     
     public function __construct() {
         $this->userModel = new UserModel();
+        $this->roleModel = new RoleModel();
     }
 
     /**
@@ -24,46 +27,67 @@ class UserController {
         
         // Obtener parámetros
         $page = isset($params['page']) ? (int)$params['page'] : 1;
-        $limit = 10;
+        $limit = 10000; // Let DataTables handle pagination
         
         // Verificar roles
         $is_manager = AuthMiddleware::isManager();
         $is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
         
-        $result = [];
+        $result = [
+            'success' => true,
+            'users' => [],
+            'total_users' => 0,
+            'departments' => [],
+            'department_filter' => '',
+            'page_title' => 'Gestión de Usuarios',
+            'current_page' => $page,
+            'total_pages' => 0
+        ];
         
-        if ($is_rrhh) {
-            // RRHH ve todos los usuarios con filtro opcional
-            $department_filter = isset($params['department']) ? $params['department'] : '';
-            $result['users'] = $this->userModel->getAll($page, $limit, $department_filter);
-            $result['total_users'] = $this->userModel->countUsers($department_filter);
-            $result['departments'] = ['Recursos Humanos', 'Liquidacion', 'Fiscalizacion', 'Cobranza'];
+        // Siempre verificar en BD real el estatus de superadmin para evitar caché de sesión
+        $is_real_superadmin = !empty($_SESSION['user_id']) ? $this->userModel->isSuperadmin($_SESSION['user_id']) : false;
+        
+        if ($is_real_superadmin) {
+            // Actualizamos la sesión para purgar cachés antiguos
+            $_SESSION['is_superadmin'] = 1;
+        } else if (isset($_SESSION['is_superadmin'])) {
+            $_SESSION['is_superadmin'] = 0;
+        }
+
+        // Filtros backend
+        $department_filter = $_GET['department'] ?? '';
+        $status_filter = $_GET['status'] ?? '';
+        $role_filter = $_GET['role'] ?? '';
+
+        if ($is_rrhh || $is_real_superadmin) {
+            // RRHH o Superadmin ve todos los usuarios con filtro opcional
+            $result['users'] = $this->userModel->getAll(1, 10000, $department_filter, $status_filter, $role_filter);
+            $result['total_users'] = count($result['users']);
+            $result['departments'] = $this->userModel->getAllDepartments();
+            $result['all_roles'] = $this->roleModel->getAll();
             $result['page_title'] = 'Gestión de Usuarios - Vista Completa';
-            $result['department_filter'] = $department_filter;
         } else if ($is_manager) {
             // Jefe de departamento ve solo usuarios de su departamento
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
             $user_id = $_SESSION['user_id'];
-            $result['users'] = $this->userModel->getUsersByManagerDepartment($user_id, $page, $limit);
-            $result['total_users'] = $this->userModel->countUsersByManagerDepartment($user_id);
-            $result['departments'] = [$is_manager['name']];
-            $result['department_filter'] = $is_manager['name'];
+            // For manager, we force the department filter to their own
+            $result['users'] = $this->userModel->getUsersByManagerDepartment($user_id, 1, 10000, $status_filter, $role_filter);
+            $result['total_users'] = count($result['users']);
+            $result['departments'] = [['id' => $is_manager['id'], 'name' => $is_manager['name']]];
+            $result['all_roles'] = $this->roleModel->getAll($is_manager['id']);
             $result['page_title'] = 'Gestión de Usuarios - Departamento: ' . $is_manager['name'];
         } else {
             return [
                 'success' => false,
-                'message' => 'No tiene permisos para acceder a esta sección',
+                'message' => 'No tiene permisos suficientes para ver esta zona',
                 'redirect' => '../dashboard/dashboard.php'
             ];
         }
-        
-        $result['total_pages'] = ceil($result['total_users'] / $limit);
-        $result['current_page'] = $page;
+
+        $result['department_filter'] = $department_filter;
+        $result['status_filter'] = $status_filter;
+        $result['role_filter'] = $role_filter;
         $result['is_manager'] = $is_manager;
         $result['is_rrhh'] = $is_rrhh;
-        $result['success'] = true;
         
         return $result;
     }
@@ -90,7 +114,8 @@ class UserController {
             'username' => '',
             'email' => '',
             'is_manager' => $is_manager,
-            'is_rrhh' => $is_rrhh
+            'is_rrhh' => $is_rrhh,
+            'is_superadmin' => !empty($_SESSION['is_superadmin'])
         ];
         
         // Si es POST, procesar creación
@@ -100,10 +125,15 @@ class UserController {
             $password = $params['password'] ?? '';
             $confirm_password = $params['confirm_password'] ?? '';
             $email = trim($params['email'] ?? '');
+            $department_roles = $params['department_roles'] ?? [];
             
             // Validaciones
             $errors = $this->validateUserCreation($staff_id, $username, $password, $confirm_password, $email);
             
+            if (empty($department_roles)) {
+                $errors[] = 'Debe asignar al menos un rol de departamento.';
+            }
+
             if (!empty($errors)) {
                 $result['errors'] = $errors;
                 $result['staff_id'] = $staff_id;
@@ -112,7 +142,7 @@ class UserController {
                 $result['success'] = false;
             } else {
                 // Verificar permisos específicos de manager
-                if ($is_manager && !$is_rrhh && !empty($staff_id)) {
+                if ($is_manager && !$is_rrhh && empty($_SESSION['is_superadmin']) && !empty($staff_id)) {
                     $available_staff = $this->userModel->getStaffWithoutUserByDepartment($is_manager['id']);
                     $staff_ids = array_column($available_staff, 'id');
                     
@@ -123,7 +153,7 @@ class UserController {
                 }
                 
                 if ($result['success']) {
-                    $creation_result = $this->userModel->createUserForStaff($staff_id, $username, $password, $email);
+                    $creation_result = $this->userModel->createUserForStaff($staff_id, $username, $password, $email, $department_roles);
                     
                     if ($creation_result['success']) {
                         $result['message'] = $creation_result['message'];
@@ -139,11 +169,15 @@ class UserController {
             }
         }
         
-        // Obtener personal disponible según el rol
-        if ($is_rrhh) {
+        // Cargar roles y departamentos disponibles para el UI
+        if ($is_rrhh || !empty($_SESSION['is_superadmin'])) {
             $result['available_staff'] = $this->userModel->getAllStaffWithoutUser();
+            $result['available_roles'] = $this->roleModel->getAll();
+            $result['all_departments'] = $this->userModel->getAllDepartments();
         } else if ($is_manager) {
             $result['available_staff'] = $this->userModel->getStaffWithoutUserByDepartment($is_manager['id']);
+            $result['available_roles'] = $this->roleModel->getAll($is_manager['id']);
+            $result['all_departments'] = [['id' => $is_manager['id'], 'name' => $is_manager['name']]];
         }
         
         return $result;
@@ -187,7 +221,8 @@ class UserController {
             'success' => true,
             'user' => $user,
             'is_manager' => AuthMiddleware::isManager(),
-            'is_rrhh' => AuthMiddleware::hasAccessToDepartment('Recursos Humanos')
+            'is_rrhh' => AuthMiddleware::hasAccessToDepartment('Recursos Humanos'),
+            'is_superadmin' => !empty($_SESSION['is_superadmin'])
         ];
     }
 
@@ -233,7 +268,8 @@ class UserController {
             'messageType' => '',
             'errors' => [],
             'is_manager' => AuthMiddleware::isManager(),
-            'is_rrhh' => AuthMiddleware::hasAccessToDepartment('Recursos Humanos')
+            'is_rrhh' => AuthMiddleware::hasAccessToDepartment('Recursos Humanos'),
+            'is_superadmin' => !empty($_SESSION['is_superadmin'])
         ];
         
         // Si es POST, procesar edición
@@ -244,10 +280,15 @@ class UserController {
             $change_password = isset($params['change_password']);
             $password = $params['password'] ?? '';
             $confirm_password = $params['confirm_password'] ?? '';
+            $department_roles = $params['department_roles'] ?? [];
             
             // Validaciones
             $errors = $this->validateUserEdition($username, $email, $status, $change_password, $password, $confirm_password, $user_id);
             
+            if (empty($department_roles)) {
+                $errors[] = 'Debe asignar al menos un rol de departamento.';
+            }
+
             if (!empty($errors)) {
                 $result['errors'] = $errors;
                 $result['success'] = false;
@@ -266,6 +307,27 @@ class UserController {
                 $update_result = $this->userModel->update($user_id, $update_data);
                 
                 if ($update_result) {
+                    $is_manager = AuthMiddleware::isManager();
+                    $is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
+
+                    // Update Role too
+                    if (!empty($department_roles)) {
+                        if ($is_rrhh || !empty($_SESSION['is_superadmin'])) {
+                            // RRHH/Superadmin can modify all assignations
+                            $this->userModel->removeAllDepartments($user_id);
+                            foreach ($department_roles as $dept_id => $r_id) {
+                                if (empty($r_id)) continue;
+                                $this->userModel->assignDepartment($user_id, $dept_id, $r_id);
+                            }
+                        } else if ($is_manager) {
+                            // Manager can only modify roles inside their department
+                            $this->userModel->removeDepartment($user_id, $is_manager['id']);
+                            if (isset($department_roles[$is_manager['id']]) && !empty($department_roles[$is_manager['id']])) {
+                                $this->userModel->assignDepartment($user_id, $is_manager['id'], $department_roles[$is_manager['id']]);
+                            }
+                        }
+                    }
+
                     $result['message'] = 'Usuario actualizado exitosamente';
                     $result['messageType'] = 'success';
                     // Actualizar datos del usuario para mostrar los cambios
@@ -276,6 +338,16 @@ class UserController {
                     $result['success'] = false;
                 }
             }
+        }
+        
+        // Cargar roles y departamentos disponibles para el UI
+        if (AuthMiddleware::hasAccessToDepartment('Recursos Humanos') || !empty($_SESSION['is_superadmin'])) {
+            $result['all_departments'] = $this->userModel->getAllDepartments();
+            $result['all_roles'] = $this->roleModel->getAll();
+        } else if (AuthMiddleware::isManager()) {
+            $mgr_dept = AuthMiddleware::isManager();
+            $result['all_departments'] = [['id' => $mgr_dept['id'], 'name' => $mgr_dept['name']]];
+            $result['all_roles'] = $this->roleModel->getAll($mgr_dept['id']);
         }
         
         return $result;
@@ -295,6 +367,14 @@ class UserController {
                 'success' => false,
                 'message' => 'ID de usuario no válido',
                 'redirect' => 'index.php?error=invalid_user'
+            ];
+        }
+
+        if ($user_id == $_SESSION['user_id']) {
+            return [
+                'success' => false,
+                'message' => 'Seguridad: No puedes desactivar tu propio usuario',
+                'redirect' => 'index.php?error=cannot_deactivate_self'
             ];
         }
         
@@ -515,29 +595,33 @@ class UserController {
         $is_manager = AuthMiddleware::isManager();
         $is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
         
-        // RRHH puede acceder a cualquier usuario
-        if ($is_rrhh) {
+        // REGLA: Un usuario no puede desactivar/editar a otro administrador o superadmin
+        // a menos que sea el superadmin principal
+        $target_is_admin = !empty($user['is_superadmin']) || $this->userModel->isManager($user['id']);
+        
+        if ($target_is_admin && empty($_SESSION['is_superadmin'])) {
+            return [
+                'success' => false,
+                'message' => 'No tiene permisos para modificar a un usuario administrador',
+                'redirect' => 'index.php?error=cannot_modify_admin'
+            ];
+        }
+
+        // RRHH o Superadmin puede acceder a cualquier usuario restante
+        if ($is_rrhh || !empty($_SESSION['is_superadmin'])) {
             return ['success' => true];
         }
         
         // Jefes solo pueden acceder a usuarios de su departamento
         if ($is_manager) {
-            // Si el usuario no tiene department_id (sin staff), solo RRHH puede manejarlo
-            if (!isset($user['department_id']) || $user['department_id'] === null) {
+            if (!$this->userModel->isUserInDepartment($user['id'], $is_manager['id'])) {
                 return [
                     'success' => false,
-                    'message' => 'Solo RRHH puede gestionar usuarios sin departamento asignado',
+                    'message' => 'No tiene permisos para acceder a este usuario (no pertenece a su zona)',
                     'redirect' => 'index.php?error=no_permission'
                 ];
             }
-            
-            if ($user['department_id'] != $is_manager['id']) {
-                return [
-                    'success' => false,
-                    'message' => 'No tiene permisos para acceder a este usuario',
-                    'redirect' => 'index.php?error=no_permission'
-                ];
-            }
+
             return ['success' => true];
         }
         

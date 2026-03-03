@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de detalles de una queja
 
 session_start();
@@ -101,21 +101,22 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Quejas</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Detalles de Queja</li>
-                    </ol>
-                </nav>
-                
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0"  style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-feedback-line me-1"  style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-feedback-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="index.php">Quejas</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Detalles de Queja</li>
+                                </ol>
+                            </nav>
+                        </div>
                         <div class="btn-group" role="group">
-                            <a href="index.php" class="btn btn-secondary">
+                            <a href="index.php" class="btn btn-outline-secondary">
                                 <i class="ri-arrow-left-line"></i> Volver al listado
                             </a>
                             <!-- Botón de seguimiento de inspección -->
@@ -125,10 +126,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </a>
                             <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
                                 <a href="edit.php?id=<?php echo $complaint['complaint_id']; ?>" class="btn btn-warning">
-                                    <i class="ri-edit-line"></i> Editar
+                                    <i class="ri-edit-2-line"></i> Editar
                                 </a>
                                 <button type="button" 
-                                        class="btn btn-danger" 
+                                        class="btn btn-outline-danger" 
                                         onclick="confirmDeleteComplaint(<?php echo $complaint['complaint_id']; ?>)">
                                     <i class="ri-delete-bin-line"></i> Eliminar
                                 </button>

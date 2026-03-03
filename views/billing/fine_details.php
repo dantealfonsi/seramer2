@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de detalles de una sanción (Versión Facturación)
 session_start();
 require_once __DIR__ . '/../../controllers/SanctionsController.php';
@@ -36,19 +36,6 @@ $fullName = ($sanction['first_name'] ?? '') . ' ' . ($sanction['last_name'] ?? '
 ?>
 
 <style>
-    .card-title-premium {
-        font-size: 2rem !important;
-        font-weight: 600 !important;
-    }
-    .icon-premium {
-        font-size: 2rem !important;
-        background: #837aff;
-        color: white;
-        font-weight: 100 !important;
-        padding: .24rem;
-        border-radius: .7rem;
-        margin-right: 1rem;
-    }
 </style>
 
 <div class="main-content">
@@ -64,8 +51,8 @@ $fullName = ($sanction['first_name'] ?? '') . ' ' . ($sanction['last_name'] ?? '
                 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
-                            <i class="ri-file-list-3-line icon-premium"></i>
+                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <div class="btn-group" role="group">

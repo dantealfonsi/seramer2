@@ -84,6 +84,7 @@ class AuthController {
             $_SESSION['user_email'] = $user_data['email'];
             $_SESSION['user_full_name'] = trim(($user_data['first_name'] ?? '') . ' ' . ($user_data['last_name'] ?? ''));
             $_SESSION['staff_id'] = $user_data['staff_id'];
+            $_SESSION['is_superadmin'] = $user_data['is_superadmin'] ?? 0;
             
             // Información del departamento principal
             if (!empty($user_data['departments'])) {
@@ -293,6 +294,7 @@ class AuthController {
             'email' => $_SESSION['user_email'],
             'full_name' => $_SESSION['user_full_name'],
             'staff_id' => $_SESSION['staff_id'] ?? null,
+            'is_superadmin' => $_SESSION['is_superadmin'] ?? 0,
             'department_id' => $_SESSION['department_id'] ?? null,
             'department_name' => $_SESSION['department_name'] ?? null,
             'primary_department' => $_SESSION['primary_department_name'] ?? null,
@@ -374,6 +376,12 @@ class AuthController {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        // Si es superadmin, saltamos la verificación de departamento
+        if (!empty($_SESSION['is_superadmin'])) {
+            return;
+        }
+
         if (!$this->userModel->hasAccessToDepartment($_SESSION['user_id'], $required_department)) {
             header("Location: $redirect_url");
             exit;

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 // Asegúrate de que tu ComplaintsController->index() ahora acepta el array de filtros
 require_once __DIR__ . '/../../controllers/ComplaintsController.php';
@@ -97,8 +97,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-chat-voice-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-chat-voice-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <?php if ($_SESSION['selected_department'] === 'Recursos Humanos'): ?>
@@ -109,63 +109,63 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                
-                                <div class="col-md-4">
-                                    <label for="complaint_type" class="form-label small">Tipo de Queja</label>
-                                    <select class="form-select" id="complaint_type" name="complaint_type">
-                                        <option value="">-- Todos los Tipos --</option>
-                                        <?php 
-                                        $current_type = $activeFilters['complaint_type'] ?? '';
-                                        foreach ($allowed_tipo as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_type === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <label for="complaint_priority" class="form-label small">Prioridad</label>
-                                    <select class="form-select" id="complaint_priority" name="complaint_priority">
-                                        <option value="">-- Todas las Prioridades --</option>
-                                        <?php 
-                                        $current_priority = $activeFilters['complaint_priority'] ?? '';
-                                        foreach ($allowed_priority as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_priority === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                
-                                <div class="col-md-4">
-                                    <label for="complaint_status" class="form-label small">Estado</label>
-                                    <select class="form-select" id="complaint_status" name="complaint_status">
-                                        <option value="">-- Todos los Estados --</option>
-                                        <?php 
-                                        $current_status = $activeFilters['complaint_status'] ?? '';
-                                        foreach ($allowed_status as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo $current_status === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label for="complaint_type" class="form-label small">Tipo de Queja</label>
+                                            <select class="form-select" id="complaint_type" name="complaint_type">
+                                                <option value="">-- Todos los Tipos --</option>
+                                                <?php 
+                                                $current_type = $activeFilters['complaint_type'] ?? '';
+                                                foreach ($allowed_tipo as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_type === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="complaint_priority" class="form-label small">Prioridad</label>
+                                            <select class="form-select" id="complaint_priority" name="complaint_priority">
+                                                <option value="">-- Todas las Prioridades --</option>
+                                                <?php 
+                                                $current_priority = $activeFilters['complaint_priority'] ?? '';
+                                                foreach ($allowed_priority as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_priority === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="complaint_status" class="form-label small">Estado</label>
+                                            <select class="form-select" id="complaint_status" name="complaint_status">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <?php 
+                                                $current_status = $activeFilters['complaint_status'] ?? '';
+                                                foreach ($allowed_status as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo $current_status === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">

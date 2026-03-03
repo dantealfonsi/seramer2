@@ -17,73 +17,40 @@ $months = [
 ];
 ?>
 
-<style>
-    .bg-gradient-warning {
-        background: linear-gradient(135deg, #ffab00 0%, #ffcf50 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9;
-    }
-    #ratesTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #ratesTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #ratesTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
-</style>
-
-<div class="main-content main-container">
-    <div class="container-xxl">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-money-euro-box-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
-                                <?php echo htmlspecialchars($page_title); ?>
-                            </h5>
-                            <a href="create.php" class="btn btn-warning text-white px-4 shadow-sm">
-                                <i class="ri-add-line me-1"></i> Registrar Tasa
-                            </a>
-                        </div>
+                    <!-- 1. Encabezado (Título y Botón) -->
+                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title d-flex align-items-center mb-0" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-money-euro-box-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-warning text-white">
+                            <i class="ri-add-line"></i> Registrar Tasa
+                        </a>
+                    </div>
 
-                        <!-- Métrica Rápida -->
-                        <div class="card border-0 bg-gradient-warning overflow-hidden mb-4" style="border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(255, 171, 0, 0.2);">
-                            <div class="card-body p-4 position-relative">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                        <i class="ri-exchange-funds-line ri-2x text-white"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="mb-0 text-white fw-bold">
-                                            <?php echo !empty($rates) ? number_format($rates[0]['bs_value'], 2) . ' Bs.' : 'No establecida'; ?>
-                                        </h3>
-                                        <p class="mb-0 text-white-50 fw-semibold">Tasa Vigente (Euro)</p>
-                                    </div>
+                    <div class="card-body p-4 pt-0">
+                        <!-- Métrica Rápida Estilo Metro -->
+                        <div class="card card-status-warning mb-4" style="background-color: var(--metro-warning-light);">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important;">
+                                    <i class="ri-exchange-funds-line"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo !empty($rates) ? number_format($rates[0]['bs_value'], 2) . ' Bs.' : 'No establecida'; ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">TASA VIGENTE (EURO)</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="ratesTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="ratesTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Período</th>
                                         <th>Valor del Euro (Bs.)</th>
@@ -107,10 +74,12 @@ $months = [
                                             <td><?php echo isset($rate['created_at']) ? date('d/m/Y H:i', strtotime($rate['created_at'])) : 'N/A'; ?></td>
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center gap-2">
-                                                    <a href="edit.php?id=<?php echo $rate['id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <a href="edit.php?id=<?php echo $rate['id']; ?>" class="btn btn-sm btn-outline-warning" style="padding: 0.4rem; border-radius: 0.5rem;" title="Editar">
                                                         <i class="ri-pencil-line"></i>
                                                     </a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo $rate['id']; ?>)">
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                            style="padding: 0.4rem; border-radius: 0.5rem;" 
+                                                            title="Eliminar" onclick="confirmDelete(<?php echo $rate['id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
                                                 </div>

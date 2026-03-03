@@ -61,84 +61,76 @@ $incomeLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 
     <div class="row">
         <!-- Estadísticas Cards -->
         <div class="col-lg-3 col-sm-6 mb-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="card-info">
-                            <p class="card-text mb-1 text-muted">Adjudicatarios</p>
-                            <div class="d-flex align-items-end mb-1">
-                                <h4 class="card-title mb-0 me-2"><?= number_format($awardeeMetrics['total']) ?></h4>
-                                <small class="text-success fw-medium">(Activos)</small>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>Adjudicatarios</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2"><?= number_format($awardeeMetrics['total']) ?></h4>
                             </div>
+                            <small>Total activos</small>
                         </div>
-                        <div class="card-icon">
-                            <span class="badge bg-label-primary rounded-circle p-2">
-                                <i class="ri-group-line ri-24px"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-label-primary rounded p-2">
+                            <i class="ri-group-line ri-24px"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="col-lg-3 col-sm-6 mb-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="card-info">
-                            <p class="card-text mb-1 text-muted">Contratos</p>
-                            <div class="d-flex align-items-end mb-1">
-                                <h4 class="card-title mb-0 me-2"><?= number_format($contractMetrics['active']) ?></h4>
-                                <small class="text-success fw-medium">(Vigentes)</small>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>Contratos</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2"><?= number_format($contractMetrics['active']) ?></h4>
                             </div>
+                            <small>Vigentes</small>
                         </div>
-                        <div class="card-icon">
-                            <span class="badge bg-label-success rounded-circle p-2">
-                                <i class="ri-file-text-line ri-24px"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-label-success rounded p-2">
+                            <i class="ri-file-text-line ri-24px"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="col-lg-3 col-sm-6 mb-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="card-info">
-                            <p class="card-text mb-1 text-muted">Pagos Pendientes</p>
-                            <div class="d-flex align-items-end mb-1">
-                                <h4 class="card-title mb-0 me-2"><?= number_format($monthlyStats['pending_payments']) ?></h4>
-                                <small class="text-warning fw-medium">(Este mes)</small>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>Pagos Pendientes</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2"><?= number_format($monthlyStats['pending_payments']) ?></h4>
                             </div>
+                            <small>En este mes</small>
                         </div>
-                        <div class="card-icon">
-                            <span class="badge bg-label-warning rounded-circle p-2">
-                                <i class="ri-time-line ri-24px"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-label-warning rounded p-2">
+                            <i class="ri-time-line ri-24px"></i>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         
         <div class="col-lg-3 col-sm-6 mb-4">
-            <div class="card h-100 shadow-sm border-0">
+            <div class="card h-100">
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="card-info">
-                            <p class="card-text mb-1 text-muted">Recaudación</p>
-                            <div class="d-flex align-items-end mb-1">
-                                <h4 class="card-title mb-0 me-2">Bs. <?= number_format($totalRevenue, 2, ',', '.') ?></h4>
-                                <small class="text-success fw-medium">(Este mes)</small>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div class="content-left">
+                            <span>Recaudación</span>
+                            <div class="d-flex align-items-end mt-2">
+                                <h4 class="mb-0 me-2">Bs. <?= number_format($totalRevenue, 2, ',', '.') ?></h4>
                             </div>
+                            <small>En este mes</small>
                         </div>
-                        <div class="card-icon">
-                            <span class="badge bg-label-info rounded-circle p-2">
-                                <i class="ri-money-dollar-circle-line ri-24px"></i>
-                            </span>
-                        </div>
+                        <span class="badge bg-label-info rounded p-2">
+                            <i class="ri-money-dollar-circle-line ri-24px"></i>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -218,7 +210,7 @@ $incomeLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 
                         }
                     }
                 }],
-                colors: ['#7367F0', '#28C76F', '#EA5455', '#FF9F43', '#00CFE8', '#FFAB00', '#D0D2D6', '#4B4B4B'],
+                colors: ['#1e6091', '#2d7a4f', '#b8860b', '#c0392b', '#2980b9', '#5d6778', '#D0D2D6', '#4B4B4B'],
                 legend: {
                     position: 'bottom',
                     labels: {
@@ -286,6 +278,7 @@ $incomeLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 
                     borderRadius: 4
                 },
             },
+            colors: ['#1e6091'],
             dataLabels: {
                 enabled: false
             },
@@ -323,8 +316,17 @@ $incomeLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 
                 }
             },
             fill: {
-                opacity: 1,
-                colors: ['#7367F0']
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'vertical',
+                    shadeIntensity: 0.5,
+                    gradientToColors: ['#1e6091'], // var(--metro-primary)
+                    inverseColors: true,
+                    opacityFrom: 1,
+                    opacityTo: 1,
+                    stops: [0, 100]
+                }
             },
             tooltip: {
                 y: {

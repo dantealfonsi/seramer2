@@ -54,7 +54,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title dani-title d-flex align-items-center">
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
                                 <i class="ri-money-dollar-circle-line" style="color: #696cff; font-size: 1.5rem;"></i>
                             </div>
@@ -126,7 +126,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                             
                             <div class="card-header border-bottom">
-                                <h5 class="card-title dani-title text-primary"><i class="ri-file-chart-line me-1"></i> Resultados del Reporte</h5>
+                                <h5 class="card-title text-primary d-flex align-items-center" style="font-size: 1.2rem;"><i class="ri-file-chart-line me-1" style="color: #696cff;"></i> Resultados del Reporte</h5>
                             </div>
                             <?php
                             $report_content_map = [

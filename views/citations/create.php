@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once __DIR__ . '/../../controllers/CitationsController.php';
 
@@ -94,11 +94,22 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-add-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-add-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="index.php">Citaciones</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">Crear</li>
+                                </ol>
+                            </nav>
+                        </div>
+                        <a href="index.php" class="btn btn-outline-secondary">
+                            <i class="ri-arrow-left-line"></i> Volver al listado
+                        </a>
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['flash_message'])): ?>
@@ -177,9 +188,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <input type="hidden" name="citation_status" value="Scheduled">
                             </div>
 
-                            <div class="d-flex justify-content-start gap-2 mt-4">
-                                <button type="submit" class="btn btn-primary"><i class="ri-save-line me-1"></i>Guardar</button>
-                                <a href="index.php" class="btn btn-secondary"><i class="ri-close-line me-1"></i>Cancelar</a>
+                            <div class="d-flex justify-content-end gap-2 mt-4">
+                                <a href="index.php" class="btn btn-outline-secondary">
+                                    <i class="ri-close-line"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="ri-save-line"></i> Guardar Citación
+                                </button>
                             </div>
                         </form>
 

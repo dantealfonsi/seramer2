@@ -79,12 +79,12 @@ class StatisticalReportModel extends Model {
 
         // Predefined colors for aesthetics
         $colors = [
-            ['rgba(255, 99, 132, 0.8)', 'rgba(255, 99, 132, 1)'],
-            ['rgba(54, 162, 235, 0.8)', 'rgba(54, 162, 235, 1)'],
-            ['rgba(255, 206, 86, 0.8)', 'rgba(255, 206, 86, 1)'],
-            ['rgba(75, 192, 192, 0.8)', 'rgba(75, 192, 192, 1)'],
-            ['rgba(153, 102, 255, 0.8)', 'rgba(153, 102, 255, 1)'],
-            ['rgba(255, 159, 64, 0.8)', 'rgba(255, 159, 64, 1)']
+            ['rgba(30, 96, 145, 0.9)', 'rgba(30, 96, 145, 1)'], // Primary
+            ['rgba(45, 122, 79, 0.9)', 'rgba(45, 122, 79, 1)'], // Success
+            ['rgba(184, 134, 11, 0.9)', 'rgba(184, 134, 11, 1)'], // Warning
+            ['rgba(192, 57, 43, 0.9)', 'rgba(192, 57, 43, 1)'], // Danger
+            ['rgba(41, 128, 185, 0.9)', 'rgba(41, 128, 185, 1)'], // Info
+            ['rgba(93, 103, 120, 0.9)', 'rgba(93, 103, 120, 1)'] // Secondary
         ];
 
         foreach ($results as $index => $row) {
@@ -236,11 +236,12 @@ class StatisticalReportModel extends Model {
         $borderColors = [];
         
         $colors = [
-            ['rgba(75, 192, 192, 0.6)', 'rgba(75, 192, 192, 1)'],
-            ['rgba(255, 99, 132, 0.6)', 'rgba(255, 99, 132, 1)'],
-            ['rgba(54, 162, 235, 0.6)', 'rgba(54, 162, 235, 1)'],
-            ['rgba(255, 206, 86, 0.6)', 'rgba(255, 206, 86, 1)'],
-            ['rgba(153, 102, 255, 0.6)', 'rgba(153, 102, 255, 1)'],
+            ['rgba(30, 96, 145, 0.9)', 'rgba(30, 96, 145, 1)'], // Primary
+            ['rgba(45, 122, 79, 0.9)', 'rgba(45, 122, 79, 1)'], // Success
+            ['rgba(184, 134, 11, 0.9)', 'rgba(184, 134, 11, 1)'], // Warning
+            ['rgba(192, 57, 43, 0.9)', 'rgba(192, 57, 43, 1)'], // Danger
+            ['rgba(41, 128, 185, 0.9)', 'rgba(41, 128, 185, 1)'], // Info
+            ['rgba(93, 103, 120, 0.9)', 'rgba(93, 103, 120, 1)'] // Secondary
         ];
 
         foreach ($results as $index => $row) {

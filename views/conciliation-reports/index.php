@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de listado de Informes de Conciliación
 
 session_start();
@@ -65,8 +65,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                 
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" style="font-size: 2rem;font-weight: 600;">
-                            <i class="ri-file-text-line me-1" style="font-size: 2rem;background: #837aff;color: white;font-weight: 100 !important;padding: .24rem;border-radius: .7rem;"></i>
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-text-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">
@@ -75,8 +75,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1"></i> Opciones de Filtrado Avanzado</h6>
+                        <form action="index.php" method="GET" >
                             <div class="row g-3">
                                 
                                 <div class="col-md-3">
@@ -114,11 +113,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         value="<?php echo htmlspecialchars($_GET['end_date'] ?? ''); ?>">
                                 </div>
                                 
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
+                                <div class="col-12 filter-card-actions">
+                                    <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                    <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
                                 </div>
                             </div>
                         </form>

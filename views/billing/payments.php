@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 require_once __DIR__ . '/../../controllers/BillingController.php';
 
 $controller = new BillingController();
@@ -20,10 +20,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-    .card-title-premium {
-        font-size: 1.5rem !important;
-        font-weight: 600 !important;
-    }
     .kpi-card {
         border: none;
         border-radius: 12px;
@@ -56,44 +52,35 @@ include __DIR__ . '/../layouts/navigation-top.php';
         margin-top: 5px;
         opacity: 0.8;
     }
-    .icon-premium {
-        font-size: 2rem !important;
-        background: #837aff;
-        color: white;
-        font-weight: 100 !important;
-        padding: .24rem;
-        border-radius: .7rem;
-        margin-right: 1rem;
-    }
 </style>
 
 <div class="main-content">
     <div class="container-fluid">
         <!-- KPI Cards -->
-        <div class="row mb-4">
-            <!-- Debtors Card (Left) -->
-            <div class="col-md-6 mb-3 mb-md-0">
-                <div class="card kpi-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">Adjudicatarios con Deuda</div>
-                            <div class="kpi-value"><?php echo number_format($kpis['debtors_count']); ?></div>
-                            <div class="kpi-subtext">Contribuyentes Pendientes</div>
+        <div class="row mb-4 g-3">
+            <div class="col-md-6">
+                <div class="card card-status-danger h-100" style="background-color: var(--metro-danger-light);">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-danger) !important; background-color: transparent !important;">
+                            <i class="ri-user-unfollow-line"></i>
                         </div>
-                        <div class="kpi-icon"><i class="ri-user-unfollow-line"></i></div>
+                        <div>
+                            <h3 class="mb-0 fw-bold" style="color: var(--metro-danger);"><?php echo number_format($kpis['debtors_count']); ?></h3>
+                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">ADJUDICATARIOS CON DEUDA</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Payments Received Card (Right) -->
             <div class="col-md-6">
-                <div class="card kpi-card" style="background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);">
-                    <div class="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="kpi-label">Pagos Recibidos</div>
-                            <div class="kpi-value"><?php echo number_format($kpis['payments_count']); ?></div>
-                            <div class="kpi-subtext"><?php echo $kpis['solvency_rate']; ?>% de Solvencia General</div>
+                <div class="card card-status-success h-100" style="background-color: var(--metro-success-light);">
+                    <div class="card-body p-3 d-flex align-items-center">
+                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important; background-color: transparent !important;">
+                            <i class="ri-secure-payment-line"></i>
                         </div>
-                        <div class="kpi-icon"><i class="ri-secure-payment-line"></i></div>
+                        <div>
+                            <h3 class="mb-0 fw-bold" style="color: var(--metro-success);"><?php echo number_format($kpis['payments_count']); ?></h3>
+                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.85rem;">PAGOS RECIBIDOS (<?php echo $kpis['solvency_rate']; ?>% SOLVENCIA)</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,8 +89,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-white border-0 py-3">
-                        <h5 class="mb-0 card-title-premium d-flex align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0 py-3">
+                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; background-color: #e7e7ff !important;">
                                 <i class="ri-file-list-3-line" style="color: #696cff; font-size: 2rem;"></i>
                             </div>
@@ -113,27 +100,26 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body">
                         <!-- Filters -->
-                         <div class="bg-light p-3 rounded mb-4">
-                            <form method="GET" action="" class="row align-items-end g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Desde</label>
-                                    <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Hasta</label>
-                                    <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100">
-                                        <i class="ri-filter-3-line me-1"></i> Filtrar
-                                    </button>
-                                </div>
-                                <div class="col-md-2">
-                                     <a href="payments.php" class="btn btn-outline-secondary w-100">
-                                        <i class="ri-refresh-line me-1"></i> Limpiar
-                                    </a>
-                                </div>
-                            </form>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-uppercase">Desde</label>
+                                        <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-bold small text-uppercase">Hasta</label>
+                                        <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
+                                    </div>
+                                    <div class="col-12 filter-card-actions">
+                                        <a href="payments.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                        <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Data Table -->

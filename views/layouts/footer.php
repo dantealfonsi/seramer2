@@ -52,5 +52,25 @@ require_once __DIR__ . '/../../config/app.php';
         <script src="<?php echo vendor('js/menu.js'); ?>"></script>
         <script src="<?php echo url('public/sweetalert2@11.js'); ?>"></script>
         <script src="<?php echo js('main.js'); ?>"></script>
+        <!-- SERAMER: Chart.js Config Global Neumórfico (carga después de chartjs si está en la página) -->
+        <script>
+        // Aplica config global si Chart.js ya fue cargado; si no, esperamos evento custom
+        (function() {
+            function loadChartConfig() {
+                var s = document.createElement('script');
+                s.src = '<?php echo js('chartjs-global-config.js'); ?>';
+                s.async = false;
+                document.body.appendChild(s);
+            }
+            if (typeof Chart !== 'undefined') {
+                loadChartConfig();
+            } else {
+                // escuchar cuando algún script de página cargue Chart.js
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof Chart !== 'undefined') loadChartConfig();
+                });
+            }
+        })();
+        </script>
     </body>
 </html>

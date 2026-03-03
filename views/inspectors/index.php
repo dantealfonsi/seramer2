@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Vista de listado de inspectores
 
 session_start();
@@ -73,8 +73,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title dani-title">
-                             <i class="ri-user-line me-1 dani-icon"></i>
+                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                             <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-user-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                             <?php echo htmlspecialchars($page_title); ?>
                         </h5>
                         <a href="create.php" class="btn btn-primary">
@@ -83,44 +83,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
-                        <form action="index.php" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-filter-2-line me-1 "></i> Opciones de Filtrado Avanzado</h6>
-                            <div class="row g-3">
-                                <div class="col-md-3">
-                                    <label for="inspector_code" class="form-label small">Código Inspector</label>
-                                    <input type="text" class="form-control" id="inspector_code" name="inspector_code" 
-                                        placeholder="Ej: I-001" 
-                                        value="<?php echo htmlspecialchars($_GET['inspector_code'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="email" class="form-label small">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                        placeholder="ejemplo@correo.com" 
-                                        value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="is_active" class="form-label small">Estado</label>
-                                    <select class="form-select" id="is_active" name="is_active">
-                                        <option value="">-- Todos los Estados --</option>
-                                        <?php 
-                                        $current_status = $_GET['is_active'] ?? '';
-                                        foreach ($status_translations as $key => $value): 
-                                        ?>
-                                            <option value="<?php echo $key; ?>" <?php echo (string)$current_status === $key ? 'selected' : ''; ?>>
-                                                <?php echo $value; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                                
-                                <div class="col-12 d-flex justify-content-end align-items-end">
-                                    <a href="index.php" class="btn btn-outline-secondary me-2">Limpiar Filtros</a>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="ri-search-line"></i> Aplicar Filtros
-                                    </button>
-                                </div>
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
-                        </form>
+                            <div class="filter-card-body">
+                                <form action="index.php" method="GET">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="inspector_code" class="form-label small">Código Inspector</label>
+                                            <input type="text" class="form-control" id="inspector_code" name="inspector_code" 
+                                                placeholder="Ej: I-001" 
+                                                value="<?php echo htmlspecialchars($_GET['inspector_code'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="email" class="form-label small">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                placeholder="ejemplo@correo.com" 
+                                                value="<?php echo htmlspecialchars($_GET['email'] ?? ''); ?>">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="is_active" class="form-label small">Estado</label>
+                                            <select class="form-select" id="is_active" name="is_active">
+                                                <option value="">-- Todos los Estados --</option>
+                                                <?php 
+                                                $current_status = $_GET['is_active'] ?? '';
+                                                foreach ($status_translations as $key => $value): 
+                                                ?>
+                                                    <option value="<?php echo $key; ?>" <?php echo (string)$current_status === $key ? 'selected' : ''; ?>>
+                                                        <?php echo $value; ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply"><i class="ri-search-line me-1"></i> Filtrar</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">
@@ -152,8 +155,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         <?php else: ?>
                             <div class="table-responsive">
-                                <table id="inspectorsTable" class="table table-striped table-hover w-100">
-                                    <thead class="table-dark">
+                                <table id="inspectorsTable" class="table table-striped table-hover align-middle w-100">
+                                    <thead>
                                         <tr>
                                             <th>ID</th>
                                             <th>Código</th>
@@ -185,13 +188,13 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex gap-2 justify-content-center">
-                                                        <a href="view.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-info btn-sm" title="Ver">
+                                                        <a href="view.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-sm btn-outline-primary" title="Ver">
                                                             <i class="ri-eye-line"></i>
                                                         </a>
-                                                        <a href="edit.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-warning btn-sm" title="Editar">
+                                                        <a href="edit.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                             <i class="ri-edit-line"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-danger btn-sm" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>)">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>)">
                                                             <i class="ri-delete-bin-line"></i>
                                                         </button>
                                                     </div>
@@ -293,9 +296,8 @@ $(document).ready(function() {
         $('#inspectorsTable').DataTable({ 
             // Habilita la extensión Responsive
             responsive: true,
-            
-            // Configuración de los botones de exportación
-            dom: 'Bfrtip',
+            // Configuración de los botones de exportación (Bf para botones y buscador en la misma linea)
+            dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',

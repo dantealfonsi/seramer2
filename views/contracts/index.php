@@ -24,21 +24,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
         padding: 1.5rem;
         background-color: #f5f5f9;
     }
-    #contractsTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #contractsTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #contractsTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
     .card-inside {
         background-color: #fff;
         border: 1px solid #d9dee3;
@@ -57,11 +42,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     <div class="card-body p-4">
                         
                         <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-file-text-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
+                        <div class="card-header d-flex justify-content-between align-items-center mb-5">
+                            <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-text-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
                                 <?php echo htmlspecialchars($page_title); ?>
                             </h5>
                             <div class="d-flex gap-2">
@@ -91,116 +74,110 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Filtros Avanzados -->
-                        <div class="card-inside p-4 mb-4">
-                            <form method="GET" action="index.php" class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Adjudicatario / ID</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-user-search-line text-muted"></i></span>
-                                        <input type="text" name="awardee" class="form-control border-start-0" placeholder="Nombre o Cédula..." value="<?php echo htmlspecialchars($filters['awardee']); ?>">
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="index.php" class="row g-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-bold small text-uppercase">Adjudicatario / ID</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="ri-user-search-line text-muted"></i></span>
+                                            <input type="text" name="awardee" class="form-control" placeholder="Nombre o Cédula..." value="<?php echo htmlspecialchars($filters['awardee']); ?>">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-bold small text-uppercase">Año Fiscal</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-calendar-line text-muted"></i></span>
-                                        <select name="fiscal_year_id" class="form-select border-start-0">
-                                            <option value="">Todos</option>
-                                            <?php foreach ($fiscalYears as $fy): ?>
-                                                <option value="<?php echo $fy['id']; ?>" <?php echo $filters['fiscal_year_id'] == $fy['id'] ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($fy['year']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold small text-uppercase">Áño Fiscal</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="ri-calendar-line text-muted"></i></span>
+                                            <select name="fiscal_year_id" class="form-select">
+                                                <option value="">Todos</option>
+                                                <?php foreach ($fiscalYears as $fy): ?>
+                                                    <option value="<?php echo $fy['id']; ?>" <?php echo $filters['fiscal_year_id'] == $fy['id'] ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars($fy['year']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-bold small text-uppercase">Estado</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-checkbox-circle-line text-muted"></i></span>
-                                        <select name="status" class="form-select border-start-0">
-                                            <option value="">Todos</option>
-                                            <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activo</option>
-                                            <option value="renewed" <?php echo $filters['status'] === 'renewed' ? 'selected' : ''; ?>>Renovado</option>
-                                            <option value="canceled" <?php echo $filters['status'] === 'canceled' ? 'selected' : ''; ?>>Cancelado</option>
-                                        </select>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold small text-uppercase">Estado</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="ri-checkbox-circle-line text-muted"></i></span>
+                                            <select name="status" class="form-select">
+                                                <option value="">Todos</option>
+                                                <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activo</option>
+                                                <option value="renewed" <?php echo $filters['status'] === 'renewed' ? 'selected' : ''; ?>>Renovado</option>
+                                                <option value="canceled" <?php echo $filters['status'] === 'canceled' ? 'selected' : ''; ?>>Cancelado</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="form-label fw-bold small text-uppercase">Tipo</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-file-list-3-line text-muted"></i></span>
-                                        <select name="type" class="form-select border-start-0">
-                                            <option value="">Todos</option>
-                                            <option value="simultaneous" <?php echo $filters['type'] === 'simultaneous' ? 'selected' : ''; ?>>Simultáneo</option>
-                                            <option value="advance" <?php echo $filters['type'] === 'advance' ? 'selected' : ''; ?>>Anticipado</option>
-                                        </select>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-bold small text-uppercase">Tipo</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="ri-file-list-3-line text-muted"></i></span>
+                                            <select name="type" class="form-select">
+                                                <option value="">Todos</option>
+                                                <option value="simultaneous" <?php echo $filters['type'] === 'simultaneous' ? 'selected' : ''; ?>>Simultáneo</option>
+                                                <option value="advance" <?php echo $filters['type'] === 'advance' ? 'selected' : ''; ?>>Anticipado</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3 d-flex align-items-end gap-2 text-nowrap">
-                                    <a href="index.php" class="btn btn-outline-secondary w-50 d-flex align-items-center justify-content-center">
-                                        <i class="ri-refresh-line me-1"></i> Limpiar
-                                    </a>
-                                    <button type="submit" class="btn btn-info w-50 text-white d-flex align-items-center justify-content-center">
-                                        <i class="ri-search-line me-1"></i> Buscar
-                                    </button>
-                                </div>
-                            </form>
+                                    <div class="col-12 filter-card-actions">
+                                        <a href="index.php" class="btn btn-filter-clear">
+                                            <i class="ri-refresh-line me-1"></i> Limpiar
+                                        </a>
+                                        <button type="submit" class="btn btn-filter-apply">
+                                            <i class="ri-search-line me-1"></i> Filtrar
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
-                        <!-- Métricas Rápidas -->
+                        <!-- Métricas Rápidas Estilo Metro (Estandarizadas con Awardees) -->
                         <div class="row g-4 mb-4">
-                            <!-- Total -->
+                            <!-- Contratos Activos -->
                             <div class="col-md-4">
-                                <div class="card border-0 bg-gradient-primary h-100 shadow-sm" style="border-radius: 0.5rem;">
-                                    <div class="card-body p-4 position-relative">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar bg-white bg-opacity-25 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                                <i class="ri-file-copy-2-line ri-2x text-white"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="mb-0 text-white fw-bold"><?php echo number_format($metrics['total']); ?></h3>
-                                                <p class="mb-0 text-white-50 fw-semibold">Total Contratos</p>
-                                            </div>
+                                <div class="card card-status-success h-100" style="background-color: var(--metro-success-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important; background-color: transparent !important;">
+                                            <i class="ri-checkbox-circle-line"></i>
                                         </div>
-                                        <div class="position-absolute" style="right: 15px; bottom: 10px; opacity: 0.1;">
-                                            <i class="ri-file-text-line text-white" style="font-size: 4rem;"></i>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-success);"><?php echo number_format($metrics['active']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Activos</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Activos -->
+                            
+                            <!-- Contratos Simultáneos -->
                             <div class="col-md-4">
-                                <div class="card border-0 h-100 shadow-sm" style="border-radius: 0.5rem; background-color: #e8fadf;">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar bg-success bg-opacity-10 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 54px; height: 54px;">
-                                                <i class="ri-checkbox-circle-line ri-2x text-success"></i>
-                                            </div>
-                                            <div>
-                                                <h3 class="mb-0 text-success fw-bold"><?php echo number_format($metrics['active']); ?></h3>
-                                                <p class="mb-0 text-muted fw-semibold">Contratos Activos</p>
-                                            </div>
+                                <div class="card card-status-primary h-100" style="background-color: var(--metro-primary-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important; background-color: transparent !important;">
+                                            <i class="ri-refresh-line"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($metrics['simultaneous']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Simultáneos</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Detalles por Tipo -->
+
+                            <!-- Contratos Anticipados -->
                             <div class="col-md-4">
-                                <div class="card border-0 h-100 shadow-sm" style="border-radius: 0.5rem; background-color: #f0f2f4;">
-                                    <div class="card-body p-3 d-flex flex-column justify-content-center">
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span class="text-muted small fw-bold text-uppercase">Tipos de Contrato</span>
+                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                            <i class="ri-history-line"></i>
                                         </div>
-                                        <div class="d-flex gap-2">
-                                            <div class="flex-grow-1 bg-white p-2 rounded-2 text-center border">
-                                                <h6 class="mb-0 fw-bold text-primary"><?php echo $metrics['simultaneous']; ?></h6>
-                                                <small class="text-muted" style="font-size: 0.65rem;">Simultáneos</small>
-                                            </div>
-                                            <div class="flex-grow-1 bg-white p-2 rounded-2 text-center border">
-                                                <h6 class="mb-0 fw-bold text-warning"><?php echo $metrics['advance']; ?></h6>
-                                                <small class="text-muted" style="font-size: 0.65rem;">Anticipados</small>
-                                            </div>
+                                        <div>
+                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($metrics['advance']); ?></h3>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Anticipados</p>
                                         </div>
                                     </div>
                                 </div>
@@ -218,8 +195,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="contractsTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="contractsTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th style="width: 40px !important;"><input type="checkbox" class="form-check-input" id="selectAll"></th>
                                         <th>Adjudicatario</th>
@@ -348,13 +325,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
 <link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
 $(document).ready(function() {
     if ($.fn.DataTable) {
         const table = $('#contractsTable').DataTable({
             responsive: true,
-            dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
+            dom: 'Bfrtip',
             buttons: [
                 {
                     extend: 'pdfHtml5',
@@ -371,22 +349,44 @@ $(document).ready(function() {
                                 {
                                     text: [
                                         { text: 'REPÚBLICA BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
+                                        { text: 'GOBIERNO BOLIVARIANA DE VENEZUELA\n', fontSize: 10, bold: true },
                                         { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
-                                        { text: 'LISTADO DE CONTRATOS REGISTRADOS', fontSize: 12, bold: true }
+                                        { text: 'DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"', fontSize: 10, bold: true }
                                     ],
                                     margin: [10, 0, 0, 0]
                                 }
                             ],
                             margin: [0, 0, 0, 10]
                         });
+
+                        doc.content.splice(1, 0, {
+                            canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
+                            margin: [0, 0, 0, 20]
+                        });
+
+                        doc.content.splice(2, 0, {
+                            text: 'Listado de Contratos Registrados',
+                            style: 'header',
+                            alignment: 'center',
+                            margin: [0, 0, 0, 15]
+                        });
+
                         const table = doc.content.find(content => content.table);
                         if (table) {
-                            table.table.widths = ['25%', '15%', '30%', '15%', '15%'];
-                            table.table.body[0].forEach(cell => {
+                            table.table.body[0].forEach(function(cell) {
                                 cell.fillColor = '#2d4154';
                                 cell.color = 'white';
                                 cell.bold = true;
+                                cell.alignment = 'center';
                             });
+
+                            for (let i = 1; i < table.table.body.length; i++) {
+                                if (i % 2 === 0) {
+                                    table.table.body[i].forEach(function(cell) {
+                                        cell.fillColor = '#f2f2f2';
+                                    });
+                                }
+                            }
                         }
                     }
                 },

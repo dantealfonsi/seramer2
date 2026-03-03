@@ -46,6 +46,8 @@ session_start();
 
     <link rel="stylesheet" href="<?php echo vendor('css/core.css'); ?>" />
     <link rel="stylesheet" href="<?php echo css('demo.css'); ?>" />
+    <!-- SERAMER: Sistema Neumórfico Integral -->
+    <link rel="stylesheet" href="<?php echo css('neumorph-system.css'); ?>" />
 
     <!-- Vendors CSS -->
 
@@ -72,7 +74,7 @@ session_start();
     <script src="<?php echo js('config.js'); ?>"></script>
   </head>
 
-  <body>
+  <body class="page-login">
     <!-- Content -->
 
     <div class="authentication-wrapper authentication-cover" >
@@ -82,7 +84,7 @@ session_start();
       <!-- /Logo -->
       <div class="authentication-inner row m-0">
         <!-- /Left Section -->
-        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2" style="background-image: url('<?php echo img('new_logo.png'); ?>');background-repeat: no-repeat;background-size: cover; background-position: center;">
+        <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2" style="background-image: url('<?php echo img('new_logo.jpg'); ?>');background-repeat: no-repeat;background-size: cover; background-position: center;">
         </div>
         <!-- /Left Section -->
 
