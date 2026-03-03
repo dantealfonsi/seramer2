@@ -23,120 +23,100 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<style>
-    .bg-gradient-secondary {
-        background: linear-gradient(135deg, #8592a3 0%, #bdc3c7 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9;
-    }
-    #stallsTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #stallsTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #stallsTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
-    .card-inside {
-        background-color: #fff;
-        border: 1px solid #d9dee3;
-        border-radius: 0.5rem;
-    }
-</style>
-
-<div class="main-content main-container">
-    <div class="container-xxl">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <!-- Contenedor Blanco Principal -->
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-store-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
-                                <?php echo htmlspecialchars($page_title); ?>
-                            </h5>
-                            <a href="create.php" class="btn btn-primary px-4 shadow-sm" style="background-color: #696cff; border-color: #696cff; font-weight: 500;">
-                                <i class="ri-add-line me-1"></i> Nuevo Local
-                            </a>
-                        </div>
+                    <!-- 1. Encabezado (Título y Botón) -->
+                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-store-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-primary">
+                            <i class="ri-add-line"></i> Nuevo Local
+                        </a>
+                    </div>
 
+                    <div class="card-body p-4 pt-0">
+                        
                         <!-- Filtros Avanzados -->
-                        <div class="card-inside p-4 mb-4">
-                            <form method="GET" action="index.php" class="row g-3">
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Número de Local</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-hashtag text-muted"></i></span>
-                                        <input type="text" name="stall_number" class="form-control border-start-0" placeholder="Ej: 101-A" value="<?php echo htmlspecialchars($filters['stall_number']); ?>">
+                        <div class="filter-card mb-4">
+                            <div class="filter-card-title">
+                                <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="index.php">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small text-uppercase">Número de Local</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-hashtag text-muted"></i></span>
+                                                <input type="text" name="stall_number" class="form-control" placeholder="Ej: 101-A" value="<?php echo htmlspecialchars($filters['stall_number']); ?>">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small text-uppercase">Zona</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-map-pin-line text-muted"></i></span>
+                                                <select name="zone_id" class="form-select" id="zone_select">
+                                                    <option value="">Todas las Zonas</option>
+                                                    <?php foreach ($zones as $z): ?>
+                                                        <option value="<?php echo $z['id']; ?>" <?php echo $filters['zone_id'] == $z['id'] ? 'selected' : ''; ?>>
+                                                            <?php echo htmlspecialchars($z['name']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small text-uppercase">Sector</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-building-line text-muted"></i></span>
+                                                <select name="sector_id" class="form-select" id="sector_select">
+                                                    <option value="">Todos los Sectores</option>
+                                                    <?php foreach ($sectors as $s): ?>
+                                                        <option value="<?php echo $s['id']; ?>" <?php echo $filters['sector_id'] == $s['id'] ? 'selected' : ''; ?> data-zone="<?php echo $s['zone_id']; ?>">
+                                                            <?php echo htmlspecialchars($s['name']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label fw-bold small text-uppercase">Estado</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-checkbox-circle-line text-muted"></i></span>
+                                                <select name="status" class="form-select">
+                                                    <option value="">Todos los Estados</option>
+                                                    <option value="vacant" <?php echo $filters['status'] === 'vacant' ? 'selected' : ''; ?>>Disponible</option>
+                                                    <option value="occupied" <?php echo $filters['status'] === 'occupied' ? 'selected' : ''; ?>>Ocupado</option>
+                                                    <option value="maintenance" <?php echo $filters['status'] === 'maintenance' ? 'selected' : ''; ?>>Mantenimiento</option>
+                                                    <option value="closed" <?php echo $filters['status'] === 'closed' ? 'selected' : ''; ?>>Clausurado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="index.php" class="btn btn-filter-clear">
+                                                <i class="ri-refresh-line me-1"></i> Limpiar
+                                            </a>
+                                            <button type="submit" class="btn btn-filter-apply">
+                                                <i class="ri-search-line me-1"></i> Filtrar
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Zona</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-map-pin-line text-muted"></i></span>
-                                        <select name="zone_id" class="form-select border-start-0" id="zone_select">
-                                            <option value="">Todas las Zonas</option>
-                                            <?php foreach ($zones as $z): ?>
-                                                <option value="<?php echo $z['id']; ?>" <?php echo $filters['zone_id'] == $z['id'] ? 'selected' : ''; ?>>
-                                                    <?php echo htmlspecialchars($z['name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Sector</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-building-line text-muted"></i></span>
-                                        <select name="sector_id" class="form-select border-start-0" id="sector_select">
-                                            <option value="">Todos los Sectores</option>
-                                            <?php foreach ($sectors as $s): ?>
-                                                <option value="<?php echo $s['id']; ?>" <?php echo $filters['sector_id'] == $s['id'] ? 'selected' : ''; ?> data-zone="<?php echo $s['zone_id']; ?>">
-                                                    <?php echo htmlspecialchars($s['name']); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label fw-bold small text-uppercase">Estado</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-white border-end-0"><i class="ri-checkbox-circle-line text-muted"></i></span>
-                                        <select name="status" class="form-select border-start-0">
-                                            <option value="">Todos los Estados</option>
-                                            <option value="vacant" <?php echo $filters['status'] === 'vacant' ? 'selected' : ''; ?>>Disponible</option>
-                                            <option value="occupied" <?php echo $filters['status'] === 'occupied' ? 'selected' : ''; ?>>Ocupado</option>
-                                            <option value="maintenance" <?php echo $filters['status'] === 'maintenance' ? 'selected' : ''; ?>>Mantenimiento</option>
-                                            <option value="closed" <?php echo $filters['status'] === 'closed' ? 'selected' : ''; ?>>Clausurado</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-12 filter-card-actions">
-                                    <a href="index.php" class="btn btn-outline-secondary px-4" title="Limpiar"><i class="ri-refresh-line me-1"></i> Limpiar</a>
-                                    <button type="submit" class="btn btn-info px-4 text-white" title="Buscar"><i class="ri-search-line me-1"></i> Buscar</button>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Métrica Rápida Estilo Metro -->
                         <div class="card card-status-secondary mb-4" style="background-color: var(--metro-secondary-light);">
                             <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-secondary) !important; background-color: transparent !important;">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-secondary) !important;">
                                     <i class="ri-store-2-line"></i>
                                 </div>
                                 <div>
@@ -157,8 +137,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="stallsTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="stallsTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Número</th>
                                         <th>Sector / Zona</th>
@@ -172,7 +152,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm bg-label-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background-color: #f2f2f7 !important; color: #43495b !important;">
+                                                    <div class="avatar avatar-sm bg-label-secondary rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
                                                         <i class="ri-hashtag"></i>
                                                     </div>
                                                     <span class="fw-bold text-dark"><?php echo htmlspecialchars($stall['stall_number']); ?></span>

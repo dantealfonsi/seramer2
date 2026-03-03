@@ -21,60 +21,29 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
-<style>
-    .bg-gradient-warning {
-        background: linear-gradient(135deg, #ffab00 0%, #ffcf50 100%);
-        color: white;
-    }
-    .main-container {
-        padding: 1.5rem;
-        background-color: #f5f5f9;
-    }
-    #zonesTable thead th {
-        background-color: #000000 !important;
-        color: white !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1.25rem 1rem;
-    }
-    #zonesTable thead th:first-child {
-        border-top-left-radius: 8px;
-    }
-    #zonesTable thead th:last-child {
-        border-top-right-radius: 8px;
-    }
-    .card-inside {
-        background-color: #fff;
-        border: 1px solid #d9dee3;
-        border-radius: 0.5rem;
-    }
-</style>
-
-<div class="main-content main-container">
-    <div class="container-xxl">
+<div class="main-content" style="padding: 1.5rem;">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-12">
                 <!-- Contenedor Blanco Principal -->
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-4">
-                        
-                        <!-- Header -->
-                        <div class="d-flex justify-content-between align-items-center mb-5">
-                            <h5 class="mb-0 d-flex align-items-center" style="font-size: 1.75rem; font-weight: 600; color: #43495b;">
-                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
-                                    <i class="ri-map-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
-                                </div>
-                                <?php echo htmlspecialchars($page_title); ?>
-                            </h5>
-                            <a href="create.php" class="btn btn-primary px-4 shadow-sm" style="background-color: #696cff; border-color: #696cff; font-weight: 500;">
-                                <i class="ri-add-line me-1"></i> Nueva Zona
-                            </a>
-                        </div>
+                    <!-- 1. Encabezado (Título y Botón) -->
+                    <div class="card-header d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title mb-0 d-flex align-items-center" style="font-size: 1.4rem; font-weight: 600;">
+                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;">
+                                <i class="ri-map-2-line" style="color: #696cff; font-size: 1.5rem;"></i>
+                            </div>
+                            <?php echo htmlspecialchars($page_title); ?>
+                        </h5>
+                        <a href="create.php" class="btn btn-primary">
+                            <i class="ri-add-line"></i> Nueva Zona
+                        </a>
+                    </div>
 
+                    <div class="card-body p-4 pt-0">
+                        
                         <!-- Filtros Avanzados -->
-                        <div class="filter-card">
+                        <div class="filter-card mb-4">
                             <div class="filter-card-title">
                                 <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
                             </div>
@@ -104,7 +73,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <!-- Métrica Rápida Estilo Metro -->
                         <div class="card card-status-warning mb-4" style="background-color: var(--metro-warning-light);">
                             <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important;">
                                     <i class="ri-map-2-line"></i>
                                 </div>
                                 <div>
@@ -125,8 +94,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tabla -->
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle w-100" id="zonesTable">
-                                <thead>
+                            <table class="table table-striped table-hover align-middle w-100" id="zonesTable">
+                                <thead class="table-dark">
                                     <tr>
                                         <th>Cód. Zona</th>
                                         <th>Nombre de la Zona</th>
@@ -140,7 +109,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td class="fw-bold">Z-<?php echo str_pad($zone['id'], 3, '0', STR_PAD_LEFT); ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm bg-label-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; background-color: #fff3e0 !important; color: #ffab00 !important;">
+                                                    <div class="avatar avatar-sm bg-label-warning rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
                                                         <i class="ri-map-pin-line"></i>
                                                     </div>
                                                     <span class="fw-bold text-dark"><?php echo htmlspecialchars($zone['name']); ?></span>
