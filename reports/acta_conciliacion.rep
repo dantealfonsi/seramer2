@@ -1,309 +1,151 @@
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acta de Conciliación #{{report_id}}</title>
-    <!-- Remixicons -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-        
-        /* HEADER Y BOTONES (solo pantalla) */
-        .screen-only {
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            background-color: #f8f9fa;
-        }
-        
-        .premium-card {
-            border: none;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            background: white;
-            overflow: hidden;
-            margin: 0 auto;
-            max-width: 900px;
-        }
-        
-        .premium-header {
-            padding: 1.5rem;
-            background: white;
-            border-bottom: 0px solid #f0f0f0;
-        }
-        
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            background-color: #e7e7ff !important;
-            border-radius: 0.5rem !important; /* matches rounded-3 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-        }
-        
-        .icon-box i {
-            color: #696cff;
-            font-size: 1.5rem;
-        }
-        
-        .report-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0px;
-            color: #323232;
-        }
-        
-        .breadcrumb {
-            font-size: 1rem;
-            margin-bottom: 0;
-            background: transparent;
-            padding: 0;
-        }
-        
-        .breadcrumb-item a {
-            color: #696cff;
-            text-decoration: none;
-        }
-        
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: var(--bs-breadcrumb-divider, "/");
-        }
-        
-        .btn-group .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4375rem 1.25rem;
-            font-weight: 400;
-        }
-        
-        /* CONTENEDOR DEL DOCUMENTO */
-        .document-wrapper {
-            max-width: 8.5in;
-            margin: 0 auto 3rem;
-            background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 4px;
-        }
-        
-        .document-container {
-            padding: 0.8in;
-            min-height: 11in;
-            position: relative;
-        }
-        
-        /* HEADER SECTION */
-        .doc-header {
-            text-align: center;
-            margin-bottom: 30px;
-            font-weight: bold;
-            font-size: 12px;
-            line-height: 1.2;
-        }
-        
-        .doc-title {
-            margin-top: 20px;
-            margin-bottom: 30px;
-            text-align: center;
-            font-weight: bold;
-            text-decoration: underline;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        
-        /* BODY CONTENT */
-        .doc-body {
-            text-align: justify;
-            font-size: 13px;
-            line-height: 1.8;
-            margin-bottom: 50px;
-        }
-        
-        .highlight {
-            font-weight: bold;
-        }
+<!-- HTML_REPORT -->
+<style>
+    /* Estilos del reporte de conciliación */
+    .document-wrapper {
+        max-width: 8.5in;
+        margin: 0 auto;
+        background-color: #fff;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+        border-radius: 4px;
+    }
+    
+    .document-container {
+        padding: 0.8in;
+        min-height: 11in;
+        background-color: #fff;
+        position: relative;
+    }
+    
+    .doc-header {
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 1.2;
+        color: #000;
+    }
+    
+    .doc-title {
+        margin-top: 20px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: bold;
+        text-decoration: underline;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: #000;
+    }
+    
+    .doc-body {
+        text-align: justify;
+        font-size: 13px;
+        line-height: 1.8;
+        margin-bottom: 50px;
+        color: #000;
+    }
+    
+    .highlight {
+        font-weight: bold;
+    }
 
-        .agreement-box {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            background-color: #fafafa;
-            min-height: 120px;
-            border-radius: 4px;
-            font-style: italic;
+    .agreement-box {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        background-color: #fafafa;
+        min-height: 120px;
+        border-radius: 4px;
+        font-style: italic;
+    }
+    
+    .signatures {
+        margin-top: 80px;
+        width: 100%;
+    }
+    
+    .signatures-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 60px;
+    }
+    
+    .signature-block {
+        width: 45%;
+        text-align: center;
+        border-top: 1px solid #000;
+        padding-top: 10px;
+    }
+    
+    .signature-center {
+        width: 45%;
+        margin: 0 auto;
+        text-align: center;
+        border-top: 1px solid #000;
+        padding-top: 10px;
+    }
+
+    @media print {
+        .document-wrapper {
+            box-shadow: none !important;
+            margin: 0 !important;
+            max-width: 100% !important;
         }
+        .document-container {
+            padding: 0.5in !important;
+        }
+    }
+</style>
+
+<!-- CONTENIDO DEL DOCUMENTO -->
+<div class="document-wrapper">
+    <div class="document-container">
+        <!-- HEADER -->
+        <div class="doc-header">
+            REPÚBLICA BOLIVARIANA DE VENEZUELA<br>
+            GOBIERNO BOLIVARIANO DE VENEZUELA<br>
+            SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ<br>
+            DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"<br>
+            DIVISIÓN DE FISCALIZACIÓN
+        </div>
         
-        /* SIGNATURES */
-        .signatures {
-            margin-top: 80px;
-            width: 100%;
-        }
+        <div class="doc-title">
+            ACTA DEL PROCESO CONCILIATORIO Y ADMINISTRATIVO
+        </div>
         
-        .signatures-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 60px;
-        }
-        
-        .signature-block {
-            width: 40%;
-            text-align: center;
-            border-top: 1px solid #000;
-            padding-top: 10px;
-        }
-        
-        .signature-center {
-            width: 40%;
-            margin: 0 auto;
-            text-align: center;
-            border-top: 1px solid #000;
-            padding-top: 10px;
-        }
-        
-        /* PRINT STYLES */
-        @media print {
-            body {
-                background-color: white !important;
-                padding: 0 !important;
-            }
-            
-            .screen-only {
-                display: none !important;
-            }
-            
-            .document-wrapper {
-                box-shadow: none !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                border: none !important;
-            }
-            
-            .document-container {
-                padding: 0.5in !important;
-            }
-            
-            @page {
-                size: letter;
-                margin: 0;
-            }
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .document-container {
-                padding: 0.4in;
-                font-size: 11px;
-            }
-            .signatures-row {
-                flex-direction: column;
-                gap: 50px;
-            }
-            .signature-block {
-                width: 80%;
-                margin: 0 auto;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- HEADER Y BOTONES (solo visible en pantalla) -->
-    <div class="screen-only container">
-        <div class="premium-card">
-            <div class="premium-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    <h5 class="report-title d-flex align-items-center mb-1">
-                        <div class="icon-box">
-                            <i class="ri-file-text-line"></i>
-                        </div>
-                        Acta de Conciliación #{{report_id}}
-                    </h5>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="../dashboard/dashboard.php">Inicio</a></li>
-                            <li class="breadcrumb-item"><a href="../conciliation-reports/view.php?id={{report_id}}">Ver Informe</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Imprimir</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="../conciliation-reports/view.php?id={{report_id}}" class="btn btn-outline-secondary">
-                        <i class="ri-arrow-left-line"></i> Volver a detalles
-                    </a>
-                    <button onclick="window.print()" class="btn btn-primary">
-                        <i class="ri-printer-line"></i> Imprimir Reporte
-                    </button>
-                </div>
+        <!-- BODY -->
+        <div class="doc-body">
+            <p>
+                Hoy <span class="highlight">{{report_date_only}}</span> siendo las <span class="highlight">{{report_time_only}}</span>, el ciudadano <span class="highlight">{{manager_name}}</span> portador de la cédula de identidad número <span class="highlight">{{manager_cedula}}</span> jefe de la División de Fiscalización adscrito a la dirección de Administración del Servicio Autónomo de Mercados del Municipio Bermúdez "SERAMER" en reunión con el ciudadano(a): <span class="highlight">{{first_name}} {{last_name}}</span> con la cédula de identidad número <span class="highlight">{{cedula}}</span>, quien es adjudicatario(a) del puesto de venta número: <span class="highlight">{{puesto}}</span> que funciona en el mercado municipal de Carúpano.
+            </p>
+            <p style="margin-top: 15px;">
+                El propósito de la presente reunión es tratar la Infracción Asociada: <span class="highlight">{{infraction_description}}</span>.
+            </p>
+            <p style="margin-top: 15px;">
+                Se llegaron a los siguientes acuerdos:
+            </p>
+            <div class="agreement-box">
+                {{agreement_details}}
             </div>
         </div>
-    </div>
-
-    <!-- CONTENIDO DEL DOCUMENTO -->
-    <div class="document-wrapper">
-        <div class="document-container">
-            <!-- HEADER -->
-            <div class="doc-header">
-                REPÚBLICA BOLIVARIANA DE VENEZUELA<br>
-                GOBIERNO BOLIVARIANO DE VENEZUELA<br>
-                SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ<br>
-                DIRECCIÓN DE ADMINISTRACIÓN "SERAMER"<br>
-                DIVISIÓN DE FISCALIZACIÓN
-            </div>
-            
-            <div class="doc-title">
-                ACTA DEL PROCESO CONCILIATORIO Y ADMINISTRATIVO
-            </div>
-            
-            <!-- BODY -->
-            <div class="doc-body">
-                <p>
-                    Hoy <span class="highlight">{{report_date_only}}</span> siendo las <span class="highlight">{{report_time_only}}</span>, el ciudadano <span class="highlight">{{manager_name}}</span> portador de la cédula de identidad número <span class="highlight">{{manager_cedula}}</span> jefe de la División de Fiscalización adscrito a la dirección de Administración del Servicio Autónomo de Mercados del Municipio Bermúdez "SERAMER" en reunión con el ciudadano(a): <span class="highlight">{{first_name}} {{last_name}}</span> con la cédula de identidad número <span class="highlight">{{cedula}}</span>, quien es adjudicatario(a) del puesto de venta número: <span class="highlight">{{puesto}}</span> que funciona en el mercado municipal de Carúpano.
-                </p>
-                <p style="margin-top: 15px;">
-                    El propósito de la presente reunión es tratar la Infracción Asociada: <span class="highlight">{{infraction_description}}</span>.
-                </p>
-                <p style="margin-top: 15px;">
-                    Se llegaron a los siguientes acuerdos:
-                </p>
-                <div class="agreement-box">
-                    {{agreement_details}}
-                </div>
-            </div>
-            
-            <!-- SIGNATURES -->
-            <div class="signatures">
-                <div class="signatures-row">
-                    <div class="signature-block">
-                        <span class="signer-name">{{first_name}} {{last_name}}</span>
-                        <span class="signer-role">C.I: {{cedula}}</span>
-                        <span class="signer-role">Adjudicatario</span>
-                    </div>
-                    
-                    <div class="signature-block">
-                        <span class="signer-name">{{manager_name}}</span>
-                        <span class="signer-role">Jefe División de Fiscalización SERAMER</span>
-                    </div>
+        
+        <!-- SIGNATURES -->
+        <div class="signatures">
+            <div class="signatures-row">
+                <div class="signature-block">
+                    <span class="signer-name">{{first_name}} {{last_name}}</span><br>
+                    <span class="signer-role">C.I: {{cedula}}</span><br>
+                    <span class="signer-role">Adjudicatario</span>
                 </div>
                 
-                <div class="signature-center">
-                    <span class="signer-name">SELLO DEL DEPARTAMENTO</span>
+                <div class="signature-block">
+                    <span class="signer-name">{{manager_name}}</span><br>
+                    <span class="signer-role">Jefe División de Fiscalización SERAMER</span>
                 </div>
             </div>
             
+            <div class="signature-center">
+                <span class="signer-name">SELLO DEL DEPARTAMENTO</span>
+            </div>
         </div>
     </div>
-</body>
-</html>
+</div>

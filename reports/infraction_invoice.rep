@@ -1,501 +1,228 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infracción #{{infraction_id}}</title>
-    <!-- Remixicons -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            line-height: 1.3;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-        
-        /* HEADER Y BOTONES (solo pantalla) */
-        .screen-only {
-            padding: 1.5rem 0;
-            margin-bottom: 2rem;
-            background-color: #f8f9fa;
-        }
-        
-        .premium-card {
-            border: none;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            background: white;
-            overflow: hidden;
-            margin: 0 auto;
-            max-width: 900px;
-        }
-        
-        .premium-header {
-            padding: 1.5rem;
-            background: white;
-        }
-        
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            background-color: #e7e7ff !important;
-            border-radius: 0.5rem !important; /* matches rounded-3 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-        }
-        
-        .icon-box i {
-            color: #696cff;
-            font-size: 1.5rem;
-        }
-        
-        .report-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0px;
-            color: #323232;
-        }
-        
-        .breadcrumb {
-            font-size: 1rem;
-            margin-bottom: 0;
-            background: transparent;
-            padding: 0;
-        }
-        
-        .breadcrumb-item a {
-            color: #696cff;
-            text-decoration: none;
-        }
-        
-        .btn-group .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.4375rem 1.25rem;
-            font-weight: 400;
-        }
-        
-        /* CONTENEDOR DE LA FACTURA */
-        .invoice-wrapper {
-            max-width: 8.5in;
-            margin: 0 auto 3rem;
-            background-color: #fff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 4px;
-        }
-        
-        .invoice-container {
-            padding: 0.4in;
-            min-height: 10in;
-        }
-        
-        /* HEADER SECTION */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #333;
-        }
-        
-        .header-left {
-            flex: 0 0 160px;
-        }
-        
-        .logo {
-            width: 100px;
-            height: auto;
-            margin-bottom: 8px;
-        }
-        
-        .company-name {
-            font-size: 10px;
-            font-weight: bold;
-            line-height: 1.2;
-        }
-        
-        .header-center {
-            flex: 1;
-            padding: 0 15px;
-            text-align: center;
-        }
-        
-        .address-title {
-            font-weight: bold;
-            font-size: 11px;
-            margin-bottom: 4px;
-        }
-        
-        .address-details {
-            font-size: 10px;
-            line-height: 1.3;
-        }
-        
-        .header-right {
-            flex: 0 0 150px;
-            text-align: right;
-        }
-        
-        .infraction-number {
-            font-size: 11px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        
-        .infraction-id {
-            font-size: 28px;
-            font-weight: bold;
-            color: #d32f2f;
-        }
-        
-        .infraction-date {
-            font-size: 10px;
-            margin-top: 4px;
-        }
-        
-        /* BUSINESS INFO SECTION */
-        .business-info {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .info-row {
-            margin-bottom: 8px;
-            display: flex;
-        }
-        
-        .info-label {
-            font-weight: bold;
-            min-width: 130px;
-            color: #444;
-        }
-        
-        .business-name-large {
-            font-size: 15px;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: #000;
-            text-transform: uppercase;
-        }
-        
-        .rif-phone {
-            display: flex;
-            gap: 25px;
-            margin-top: 6px;
-        }
-        
-        /* SEPARATOR */
-        .separator {
-            border-top: 2px solid #333;
-            margin: 15px 0;
-        }
-        
-        /* INFRACTION DETAILS */
-        .infraction-details {
-            margin: 20px 0;
-        }
-        
-        .section-title {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #333;
-        }
-        
-        .detail-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        
-        .detail-table th {
-            background-color: #f1f1f1;
-            padding: 10px;
-            text-align: left;
-            font-weight: bold;
-            border: 1px solid #ddd;
-            font-size: 11px;
-        }
-        
-        .detail-table td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            font-size: 11px;
-        }
-        
-        .detail-table tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        /* TOTALS */
-        .totals {
-            margin-top: 25px;
-            float: right;
-            width: 300px;
-        }
-        
-        .totals-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 11px;
-        }
-        
-        .totals-row.total {
-            background-color: #333;
-            color: white;
-            font-weight: bold;
-            font-size: 13px;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
-        
-        .amount {
-            text-align: right;
-            font-weight: bold;
-        }
-        
-        /* FOOTER */
-        .footer {
-            clear: both;
-            margin-top: 40px;
-            padding-top: 15px;
-            border-top: 1px solid #ccc;
-            font-size: 9px;
-            text-align: center;
-            font-style: italic;
-        }
-        
-        .observations {
-            margin: 15px 0;
-            padding: 12px;
-            background-color: #fff8e1;
-            border-left: 4px solid #ff9800;
-        }
-        
-        .observations-title {
-            font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 10px;
-        }
-        
-        .observations-content {
-            font-size: 10px;
-        }
-        
-        /* PRINT STYLES */
-        @media print {
-            body {
-                background-color: white !important;
-                padding: 0 !important;
-            }
-            
-            .screen-only {
-                display: none !important;
-            }
-            
-            .invoice-wrapper {
-                box-shadow: none !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                border: none !important;
-            }
-            
-            .invoice-container {
-                padding: 0.3in !important;
-            }
-        }
-        
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .invoice-container {
-                padding: 0.3in;
-            }
-            .header {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .header-right {
-                text-align: center;
-                margin-top: 15px;
-            }
-            .totals {
-                width: 100%;
-                float: none;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- HEADER Y BOTONES (solo visible en pantalla) -->
-    <div class="screen-only container">
-        <div class="premium-card">
-            <div class="premium-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    <h5 class="report-title d-flex align-items-center mb-1">
-                        <div class="icon-box">
-                            <i class="ri-file-paper-2-line"></i>
-                        </div>
-                        Reporte de Infracción #{{infraction_id}}
-                    </h5>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="../dashboard/dashboard.php">Inicio</a></li>
-                            <li class="breadcrumb-item"><a href="../infractions/view.php?id={{infraction_id}}">Ver Infracción</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Imprimir</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="btn-group" role="group">
-                    <a href="../infractions/view.php?id={{infraction_id}}" class="btn btn-outline-secondary">
-                        <i class="ri-arrow-left-line"></i> Volver a detalles
-                    </a>
-                    <button onclick="window.print()" class="btn btn-primary">
-                        <i class="ri-printer-line"></i> Imprimir Reporte
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- HTML_REPORT -->
+<style>
+    /* Estilos del reporte de infracción */
+    .invoice-wrapper {
+        max-width: 8.5in;
+        margin: 0 auto;
+        background-color: #fff;
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+        border-radius: 4px;
+    }
+    
+    .invoice-container {
+        padding: 0.4in;
+        min-height: 10in;
+        background-color: #fff;
+    }
+    
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #333;
+    }
+    
+    .company-name {
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+    
+    .header-center {
+        flex: 1;
+        padding: 0 15px;
+        text-align: center;
+    }
+    
+    .address-title {
+        font-weight: bold;
+        font-size: 11px;
+    }
+    
+    .address-details {
+        font-size: 10px;
+    }
+    
+    .infraction-id {
+        font-size: 28px;
+        font-weight: bold;
+        color: #d32f2f;
+    }
+    
+    .business-info {
+        margin: 20px 0;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .info-row {
+        margin-bottom: 8px;
+        display: flex;
+    }
+    
+    .info-label {
+        font-weight: bold;
+        min-width: 130px;
+    }
+    
+    .business-name-large {
+        font-size: 15px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+    
+    .section-title {
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid #333;
+    }
+    
+    .detail-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .detail-table th, .detail-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        font-size: 11px;
+    }
+    
+    .detail-table th {
+        background-color: #f1f1f1;
+    }
+    
+    .totals {
+        margin-top: 25px;
+        float: right;
+        width: 300px;
+    }
+    
+    .totals-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .totals-row.total {
+        background-color: #333;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 4px;
+        margin-top: 8px;
+    }
 
-    <!-- CONTENIDO DE LA FACTURA -->
-    <div class="invoice-wrapper">
-        <div class="invoice-container">
-            <!-- HEADER -->
-            <div class="header">
-                <div class="header-left">
-                    <img src="../../public/assets/img/logo.png" alt="Logo SERAMER" class="logo">
-                    <div class="company-name">
-                        Servicio Autónomo de Mercados de Bermúdez
-                    </div>
-                </div>
-                
-                <div class="header-center">
-                    <div class="address-title">DOMICILIO FISCAL</div>
-                    <div class="address-details">
-                        Carúpano, Estado Sucre<br>
-                        Municipio Bermúdez<br>
-                        Parroquia Santa Catalina<br>
-                        Calle El Mercadito
-                    </div>
-                </div>
-                
-                <div class="header-right">
-                    <div class="infraction-number">INFRACCIÓN N°:</div>
-                    <div class="infraction-id">{{infraction_id}}</div>
-                    <div class="infraction-date">
-                        Fecha: {{infraction_datetime}}
-                    </div>
+    @media print {
+        .invoice-wrapper {
+            box-shadow: none !important;
+            margin: 0 !important;
+            max-width: 100% !important;
+        }
+        .invoice-container {
+            padding: 0.3in !important;
+        }
+    }
+</style>
+
+<div class="invoice-wrapper">
+    <div class="invoice-container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="header-left">
+                <div class="company-name">
+                    REPÚBLICA BOLIVARIANA DE VENEZUELA<br>
+                    ALCALDÍA DEL MUNICIPIO BERMÚDEZ<br>
+                    SERAMER
                 </div>
             </div>
-            
-            <!-- BUSINESS INFORMATION -->
-            <div class="business-info">
-                <div class="business-name-large">
-                    {{business_name}}
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">PUESTO:</span>
-                    <span>{{stall_number}}</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">DIRECCIÓN:</span>
-                    <span>{{address}}</span>
-                </div>
-                
-                <div class="rif-phone">
-                    <div>
-                        <span class="info-label">RIF:</span>
-                        <span>{{rif}}</span>
-                    </div>
-                    <div>
-                        <span class="info-label">TELÉFONO:</span>
-                        <span>{{phone}}</span>
-                    </div>
-                </div>
-                
-                <div class="info-row">
-                    <span class="info-label">ADJUDICATARIO:</span>
-                    <span>{{adjudicatory_name}}</span>
+            <div class="header-center">
+                <div class="address-title">SERVICIO AUTÓNOMO DE MERCADOS MUNICIPALES</div>
+                <div class="address-details">
+                    Carúpano, Estado Sucre<br>
+                    RIF: G-20000000-0
                 </div>
             </div>
-            
-            <!-- SEPARATOR -->
-            <div class="separator"></div>
-            
-            <!-- INFRACTION DETAILS -->
-            <div class="infraction-details">
-                <div class="section-title">DETALLES DE LA INFRACCIÓN</div>
-                
-                <table class="detail-table">
-                    <thead>
-                        <tr>
-                            <th>TIPO DE INFRACCIÓN</th>
-                            <th>DESCRIPCIÓN</th>
-                            <th>SEVERIDAD</th>
-                            <th>MONTO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{infraction_type_name}}</td>
-                            <td>{{infraction_description}}</td>
-                            <td>{{severity_name}}</td>
-                            <td class="amount">Bs. {{fine_amount}}</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <!-- OBSERVATIONS (if any) -->
-                {{#inspector_observations}}
-                <div class="observations">
-                    <div class="observations-title">OBSERVACIONES DEL INSPECTOR:</div>
-                    <div class="observations-content">{{inspector_observations}}</div>
-                </div>
-                {{/inspector_observations}}
+            <div class="header-right">
+                <div class="infraction-number">INFRACCIÓN Nº</div>
+                <div class="infraction-id">{{infraction_id}}</div>
             </div>
+        </div>
+
+        <div class="business-info">
+            <div class="business-name-large">{{business_name}}</div>
+            <div class="info-row">
+                <span class="info-label">RIF:</span>
+                <span>{{rif}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Adjudicatario:</span>
+                <span>{{adjudicatory_name}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Puesto:</span>
+                <span>{{stall_number}}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Ubicación:</span>
+                <span>{{address}}</span>
+            </div>
+        </div>
+
+        <div class="infraction-details">
+            <div class="section-title">DETALLES DE LA INFRACCIÓN</div>
+            <table class="detail-table">
+                <thead>
+                    <tr>
+                        <th>Concepto / Tipo de Infracción</th>
+                        <th>Fecha y Hora</th>
+                        <th>Gravedad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{infraction_type_name}}</td>
+                        <td>{{infraction_datetime}}</td>
+                        <td>{{severity_name}}</td>
+                        <td>{{sanction_status}}</td>
+                    </tr>
+                </tbody>
+            </table>
             
-            <!-- TOTALS -->
-            <div class="totals">
-                <div class="totals-row">
-                    <span>MONTO BASE:</span>
-                    <span class="amount">Bs. {{fine_amount}}</span>
-                </div>
-                
-                <div class="totals-row total">
-                    <span>TOTAL A PAGAR:</span>
-                    <span class="amount">Bs. {{fine_amount}}</span>
+            <div style="margin-top: 20px;">
+                <div class="section-title">DESCRIPCIÓN Y OBSERVACIONES</div>
+                <div style="padding: 10px; border: 1px solid #ddd; font-size: 11px; min-height: 80px;">
+                    <strong>Hechos:</strong> {{infraction_description}}<br><br>
+                    <strong>Observaciones:</strong> {{inspector_observations}}
                 </div>
             </div>
-            
-            <!-- FOOTER -->
-            <div class="footer">
-                <p>Este documento constituye notificación oficial de la infracción cometida.</p>
-                <p>El pago debe realizarse en un plazo de 30 días hábiles desde la fecha de emisión.</p>
-                <p>Estado de la Sanción: <strong>{{sanction_status}}</strong></p>
+        </div>
+
+        <div class="totals text-end">
+            <div class="totals-row">
+                <span>Monto de la Multa (UT/Petros)</span>
+                <span class="amount">{{fine_amount}}</span>
+            </div>
+            <div class="totals-row total">
+                <span>TOTAL A PAGAR</span>
+                <span class="amount">{{fine_amount}}</span>
+            </div>
+        </div>
+        
+        <div style="clear: both; margin-top: 100px; display: flex; justify-content: space-around;">
+            <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; font-size: 10px;">
+                FIRMA DEL FISCAL
+            </div>
+            <div style="border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; font-size: 10px;">
+                FIRMA DEL ADJUDICATARIO
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
