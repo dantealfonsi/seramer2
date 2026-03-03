@@ -885,27 +885,13 @@ class UserModel {
      */
     public function isManager($user_id) {
         try {
-            // First check legacy manager field in departments
-            $query = "SELECT d.*, s.first_name, s.last_name 
-                      FROM departments d
-                      INNER JOIN staff s ON d.manager_id = s.id
-                      INNER JOIN users u ON s.id = u.staff_id
-                      WHERE u.id = :user_id AND u.status = 'active'";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
-            
-            $manager = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($manager) return $manager;
-
-            // Then check new user_departments for 'admin' role
+            // Check user_departments for a role with full access
             $query = "SELECT d.*, r.name as role_name
                       FROM user_departments ud
                       INNER JOIN departments d ON ud.department_id = d.id
                       INNER JOIN roles r ON ud.role_id = r.id
                       WHERE ud.user_id = :user_id 
-                      AND (r.name = 'admin' OR r.name = 'administrador')
+                      AND r.can_read = 1 AND r.can_write = 1 AND r.can_modify = 1 AND r.can_delete = 1
                       AND ud.status = 'active'
                       LIMIT 1";
             

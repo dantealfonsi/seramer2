@@ -211,12 +211,7 @@ class AuthMiddleware {
             return;
         }
 
-        // Verificar si tiene acceso a Recursos Humanos (acceso completo)
-        if (self::hasAccessToDepartment('Recursos Humanos')) {
-            return;
-        }
-        
-        // Verificar si es jefe de departamento
+        // Verificar si es jefe de departamento (administrador)
         require_once __DIR__ . '/../models/UserModel.php';
         $userModel = new UserModel();
         

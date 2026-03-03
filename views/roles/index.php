@@ -159,6 +159,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <strong><?php echo htmlspecialchars($role['name']); ?></strong>
                                                     <?php if ($role['name'] === 'admin'): ?>
                                                         <span class="badge bg-danger ms-2">Admin Sistema</span>
+                                                    <?php elseif ($role['can_read'] && $role['can_write'] && $role['can_modify'] && $role['can_delete']): ?>
+                                                        <span class="badge bg-primary ms-2" title="Rol con acceso total (Lectura, Escritura, Edición, Eliminación) que automáticamente concede estatus de administrador">👑 Administrador Total</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <?php if ($is_superadmin): ?>

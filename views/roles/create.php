@@ -99,6 +99,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
 
                             <h6 class="mb-3">Permisos / Nivel de Confianza</h6>
+                            
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch custom-switch-lg p-3 bg-light rounded border">
+                                        <input class="form-check-input ms-0 me-3" type="checkbox" id="is_admin_toggle" onchange="toggleAllPermissions(this)">
+                                        <label class="form-check-label fw-bold text-primary" for="is_admin_toggle" style="font-size: 1.1em;">
+                                            🌟 Administrador (Acceso Total)
+                                        </label>
+                                        <small class="d-block text-muted ms-5 mt-1">Activar esta opción marcará todos los niveles de confianza y convertirá este rol en administrador de su departamento.</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row mb-4">
                                 <div class="col-md-6 col-lg-3 mb-2">
                                     <div class="form-check form-switch custom-switch-lg">
@@ -291,6 +304,17 @@ document.addEventListener('DOMContentLoaded', function() {
         renderMenuChecks();
     }
 });
+
+function toggleAllPermissions(toggle) {
+    const isChecked = toggle.checked;
+    document.getElementById('can_read').checked = isChecked;
+    document.getElementById('can_write').checked = isChecked;
+    document.getElementById('can_modify').checked = isChecked;
+    document.getElementById('can_delete').checked = isChecked;
+    
+    // Si queremos habilitar todos los menús al hacer clic, podríamos, pero de momento
+    // esto cumple con encender los 4 niveles de confianza.
+}
 </script>
 
 <style>

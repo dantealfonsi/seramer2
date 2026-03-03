@@ -368,6 +368,14 @@ class UserController {
                 'redirect' => 'index.php?error=invalid_user'
             ];
         }
+
+        if ($user_id == $_SESSION['user_id']) {
+            return [
+                'success' => false,
+                'message' => 'Seguridad: No puedes desactivar tu propio usuario',
+                'redirect' => 'index.php?error=cannot_deactivate_self'
+            ];
+        }
         
         // Obtener datos del usuario
         $user = $this->userModel->getUserWithStaffDetails($user_id);
@@ -586,7 +594,19 @@ class UserController {
         $is_manager = AuthMiddleware::isManager();
         $is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
         
-        // RRHH o Superadmin puede acceder a cualquier usuario
+        // REGLA: Un usuario no puede desactivar/editar a otro administrador o superadmin
+        // a menos que sea el superadmin principal
+        $target_is_admin = !empty($user['is_superadmin']) || $this->userModel->isManager($user['id']);
+        
+        if ($target_is_admin && empty($_SESSION['is_superadmin'])) {
+            return [
+                'success' => false,
+                'message' => 'No tiene permisos para modificar a un usuario administrador',
+                'redirect' => 'index.php?error=cannot_modify_admin'
+            ];
+        }
+
+        // RRHH o Superadmin puede acceder a cualquier usuario restante
         if ($is_rrhh || !empty($_SESSION['is_superadmin'])) {
             return ['success' => true];
         }
@@ -598,18 +618,6 @@ class UserController {
                     'success' => false,
                     'message' => 'No tiene permisos para acceder a este usuario (no pertenece a su zona)',
                     'redirect' => 'index.php?error=no_permission'
-                ];
-            }
-
-            // REGLA: Un jefe no puede desactivar/editar a otro administrador o superadmin
-            // a menos que sea el superadmin real
-            $target_is_admin = !empty($user['is_superadmin']) || (isset($user['role_names']) && strpos(strtolower($user['role_names']), 'admin') !== false);
-            
-            if ($target_is_admin && empty($_SESSION['is_superadmin'])) {
-                return [
-                    'success' => false,
-                    'message' => 'No tiene permisos para modificar a un usuario administrador',
-                    'redirect' => 'index.php?error=cannot_modify_admin'
                 ];
             }
 

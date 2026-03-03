@@ -202,8 +202,11 @@ if (!empty($_SESSION['is_superadmin'])) {
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <?php if ($is_superadmin): ?>
-                <!-- Módulos Generales (Solo Superadmin) -->
+                <?php 
+                $is_manager = $userModel->isManager($_SESSION['user_id'] ?? 0);
+                if ($is_superadmin || $is_manager): 
+                ?>
+                <!-- Módulos Generales (Superadmin y Administradores) -->
                 <li class="menu-header small text-uppercase">
                     <span class="menu-header-text">Configuraciones Globales</span>
                 </li>
@@ -222,6 +225,7 @@ if (!empty($_SESSION['is_superadmin'])) {
                     </a>
                 </li>
 
+                <?php if ($is_superadmin): ?>
                 <li class="menu-item <?php echo isMenuItemActive('views/departments/index.php') ? 'active' : ''; ?>">
                     <a href="<?php echo url('views/departments/index.php'); ?>" class="menu-link" style="color:black">
                         <i class="menu-icon icon-base ri ri-building-3-line"></i>
@@ -236,6 +240,7 @@ if (!empty($_SESSION['is_superadmin'])) {
                         <div data-i18n="Editor de Reportes">Editor de Reportes</div>
                     </a>
                 </li>
+                <?php endif; ?>
                 <?php endif; ?>
 
                

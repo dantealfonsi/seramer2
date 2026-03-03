@@ -124,6 +124,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
 
                             <h6 class="mb-3">Permisos / Nivel de Confianza</h6>
+                            <?php 
+                            $is_full_admin = ($role['can_read'] && $role['can_write'] && $role['can_modify'] && $role['can_delete']);
+                            ?>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-check form-switch custom-switch-lg p-3 bg-light rounded border">
+                                        <input class="form-check-input ms-0 me-3" type="checkbox" id="is_admin_toggle" onchange="toggleAllPermissions(this)" <?php echo $is_full_admin ? 'checked' : ''; ?>>
+                                        <label class="form-check-label fw-bold text-primary" for="is_admin_toggle" style="font-size: 1.1em;">
+                                            🌟 Administrador (Acceso Total)
+                                        </label>
+                                        <small class="d-block text-muted ms-5 mt-1">Activar esta opción marcará todos los niveles de confianza y convertirá este rol en administrador de su departamento.</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row mb-4">
                                 <div class="col-md-6 col-lg-3 mb-2">
                                     <div class="form-check form-switch custom-switch-lg">
@@ -245,6 +260,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             
                             <!-- Checkbox Logic -->
                             <script>
+                            function toggleAllPermissions(toggle) {
+                                const isChecked = toggle.checked;
+                                document.getElementById('can_read').checked = isChecked;
+                                document.getElementById('can_write').checked = isChecked;
+                                document.getElementById('can_modify').checked = isChecked;
+                                document.getElementById('can_delete').checked = isChecked;
+                            }
+
                             document.addEventListener('DOMContentLoaded', function() {
                                 // When parent checked/unchecked -> logic for children
                                 const parentCheckboxes = document.querySelectorAll('.parent-checkbox');
