@@ -45,20 +45,52 @@ switch ($action) {
         // 2. Formatear
         $formatted_notifications = array_map(function($n) {
             $type = strtolower($n['notification_type']);
-            // Determinar ID relacionado
+
+            // Determinar ID relacionado — prioridad: sanction > citation > complaint > alert > infraction
             $related_id = $n['sanction_id'] ?? $n['citation_id'] ?? $n['complaint_id'] ?? $n['alert_id'] ?? $n['infraction_id'] ?? 0;
-            
+
             // PARCHE: Si el ID es 0, intentamos extraerlo del mensaje (ej: "Sanción #123")
             if ($related_id == 0 && preg_match('/#(\d+)/', $n['notification_message'], $matches)) {
                 $related_id = $matches[1];
             }
 
-            // Forzar el tipo para el router si tiene ID específico
-            if (!empty($n['sanction_id']) || strpos($type, 'sanction') !== false) {
-                $type = 'sanction';
-            } elseif (!empty($n['citation_id']) || strpos($type, 'citation') !== false) {
-                $type = 'citation';
+            // Mapeo explícito de tipos de notificación → entidad del router
+            $typeMap = [
+                'sanction_new'           => 'sanction',
+                'sanction_paid'          => 'sanction',
+                'fine_payment_received'  => 'sanction',
+                'fine_paid'              => 'sanction',
+                'infraction_new'         => 'infraction',
+                'infraction_update'      => 'infraction',
+                'complaint_new'          => 'complaint',
+                'complaint_update'       => 'complaint',
+                'citation_new'           => 'citation',
+                'citation_update'        => 'citation',
+                'alert_new'              => 'alert',
+                'alert_update'           => 'alert',
+                'exchange_rate_update'   => null, // sin vista dedicada
+            ];
+
+            // Determinar entidad final
+            if (isset($typeMap[$type])) {
+                $entity_type = $typeMap[$type];
+            } elseif (!empty($n['sanction_id'])) {
+                $entity_type = 'sanction';
+            } elseif (!empty($n['citation_id'])) {
+                $entity_type = 'citation';
+            } elseif (!empty($n['complaint_id'])) {
+                $entity_type = 'complaint';
+            } elseif (!empty($n['alert_id'])) {
+                $entity_type = 'alert';
+            } elseif (!empty($n['infraction_id'])) {
+                $entity_type = 'infraction';
+            } else {
+                // Fallback: primera parte del tipo
+                $parts = explode('_', $type);
+                $entity_type = $parts[0];
             }
+
+            $type = $entity_type ?? $type;
             
             // Construir enlace incluyendo notif_id
             $n['link'] = url('public/utils/notifications/details.php?id=' . $related_id . '&type=' . $type . '&notif_id=' . $n['notification_id']);

@@ -11,15 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ... logic ...
 }
 
-// RBAC: Solo RRHH puede editar
-if (!isset($_SESSION['selected_department']) || $_SESSION['selected_department'] !== 'Recursos Humanos') {
-    $_SESSION['flash_message'] = [
-        'type' => 'danger',
-        'message' => 'No tiene permisos para acceder a esta sección.'
-    ];
-    header('Location: index.php');
-    exit;
-}
+
 
 // Cargar la queja y datos para el formulario
 $complaintId = isset($_GET['id']) ? (int)$_GET['id'] : null;

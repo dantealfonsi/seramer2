@@ -598,19 +598,19 @@ class BillingController {
             $notifications = [];
             foreach ($fiscalizationUsers as $userId) {
                 $notifications[] = [
-                    'sender_user_id' => $_SESSION['user_id'] ?? null,
-                    'recipient_user_id' => $userId,
-                    'notification_type' => 'fine_payment_received',
-                    'notification_subject' => 'Pago de Multa Recibido',
-                    'notification_message' => "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
-                    // 'link' is not supported by insertBulkNotifications in current model
-                    'complaint_id' => null,
-                    'alert_id' => null,
-                    'infraction_id' => $sanction['infraction_id'] ?? null, // Link to infraction if column exists
-                    'citation_id' => null,
-                    'is_global' => 0,
-                    'target_role_id' => null,
-                    'target_department_id' => 3
+                    'sender_user_id'      => $_SESSION['user_id'] ?? null,
+                    'recipient_user_id'   => $userId,
+                    'notification_type'   => 'sanction_paid',
+                    'notification_subject'=> 'Pago de Multa Recibido',
+                    'notification_message'=> "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
+                    'complaint_id'        => null,
+                    'alert_id'            => null,
+                    'infraction_id'       => $sanction['infraction_id'] ?? null,
+                    'sanction_id'         => $sanctionId,
+                    'citation_id'         => null,
+                    'is_global'           => 0,
+                    'target_role_id'      => null,
+                    'target_department_id'=> 3
                 ];
             }
 

@@ -33,6 +33,20 @@ if (isset($_SESSION['selected_department']) && $_SESSION['selected_department'] 
     exit();
 }
 
+// Redireccionar si es superadmin
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'superadmin') {
+    header("Location: " . url('views/dashboard/superadmin.php'));
+    exit();
+}
+
+// Departamentos conocidos con dashboard propio
+$dashboardDepartments = ['Cobranza', 'Liquidacion', 'Fiscalizacion'];
+$currentDept = $_SESSION['selected_department'] ?? '';
+if (!in_array($currentDept, $dashboardDepartments)) {
+    header("Location: " . url('views/dashboard/default.php'));
+    exit();
+}
+
 // Verificar si la sesión es válida (no expirada)
 $session_timeout = 1800; // 30 minutos
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $session_timeout) {

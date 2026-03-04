@@ -56,15 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// RBAC: Solo RRHH puede crear
-if ($_SESSION['selected_department'] !== 'Recursos Humanos') {
-    $_SESSION['flash_message'] = [
-        'type' => 'danger',
-        'message' => 'No tiene permisos para acceder a esta sección.'
-    ];
-    header('Location: index.php');
-    exit;
-}
+
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
