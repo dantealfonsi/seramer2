@@ -42,6 +42,24 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
+<?php if (isset($_SESSION['flash_message'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+        title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        width: '450px'
+    });
+});
+</script>
+<?php unset($_SESSION['flash_message']); ?>
+<?php endif; ?>
+
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">

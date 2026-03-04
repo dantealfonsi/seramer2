@@ -93,28 +93,34 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <div class="card-body">
-                        <?php
-                        if (isset($_SESSION['flash_message'])) {
-                            $alert_type = $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger';
-                            echo '<div class="alert alert-' . $alert_type . ' alert-dismissible fade show" role="alert">';
-                            echo htmlspecialchars($_SESSION['flash_message']['message']);
-                            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                            echo '</div>';
-                            unset($_SESSION['flash_message']);
-                        }
-                        ?>
+                        <?php if (isset($_SESSION['flash_message'])): ?>
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                    title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true,
+                                    width: '450px'
+                                });
+                            });
+                            </script>
+                            <?php unset($_SESSION['flash_message']); ?>
+                        <?php endif; ?>
 
                         <form method="POST" action="edit.php">
                             <input type="hidden" name="inspector_id"
                                 value="<?php echo htmlspecialchars($inspector['inspector_id']); ?>">
 
                             <div class="mb-3">
-                                <label for="inspector_code" class="form-label">Código de Inspector <span
-                                        class="text-danger">*</span></label>
-                                <input onKeyup="validarLocation('inspector_code', 3)" type="text" class="form-control"
-                                    id="inspector_code" name="inspector_code"
-                                    value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" required>
-                                <div id="errorTextLocation" style="color: red;"></div>
+                                <label for="inspector_code_display" class="form-label">Código de Inspector</label>
+                                <input type="text" class="form-control" id="inspector_code_display" 
+                                    value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" disabled>
+                                <input type="hidden" name="inspector_code" value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>">
+                                <small class="text-muted">El código de inspector no puede ser modificado.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">Nombre Completo <span

@@ -8,6 +8,11 @@ require_once __DIR__ . '/../../controllers/InspectionController.php';
 
 $inspectionsController = new InspectionController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$inspectionsThisMonth = $dashboardStats['inspections_this_month'] ?? 0;
+
 // --- LÓGICA DE ELIMINACIÓN (Manejo de POST para DELETE) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['_method'] ?? '') === 'DELETE') {
     $deleteId = $_POST['id'] ?? null; 
@@ -93,6 +98,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     
                     <div class="card-body border-bottom">
+
                         <div class="filter-card">
                             <div class="filter-card-title">
                                 <i class="ri-filter-2-line"></i> Opciones de Filtrado Avanzado
@@ -182,6 +188,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjeta de Métrica (Inspecciones del Mes) -->
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-search-eye-line" style="font-size: 1.6rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($inspectionsThisMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Inspecciones realizadas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <?php if ($has_filters): ?>
                         <div class="mt-2">
                             <small class="text-muted">
@@ -192,10 +215,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mx-3 mt-3" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
                     <?php unset($_SESSION['flash_message']); ?>
                     <?php endif; ?>
 
@@ -271,24 +304,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación de Reporte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el reporte con ID: <strong id="inspectionId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción no se puede deshacer y eliminará el registro de forma permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 <script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
@@ -300,39 +316,40 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 <script>
-let deleteInspectionId = null;
-
 function confirmDelete(id) {
-    deleteInspectionId = id; 
-    document.getElementById('inspectionId').textContent = id;
-    
-    // Asumimos que Bootstrap JS está cargado
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
-}
+    Swal.fire({
+        title: '¿Eliminar Reporte de Inspección #' + id + '?',
+        html: 'Esta acción <strong>no se puede deshacer</strong> y eliminará el reporte de forma permanente.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="ri-delete-bin-line"></i> Sí, eliminar',
+        cancelButtonText: '<i class="ri-close-line"></i> Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php';
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteInspectionId) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'index.php'; 
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteInspectionId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {

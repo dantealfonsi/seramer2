@@ -192,7 +192,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($contracts)): ?>
+                             <?php if (!empty($contracts)): ?>
                                 <?php foreach ($contracts as $contract): 
                                     $statusClass = [
                                         'Pendiente' => 'bg-label-warning',
@@ -242,15 +242,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="8" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="ri-information-line ri-48px mb-2"></i>
-                                            <p>No se encontraron contratos para la planificación seleccionada.</p>
-                                        </div>
-                                    </td>
-                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -260,101 +251,140 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
- <!-- DataTables Dependencies (CDN for full Buttons support) -->
- <script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
- <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
+<?php include __DIR__ . '/../layouts/footer.php'; ?>
 
- <script>
- $(document).ready(function() {
-     if ($.fn.DataTable) {
-         $('#planningTable').DataTable({
-             responsive: true,
-             dom: '<"d-flex justify-content-between align-items-center mb-3"Bf>rtip',
-             buttons: [
-                 {
-                     extend: 'pdfHtml5',
-                     text: '<i class="ri-file-pdf-line me-1"></i> PDF',
-                     className: 'btn btn-danger btn-sm me-1',
-                     orientation: 'landscape',
-                     pageSize: 'LETTER',
-                     exportOptions: { columns: [0, 1, 2, 5, 6] },
-                     customize: function (doc) {
-                         doc.content.splice(0, 1);
-                         doc.content.unshift({
-                             columns: [
-                                 { image: commonPdfLogo, width: 50 },
-                                 {
-                                     text: [
-                                         { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
-                                         { text: 'PLANIFICACIÓN DE PAGOS SIMULTÁNEOS', fontSize: 12, bold: true },
-                                         { text: '<?= htmlspecialchars($current_month_spanish) ?> <?= $current_year ?>', fontSize: 10 }
-                                     ],
-                                     margin: [10, 0, 0, 0]
-                                 }
-                             ],
-                             margin: [0, 0, 0, 10]
-                         });
-                     }
-                 },
-                 {
-                     extend: 'excelHtml5',
-                     text: '<i class="ri-file-excel-line me-1"></i> Excel',
-                     className: 'btn btn-success btn-sm me-1',
-                     exportOptions: { columns: [0, 1, 2, 5, 6] },
-                     title: 'Planificacion_Simultaneos_<?= $current_month_spanish ?>'
-                 },
-                 {
-                     extend: 'print',
-                     text: '<i class="ri-printer-line me-1"></i> Imprimir',
-                     className: 'btn btn-info btn-sm',
-                     exportOptions: { columns: [0, 1, 2, 5, 6] }
-                 }
-             ],
-             language: {
-                 url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-             },
-             order: [[6, 'asc']]
-         });
-     }
- });
+<!-- DataTables Dependencies (Standardized local files) -->
+<script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
+<script type="text/javascript" src="../../public/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
- function loadSectors() {
-     const zoneId = document.getElementById('zoneSelect').value;
-     const sectorSelect = document.getElementById('sectorSelect');
-     
-     sectorSelect.innerHTML = '<option value="">Cargando...</option>';
-     
-     if (!zoneId) {
-         sectorSelect.innerHTML = '<option value="">Todos</option>';
-         return;
-     }
+<style>
+    /* Forzar gris completo en el cuerpo de la tabla para coincidir con el estilo Metro Premium */
+    #planningTable tbody tr {
+        background-color: #f9f9fb !important;
+    }
+    #planningTable tbody tr:nth-of-type(odd) {
+        background-color: #f4f4f7 !important;
+    }
+    #planningTable.table-hover tbody tr:hover {
+        background-color: #ececf1 !important;
+    }
+    /* Estructura de cabecera Metro */
+    #planningTable thead th {
+        background-color: #2c3e50 !important;
+        color: #ffffff !important;
+        text-transform: uppercase !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.05em;
+    }
+</style>
 
-     fetch(`ajax.php?action=get_sectors&zone_id=${zoneId}`)
-         .then(response => response.json())
-         .then(data => {
-             let html = '<option value="">Todos</option>';
-             data.forEach(s => {
-                 html += `<option value="${s.id}">${s.name}</option>`;
-             });
-             sectorSelect.innerHTML = html;
-         });
- }
+<script>
+$(document).ready(function() {
+    if ($.fn.DataTable) {
+        $('#planningTable').DataTable({
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    text: '<i class="ri-file-pdf-line me-1"></i> PDF',
+                    className: 'btn btn-danger btn-sm me-1',
+                    exportOptions: { columns: [0, 1, 2, 5, 6] },
+                    orientation: 'landscape',
+                    pageSize: 'LETTER',
+                    customize: function (doc) {
+                        doc.content.splice(0, 1);
+                        doc.content.unshift({
+                            columns: [
+                                { image: commonPdfLogo, width: 50 },
+                                {
+                                    text: [
+                                        { text: 'SERVICIO AUTÓNOMO DE MERCADO MUNICIPAL DE BERMÚDEZ\n', fontSize: 10, bold: true },
+                                        { text: 'PLANIFICACIÓN DE PAGOS SIMULTÁNEOS', fontSize: 12, bold: true },
+                                        { text: '<?= htmlspecialchars($current_month_spanish) ?> <?= $current_year ?>', fontSize: 10 }
+                                    ],
+                                    margin: [10, 0, 0, 0]
+                                }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        });
+                    }
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: '<i class="ri-file-excel-line me-1"></i> Excel',
+                    className: 'btn btn-success btn-sm me-1',
+                    exportOptions: { columns: [0, 1, 2, 5, 6] },
+                    title: 'Planificacion_Simultaneos_<?= $current_month_spanish ?>'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="ri-printer-line me-1"></i> Imprimir',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: { columns: [0, 1, 2, 5, 6] }
+                },
+                'colvis'
+            ],
+            language: {
+                "decimal": "",
+                "emptyTable": "No hay datos disponibles en la tabla",
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                "thousands": ",",
+                "lengthMenu": "Mostrar _MENU_ entradas",
+                "loadingRecords": "Cargando...",
+                "processing": "Procesando...",
+                "search": "Buscar:",
+                "zeroRecords": "No se encontraron registros coincidentes",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                }
+            },
+            order: [[6, 'asc']]
+        });
+    }
 
- // Auto-submit en cambio de morosos
- document.getElementById('showDelinquent').addEventListener('change', () => {
-     document.getElementById('filtersForm').submit();
- });
- </script>
+    // Auto-submit en cambio de morosos
+    const showDelinquent = document.getElementById('showDelinquent');
+    if(showDelinquent) {
+        showDelinquent.addEventListener('change', () => {
+            document.getElementById('filtersForm').submit();
+        });
+    }
+});
 
- <?php include __DIR__ . '/../layouts/footer.php'; ?>
+function loadSectors() {
+    const zoneId = document.getElementById('zoneSelect').value;
+    const sectorSelect = document.getElementById('sectorSelect');
+    
+    sectorSelect.innerHTML = '<option value="">Cargando...</option>';
+    
+    if (!zoneId) {
+        sectorSelect.innerHTML = '<option value="">Todos los Sectores</option>';
+        return;
+    }
+
+    fetch(`ajax.php?action=get_sectors&zone_id=${zoneId}`)
+        .then(response => response.json())
+        .then(data => {
+            sectorSelect.innerHTML = '<option value="">Todos los Sectores</option>';
+            data.forEach(sector => {
+                const option = document.createElement('option');
+                option.value = sector.id;
+                option.textContent = sector.name;
+                sectorSelect.appendChild(option);
+            });
+        });
+}
+</script>

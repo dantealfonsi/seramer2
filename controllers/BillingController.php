@@ -80,12 +80,25 @@ class BillingController {
                 break;
             
             case 'stall':
+                // Search stall by number
                 $stall = $this->stallModel->searchByStallNumber($searchTerm);
                 if ($stall) {
-                    // Get contract for this stall
-                    $contract = $this->contractModel->getByStall($stall['id']);
+                    // Find the contract associated with this stall
+                    $sqlContract = "SELECT c.* FROM contracts c 
+                                    JOIN contract_locations cl ON c.id = cl.contract_id 
+                                    WHERE cl.stall_id = :stall_id 
+                                    AND c.status = 'active' 
+                                    LIMIT 1";
+                    $contract = $this->contractModel->queryOne($sqlContract, ['stall_id' => $stall['id']]);
+                    
                     if ($contract) {
                         $awardee = $this->awardeeModel->getById($contract['awardee_id']);
+                    } else {
+                        // If no active contract, maybe it's linked directly to awardee in some systems?
+                        // But usually it's via contract. Let's try awardee_id in stall if exists.
+                        if (!empty($stall['awardee_id'])) {
+                            $awardee = $this->awardeeModel->getById($stall['awardee_id']);
+                        }
                     }
                 }
                 break;
@@ -585,19 +598,19 @@ class BillingController {
             $notifications = [];
             foreach ($fiscalizationUsers as $userId) {
                 $notifications[] = [
-                    'sender_user_id' => $_SESSION['user_id'] ?? null,
-                    'recipient_user_id' => $userId,
-                    'notification_type' => 'fine_payment_received',
-                    'notification_subject' => 'Pago de Multa Recibido',
-                    'notification_message' => "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
-                    // 'link' is not supported by insertBulkNotifications in current model
-                    'complaint_id' => null,
-                    'alert_id' => null,
-                    'infraction_id' => $sanction['infraction_id'] ?? null, // Link to infraction if column exists
-                    'citation_id' => null,
-                    'is_global' => 0,
-                    'target_role_id' => null,
-                    'target_department_id' => 3
+                    'sender_user_id'      => $_SESSION['user_id'] ?? null,
+                    'recipient_user_id'   => $userId,
+                    'notification_type'   => 'sanction_paid',
+                    'notification_subject'=> 'Pago de Multa Recibido',
+                    'notification_message'=> "Se ha recibido el pago de la sanción #$sanctionId. La infracción #$infractionId ha sido resuelta.",
+                    'complaint_id'        => null,
+                    'alert_id'            => null,
+                    'infraction_id'       => $sanction['infraction_id'] ?? null,
+                    'sanction_id'         => $sanctionId,
+                    'citation_id'         => null,
+                    'is_global'           => 0,
+                    'target_role_id'      => null,
+                    'target_department_id'=> 3
                 ];
             }
 

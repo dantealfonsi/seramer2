@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../../controllers/ContractController.php';
 
+// Ensamblar cédula desde prefijo + numero separados
+$awardee_id_prefix = strtoupper($_GET['id_prefix'] ?? 'V');
+$awardee_id_number = trim($_GET['id_number_raw'] ?? '');
+$awardee_filter = '';
+if (!empty($awardee_id_number)) {
+    $awardee_filter = $awardee_id_prefix . '-' . $awardee_id_number;
+}
+
+// Si viene del filtro de nombre (campo libre) se usa directamente
+$awardee_text = $_GET['awardee_text'] ?? '';
+// El filtro final: cedula tiene prioridad, si no, usar texto libre
+$_GET['awardee'] = $awardee_filter ?: $awardee_text;
+
 $controller = new ContractController();
 $data = $controller->index();
 $contracts = $data['contracts'];
@@ -9,6 +22,16 @@ $page_title = $data['page_title'];
 $filters = $data['filters'];
 $fiscalYears = $data['fiscalYears'];
 $totalContracts = count($contracts);
+
+// Parsear para re-mostrar en el formulario
+if (!empty($filters['awardee'])) {
+    if (preg_match('/^([VEJvej])-(.+)$/', $filters['awardee'], $m)) {
+        $awardee_id_prefix = strtoupper($m[1]);
+        $awardee_id_number = $m[2];
+    } else {
+        $awardee_id_number = $filters['awardee'];
+    }
+}
 
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -81,10 +104,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="filter-card-body">
                                 <form method="GET" action="index.php" class="row g-3">
                                     <div class="col-md-3">
-                                        <label class="form-label fw-bold small text-uppercase">Adjudicatario / ID</label>
+                                        <label class="form-label fw-bold small text-uppercase" id="contracts-id-label"><?= $awardee_id_prefix === 'J' ? 'Adjudicatario / RIF' : 'Adjudicatario / Cédula' ?></label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="ri-user-search-line text-muted"></i></span>
-                                            <input type="text" name="awardee" class="form-control" placeholder="Nombre o Cédula..." value="<?php echo htmlspecialchars($filters['awardee']); ?>">
+                                            <select class="form-select" name="id_prefix" id="contracts_id_prefix" style="max-width: 75px;" onchange="updateContractsLabel()">
+                                                <option value="V" <?= $awardee_id_prefix === 'V' ? 'selected' : '' ?>>V-</option>
+                                                <option value="E" <?= $awardee_id_prefix === 'E' ? 'selected' : '' ?>>E-</option>
+                                                <option value="J" <?= $awardee_id_prefix === 'J' ? 'selected' : '' ?>>J-</option>
+                                            </select>
+                                            <input type="text" name="id_number_raw" id="contracts_id_raw" class="form-control"
+                                                placeholder="55667788"
+                                                value="<?= htmlspecialchars($awardee_id_number) ?>"
+                                                oninput="this.value=this.value.replace(/\D/g,'')">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -140,14 +170,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <div class="row g-4 mb-4">
                             <!-- Contratos Activos -->
                             <div class="col-md-4">
-                                <div class="card card-status-success h-100" style="background-color: var(--metro-success-light);">
+                                <div class="card card-status-success h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important; background-color: transparent !important;">
-                                            <i class="ri-checkbox-circle-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e8fadf !important; color: #71dd37;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-success);"><?php echo number_format($metrics['active']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Activos</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #71dd37;"><?php echo number_format($metrics['active']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Activos</p>
                                         </div>
                                     </div>
                                 </div>
@@ -155,14 +185,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             
                             <!-- Contratos Simultáneos -->
                             <div class="col-md-4">
-                                <div class="card card-status-primary h-100" style="background-color: var(--metro-primary-light);">
+                                <div class="card card-status-primary h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important; background-color: transparent !important;">
-                                            <i class="ri-refresh-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-refresh-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($metrics['simultaneous']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Simultáneos</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($metrics['simultaneous']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Simultáneos</p>
                                         </div>
                                     </div>
                                 </div>
@@ -170,14 +200,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <!-- Contratos Anticipados -->
                             <div class="col-md-4">
-                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                <div class="card card-status-warning h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
-                                            <i class="ri-history-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #fff2e2 !important; color: #fdac41;">
+                                            <i class="ri-history-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($metrics['advance']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Anticipados</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #fdac41;"><?php echo number_format($metrics['advance']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Anticipados</p>
                                         </div>
                                     </div>
                                 </div>
@@ -186,10 +216,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Mensajes Flash -->
                         <?php if (isset($_SESSION['flash_message'])): ?>
-                        <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mb-4" role="alert">
-                            <i class="ri-info-line me-2"></i><?php echo $_SESSION['flash_message']['message']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
                         <?php unset($_SESSION['flash_message']); ?>
                         <?php endif; ?>
 
@@ -553,4 +593,32 @@ function singleChangePaymentStatus(id, status) {
     $.post('bulk_actions.php?action=update_payment_status', JSON.stringify({ ids: [id], status_payment: status }))
       .done(() => location.reload());
 }
+</script>
+
+<script>
+// --- Lógica prefijo Cédula/RIF en Contratos ---
+function updateContractsLabel() {
+    const prefix = document.getElementById('contracts_id_prefix')?.value;
+    const label  = document.getElementById('contracts-id-label');
+    if (!label) return;
+    label.textContent = prefix === 'J' ? 'Adjudicatario / RIF' : 'Adjudicatario / Cédula';
+}
+
+function formatContractsId(input) {
+    // Solo dígitos, sin puntos (formato venezolano: V-55667788)
+    input.value = input.value.replace(/\D/g, '');
+}
+
+function buildContractsAwardee() {
+    const prefix = document.getElementById('contracts_id_prefix')?.value || 'V';
+    const raw    = document.getElementById('contracts_id_raw')?.value || '';
+    const hidden = document.getElementById('contracts_awardee_hidden');
+    if (hidden) {
+        hidden.value = raw ? (prefix + '-' + raw) : '';
+    }
+    const rawInput = document.getElementById('contracts_id_raw');
+    if (rawInput) rawInput.disabled = true;
+}
+
+document.addEventListener('DOMContentLoaded', updateContractsLabel);
 </script>

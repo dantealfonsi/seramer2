@@ -10,29 +10,34 @@ require_once __DIR__ . '/../../controllers/RolesController.php';
 $sanctionsController = new SanctionsController();
 $rol = new RolesController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+
+$sanctionsImposed = $dashboardStats['sanctions_imposed_month'] ?? 0;
+$sanctionsPaid = $dashboardStats['sanctions_paid_month'] ?? 0;
+$sanctionsPending = $dashboardStats['sanctions_pending_month'] ?? 0;
+
 // --- MAPAS DE TRADUCCIÓN Y ESTILOS ---
 $allowed_sanction_status = [
     'Imposed' => 'Impuesta',
     'Paid' => 'Pagada',
     'Pending' => 'Pendiente',
-    'Canceled' => 'Cancelada'
+    'Canceled' => 'Cancelada',
+    'Waived' => 'Cancelada'
 ];
 
 $status_colors = [
     'Imposed' => 'warning',
     'Paid' => 'success',
     'Pending' => 'secondary',
-    'Canceled' => 'danger'
+    'Canceled' => 'danger',
+    'Waived' => 'danger'
 ];
 
 // --- LÓGICA DE ELIMINACIÓN (Manejo de POST para DELETE) ---
-// El formulario JS envía POST a 'delete.php', por lo que esta lógica
-// debe replicarse en 'delete.php' o redirigir aquí si se desea centralizar.
-// Si deseas centralizar la lógica de delete aquí:
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
-    // Si la acción DELETE viene centralizada a index.php (más común en frameworks)
     $deleteId = $_POST['id'];
-    // Llama al método de eliminación (o desactivación, según la lógica de tu controlador)
     $deleteResult = $sanctionsController->delete($deleteId); 
 
     $_SESSION['flash_message'] = [
@@ -43,12 +48,10 @@ if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST
     header("Location: index.php");
     exit;    
 }
-// ----------------------------------------------------------
 
 // Preparar parámetros de filtrado
 $filters = [
     'search' => $_GET['search'] ?? '', // Filtro general para DataTables
-    // ID removed
     'sanction_status' => $_GET['sanction_status'] ?? null,
     'date_from' => $_GET['date_from'] ?? null,
     'date_to' => $_GET['date_to'] ?? null,
@@ -58,32 +61,26 @@ $filters = [
                         : null,
 ];
 
-// Solo incluir filtros de servidor que tengan un valor distinto a null o cadena vacía
-// Excluimos 'search' del filtrado del servidor si solo queremos usarlo para DataTables localmente
 $activeFilters = array_filter($filters, fn($value, $key) => $value !== null && $value !== '' && $key !== 'search', ARRAY_FILTER_USE_BOTH);
 
 $params = [
     'filters' => $activeFilters,
 ];
 
-// Usar el controlador para obtener los datos
 $result = $sanctionsController->index($params);
 
-// Manejar el resultado de la carga
 if (!$result['success']) {
     $_SESSION['flash_message'] = [
         'type' => 'danger',
         'message' => 'No se pudo cargar la lista de sanciones. ' . ($result['message'] ?? 'Error desconocido.')
     ];
-    $sanctions = []; // Asegurar que $sanctions esté definida
+    $sanctions = []; 
 } else {
     $sanctions = $result['sanctions'] ?? [];
 }
 
-// Recuperar lista de adjudicatarios para los filtros
 $awardees = $result['awardees'] ?? [];
-
-$has_filters = !empty($activeFilters); // Para el mensaje de resultados filtrados
+$has_filters = !empty($activeFilters); 
 
 // Incluir header y layouts
 require_once __DIR__ . '/../layouts/header.php';
@@ -96,12 +93,22 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 
-                <?php if (isset($_SESSION['flash_message'])) : ?>
-                    <div class="alert alert-<?php echo htmlspecialchars($_SESSION['flash_message']['type']); ?> alert-dismissible fade show" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <?php unset($_SESSION['flash_message']); ?>
+                <?php if (isset($_SESSION['flash_message'])): ?>
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                        title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                        showConfirmButton: false,
+                        timer: 4000,
+                        timerProgressBar: true,
+                        width: '450px'
+                    });
+                });
+                </script>
+                <?php unset($_SESSION['flash_message']); ?>
                 <?php endif; ?>
 
                 <div class="card">
@@ -180,8 +187,55 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjetas de Métricas (Sanciones del Mes) -->
+                        <div class="row g-3 mt-4 mb-2">
+                            <!-- Impuestas -->
+                            <div class="col-md-4">
+                                <div class="card card-status-warning" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff4e1 !important; color: #ffab00;">
+                                            <i class="ri-file-warning-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #ffab00;"><?php echo number_format($sanctionsImposed); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Impuestas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Pagadas -->
+                            <div class="col-md-4">
+                                <div class="card card-status-success" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8fadf !important; color: #71dd37;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #71dd37;"><?php echo number_format($sanctionsPaid); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pagadas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Pendientes -->
+                            <div class="col-md-4">
+                                <div class="card card-status-secondary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #ebeef1 !important; color: #8592a3;">
+                                            <i class="ri-time-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #8592a3;"><?php echo number_format($sanctionsPending); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Pendientes este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <?php if ($has_filters): ?>
-                        <div class="mt-2">
+                        <div class="mt-3">
                             <small class="text-muted">
                                 Resultados filtrados del servidor: (<?php echo count($sanctions); ?> registro<?php echo count($sanctions) != 1 ? 's' : ''; ?>). Use la caja de búsqueda (de la tabla) para filtrar localmente.
                             </small>
@@ -234,10 +288,16 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 </td>
                                                 <td class="text-end">
                                                     <?php if ($rol->hasPermission('INFRACTIONS', 'r')): ?>
-                                                    <a href="view.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-outline-primary">
+                                                    <a href="view.php?id=<?php echo $sanction['sanction_id']; ?>" class="btn btn-sm btn-outline-primary" title="Ver Detalles">
                                                         <i class="ri-eye-line"></i>
                                                     </a>
                                                     <?php endif; ?>
+                                                    <?php /* if ($rol->hasPermission('INFRACTIONS', 'w') && $sanction['sanction_status'] !== 'Paid'): ?>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar/Cancelar" 
+                                                            onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>, '<?php echo htmlspecialchars($sanction['stall_number']); ?>')">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                    <?php endif; */ ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -247,25 +307,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación/Cancelación de Sanción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea **eliminar o cancelar** la sanción del puesto <strong id="sanctionId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción marcará la sanción como CANCELADA o la eliminará permanentemente (dependiendo de la lógica del servidor).</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Continuar</button>
             </div>
         </div>
     </div>
@@ -282,42 +323,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteSanctionId = null;
-
-function confirmDelete(id) {
-    deleteSanctionId = id;
-    document.getElementById('sanctionId').textContent = id;
-    
-    // Inicializar y mostrar el modal de Bootstrap
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+function confirmDelete(id, stall) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Vas a eliminar o cancelar la sanción del puesto ' + stall + '. Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php'; 
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteSanctionId) {
-        // Crear un formulario para enviar la solicitud de eliminación/cancelación
-        const form = document.createElement('form');
-        form.method = 'POST';
-        // NOTA: Si centralizaste la lógica en index.php, usa 'index.php'. 
-        // Si usas un archivo dedicado 'delete.php' para el POST, usa 'delete.php'.
-        form.action = 'index.php'; 
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteSanctionId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE'; // Usar DELETE para la acción
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {
@@ -331,15 +374,11 @@ $(document).ready(function() {
     `;
     
     // Columnas a exportar
-    // Puesto(0), Adjudicatario(1), Infracción(2), Tipo(3), Monto(4), Fecha(5), Estado(6)
-    // Se excluye la Columna 7 (Acciones)
     const exportColumns = [0, 1, 2, 3, 4, 5, 6]; 
     
     if ($.fn.DataTable) {
         $('#sanctionsTable').DataTable({ 
             responsive: true,
-            
-            // Configuración de los botones de exportación (Bf para botones y buscador en la misma linea)
             dom: '<"d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3"Bf>rtip',
             buttons: [
                 {
@@ -352,10 +391,7 @@ $(document).ready(function() {
                         columns: exportColumns 
                     },
                     customize: function (doc) {
-                        // 1. Remover título por defecto
                         doc.content.splice(0, 1);
-
-                        // 2. Agregar Encabezado Institucional (Logo + Texto)
                         doc.content.unshift({
                             columns: [
                                 {
@@ -374,33 +410,24 @@ $(document).ready(function() {
                             ],
                             margin: [0, 0, 0, 10]
                         });
-
-                        // 3. Agregar Línea Horizontal
                         doc.content.splice(1, 0, {
                             canvas: [{ type: 'line', x1: 0, y1: 5, x2: 515, y2: 5, lineWidth: 1, lineColor: '#000000' }],
                             margin: [0, 0, 0, 20]
                         });
-
-                        // 4. Agregar Título Centrado
                         doc.content.splice(2, 0, {
                             text: 'Listado de Sanciones',
                             style: 'header',
                             alignment: 'center',
                             margin: [0, 0, 0, 15]
                         });
-
-                        // 5. Estilo de la Tabla
                         const table = doc.content.find(content => content.table);
                         if (table) {
-                            // Estilo de la cabecera
                             table.table.body[0].forEach(function(cell) {
                                 cell.fillColor = '#2d4154';
                                 cell.color = 'white';
                                 cell.bold = true;
                                 cell.alignment = 'center';
                             });
-
-                            // Zebra striping
                             for (let i = 1; i < table.table.body.length; i++) {
                                 if (i % 2 === 0) {
                                     table.table.body[i].forEach(function(cell) {
@@ -408,8 +435,6 @@ $(document).ready(function() {
                                     });
                                 }
                             }
-                            
-                            // Ajustar anchos
                             table.table.widths = Array(table.table.body[0].length).fill('*');
                         }
                     }
@@ -433,8 +458,6 @@ $(document).ready(function() {
                     messageTop: customHeader, 
                     customize: function (win) {
                         $(win.document.body).find('table').addClass('w-100').css('width', '100%');
-                        
-                        // Aplicar estilos para que el encabezado se imprima correctamente
                         $(win.document.body).find('head').append(
                             '<style>' +
                                 '@media print { @page { size: letter; margin: 1cm; } } ' +
@@ -450,7 +473,6 @@ $(document).ready(function() {
                 },
                 'colvis' 
             ],
-            // Configuración de idioma a español
             language: {
                 "decimal": "",
                 "emptyTable": "No hay datos disponibles en la tabla",
@@ -475,9 +497,7 @@ $(document).ready(function() {
                     "sortDescending": ": activar para ordenar la columna descendente"
                 } 
             },
-            // Orden por defecto
             order: [[0, 'desc']], 
-            // Deshabilitar el ordenamiento en la columna de Acciones
             "columnDefs": [
                 { "orderable": false, "targets": 7 } 
             ]
@@ -486,10 +506,8 @@ $(document).ready(function() {
         console.error("DataTables no está cargado.");
     }
     
-    // Mover el valor del filtro 'search' (si existe) a la caja de búsqueda de DataTables
     const initialSearchValue = '<?php echo addslashes($_GET['search'] ?? ''); ?>';
     if (initialSearchValue) {
-        // Aplica el filtro global del DataTables con el valor de la búsqueda general del GET
         $('#sanctionsTable').DataTable().search(initialSearchValue).draw();
     }
 });

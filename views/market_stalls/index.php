@@ -114,14 +114,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Métrica Rápida Estilo Metro -->
-                        <div class="card card-status-secondary mb-4" style="background-color: var(--metro-secondary-light);">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-secondary) !important;">
-                                    <i class="ri-store-2-line"></i>
-                                </div>
-                                <div>
-                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-secondary);"><?php echo number_format($totalStalls); ?></h3>
-                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">LOCALES REGISTRADOS</p>
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-store-2-line" style="font-size: 1.6rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($totalStalls); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">LOCALES REGISTRADOS</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

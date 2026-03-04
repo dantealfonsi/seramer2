@@ -7,7 +7,11 @@ require_once __DIR__ . '/../../controllers/RolesController.php';
 $complaintsController = new ComplaintsController();
 $rol = new RolesController(); // Si se usa para permisos
 
-// Opciones en español para los select de estado y prioridad (Necesario para el formulario)
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$complaintsThisMonth = $dashboardStats['complaints_this_month'] ?? 0;
+
 $allowed_priority = [
     'Low' => 'Baja',
     'Medium' => 'Media',
@@ -64,9 +68,9 @@ if (isset($result['success']) && $result['success']) {
     $has_filters = false;
 }
 
-// 3. Lógica de eliminación (manteniendo tu método actual con GET)
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
-    $deleteId = $_GET['delete_id'];
+// 3. Lógica de eliminación (Manejo de POST para DELETE)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
+    $deleteId = $_POST['id'];
     $deleteResult = $complaintsController->delete($deleteId);
 
     $_SESSION['flash_message'] = [
@@ -88,10 +92,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show mt-2" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' || $_SESSION['flash_message']['type'] === 'primary' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
                     <?php unset($_SESSION['flash_message']); ?>
                 <?php endif; ?>
 
@@ -166,10 +180,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjeta de Métricas (Ancho Completo) -->
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-chat-voice-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($complaintsThisMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Quejas / Sugerencias recibidas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <?php if ($has_filters): ?>
-                        <div class="mt-2">
+                        <div class="mt-2 text-end">
                             <small class="text-muted">
-                                Resultados filtrados del servidor: (<?php echo count($complaints); ?> registro<?php echo count($complaints) != 1 ? 's' : ''; ?>). Use la caja de búsqueda para filtrar localmente.
+                                <i class="ri-information-line me-1"></i> Resultados filtrados (<?php echo count($complaints); ?> registros).
                             </small>
                         </div>
                         <?php endif; ?>
@@ -213,27 +245,37 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                 <small class="text-muted"><?php echo htmlspecialchars($complaint['client_email']); ?></small>
                                             </td>
                                             <td>
-                                                <span class="badge bg-secondary"><?php echo htmlspecialchars($allowed_tipo[$complaint['complaint_type']] ?? $complaint['complaint_type']); ?></span>
+                                                <span class="badge bg-light text-dark border">
+                                                    <?php echo htmlspecialchars($allowed_tipo[$complaint['complaint_type']] ?? $complaint['complaint_type']); ?>
+                                                </span>
                                             </td>
                                             <td>
                                                 <?php
-                                                $priority_colors = ['Low' => 'secondary', 'Medium' => 'info', 'High' => 'warning', 'Urgent' => 'danger'];
-                                                $p_color = $priority_colors[$complaint['complaint_priority']] ?? 'light';
+                                                $priority_classes = ['Low' => 'success', 'Medium' => 'info', 'High' => 'warning', 'Urgent' => 'danger'];
+                                                $p_class = $priority_classes[$complaint['complaint_priority']] ?? 'secondary';
                                                 ?>
-                                                <span class="badge bg-<?php echo $p_color; ?>"><?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']] ?? $complaint['complaint_priority']); ?></span>
+                                                <span class="badge bg-<?php echo $p_class; ?>">
+                                                    <?php echo htmlspecialchars($allowed_priority[$complaint['complaint_priority']] ?? $complaint['complaint_priority']); ?>
+                                                </span>
                                             </td>
                                             <td>
                                                 <?php
-                                                $status_colors = ['Received' => 'primary', 'In Process' => 'warning', 'Resolved' => 'success', 'Closed' => 'dark'];
-                                                $s_color = $status_colors[$complaint['complaint_status']] ?? 'light';
+                                                $status_classes = ['Received' => 'secondary', 'In Process' => 'primary', 'Resolved' => 'success', 'Closed' => 'dark'];
+                                                $s_class = $status_classes[$complaint['complaint_status']] ?? 'light';
                                                 ?>
-                                                <span class="badge bg-<?php echo $s_color; ?>"><?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']] ?? $complaint['complaint_status']); ?></span>
+                                                <span class="badge bg-<?php echo $s_class; ?>">
+                                                    <?php echo htmlspecialchars($allowed_status[$complaint['complaint_status']] ?? $complaint['complaint_status']); ?>
+                                                </span>
                                             </td>
                                             <td>
-                                                <?php 
-                                                $date = new DateTime($complaint['complaint_datetime']);
-                                                echo $date->format('d/m/Y H:i'); 
-                                                ?>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="ri-calendar-line me-1 text-muted"></i>
+                                                    <?php 
+                                                    $date = new DateTime($complaint['complaint_datetime']);
+                                                    echo $date->format('d/m/Y'); 
+                                                    ?>
+                                                </div>
+                                                <small class="text-muted"><?php echo $date->format('h:i A'); ?></small>
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group" role="group">
@@ -289,21 +331,46 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteComplaintId = null;
-
+// Función para eliminación con SweetAlert2
 function confirmDelete(id) {
-    deleteComplaintId = id;
-    document.getElementById('complaintId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal')); 
-    modal.show();
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: "La queja con ID #" + id + " será eliminada permanentemente.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#696cff',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-primary me-3',
+            cancelButton: 'btn btn-outline-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Crear un formulario temporal para enviar el DELETE
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            form.appendChild(idInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteComplaintId) {
-        // Mantiene la lógica original de eliminación por GET
-        window.location.href = 'index.php?delete_id=' + deleteComplaintId; 
-    }
-});
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {

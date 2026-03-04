@@ -61,12 +61,24 @@ class CashRegisterModel extends Model {
     }
     
     public function getByAssignedUser(int $userId): ?array {
+        // Primero buscar la caja asignada específicamente al usuario
         $query = "SELECT cr.*
                   FROM {$this->table} cr
                   WHERE cr.user_id = :user_id
                   AND cr.status = 'active'
                   LIMIT 1";
-        return $this->queryOne($query, ['user_id' => $userId]);
+        $result = $this->queryOne($query, ['user_id' => $userId]);
+
+        // Si no tiene caja propia, usar cualquier caja activa disponible en el sistema
+        if (!$result) {
+            $fallback = "SELECT cr.*
+                         FROM {$this->table} cr
+                         WHERE cr.status = 'active'
+                         LIMIT 1";
+            $result = $this->queryOne($fallback, []);
+        }
+
+        return $result ?: null;
     }
     
     public function validateUniqueName(string $name, ?int $excludeId = null): bool {

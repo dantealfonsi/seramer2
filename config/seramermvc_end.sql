@@ -1,16 +1,16 @@
--- phpMyAdmin SQL Dump
+﻿-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 02-03-2026 a las 02:27:22
+-- Tiempo de generación: 04-03-2026 a las 07:43:24
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-SET FOREIGN_KEY_CHECKS = 0;
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -320,10 +320,9 @@ CREATE TABLE `citations` (
 --
 
 INSERT INTO `citations` (`citation_id`, `infraction_id`, `citation_datetime`, `location`, `mediator_user_id`, `citation_status`) VALUES
-(1, 4, '2025-09-23 16:13:00', 'dsdsds dsds', 8, 'Rescheduled'),
-(2, 10, '2026-01-20 01:16:00', 'testing', 8, 'Resuelta'),
-(3, 4, '2026-01-21 04:31:00', 'testing', 3, 'Resuelta'),
-(4, 11, '2026-01-21 04:48:00', 'No se', 8, 'Resuelta');
+(5, 17, '2026-03-18 16:27:00', 'CALLE CANTAURA', 8, 'Resuelta'),
+(6, 21, '2026-03-18 16:27:00', 'TEST', 8, 'Scheduled'),
+(7, 19, '2026-03-17 19:35:00', 'SERAMER', 8, 'Scheduled');
 
 -- --------------------------------------------------------
 
@@ -356,7 +355,9 @@ INSERT INTO `complaints` (`complaint_id`, `complaint_datetime`, `client_user_id`
 (10, '2025-10-28 03:53:55', 8, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'asdas', 1, 2, 'Suggestion', 'Received', 'Medium', 'asdasd'),
 (11, '2026-01-21 05:11:42', NULL, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'asdasasdas', 1, 2, 'Claim', 'In Process', 'Medium', 'asdasdasd'),
 (12, '2026-01-21 05:11:56', NULL, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'asdasdas', 1, 2, 'Suggestion', 'Received', 'Medium', 'asdasdasd'),
-(13, '2026-01-21 05:59:33', NULL, 'Natera Jeu', '04248536876', 'daniel.alfonsi2011@gmail.com', 'Se robo una patilla ', 1, 2, 'Question', 'In Process', 'Urgent', 'Se ve peligroso');
+(13, '2026-01-21 05:59:33', NULL, 'Natera Jeu', '04248536876', 'daniel.alfonsi2011@gmail.com', 'Se robo una patilla ', 1, 2, 'Question', 'In Process', 'Urgent', 'Se ve peligroso'),
+(14, '2026-03-04 06:28:36', NULL, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'ES TODO UN TEST', 1, 3, 'Suggestion', 'Received', 'High', 'ES TODO UN TEST'),
+(15, '2026-03-04 06:33:23', NULL, 'Martha Figuera', '04248536876', 'daniel.alfonsi2011@gmail.com', 'No se que poner', 5, 2, 'Suggestion', 'In Process', 'Low', '');
 
 -- --------------------------------------------------------
 
@@ -395,7 +396,9 @@ INSERT INTO `complaint_tracking` (`tracking_id`, `complaint_id`, `action_datetim
 (2, 9, '2025-09-24 13:01:55', 1, 'Resolution', 'hjghjhg', 'jghjgh'),
 (3, 10, '2026-01-19 19:23:23', 1, 'Assignment', 'asdasd', 'asdasd'),
 (4, 10, '2026-01-21 04:34:47', 10, 'Resolution', 'Ya me devolvio la plata', 'Ya me devolvio la plata'),
-(5, 13, '2026-01-21 06:00:34', 1, 'Resolution', 'Devolvio la patilla', 'Devolvio la patilla');
+(5, 13, '2026-01-21 06:00:34', 1, 'Resolution', 'Devolvio la patilla', 'Devolvio la patilla'),
+(6, 13, '2026-03-04 04:49:43', 11, 'Follow-up', 'test', 'test'),
+(7, 11, '2026-03-04 04:59:24', 8, 'Follow-up', 'tEST', 'TEST');
 
 -- --------------------------------------------------------
 
@@ -441,7 +444,8 @@ INSERT INTO `conciliation_reports` (`report_id`, `citation_id`, `awardee_attenda
 (3, 1, 0, 'Agreement Reached', 'asdasd', '2025-10-29 02:02:04'),
 (4, 2, 1, 'Agreement Reached', 'asdadasd', '2026-01-20 00:44:42'),
 (5, 3, 1, 'Agreement Reached', 'ACUERDO ALCANZADO', '2026-01-21 04:31:19'),
-(6, 4, 1, 'Agreement Reached', 'No va a consumir mas', '2026-01-21 04:50:28');
+(6, 4, 1, 'Agreement Reached', 'No va a consumir mas', '2026-01-21 04:50:28'),
+(7, 5, 1, 'Agreement Reached', 'EL CLIENTE TUVO LA RAZóN', '2026-03-04 04:26:27');
 
 -- --------------------------------------------------------
 
@@ -466,7 +470,6 @@ CREATE TABLE `contracts` (
 --
 
 INSERT INTO `contracts` (`id`, `awardee_id`, `fiscal_year_id`, `start_date`, `end_date`, `type`, `contract_mode`, `status`, `status_payment`) VALUES
-(1, 4, 1, '2026-01-01', '2026-12-31', 'advance', '', 'active', 'up to date'),
 (2, 3, 1, '2026-01-01', '2026-12-31', 'simultaneous', '', 'active', 'up to date'),
 (3, 3, 1, '2026-01-01', '2026-12-31', 'simultaneous', '', 'active', 'up to date'),
 (4, 4, 1, '2026-01-01', '2026-12-31', 'advance', '', 'active', 'up to date'),
@@ -498,8 +501,6 @@ CREATE TABLE `contract_business_categories` (
 --
 
 INSERT INTO `contract_business_categories` (`id`, `contract_id`, `external_category_id`, `internal_category_id`, `type`) VALUES
-(1, 1, NULL, 41, 'internal'),
-(2, 1, NULL, 22, 'internal'),
 (5, 2, NULL, 21, 'internal'),
 (7, 11, NULL, 1, 'internal'),
 (8, 12, NULL, 5, 'internal'),
@@ -522,7 +523,6 @@ CREATE TABLE `contract_locations` (
 --
 
 INSERT INTO `contract_locations` (`id`, `contract_id`, `stall_id`) VALUES
-(1, 1, 1),
 (3, 2, 1),
 (4, 11, 12),
 (5, 12, 16);
@@ -548,15 +548,6 @@ CREATE TABLE `contract_payments` (
 --
 
 INSERT INTO `contract_payments` (`id`, `contract_id`, `payment_reference`, `euro_rate_id`, `payment_date`, `amount`, `status`) VALUES
-(10, 1, 'PAY-1-001', 1, '2025-08-04', 5.50, 'pending'),
-(11, 1, 'PAY-1-002', NULL, '2025-09-04', 5.50, 'pending'),
-(12, 1, 'PAY-1-003', NULL, '2025-10-04', 5.50, 'pending'),
-(13, 1, 'PAY-1-004', NULL, '2025-11-04', 5.50, 'pending'),
-(14, 1, 'PAY-1-005', NULL, '2025-12-04', 5.50, 'pending'),
-(15, 1, 'PAY-1-006', NULL, '2026-01-04', 5.50, 'pending'),
-(16, 1, 'PAY-1-007', NULL, '2026-02-04', 5.50, 'pending'),
-(17, 1, 'PAY-1-008', NULL, '2026-03-04', 5.50, 'pending'),
-(18, 1, 'PAY-1-009', NULL, '2026-04-04', 5.50, 'pending'),
 (28, 2, 'PAY-2-001', 1, '2025-08-04', 1167.04, 'paid'),
 (29, 2, 'PAY-2-002', NULL, '2025-09-04', 0.00, 'paid'),
 (30, 2, 'PAY-2-003', NULL, '2025-10-04', 0.00, 'pending'),
@@ -901,7 +892,8 @@ INSERT INTO `fine_payments` (`payment_id`, `sanction_id`, `payment_date`, `amoun
 (7, 9, '2026-01-21 09:54:46', 20000.00, '44545', 'Pago Móvil', 'Paid', 2, 3),
 (8, 16, '2026-02-09 10:05:45', 20000.00, '59898', 'Dólares', 'Paid', 2, 6),
 (9, 16, '2026-02-09 10:06:51', 20000.00, '4546544454', 'Dólares', 'Paid', 2, 6),
-(10, 14, '2026-02-09 10:12:12', 20000.00, '1111', 'Biopago', 'Paid', 2, 5);
+(10, 14, '2026-02-09 10:12:12', 20000.00, '1111', 'Biopago', 'Paid', 2, 5),
+(11, 18, '2026-03-04 11:31:14', 400.00, '123546', 'Transferencia', 'Paid', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -993,19 +985,25 @@ CREATE TABLE `infractions` (
 --
 
 INSERT INTO `infractions` (`infraction_id`, `awardee_id`, `stall_id`, `infraction_datetime`, `infraction_type_id`, `infraction_description`, `infraction_status`, `inspector_observations`, `proof`, `status_logical`) VALUES
-(4, 2, 1, '2025-09-18 20:19:43', 1, 'sssssssss fgfgfgf ffgfg', 'Resolved', 'sssssssssss', '68cc695fbe614.jpg', 'active'),
-(5, 2, 1, '2025-10-29 00:11:19', 25, 'TestTestestestse', 'Reported', 'Test', '', 'active'),
-(6, 1, 1, '2025-10-29 02:48:44', 22, 'Esto es una descripcion de mas de 10 caracteres', 'Reported', 'No se', '', 'active'),
-(7, 2, 1, '2025-12-07 18:51:17', 3, 'Esta es una prueba', 'Reported', '', '', 'active'),
-(8, 2, 1, '2025-12-07 20:49:37', 19, 'aasdasasas', 'Reported', '', '', 'active'),
-(9, 2, 1, '2025-12-07 21:14:16', 3, 'asdasdasdasda', 'Resolved', '', '', 'active'),
-(10, 2, 1, '2026-01-19 16:26:43', 7, 'TESTasdasdsd', 'Cancelled', '', '', 'active'),
-(11, 2, 1, '2026-01-19 16:38:03', 28, 'asdasaaassdfsdf', 'Resolved', 'asdasdasdsad', '', 'active'),
-(12, 2, 1, '2026-01-21 05:05:43', 7, 'aasdasddasd', 'Reported', 'asdasdasdas', '', 'active'),
-(13, 2, 1, '2026-01-21 05:38:40', 19, 'asdasdasdasd', 'Resolved', 'asdasdsadasd', '', 'active'),
-(14, 2, 1, '2026-01-21 07:05:13', 3, 'saasdasdas', 'Resolved', 'asdasdasdasd', '', 'active'),
-(15, 2, 1, '2026-01-21 07:06:04', 3, 'asdasdasdsad', 'Reported', 'asdasdasda', '', 'active'),
-(16, 2, 1, '2026-01-21 07:06:20', 3, 'asdasdasdas', 'Resolved', 'asdasdasdasd', '', 'active');
+(4, 2, 1, '2025-09-18 20:19:43', 1, 'sssssssss fgfgfgf ffgfg', 'Resolved', 'sssssssssss', '68cc695fbe614.jpg', 'deleted'),
+(5, 2, 1, '2025-10-29 00:11:19', 25, 'TestTestestestse', 'Reported', 'Test', '', 'deleted'),
+(6, 1, 1, '2025-10-29 02:48:44', 22, 'Esto es una descripcion de mas de 10 caracteres', 'Reported', 'No se', '', 'deleted'),
+(7, 2, 1, '2025-12-07 18:51:17', 3, 'Esta es una prueba', 'Reported', '', '', 'deleted'),
+(8, 2, 1, '2025-12-07 20:49:37', 19, 'aasdasasas', 'Reported', '', '', 'deleted'),
+(9, 2, 1, '2025-12-07 21:14:16', 3, 'asdasdasdasda', 'Resolved', '', '', 'deleted'),
+(10, 2, 1, '2026-01-19 16:26:43', 7, 'TESTasdasdsd', 'Cancelled', '', '', 'deleted'),
+(11, 2, 1, '2026-01-19 16:38:03', 28, 'asdasaaassdfsdf', 'Resolved', 'asdasdasdsad', '', 'deleted'),
+(12, 2, 1, '2026-01-21 05:05:43', 7, 'aasdasddasd', 'Reported', 'asdasdasdas', '', 'deleted'),
+(13, 2, 1, '2026-01-21 05:38:40', 19, 'asdasdasdasd', 'Resolved', 'asdasdsadasd', '', 'deleted'),
+(14, 2, 1, '2026-01-21 07:05:13', 3, 'saasdasdas', 'Resolved', 'asdasdasdasd', '', 'deleted'),
+(15, 2, 1, '2026-01-21 07:06:04', 3, 'asdasdasdsad', 'Reported', 'asdasdasda', '', 'deleted'),
+(16, 2, 1, '2026-01-21 07:06:20', 3, 'asdasdasdas', 'Resolved', 'asdasdasdasd', '', 'deleted'),
+(17, 3, 1, '2026-03-04 04:45:26', 24, 'intento acaparar', 'Resolved', '', '', 'active'),
+(18, 2, 5, '2026-03-04 04:57:38', 19, 'agresion fisica', 'Resolved', 'le pego a una señora', '', 'active'),
+(19, 1, 2, '2026-03-04 05:03:46', 30, 'intento quemar un local', 'Reported', 'mato a alguien', '', 'active'),
+(20, 6, 9, '2026-03-04 05:04:50', 12, 'se peleo con alguien', 'Reported', 'se peleo con alguien', '', 'active'),
+(21, 7, 7, '2026-03-04 05:10:21', 8, 'se le olvido cerrar', 'Reported', 'se le olvido cerrar', '', 'active'),
+(22, 1, 2, '2026-03-04 07:12:37', 19, 'Juansito el pasaito', 'Reported', '', '', 'active');
 
 -- --------------------------------------------------------
 
@@ -1061,7 +1059,8 @@ INSERT INTO `infraction_types` (`infraction_type_id`, `infraction_type_name`, `d
 (33, 'Daños dolosos a instalaciones', 'Ocasionar dolosamente daños a las instalaciones del mercado, sin perjuicio de la obligación de reparar el daño.', '109.4', 3),
 (34, 'Cierre temporal injustificado (Grave)', 'Cerrar el puesto o local durante un período de más de treinta (30) días en el periodo de un año, salvo causa justificada.', '109.5', 3),
 (35, 'Traspaso o cesión unilateral', 'Traspasar, ceder o transferir total o parcialmente, el local o puesto que le haya sido adjudicado o arrendado de manera unilateral.', '109.6', 3),
-(36, 'Expender bebidas alcohólicas o prohibidas', 'Expender bebidas alcohólicas o cualquier sustancia prohibida.', '109.7', 3);
+(36, 'Expender bebidas alcohólicas o prohibidas', 'Expender bebidas alcohólicas o cualquier sustancia prohibida.', '109.7', 3),
+(37, 'Test infraction', 'TEST infraction', '666', 0);
 
 -- --------------------------------------------------------
 
@@ -1087,16 +1086,11 @@ CREATE TABLE `inspection_reports` (
 --
 
 INSERT INTO `inspection_reports` (`report_id`, `scheduled_inspection_id`, `main_inspector_id`, `assistant_inspector_id`, `stall_id`, `awardee_id`, `creation_date`, `general_observations`, `inspector_signature_url`, `assistant_signature_url`) VALUES
-(2, 1, 5, 1, 1, 2, '2025-09-17 01:32:49', 'El inspector fue bueno', '', ''),
-(3, 2, 1, 3, 1, 2, '2025-09-17 11:43:12', 'El inspector fue malo', '', ''),
-(4, 3, 3, 5, 1, 1, '2025-09-17 12:50:32', 'No lo se', '', ''),
-(5, 4, 5, 1, 1, 2, '2025-09-19 13:07:49', 'Esto es una prueba', '', ''),
-(6, 5, 5, 1, 1, 2, '2025-10-26 22:38:50', 'asdasd', '', ''),
-(7, 6, 3, 1, 1, 1, '2025-10-26 22:55:23', 'Test', '', ''),
-(9, 8, 5, 1, 1, 2, '2025-12-06 15:55:31', 'asdasdasd', '', ''),
-(10, 9, 5, 5, 1, 2, '2026-01-19 05:00:44', 'zxcz', '', ''),
-(11, 10, 1, 5, 1, 2, '2026-01-21 04:36:43', 'asasdasdsad', '', ''),
-(12, 11, 3, 0, 1, 2, '2026-01-21 06:03:29', 'asdasasdasdasda', '', '');
+(13, 12, 5, 0, 1, 3, '2026-03-04 03:13:39', 'Esto es un test 2', '', ''),
+(14, 13, 1, 5, 7, 7, '2026-03-04 03:26:31', 'Reporte en progreso', '', ''),
+(15, 14, 1, 1, 3, 3, '2026-03-04 03:34:20', 'observacion 3', '', ''),
+(16, 15, 1, 0, 2, 1, '2026-03-04 03:36:18', 'Juan perez', '', ''),
+(17, 16, 5, 0, 9, 6, '2026-03-04 03:36:55', 'sitio quemado', '', '');
 
 -- --------------------------------------------------------
 
@@ -1120,14 +1114,10 @@ CREATE TABLE `inspection_updates` (
 --
 
 INSERT INTO `inspection_updates` (`update_id`, `report_id`, `status_old`, `status_new`, `update_description`, `updated_by_user_id`, `update_date`, `inspection_id`) VALUES
-(3, 7, 'In Progress', 'In Progress', 'asdasd\n--- Resultado: asdasd', 8, '2025-10-27 01:59:33', 6),
-(4, 7, 'In Progress', 'In Progress', 'asdasdasd\n--- Resultado: asdasdasd', 8, '2025-10-27 01:59:45', 6),
-(5, 7, 'In Progress', 'Completed', 'AAAA\n--- Resultado: AAAA', 8, '2025-10-27 02:13:53', 6),
-(6, 9, 'Pending', 'In Progress', 'tEST\n--- Resultado: TEST', 8, '2026-01-19 00:05:46', 8),
-(7, 9, 'In Progress', 'Completed', 'TEST\n--- Resultado: TEST', 8, '2026-01-19 00:08:03', 8),
-(8, 6, 'Pending', 'In Progress', 'test\n--- Resultado: tes', 8, '2026-01-19 00:30:02', 5),
-(9, 10, 'In Progress', 'In Progress', 'Dasdasd\n--- Resultado: asdasdasd', 8, '2026-01-21 00:37:10', 9),
-(10, 10, 'In Progress', 'Cancelled', 'El tipo no hizo nada', 8, '2026-01-21 00:37:20', 9);
+(11, 13, 'Pending', 'Pending', 'No hubo progreso', 8, '2026-03-03 23:17:50', 12),
+(12, 13, 'Pending', 'In Progress', 'Visitamos y todo bien', 8, '2026-03-03 23:18:00', 12),
+(13, 13, 'In Progress', 'Completed', 'TODO FINO', 8, '2026-03-03 23:18:10', 12),
+(14, 17, 'In Progress', 'In Progress', 'PASO ALGO\n--- Resultado: TEST', 8, '2026-03-04 01:06:35', 16);
 
 -- --------------------------------------------------------
 
@@ -1174,46 +1164,11 @@ CREATE TABLE `internal_business_categories` (
 --
 
 INSERT INTO `internal_business_categories` (`id`, `name`, `payment_count`) VALUES
-(1, 'Dulceria y Emprendedores', 2.00),
-(2, 'Varios', 2.00),
-(3, 'Viveres', 2.00),
-(4, 'Quincallas', 2.00),
-(6, 'Legumbre y Hortalizas', 2.00),
-(7, 'Verduras', 2.00),
-(8, 'Frutas', 2.00),
-(9, 'Pescados, Fresco o Salado', 2.00),
-(10, 'Condimentos y especias para cocinar', 2.00),
-(11, 'Arepera', 2.50),
-(12, 'Comidas', 2.50),
-(13, 'Refresquerias / cafeterias', 2.50),
-(14, 'Empanadas', 2.50),
-(15, 'Mercancia Seca', 2.50),
-(16, 'Puesto de Reparación de zapatos', 2.50),
-(17, 'Chatarreros', 2.50),
-(18, 'Carne de Res', 3.00),
-(19, 'Carne de Cochino', 3.00),
-(20, 'Pollos Beneficiados', 3.00),
-(21, 'Charcuteria', 3.00),
-(22, 'Floristerias', 3.00),
-(23, 'Periodico y Revistas', 3.00),
-(24, 'Papeleria y Libreria', 3.00),
-(25, 'Servicio Tecnico e Internet', 3.00),
-(26, 'Plantas Curativas y Ornamentales', 3.00),
-(27, 'Relojeria, joyas y Prendas', 3.00),
-(28, 'Ventas de equipos celulares y de computadoras informatica', 3.00),
-(29, 'Ventas de Ropa y Zapatos', 3.00),
-(30, 'Ventas de Animales vivos', 3.00),
-(31, 'Peladoras de pollos y gallinas', 3.00),
-(32, 'Juegos y Apuestas Licitas', 5.00),
-(33, 'Loterias y Animalitos', 5.00),
-(34, 'Deposito', 5.00),
-(35, 'Ferreterias', 5.00),
-(36, 'Barberia y Peluqueria', 5.00),
-(37, 'Ventas de Comidas y Refresqueria', 5.00),
-(38, 'Mini Panaderias', 5.00),
-(39, 'Venta de electrodomésticos, repuestos, equipos y derivados', 5.00),
-(40, 'Ventas de bicicletas y repuestos', 5.00),
-(41, 'Aliños', 2.50);
+(1, 'Comida Rápida', 1.00),
+(2, 'Pescadería', 1.00),
+(3, 'Carnicería', 1.00),
+(4, 'Verdulería', 1.00),
+(5, 'Charcutería', 1.00);
 
 -- --------------------------------------------------------
 
@@ -1394,50 +1349,16 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`notification_id`, `notification_datetime`, `sender_user_id`, `recipient_user_id`, `target_role_id`, `target_department_id`, `is_global`, `notification_type`, `notification_subject`, `notification_message`, `read_status`, `complaint_id`, `alert_id`, `infraction_id`, `citation_id`, `sanction_id`) VALUES
-(5, '2025-12-07 20:14:16', 8, 8, NULL, NULL, 0, 'infraction_new', 'Nueva Infracción Registrada', 'Se ha registrado una nueva infracción con ID #9. Por favor, revise los detalles.', 1, 9, NULL, NULL, NULL, NULL),
-(6, '2026-01-19 15:26:44', 8, 8, NULL, NULL, 0, 'infraction_new', 'Nueva Infracción Registrada', 'Se ha registrado una nueva infracción con ID #10. Por favor, revise los detalles.', 1, 10, NULL, NULL, NULL, NULL),
-(8, '2026-01-21 04:05:43', 8, 2, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #12. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(9, '2026-01-21 04:05:43', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #12. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, NULL),
-(10, '2026-01-21 04:05:43', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #12. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(11, '2026-01-21 04:05:43', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #12. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(13, '2026-01-21 04:38:40', 8, 2, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #13. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(14, '2026-01-21 04:38:40', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #13. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, NULL),
-(15, '2026-01-21 04:38:40', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #13. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(16, '2026-01-21 04:38:40', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #13. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(18, '2026-01-21 04:49:04', NULL, 8, NULL, NULL, 0, 'citation_status_update', 'Citación En Proceso', 'La citación #4 ha pasado a estado En Proceso.', 1, NULL, NULL, NULL, 1, NULL),
-(19, '2026-01-21 04:54:47', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(20, '2026-01-21 04:54:47', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(21, '2026-01-21 04:54:47', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(22, '2026-01-21 05:11:42', 4, 3, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #11. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 11, NULL, NULL, NULL, NULL),
-(23, '2026-01-21 05:11:42', 4, 7, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #11. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 11, NULL, NULL, NULL, NULL),
-(24, '2026-01-21 05:11:42', 4, 8, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #11. Por favor, revise los detalles y asigne un inspector si es necesario.', 1, 11, NULL, NULL, NULL, NULL),
-(25, '2026-01-21 05:11:56', 4, 3, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #12. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 12, NULL, NULL, NULL, NULL),
-(26, '2026-01-21 05:11:56', 4, 7, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #12. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 12, NULL, NULL, NULL, NULL),
-(27, '2026-01-21 05:11:56', 4, 8, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #12. Por favor, revise los detalles y asigne un inspector si es necesario.', 1, 12, NULL, NULL, NULL, NULL),
-(28, '2026-01-21 05:59:33', 4, 3, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #13. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 13, NULL, NULL, NULL, NULL),
-(29, '2026-01-21 05:59:33', 4, 7, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #13. Por favor, revise los detalles y asigne un inspector si es necesario.', 1, 13, NULL, NULL, NULL, NULL),
-(30, '2026-01-21 05:59:33', 4, 8, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #13. Por favor, revise los detalles y asigne un inspector si es necesario.', 1, 13, NULL, NULL, NULL, NULL),
-(31, '2026-01-21 06:05:13', 8, 2, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #14. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(32, '2026-01-21 06:05:13', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #14. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, NULL),
-(33, '2026-01-21 06:05:13', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #14. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(34, '2026-01-21 06:05:13', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #14. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(35, '2026-01-21 06:06:04', 8, 2, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #15. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(36, '2026-01-21 06:06:04', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #15. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, NULL),
-(37, '2026-01-21 06:06:04', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #15. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(38, '2026-01-21 06:06:04', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #15. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(39, '2026-01-21 06:06:20', 8, 2, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #16. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(40, '2026-01-21 06:06:20', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #16. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, NULL),
-(41, '2026-01-21 06:06:20', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #16. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(42, '2026-01-21 06:06:20', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #16. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, NULL),
-(43, '2026-02-09 05:05:45', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(44, '2026-02-09 05:05:45', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(45, '2026-02-09 05:05:45', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(46, '2026-02-09 05:06:51', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(47, '2026-02-09 05:06:51', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(48, '2026-02-09 05:06:51', NULL, NULL, NULL, 3, 0, '', '', '', 0, NULL, NULL, NULL, NULL, NULL),
-(49, '2026-02-09 05:12:12', 6, 3, NULL, 3, 0, 'fine_payment_received', 'Pago de Multa Recibido', 'Se ha recibido el pago de la sanción #14. La infracción #14 ha sido resuelta.', 0, NULL, NULL, NULL, NULL, NULL),
-(50, '2026-02-09 05:12:12', 6, 7, NULL, 3, 0, 'fine_payment_received', 'Pago de Multa Recibido', 'Se ha recibido el pago de la sanción #14. La infracción #14 ha sido resuelta.', 0, NULL, NULL, NULL, NULL, NULL),
-(51, '2026-02-09 05:12:12', 6, 8, NULL, 3, 0, 'fine_payment_received', 'Pago de Multa Recibido', 'Se ha recibido el pago de la sanción #14. La infracción #14 ha sido resuelta.', 1, NULL, NULL, NULL, NULL, NULL);
+(100, '2026-03-04 06:12:37', 8, 6, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #22. Proceder con gestión de cobro.', 1, NULL, NULL, NULL, NULL, 22),
+(101, '2026-03-04 06:12:37', 8, 11, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #22. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, 22),
+(102, '2026-03-04 06:12:37', 8, 12, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #22. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, 22),
+(103, '2026-03-04 06:12:37', 8, 13, NULL, 2, 0, 'sanction_new', 'Nueva Sanción Aplicada', 'Se ha aplicado una nueva sanción #22. Proceder con gestión de cobro.', 0, NULL, NULL, NULL, NULL, 22),
+(108, '2026-03-04 06:28:36', 13, 3, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #14. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 14, NULL, NULL, NULL, NULL),
+(109, '2026-03-04 06:28:36', 13, 8, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #14. Por favor, revise los detalles y asigne un inspector si es necesario.', 1, 14, NULL, NULL, NULL, NULL),
+(110, '2026-03-04 06:31:14', 6, 3, NULL, 3, 0, 'fine_payment_received', 'Pago de Multa Recibido', 'Se ha recibido el pago de la sanción #18. La infracción #18 ha sido resuelta.', 0, NULL, NULL, NULL, NULL, NULL),
+(111, '2026-03-04 06:31:14', 6, 8, NULL, 3, 0, 'fine_payment_received', 'Pago de Multa Recibido', 'Se ha recibido el pago de la sanción #18. La infracción #18 ha sido resuelta.', 1, NULL, NULL, NULL, NULL, NULL),
+(112, '2026-03-04 06:33:23', 13, 3, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #15. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 15, NULL, NULL, NULL, NULL),
+(113, '2026-03-04 06:33:23', 13, 8, NULL, 3, 0, 'complaint_new', 'Nueva Queja Registrada', 'Se ha registrado una nueva queja #15. Por favor, revise los detalles y asigne un inspector si es necesario.', 0, 15, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1504,8 +1425,9 @@ INSERT INTO `roles` (`id`, `department_id`, `name`, `description`, `can_read`, `
 (2, 3, 'admin', 'Administrador del departamento', 1, 1, 1, 1, NULL, '2026-02-28 13:54:58', '2026-02-28 13:54:58'),
 (3, 4, 'admin', 'Administrador del departamento', 1, 1, 1, 1, NULL, '2026-02-28 13:54:58', '2026-02-28 13:54:58'),
 (4, 1, 'admin', 'Administrador del departamento', 1, 1, 1, 1, NULL, '2026-02-28 13:54:58', '2026-02-28 13:54:58'),
-(5, 2, 'Test Rol', 'test', 1, 0, 0, 0, '[\"Gesti\\u00f3n de Cobros\",\"Gesti\\u00f3n de Cobros::Cuentas por Cobrar\",\"Gesti\\u00f3n de Cobros::Gesti\\u00f3n de Multas\",\"Gesti\\u00f3n de Cobros::Control de Morosidad\",\"Gesti\\u00f3n de Cobros::Pagos Recibidos\",\"Cajas\",\"Cajas::Cierre de Caja\",\"Cajas::Administrar Cajas\"]', '2026-02-28 23:16:34', '2026-02-28 23:16:34'),
-(6, 5, 'Auditoria', 'Gestión de Reportes', 1, 1, 0, 0, '[\"Quejas\",\"Quejas::Quejas (Registrar)\",\"Quejas::Historial de Quejas\",\"Reportes\",\"Reportes\",\"Reportes::Editor de Reportes\",\"Reportes::Reportes Estadisticos\",\"Reportes\",\"Reportes::Reportes de Cobranza\"]', '2026-02-28 23:36:51', '2026-03-01 00:04:25');
+(6, 5, 'Auditoria', 'Gestión de Reportes', 1, 1, 0, 0, '[\"Quejas\",\"Quejas::Quejas (Registrar)\",\"Quejas::Historial de Quejas\",\"Reportes\",\"Reportes\",\"Reportes::Editor de Reportes\",\"Reportes::Reportes Estadisticos\",\"Reportes\",\"Reportes::Reportes de Cobranza\"]', '2026-02-28 23:36:51', '2026-03-01 00:04:25'),
+(7, 5, 'taquilla', 'taquilla', 1, 1, 1, 0, '[\"Quejas\",\"Quejas::Quejas (Registrar)\",\"Quejas::Historial de Quejas\",\"Reportes Estad\\u00edsticos\",\"Gesti\\u00f3n de Cobros\",\"Gesti\\u00f3n de Cobros::Cuentas por Cobrar\",\"Gesti\\u00f3n de Cobros::Gesti\\u00f3n de Multas\",\"Gesti\\u00f3n de Cobros::Control de Morosidad\",\"Gesti\\u00f3n de Cobros::Pagos Recibidos\",\"Reportes de Cobranza\"]', '2026-03-04 05:22:03', '2026-03-04 05:28:08'),
+(8, 5, 'POR DEFECTO', 'ROL POR DEFECTO', 1, 0, 0, 0, '[\"Quejas\",\"Quejas::Quejas (Registrar)\",\"Quejas::Historial de Quejas\"]', '2026-03-04 05:29:17', '2026-03-04 05:29:17');
 
 -- --------------------------------------------------------
 
@@ -1607,19 +1529,12 @@ CREATE TABLE `sanctions` (
 --
 
 INSERT INTO `sanctions` (`sanction_id`, `infraction_id`, `sanction_type_id`, `fine_amount`, `fine_currency`, `imposition_date`, `effect_start_date`, `effect_end_date`, `sanction_status`, `sanction_observations`, `is_repeat_offense`, `imposed_by_user_id`) VALUES
-(1, 4, 1, 100.00, 'Euro', '2025-09-21 00:27:52', '2025-09-22', '2025-09-23', 'Waived', 'dsdssd', 0, 1),
-(4, 5, 2, 400.00, 'VES', '2025-10-28 23:11:19', '0000-00-00', '0000-00-00', 'Paid', 'Test', 0, 1),
-(5, 6, 2, 400.00, 'VES', '2025-10-29 01:48:44', '2025-10-28', '0000-00-00', 'Paid', 'No se', 0, 1),
-(7, 7, 1, 20000.00, 'VES', '2025-12-07 17:51:17', '2025-12-07', '0000-00-00', 'Imposed', '', 0, 1),
-(8, 8, 2, 400.00, 'VES', '2025-12-07 19:49:37', '2025-12-04', '0000-00-00', 'Imposed', '', 0, 1),
-(9, 9, 1, 20000.00, 'VES', '2025-12-07 20:14:16', '0000-00-00', '0000-00-00', 'Paid', '', 0, 1),
-(10, 10, 1, 400.00, 'VES', '2026-01-19 15:26:44', '2026-01-05', '0000-00-00', 'Cancelled', '', 0, 1),
-(11, 11, 2, 400.00, 'VES', '2026-01-19 15:38:03', '0000-00-00', '0000-00-00', 'Waived', 'asdasdasdsad', 0, 1),
-(12, 12, 1, 400.00, 'VES', '2026-01-21 04:05:43', '2026-01-08', '0000-00-00', 'Imposed', 'asdasdasdas', 0, 1),
-(13, 13, 2, 400.00, 'VES', '2026-01-21 04:38:40', '2026-01-14', '0000-00-00', 'Paid', 'asdasdsadasd', 0, 1),
-(14, 14, 1, 20000.00, 'VES', '2026-01-21 06:05:13', '2026-01-22', '0000-00-00', 'Paid', 'asdasdasdasd', 0, 1),
-(15, 15, 1, 20000.00, 'VES', '2026-01-21 06:06:04', '2026-01-21', '0000-00-00', 'Imposed', 'asdasdasda', 0, 1),
-(16, 16, 1, 20000.00, 'VES', '2026-01-21 06:06:20', '2026-01-21', '0000-00-00', 'Paid', 'asdasdasdasd', 0, 1);
+(17, 17, 2, 400.00, 'VES', '2026-03-04 03:45:27', '2026-03-03', '0000-00-00', 'Waived', '', 0, 1),
+(18, 18, 2, 400.00, 'VES', '2026-03-04 03:57:38', '2026-03-02', '0000-00-00', 'Paid', 'le pego a una señora', 0, 1),
+(19, 19, 3, 400.00, 'VES', '2026-03-04 04:03:46', '2026-03-04', '0000-00-00', 'Imposed', 'mato a alguien', 0, 1),
+(20, 20, 1, 400.00, 'VES', '2026-03-04 04:04:50', '2026-03-02', '0000-00-00', 'Imposed', 'se peleo con alguien', 0, 1),
+(21, 21, 1, 400.00, 'VES', '2026-03-04 04:10:21', '2026-03-03', '0000-00-00', 'Imposed', 'se le olvido cerrar', 0, 1),
+(22, 22, 2, 400.00, 'VES', '2026-03-04 06:12:37', '2026-03-03', '0000-00-00', 'Imposed', '', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -1679,7 +1594,12 @@ INSERT INTO `scheduled_inspections` (`inspection_id`, `scheduled_date`, `inspect
 (8, '0000-00-00', 'Rutine', 8, 'Completed', '', '2025-12-06 15:55:30'),
 (9, '2026-01-21', 'Complain', 8, 'Cancelled', 'asdasd', '2026-01-19 05:00:43'),
 (10, '2026-01-05', 'Rutine', 8, 'Pending', 'asdasdasdasd', '2026-01-21 04:36:43'),
-(11, '2026-01-21', 'Complain', 8, 'Pending', 'asasdasdas', '2026-01-21 06:03:29');
+(11, '2026-01-21', 'Complain', 8, 'Pending', 'asasdasdas', '2026-01-21 06:03:29'),
+(12, '2026-03-04', 'Rutine', 8, 'Completed', 'TEST', '2026-03-04 03:13:39'),
+(13, '2026-03-05', 'New Stall', 8, 'Pending', 'En progreso', '2026-03-04 03:26:31'),
+(14, '2026-03-04', 'Rutine', 8, 'In Progress', 'Test', '2026-03-04 03:34:20'),
+(15, '2026-03-27', 'Rutine', 8, 'Pending', 'inspeccion a futuro', '2026-03-04 03:36:18'),
+(16, '2026-03-04', 'Complain', 8, 'In Progress', 'denuncia', '2026-03-04 03:36:55');
 
 -- --------------------------------------------------------
 
@@ -1754,7 +1674,12 @@ INSERT INTO `staff` (`id`, `academic_degree_id`, `academic_specialization_id`, `
 --
 -- Disparadores `staff`
 --
-CREATE TRIGGER `staff_updated_at_trigger` BEFORE UPDATE ON `staff` FOR EACH ROW SET NEW.updated_at = CURRENT_TIMESTAMP;
+DELIMITER $$
+CREATE TRIGGER `staff_updated_at_trigger` BEFORE UPDATE ON `staff` FOR EACH ROW BEGIN
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1828,23 +1753,28 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `staff_id`, `username`, `password_hash`, `is_superadmin`, `email`, `last_login`, `password_reset_token`, `password_reset_expires`, `status`, `created_at`, `updated_at`) VALUES
 (1, 1, 'mmaria', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 1, 'maria.gonzalez@empresa.com', '2026-02-21 23:40:03', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-02-28 16:39:45'),
-(2, 2, 'cperez', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'carlos.perez@empresa.com', '2026-03-01 10:50:42', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-01 14:50:42'),
+(2, 2, 'cperez', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'carlos.perez@empresa.com', '2026-03-04 02:40:26', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-04 06:40:26'),
 (3, 3, 'arodriguez', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'ana.rodriguez@empresa.com', '2026-01-21 00:15:09', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-01-21 04:15:09'),
-(4, 4, 'lmartinez', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'luis.martinez@empresa.com', '2026-02-28 20:12:02', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-01 00:12:02'),
-(5, NULL, 'devliq', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devliquidacion@empresa.com', '2026-03-01 18:46:11', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-01 22:46:11'),
-(6, NULL, 'devcob', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devcobranza@empresa.com', '2026-03-01 19:01:26', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-01 23:01:26'),
+(4, 4, 'lmartinez', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'luis.martinez@empresa.com', '2026-03-02 20:01:55', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-03 00:01:55'),
+(5, NULL, 'devliq', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devliquidacion@empresa.com', '2026-03-04 02:39:33', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-04 06:39:33'),
+(6, NULL, 'devcob', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devcobranza@empresa.com', '2026-03-04 02:39:46', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-04 06:39:46'),
 (7, 9, 'devrrhh', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 1, 'devrrhh@empresa.com', '2026-02-28 14:01:48', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-02-28 18:43:21'),
-(8, 7, 'devfisc', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devfiscalizacion@empresa.com', '2026-03-01 19:01:51', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-01 23:01:51'),
+(8, 7, 'devfisc', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'devfiscalizacion@empresa.com', '2026-03-04 02:39:23', NULL, NULL, 'active', '2025-08-02 21:28:47', '2026-03-04 06:39:23'),
 (9, 9, 'afigueroa', '$2y$10$c1/w.fOiN.1tFuNTUJ0ZnuejWAUnTP.EFcds7MHQnu1G/h47gw7Ly', 0, 'Andres.Figueroa@empresa.com', '2026-01-19 23:33:19', NULL, NULL, 'active', '2025-08-03 02:56:10', '2026-01-20 03:33:19'),
 (10, 5, 'plopez', '$2y$12$.Xv3sGjkrCSNnlJmdyz1j.sxfCYf2C/09OvOa794nxeA2sWCwX6WC', 0, 'pedro.lopez@empresa.com', NULL, NULL, NULL, 'active', '2025-08-03 13:36:10', '2025-08-03 15:33:38'),
 (11, 10, 'arojas', '$2y$12$DxcEraAN3tao8.z.FaOgsuz5jP39VqoFpDSQU3qZDgioePvAK6vh6', 0, 'ana.rojas@empresa.com', '2026-01-17 13:57:01', NULL, NULL, 'active', '2025-08-04 16:42:11', '2026-01-17 17:57:01'),
 (12, 11, 'frodriguez', '$2y$12$32yiS2OUJt5hgQzoB/NCiuIdgb2Yvvh8L56GOlYsY9Kh9iUnM4Ri2', 0, 'felipe.rodriguez@empresa.com', NULL, NULL, NULL, 'active', '2025-08-04 16:42:40', '2025-08-04 16:42:40'),
-(13, 14, 'renebello', '$2y$10$zsr7ylbSZeUyMvKvwHeir.1v51eq/P5WXi62b8w3NAmMfDJR/iTf2', 1, 'rene.bello@seramer.com', '2026-03-01 19:50:35', NULL, NULL, 'active', '2026-02-28 22:11:48', '2026-03-01 23:50:35');
+(13, 14, 'renebello', '$2y$10$zsr7ylbSZeUyMvKvwHeir.1v51eq/P5WXi62b8w3NAmMfDJR/iTf2', 1, 'rene.bello@seramer.com', '2026-03-04 02:39:56', NULL, NULL, 'active', '2026-02-28 22:11:48', '2026-03-04 06:39:56');
 
 --
 -- Disparadores `users`
 --
-CREATE TRIGGER `users_updated_at_trigger` BEFORE UPDATE ON `users` FOR EACH ROW SET NEW.updated_at = CURRENT_TIMESTAMP;
+DELIMITER $$
+CREATE TRIGGER `users_updated_at_trigger` BEFORE UPDATE ON `users` FOR EACH ROW BEGIN
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1867,7 +1797,6 @@ CREATE TABLE `user_departments` (
 
 INSERT INTO `user_departments` (`id`, `user_id`, `department_id`, `role_id`, `status`, `created_at`) VALUES
 (1, 1, 1, 4, 'active', '2025-08-02 21:28:47'),
-(2, 2, 2, 5, 'active', '2025-08-02 21:28:47'),
 (3, 3, 3, 2, 'active', '2025-08-02 21:28:47'),
 (5, 5, 1, 4, 'active', '2025-08-02 21:28:47'),
 (6, 6, 2, 1, 'active', '2025-08-02 21:28:47'),
@@ -1879,7 +1808,8 @@ INSERT INTO `user_departments` (`id`, `user_id`, `department_id`, `role_id`, `st
 (13, 13, 2, NULL, 'active', '2026-02-28 22:11:48'),
 (14, 10, 1, 4, 'active', '2026-03-01 00:04:54'),
 (15, 10, 5, 6, 'active', '2026-03-01 00:04:54'),
-(16, 4, 5, 6, 'active', '2026-03-01 00:06:05');
+(16, 4, 5, 6, 'active', '2026-03-01 00:06:05'),
+(17, 2, 5, 7, 'active', '2026-03-04 05:22:34');
 
 -- --------------------------------------------------------
 
@@ -1944,7 +1874,12 @@ CREATE TABLE `vacations` (
 --
 -- Disparadores `vacations`
 --
-CREATE TRIGGER `vacations_updated_at_trigger` BEFORE UPDATE ON `vacations` FOR EACH ROW SET NEW.updated_at = CURRENT_TIMESTAMP;
+DELIMITER $$
+CREATE TRIGGER `vacations_updated_at_trigger` BEFORE UPDATE ON `vacations` FOR EACH ROW BEGIN
+    SET NEW.updated_at = CURRENT_TIMESTAMP;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -2551,19 +2486,19 @@ ALTER TABLE `cash_registers`
 -- AUTO_INCREMENT de la tabla `citations`
 --
 ALTER TABLE `citations`
-  MODIFY `citation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `citation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `complaints`
 --
 ALTER TABLE `complaints`
-  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `complaint_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de la tabla `complaint_tracking`
 --
 ALTER TABLE `complaint_tracking`
-  MODIFY `tracking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `tracking_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `compliance_alerts`
@@ -2575,7 +2510,7 @@ ALTER TABLE `compliance_alerts`
 -- AUTO_INCREMENT de la tabla `conciliation_reports`
 --
 ALTER TABLE `conciliation_reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `contracts`
@@ -2653,7 +2588,7 @@ ALTER TABLE `fee_payments`
 -- AUTO_INCREMENT de la tabla `fine_payments`
 --
 ALTER TABLE `fine_payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `fiscalization_roles`
@@ -2677,25 +2612,25 @@ ALTER TABLE `fiscal_year`
 -- AUTO_INCREMENT de la tabla `infractions`
 --
 ALTER TABLE `infractions`
-  MODIFY `infraction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `infraction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `infraction_types`
 --
 ALTER TABLE `infraction_types`
-  MODIFY `infraction_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `infraction_type_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT de la tabla `inspection_reports`
 --
 ALTER TABLE `inspection_reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `inspection_updates`
 --
 ALTER TABLE `inspection_updates`
-  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `inspectors`
@@ -2743,7 +2678,7 @@ ALTER TABLE `modules`
 -- AUTO_INCREMENT de la tabla `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT de la tabla `ordinance_articles`
@@ -2761,7 +2696,7 @@ ALTER TABLE `payment_methods`
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `role_modules`
@@ -2773,7 +2708,7 @@ ALTER TABLE `role_modules`
 -- AUTO_INCREMENT de la tabla `sanctions`
 --
 ALTER TABLE `sanctions`
-  MODIFY `sanction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `sanction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `sanction_types`
@@ -2785,7 +2720,7 @@ ALTER TABLE `sanction_types`
 -- AUTO_INCREMENT de la tabla `scheduled_inspections`
 --
 ALTER TABLE `scheduled_inspections`
-  MODIFY `inspection_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `inspection_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `sectors`
@@ -2815,7 +2750,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `user_departments`
 --
 ALTER TABLE `user_departments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `user_records`
@@ -3075,7 +3010,7 @@ ALTER TABLE `user_roles`
 --
 ALTER TABLE `vacations`
   ADD CONSTRAINT `vacations_ibfk_1` FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS=1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

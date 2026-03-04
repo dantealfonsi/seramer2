@@ -202,16 +202,14 @@ class ComplaintsModel {
         return $this->db->fetchAll($sql);
     }
 
-    /**
-     * Obtiene el adjudicatario asociado a un puesto específico.
-     * @param int $stallId
-     * @return array|false
-     */
     public function getAwardeeByStall($stallId) {
         $sql = "SELECT a.id, a.first_name, a.last_name 
-                FROM awardees a
-                JOIN market_stalls ms ON a.id = ms.awardee_id
-                WHERE ms.id = ?";
+                FROM market_stalls ms
+                LEFT JOIN contract_locations cl ON ms.id = cl.stall_id
+                LEFT JOIN contracts c ON cl.contract_id = c.id AND c.status IN ('active', 'renewed') AND c.end_date >= CURDATE()
+                LEFT JOIN awardees a ON COALESCE(c.awardee_id, ms.awardee_id) = a.id
+                WHERE ms.id = ? 
+                LIMIT 1";
         return $this->db->fetchOne($sql, [$stallId]);
     }
 

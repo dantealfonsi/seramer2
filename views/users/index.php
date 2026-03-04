@@ -129,56 +129,42 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                         </div>
 
-                        <!-- Mensajes de estado -->
+                        <!-- Toast Notifications -->
                         <?php if (isset($_GET['success'])): ?>
-                            <div class="alert alert-success alert-dismissible" role="alert">
-                                <?php
-                                switch ($_GET['success']) {
-                                    case 'user_created':
-                                        echo 'Usuario creado exitosamente';
-                                        break;
-                                    case 'user_updated':
-                                        echo 'Usuario actualizado exitosamente';
-                                        break;
-                                    case 'user_deactivated':
-                                        echo 'Usuario desactivado exitosamente';
-                                        break;
-                                    case 'user_reactivated':
-                                        echo 'Usuario reactivado exitosamente';
-                                        break;
-                                    default:
-                                        echo 'Operación realizada exitosamente';
-                                }
-                                ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            let message = '';
+                            switch ('<?php echo $_GET['success']; ?>') {
+                                case 'user_created': message = 'Usuario creado exitosamente'; break;
+                                case 'user_updated': message = 'Usuario actualizado exitosamente'; break;
+                                case 'user_deactivated': message = 'Usuario desactivado exitosamente'; break;
+                                case 'user_reactivated': message = 'Usuario reactivado exitosamente'; break;
+                                default: message = 'Operación realizada exitosamente';
+                            }
+                            Swal.fire({
+                                toast: true, position: 'top-end', icon: 'success', title: message,
+                                showConfirmButton: false, timer: 4000, timerProgressBar: true, width: '450px'
+                            });
+                        });
+                        </script>
                         <?php endif; ?>
 
                         <?php if (isset($_GET['error'])): ?>
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                                <?php
-                                switch ($_GET['error']) {
-                                    case 'user_not_found':
-                                        echo 'Usuario no encontrado en la base de datos';
-                                        break;
-                                    case 'no_permission':
-                                        echo 'No tiene permisos para realizar esta acción';
-                                        break;
-                                    case 'invalid_user':
-                                        echo 'ID de usuario no válido';
-                                        break;
-                                    case 'invalid_user_id':
-                                        echo 'El ID de usuario proporcionado no es válido o está vacío';
-                                        break;
-                                    case 'staff_data_missing':
-                                        echo 'El usuario existe pero no tiene datos de personal asociados. Contacte al administrador.';
-                                        break;
-                                    default:
-                                        echo htmlspecialchars($_GET['error']);
-                                }
-                                ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            let message = '';
+                            switch ('<?php echo $_GET['error']; ?>') {
+                                case 'user_not_found': message = 'Usuario no encontrado'; break;
+                                case 'no_permission': message = 'No tiene permisos para realizar esta acción'; break;
+                                case 'invalid_user': message = 'ID de usuario no válido'; break;
+                                default: message = '<?php echo addslashes($_GET['error']); ?>';
+                            }
+                            Swal.fire({
+                                toast: true, position: 'top-end', icon: 'error', title: message,
+                                showConfirmButton: false, timer: 4000, timerProgressBar: true, width: '450px'
+                            });
+                        });
+                        </script>
                         <?php endif; ?>
 
 
@@ -260,8 +246,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                             <i class="ri-eye-line"></i>
                                                         </a>
                                                         <?php 
+                                                            $is_self = $user['id'] == $_SESSION['user_id'];
                                                             $is_target_admin = !empty($user['is_superadmin']) || (isset($user['role_names']) && strpos(strtolower($user['role_names']), 'admin') !== false);
-                                                            $can_modify = !empty($_SESSION['is_superadmin']) || $is_rrhh || !$is_target_admin;
+                                                            // Un usuario no puede modificarse a sí mismo desde el listado (seguridad)
+                                                            // Los administradores solo pueden ser modificados por superadmins
+                                                            $can_modify = (!$is_self) && (!empty($_SESSION['is_superadmin']) || $is_rrhh || !$is_target_admin);
                                                         ?>
                                                         
                                                         <a href="<?php echo $can_modify ? 'edit.php?id=' . $user['id'] : 'javascript:void(0);'; ?>" 
@@ -272,17 +261,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         </a>
 
                                                         <?php if ($user['status'] === 'active'): ?>
-                                                            <a href="<?php echo $can_modify ? 'deactivate.php?id=' . $user['id'] : 'javascript:void(0);'; ?>" 
+                                                            <a href="javascript:void(0);" 
                                                                class="btn btn-sm btn-outline-danger <?php echo !$can_modify ? 'disabled' : ''; ?>" 
                                                                title="<?php echo $can_modify ? 'Desactivar' : 'Usuario Protegido'; ?>"
-                                                               <?php echo $can_modify ? 'onclick="return confirm(\'¿Está seguro de desactivar este usuario?\')"' : 'aria-disabled="true"'; ?>>
+                                                               <?php echo $can_modify ? 'onclick="confirmToggleStatus('.$user['id'].', \'deactivate\', \''.addslashes($user['username']).'\')"' : 'aria-disabled="true"'; ?>>
                                                                 <i class="ri-user-unfollow-line"></i>
                                                             </a>
                                                         <?php else: ?>
-                                                            <a href="<?php echo $can_modify ? 'reactivate.php?id=' . $user['id'] : 'javascript:void(0);'; ?>" 
+                                                            <a href="javascript:void(0);" 
                                                                class="btn btn-sm btn-outline-success <?php echo !$can_modify ? 'disabled' : ''; ?>" 
                                                                title="<?php echo $can_modify ? 'Reactivar' : 'Usuario Protegido'; ?>"
-                                                               <?php echo $can_modify ? 'onclick="return confirm(\'¿Está seguro de reactivar este usuario?\')"' : 'aria-disabled="true"'; ?>>
+                                                               <?php echo $can_modify ? 'onclick="confirmToggleStatus('.$user['id'].', \'reactivate\', \''.addslashes($user['username']).'\')"' : 'aria-disabled="true"'; ?>>
                                                                 <i class="ri-user-received-line"></i>
                                                             </a>
                                                         <?php endif; ?>
@@ -358,4 +347,27 @@ $(document).ready(function() {
         console.error("DataTables no cargado");
     }
 });
+
+function confirmToggleStatus(id, action, username) {
+    const isDeactivate = action === 'deactivate';
+    Swal.fire({
+        title: isDeactivate ? '¿Desactivar usuario?' : '¿Reactivar usuario?',
+        text: `¿Estás seguro de que deseas ${isDeactivate ? 'desactivar' : 'reactivar'} al usuario "${username}"?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: isDeactivate ? '#ff3e1d' : '#71dd37',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: isDeactivate ? 'Sí, desactivar' : 'Sí, reactivar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: `btn btn-${isDeactivate ? 'danger' : 'success'} me-3`,
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `${action}.php?id=${id}`;
+        }
+    });
+}
 </script>

@@ -56,8 +56,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                <div class="card">
+                <div class="card shadow-sm border-0">
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div>
                             <h5 class="card-title d-flex align-items-center mb-1" style="font-size: 1.4rem;font-weight: 600;">
@@ -77,10 +76,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                     <div class="card-body">
                         <?php if (isset($_SESSION['flash_message'])): ?>
-                            <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> mt-2" role="alert">
-                                <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                            </div>
-                            <?php unset($_SESSION['flash_message']); ?>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
+                        <?php unset($_SESSION['flash_message']); ?>
                         <?php endif; ?>
 
                         <form method="POST" action="edit.php">

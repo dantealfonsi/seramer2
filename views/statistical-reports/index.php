@@ -81,7 +81,7 @@ include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
                                     <select class="form-select" id="report_type" name="report_type">
                                         <option value="">-- Elija un Reporte --</option>
                                         <option value="activity_history" <?php echo ($selected_report == 'activity_history') ? 'selected' : ''; ?>>Historial de Actividad (Tabla)</option>
-                                        <option value="infraction_count" <?php echo ($selected_report == 'infraction_count') ? 'selected' : ''; ?>>Conteo de Infracciones por Tiempo (Gráfico) *</option>
+
                                         <option value="infractions_by_month" <?php echo ($selected_report == 'infractions_by_month') ? 'selected' : ''; ?>>Infracciones por Mes (Gráfico)</option>
                                         <option value="employees_by_department" <?php echo ($selected_report == 'employees_by_department') ? 'selected' : ''; ?>>Empleados por Departamento (Gráfico)</option>
                                         <option value="inspection_productivity" <?php echo ($selected_report == 'inspection_productivity') ? 'selected' : ''; ?>>Productividad de la Inspección (Gráfico)</option>
@@ -204,12 +204,7 @@ $(document).ready(function() {
             'user': 'Por Usuario Específico', // Keep generic user filter for audit
             'all': 'Ver todos los registros'
         },
-        infraction_count: { 
-            'date_range': 'Por Rango de Fechas (Diario)',
-            'weekly': 'Por Rango de Fechas (Semanal)',
-            'last_6_months': 'Últimos 6 Meses (Por Mes)',
-            'annual': 'Por Año Específico',
-        },
+
         infractions_by_month: {
             'last_6_months': 'Últimos 6 Meses',
             'annual': 'Últimos 12 Meses (Anual)',
@@ -317,14 +312,7 @@ $(document).ready(function() {
                         filterHtml = filterTemplates.user;
                     }
                     break;
-                case 'infraction_count': 
-                    if (selectedMode === 'date_range' || selectedMode === 'weekly') {
-                        filterHtml = filterTemplates.date_range;
-                    } else if (selectedMode === 'annual') {
-                        filterHtml = filterTemplates.year;
-                    }
-                    // 'last_6_months' usa filterTemplates.none
-                    break;
+
                 case 'infractions_by_month':
                 case 'employees_by_department':
                 case 'inspection_productivity':
@@ -405,13 +393,7 @@ $(document).ready(function() {
                                 filterHtml = filterTemplates.user;
                             }
                             break;
-                        case 'infraction_count': 
-                            if (selectedMode === 'date_range' || selectedMode === 'weekly') {
-                                filterHtml = filterTemplates.date_range;
-                            } else if (selectedMode === 'annual') {
-                                filterHtml = filterTemplates.year;
-                            }
-                            break;
+
                         case 'inspector_performance':
                             if (selectedMode === 'period') {
                                 filterHtml = filterTemplates.period;

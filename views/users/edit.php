@@ -73,20 +73,33 @@ $page_title = 'Editar Usuario';
                 </div>
                 <div class="card-body">
                     <?php if (!empty($message)): ?>
-                        <div class="alert alert-<?php echo $messageType; ?> alert-dismissible">
-                            <?php echo htmlspecialchars($message); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $messageType === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($message); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
                     <?php endif; ?>
 
                     <?php if (!empty($errors)): ?>
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                <?php foreach ($errors as $error): ?>
-                                    <li><?php echo htmlspecialchars($error); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Errores de Validación',
+                                html: '<ul class="text-start mb-0"><?php foreach ($errors as $error): ?><li><?php echo addslashes($error); ?></li><?php endforeach; ?></ul>',
+                                confirmButtonColor: '#696cff'
+                            });
+                        });
+                        </script>
                     <?php endif; ?>
 
                     <!-- Información del Personal -->
@@ -283,16 +296,18 @@ $page_title = 'Editar Usuario';
                                     <i class="ri-close-line me-1"></i>Cancelar
                                 </a>
                                 
-                                <?php if ($user['status'] == 'active'): ?>
-                                    <button type="button" class="btn btn-outline-warning ms-auto" 
-                                            onclick="confirmDeactivate(<?php echo $user['id']; ?>)">
-                                        <i class="ri-user-unfollow-line me-1"></i>Desactivar Usuario
-                                    </button>
-                                <?php else: ?>
-                                    <button type="button" class="btn btn-outline-success ms-auto" 
-                                            onclick="confirmReactivate(<?php echo $user['id']; ?>)">
-                                        <i class="ri-user-add-line me-1"></i>Reactivar Usuario
-                                    </button>
+                                <?php if ($user['id'] != $_SESSION['user_id']): ?>
+                                    <?php if ($user['status'] == 'active'): ?>
+                                        <button type="button" class="btn btn-outline-warning ms-auto" 
+                                                onclick="confirmDeactivate(<?php echo $user['id']; ?>)">
+                                            <i class="ri-user-unfollow-line me-1"></i>Desactivar Usuario
+                                        </button>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-outline-success ms-auto" 
+                                                onclick="confirmReactivate(<?php echo $user['id']; ?>)">
+                                            <i class="ri-user-add-line me-1"></i>Reactivar Usuario
+                                        </button>
+                                    <?php endif; ?>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -336,16 +351,48 @@ document.getElementById('confirm_password').addEventListener('input', function()
 
 // Confirmación de desactivación
 function confirmDeactivate(userId) {
-    if (confirm('¿Estás seguro de que deseas desactivar este usuario? El usuario no podrá acceder al sistema hasta que sea reactivado.')) {
-        window.location.href = 'deactivate.php?id=' + userId;
-    }
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: '¿Estás seguro de que deseas desactivar este usuario? El usuario no podrá acceder al sistema hasta que sea reactivado.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ffbb33',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-warning me-3',
+            cancelButton: 'btn btn-outline-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'deactivate.php?id=' + userId;
+        }
+    });
 }
 
 // Confirmación de reactivación
 function confirmReactivate(userId) {
-    if (confirm('¿Estás seguro de que deseas reactivar este usuario?')) {
-        window.location.href = 'reactivate.php?id=' + userId;
-    }
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: '¿Estás seguro de que deseas reactivar este usuario?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#696cff',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, reactivar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-primary me-3',
+            cancelButton: 'btn btn-outline-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'reactivate.php?id=' + userId;
+        }
+    });
 }
 </script>
 

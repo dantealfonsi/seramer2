@@ -7,6 +7,13 @@ require_once __DIR__ . '/../../controllers/ConciliationReportsController.php';
 $citationsController = new CitationsController();
 $conciliationReportsController = new ConciliationReportsController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$citationsThisMonth = $dashboardStats['citations_this_month'] ?? 0;
+$citationsScheduledMonth = $dashboardStats['citations_scheduled_month'] ?? 0;
+$citationsCompletedMonth = $dashboardStats['citations_completed_month'] ?? 0;
+
 // 1. OBTENER PARÁMETROS DE FILTRADO DEL GET
 // Ahora obtenemos los parámetros de filtro del URL (método GET), que se establecen al hacer clic en "Aplicar Filtros"
 $filter_params = [
@@ -52,8 +59,8 @@ if (isset($result['success']) && $result['success']) {
 
 
 // Lógica de eliminación (Procesada en la misma página)
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
-    $deleteId = $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
+    $deleteId = $_POST['id'];
     $deleteResult = $citationsController->delete($deleteId);
 
     $_SESSION['flash_message'] = [
@@ -78,10 +85,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show mt-2" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' || $_SESSION['flash_message']['type'] === 'primary' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
                     <?php unset($_SESSION['flash_message']); ?>
                 <?php endif; ?>
 
@@ -156,6 +173,53 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         </div>
                                     </div>
                                 </form>
+                            </div>
+                        </div>
+
+                        <!-- Tarjetas de Métricas -->
+                        <div class="row g-3 mt-4 mb-2">
+                             <div class="col-md-4">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-calendar-event-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($citationsThisMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Citaciones este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tarjeta: Programadas -->
+                             <div class="col-md-4">
+                                <div class="card card-status-info" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e1f5fe !important; color: #03a9f4;">
+                                            <i class="ri-time-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #03a9f4;"><?php echo number_format($citationsScheduledMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Programadas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tarjeta: Resueltas (Completadas) -->
+                             <div class="col-md-4">
+                                <div class="card card-status-success" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8f5e9 !important; color: #4caf50;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #4caf50;"><?php echo number_format($citationsCompletedMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Resueltas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -273,24 +337,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar la citación con ID: <strong id="citationId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción es permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -303,20 +350,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteCitationId = null;
-
 function confirmDelete(id) {
-    deleteCitationId = id;
-    document.getElementById('citationId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Vas a eliminar la citación #' + id + '. Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php'; 
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteCitationId) {
-        window.location.href = 'index.php?delete_id=' + deleteCitationId; 
-    }
-});
 
 $(document).ready(function() {
     // 1. Obtener los valores de filtro de la URL (PHP los cargó en el HTML)
@@ -472,28 +543,41 @@ $(document).ready(function() {
         function(settings, data, dataIndex) {
             // Obtener los valores de filtro de los campos de entrada
             const statusFilter = $('#filterStatus').val();
-            // const locationFilter = $('#filterLocation').val().toLowerCase(); // Eliminado
             const dateFilter = $('#filterDate').val();
+            const stallFilter = $('#filterStall').val().toLowerCase().trim();
+            const awardeeFilter = $('#filterAwardee').val().toLowerCase().trim();
+            const idPrefixFilter = $('#filterIdPrefix').val();
+            const idNumberFilter = $('#filterIdNumber').val().trim();
 
             // Columnas de la tabla (índices basados en 0):
-            // 0: ID (Oculto)
+            // 0: ID Citación
             // 1: Fecha (DD/MM/YYYY)
             // 2: Hora (hh:mm A)
-            // 3: Puesto
-            // 4: Adjudicatario
-            // 5: Infracción (Icono)
+            // 3: Puesto (HTML badge)
+            // 4: Adjudicatario (Nombre + ID small)
+            // 5: Infracción (Icono popover)
             // 6: Mediador
             // 7: Estado (HTML del badge)
             // 8: Acciones
 
-            // Obtener datos de la fila actual
+            // 1. Obtener Estado
             const statusMatch = data[7].match(/data-status-key="([^"]+)"/);
             const rowStatus = statusMatch ? statusMatch[1] : ''; 
 
+            // 2. Obtener Fecha
             const rowDateStr = data[1]; // Formato: DD/MM/YYYY
+
+            // 3. Obtener Puesto (limpiar del badge)
+            const rowStall = data[3].replace(/<[^>]*>?/gm, '').toLowerCase().trim();
+
+            // 4. Obtener Adjudicatario
+            const rowAwardee = data[4].toLowerCase().trim();
 
             let passStatus = true;
             let passDate = true;
+            let passStall = true;
+            let passAwardee = true;
+            let passId = true;
 
             // 1. Filtrar por Estado
             if (statusFilter !== '' && statusFilter.toLowerCase() !== rowStatus) {
@@ -502,11 +586,8 @@ $(document).ready(function() {
 
             // 2. Filtrar por Fecha exacta
             if (dateFilter) {
-                // Convertir DD/MM/YYYY a YYYY-MM-DD para comparar con el input date (YYYY-MM-DD)
                 const parts = rowDateStr.split('/');
                 if (parts.length === 3) {
-                    // parts[0] = DD, parts[1] = MM, parts[2] = YYYY
-                    // Input date format: YYYY-MM-DD
                     const rowDateISO = `${parts[2]}-${parts[1]}-${parts[0]}`;
                     if (rowDateISO !== dateFilter) {
                         passDate = false;
@@ -514,14 +595,32 @@ $(document).ready(function() {
                 }
             }
 
-            // La fila solo pasa si cumple con los criterios
-            return passStatus && passDate;
+            // 3. Filtrar por Puesto (parcial)
+            if (stallFilter && !rowStall.includes(stallFilter)) {
+                passStall = false;
+            }
+
+            // 4. Filtrar por Adjudicatario (parcial)
+            if (awardeeFilter && !rowAwardee.includes(awardeeFilter)) {
+                passAwardee = false;
+            }
+
+            // 5. Filtrar por Cédula (Prefijo y/o Número)
+            if (idPrefixFilter || idNumberFilter) {
+                const fullIdSearch = (idPrefixFilter + idNumberFilter).toLowerCase();
+                if (!rowAwardee.includes(fullIdSearch)) {
+                    passId = false;
+                }
+            }
+
+            // La fila solo pasa si cumple con TODOS los criterios
+            return passStatus && passDate && passStall && passAwardee && passId;
         }
     );
     
     // **APLICACIÓN INICIAL DEL FILTRO:**
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('filterStatus') || urlParams.get('filterDate')) {
+    if (urlParams.get('filterStatus') || urlParams.get('filterDate') || urlParams.get('filterStall') || urlParams.get('filterAwardee') || urlParams.get('filterIdNumber')) {
         table.draw();
     }
 });

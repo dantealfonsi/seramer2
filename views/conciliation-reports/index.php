@@ -129,10 +129,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <?php endif; ?>
                     </div>
                     <?php if (isset($_SESSION['flash_message'])): ?>
-                        <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show mt-2 mx-3" role="alert">
-                            <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
                         <?php unset($_SESSION['flash_message']); ?>
                     <?php endif; ?>
 

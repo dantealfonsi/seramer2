@@ -44,50 +44,42 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <div class="card-body">
-                        <!-- Mensajes de estado -->
+                        <!-- Toast Notifications -->
                         <?php if (isset($_GET['success'])): ?>
-                            <div class="alert alert-success alert-dismissible" role="alert">
-                                <?php
-                                switch ($_GET['success']) {
-                                    case 'role_created':
-                                        echo 'Rol creado exitosamente';
-                                        break;
-                                    case 'role_updated':
-                                        echo 'Rol actualizado exitosamente';
-                                        break;
-                                    case 'role_deleted':
-                                        echo 'Rol eliminado exitosamente';
-                                        break;
-                                    default:
-                                        echo 'Operación realizada exitosamente';
-                                }
-                                ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            let message = '';
+                            switch ('<?php echo $_GET['success']; ?>') {
+                                case 'role_created': message = 'Rol creado exitosamente'; break;
+                                case 'role_updated': message = 'Rol actualizado exitosamente'; break;
+                                case 'role_deleted': message = 'Rol eliminado exitosamente'; break;
+                                default: message = 'Operación realizada exitosamente';
+                            }
+                            Swal.fire({
+                                toast: true, position: 'top-end', icon: 'success', title: message,
+                                showConfirmButton: false, timer: 4000, timerProgressBar: true, width: '450px'
+                            });
+                        });
+                        </script>
                         <?php endif; ?>
 
                         <?php if (isset($_GET['error'])): ?>
-                            <div class="alert alert-danger alert-dismissible" role="alert">
-                                <?php
-                                switch ($_GET['error']) {
-                                    case 'role_not_found':
-                                        echo 'Rol no encontrado';
-                                        break;
-                                    case 'no_permission':
-                                        echo 'No tiene permisos para realizar esta acción';
-                                        break;
-                                    case 'cannot_delete_admin':
-                                        echo 'No se puede eliminar el rol de administrador';
-                                        break;
-                                    case 'cannot_modify_admin':
-                                        echo 'No se pueden modificar las propiedades base del rol de administrador';
-                                        break;
-                                    default:
-                                        echo htmlspecialchars($_GET['error']);
-                                }
-                                ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            let message = '';
+                            switch ('<?php echo $_GET['error']; ?>') {
+                                case 'role_not_found': message = 'Rol no encontrado'; break;
+                                case 'no_permission': message = 'No tiene permisos para realizar esta acción'; break;
+                                case 'cannot_delete_admin': message = 'No se puede eliminar el rol de administrador'; break;
+                                case 'cannot_modify_admin': message = 'No se pueden modificar las propiedades base del rol de administrador'; break;
+                                default: message = '<?php echo addslashes($_GET['error']); ?>';
+                            }
+                            Swal.fire({
+                                toast: true, position: 'top-end', icon: 'error', title: message,
+                                showConfirmButton: false, timer: 4000, timerProgressBar: true, width: '450px'
+                            });
+                        });
+                        </script>
                         <?php endif; ?>
 
 
@@ -159,6 +151,8 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <strong><?php echo htmlspecialchars($role['name']); ?></strong>
                                                     <?php if ($role['name'] === 'admin'): ?>
                                                         <span class="badge bg-danger ms-2">Admin Sistema</span>
+                                                    <?php elseif ($role['id'] == 8): ?>
+                                                        <span class="badge bg-secondary ms-2" title="Rol inmutable asignado por defecto"><i class="ri-lock-line me-1"></i> Rol por Defecto</span>
                                                     <?php elseif ($role['can_read'] && $role['can_write'] && $role['can_modify'] && $role['can_delete']): ?>
                                                         <span class="badge bg-primary ms-2" title="Rol con acceso total (Lectura, Escritura, Edición, Eliminación) que automáticamente concede estatus de administrador">👑 Administrador Total</span>
                                                     <?php endif; ?>
@@ -188,17 +182,31 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-center">
-                                                     <a href="<?php echo ($role['name'] !== 'admin' || $is_superadmin) ? 'edit.php?id=' . $role['id'] : 'javascript:void(0);'; ?>" 
-                                                        class="btn btn-sm btn-outline-warning <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'disabled' : ''; ?>" 
-                                                        title="<?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'No Editable' : 'Editar'; ?>"
-                                                        <?php echo ($role['name'] === 'admin' && !$is_superadmin) ? 'aria-disabled="true"' : ''; ?>>
+                                                     <?php 
+                                                        $is_protected = ($role['name'] === 'admin' || $role['id'] == 8);
+                                                        $can_edit = $is_superadmin && !$is_protected; // Only superadmin could edit, but not protected ones
+                                                        if (!$is_superadmin && $role['name'] !== 'admin' && $role['id'] != 8) {
+                                                            // Logic for managers (from controller context we know they can only edit their own dept roles, 
+                                                            // but $is_superadmin check here is simpler for view)
+                                                            $can_edit = true; 
+                                                        }
+                                                        
+                                                        // Simplify: block edit if protected
+                                                        $link_edit = $is_protected ? 'javascript:void(0);' : 'edit.php?id=' . $role['id'];
+                                                        $class_edit = $is_protected ? 'disabled' : '';
+                                                        $title_edit = $is_protected ? 'Rol Inmutable' : 'Editar';
+                                                     ?>
+                                                     <a href="<?php echo $link_edit; ?>" 
+                                                        class="btn btn-sm btn-outline-warning <?php echo $class_edit; ?>" 
+                                                        title="<?php echo $title_edit; ?>"
+                                                        <?php echo $is_protected ? 'aria-disabled="true"' : ''; ?>>
                                                          <i class="ri-edit-line"></i>
                                                      </a>
                                                      
-                                                     <?php if ($is_superadmin && $role['name'] !== 'admin'): ?>
-                                                         <a href="delete.php?id=<?php echo $role['id']; ?>" 
+                                                     <?php if ($is_superadmin && $role['name'] !== 'admin' && $role['id'] != 8): ?>
+                                                         <a href="javascript:void(0);" 
                                                             class="btn btn-sm btn-outline-danger" title="Eliminar"
-                                                            onclick="return confirm('¿Está seguro de eliminar este rol? Los usuarios asignados a este rol perderán sus permisos.')">
+                                                            onclick="confirmDeleteRole(<?php echo $role['id']; ?>, '<?php echo addslashes($role['name']); ?>')">
                                                              <i class="ri-delete-bin-line"></i>
                                                          </a>
                                                      <?php endif; ?>
@@ -266,4 +274,26 @@ $(document).ready(function() {
         console.error("DataTables no cargado");
     }
 });
+
+function confirmDeleteRole(id, name) {
+    Swal.fire({
+        title: '¿Eliminar rol?',
+        text: `¿Estás seguro de que deseas eliminar el rol "${name}"? Los usuarios asignados serán movidos automáticamente al rol "POR DEFECTO".`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = `delete.php?id=${id}`;
+        }
+    });
+}
 </script>

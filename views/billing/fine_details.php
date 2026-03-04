@@ -42,19 +42,22 @@ $fullName = ($sanction['first_name'] ?? '') . ' ' . ($sanction['last_name'] ?? '
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="fines.php">Gestión de Multas</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Detalles de Multa</li>
-                    </ol>
-                </nav>
+
                 
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                    <div class="card-header d-flex justify-content-between align-items-center py-3">
+                        <div class="d-flex flex-column">
+                            <h5 class="mb-1 card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
+                                <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-file-list-3-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
+                                <?php echo htmlspecialchars($page_title); ?>
+                            </h5>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                    <li class="breadcrumb-item"><a href="fines.php">Gestión de Multas</a></li>
+                                    <li class="breadcrumb-item active">Detalle</li>
+                                </ol>
+                            </nav>
+                        </div>
                         <div class="btn-group" role="group">
                             <a href="fines.php" class="btn btn-secondary">
                                 <i class="ri-arrow-left-line"></i> Volver al listado

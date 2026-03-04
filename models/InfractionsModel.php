@@ -129,14 +129,27 @@ class InfractionsModel {
 
     public function getStallsList() {
         try {
-            // Direct mapping using awardee_id column in market_stalls
+            // Mapping using contracts table for current active awardee, fallback to market_stalls awardee_id
             $query = "SELECT 
                         s.id, 
                         s.sector_id, 
                         s.stall_number, 
                         s.location_description, 
-                        s.awardee_id,
-                        CONCAT(a.first_name, ' ', a.last_name) as awardee_full_name
+                        COALESCE(
+                            (SELECT c.awardee_id FROM contracts c 
+                             INNER JOIN contract_locations cl ON c.id = cl.contract_id 
+                             WHERE cl.stall_id = s.id AND c.status IN ('active', 'renewed') 
+                             AND c.end_date >= CURDATE() ORDER BY c.id DESC LIMIT 1),
+                            s.awardee_id
+                        ) as awardee_id,
+                        COALESCE(
+                            (SELECT CONCAT(ca.first_name, ' ', ca.last_name) FROM contracts c 
+                             INNER JOIN contract_locations cl ON c.id = cl.contract_id 
+                             INNER JOIN awardees ca ON c.awardee_id = ca.id 
+                             WHERE cl.stall_id = s.id AND c.status IN ('active', 'renewed') 
+                             AND c.end_date >= CURDATE() ORDER BY c.id DESC LIMIT 1),
+                            CONCAT(a.first_name, ' ', a.last_name)
+                        ) as awardee_full_name
                       FROM market_stalls s
                       LEFT JOIN awardees a ON s.awardee_id = a.id
                       ORDER BY s.stall_number";
@@ -825,8 +838,7 @@ class InfractionsModel {
             FROM 
                 {$this->table} -- Usamos la propiedad $this->table
             WHERE 
-                status_logical = 'active'
-                AND DATE(infraction_datetime) BETWEEN :start_date AND :end_date
+                DATE(infraction_datetime) BETWEEN :start_date AND :end_date
             GROUP BY 
                 {$grouping}
             ORDER BY 

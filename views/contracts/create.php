@@ -40,18 +40,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <div class="col-md-6">
                             <label class="form-label" for="awardee_id">Adjudicatario <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <select class="form-select select2" id="awardee_id" name="awardee_id" required>
-                                    <option value="">Seleccione Adjudicatario</option>
+                                <select class="form-select" id="awardee_id" name="awardee_id" required style="flex: 1;">
+                                    <option value="">Seleccione un Adjudicatario...</option>
                                     <?php foreach ($awardees as $awardee): ?>
                                     <option value="<?= $awardee['id'] ?>">
                                         <?= htmlspecialchars($awardee['last_name'] . ' ' . $awardee['first_name']) ?> (<?= $awardee['id_number'] ?>)
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addAwardeeModal">
+                                <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#addAwardeeModal" title="Registrar nuevo adjudicatario">
                                     <i class="ri-add-line"></i>
                                 </button>
                             </div>
+                            <small class="text-muted"><i class="ri-search-line me-1"></i>Puedes buscar por nombre o cédula en el selector</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="fiscal_year_id">Año Fiscal <span class="text-danger">*</span></label>
@@ -544,8 +545,10 @@ function removeLocationUI(val) {
 }
 
 function updateCounters() {
-    document.getElementById('cat_count').textContent = selectedCats.length;
-    document.getElementById('loc_count').textContent = selectedLocs.length;
+    const catEl = document.getElementById('cat_count');
+    const locEl = document.getElementById('loc_count');
+    if (catEl) catEl.textContent = selectedCats.length;
+    if (locEl) locEl.textContent = selectedLocs.length;
 }
 
 // Modal sectors
@@ -627,3 +630,25 @@ function quickCreateAwardee() {
 </script>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
+
+<!-- Select2 para búsqueda de adjudicatario -->
+<link rel="stylesheet" href="../../public/assets/vendor/libs/select2/select2.css">
+<script src="../../public/assets/vendor/libs/select2/select2.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Inicializar Select2 en el campo de adjudicatario
+    $('#awardee_id').select2({
+        placeholder: 'Buscar por nombre o cédula...',
+        allowClear: true,
+        width: '100%',
+        language: {
+            noResults: function() { return 'No se encontraron adjudicatarios'; },
+            searching: function() { return 'Buscando...'; }
+        }
+    });
+
+    // Cuando se crea un adjudicatario desde el modal, actualizar Select2
+    // (el quickCreateAwardee ya maneja esto con $(sel).trigger('change'))
+});
+</script>

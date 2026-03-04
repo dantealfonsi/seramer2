@@ -78,10 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $inspectionReportsController->store($data_to_store);
 
     if ($result['success']) {
-        $_SESSION['flash_message'] = [
-            'type' => 'success',
-            'message' => $result['message']
-        ];
         header('Location: ' . $result['redirect']);
         exit;
     } else {

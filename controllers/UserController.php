@@ -595,6 +595,16 @@ class UserController {
         $is_manager = AuthMiddleware::isManager();
         $is_rrhh = AuthMiddleware::hasAccessToDepartment('Recursos Humanos');
         
+        // REGLA: No se permite a un usuario editarse a sí mismo desde la sección de gestión de usuarios
+        // para evitar bloqueos accidentales o cambios de roles/permisos propios.
+        if ($user['id'] == $_SESSION['user_id']) {
+            return [
+                'success' => false,
+                'message' => 'Seguridad: No puedes modificar tu propio usuario desde el panel de gestión',
+                'redirect' => 'index.php?error=cannot_modify_self'
+            ];
+        }
+
         // REGLA: Un usuario no puede desactivar/editar a otro administrador o superadmin
         // a menos que sea el superadmin principal
         $target_is_admin = !empty($user['is_superadmin']) || $this->userModel->isManager($user['id']);
