@@ -234,7 +234,7 @@ class InspectionController {
         ];
         
         if ($result['success']) {
-            return ['success' => true, 'redirect' => 'index.php'];
+            return ['success' => true, 'redirect' => 'index.php', 'message' => $msg];
         }
         return $result;
     }

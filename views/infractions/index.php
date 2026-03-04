@@ -10,6 +10,11 @@ require_once __DIR__ . '/../../controllers/RolesController.php';
 $infractionsController = new InfractionsController();
 $rol = new RolesController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$infractionsThisMonth = $dashboardStats['infractions_this_month'] ?? 0;
+
 // 1. Obtener la tasa actual (Asume que el controlador tiene un método para esto)
 $economicIndicators = $infractionsController->getLatestEconomicIndicators();
 
@@ -193,6 +198,19 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjeta de Métrica (Infracciones del Mes) -->
+                        <div class="card card-status-danger mt-4 mb-2" style="background-color: #ffe5e5; border: none; border-radius: 12px;">
+                            <div class="card-body p-3 d-flex align-items-center">
+                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; background-color: #ff3e1d; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                    <i class="ri-alert-line"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0 fw-bold" style="color: #ff3e1d;"><?php echo number_format($infractionsThisMonth); ?></h3>
+                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem; text-transform: uppercase;">Infracciones reportadas este mes</p>
+                                </div>
+                            </div>
+                        </div>
                         
                         <?php if ($has_search && empty($activeFilters)): // Ahora $has_search solo indica si se usó el input de búsqueda global o filtros de columna ?>
                         <div class="mt-2">
@@ -204,10 +222,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mx-3 mt-3" role="alert">
-                        <?php echo $_SESSION['flash_message']['message']; ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
                     <?php unset($_SESSION['flash_message']); ?>
                     <?php endif; ?>
 
@@ -317,24 +345,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación de Infracción</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar la infracción con ID: <strong id="infractionId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción no se puede deshacer y eliminará el registro de forma permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -347,40 +358,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteInfractionId = null;
-
 function confirmDelete(id) {
-    deleteInfractionId = id;
-    document.getElementById('infractionId').textContent = id;
-    
-    // Asumiendo Bootstrap 5
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
-}
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Vas a eliminar la infracción #' + id + '. Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'delete.php';
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteInfractionId) {
-        // Crear formulario para enviar la solicitud de eliminación
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'delete.php';
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteInfractionId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {

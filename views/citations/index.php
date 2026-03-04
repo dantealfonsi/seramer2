@@ -7,6 +7,11 @@ require_once __DIR__ . '/../../controllers/ConciliationReportsController.php';
 $citationsController = new CitationsController();
 $conciliationReportsController = new ConciliationReportsController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$citationsThisMonth = $dashboardStats['citations_this_month'] ?? 0;
+
 // 1. OBTENER PARÁMETROS DE FILTRADO DEL GET
 // Ahora obtenemos los parámetros de filtro del URL (método GET), que se establecen al hacer clic en "Aplicar Filtros"
 $filter_params = [
@@ -52,8 +57,8 @@ if (isset($result['success']) && $result['success']) {
 
 
 // Lógica de eliminación (Procesada en la misma página)
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['delete_id'])) {
-    $deleteId = $_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
+    $deleteId = $_POST['id'];
     $deleteResult = $citationsController->delete($deleteId);
 
     $_SESSION['flash_message'] = [
@@ -78,10 +83,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
         <div class="row">
             <div class="col-12">
                 <?php if (isset($_SESSION['flash_message'])): ?>
-                    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> alert-dismissible fade show mt-2" role="alert">
-                        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' || $_SESSION['flash_message']['type'] === 'primary' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
                     <?php unset($_SESSION['flash_message']); ?>
                 <?php endif; ?>
 
@@ -158,6 +173,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjetas de Métricas -->
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-md-4">
+                                <div class="card card-status-primary" style="background-color: #e7e7ff; border: none; border-radius: 12px;">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; background-color: #696cff; color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                                            <i class="ri-calendar-event-line"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($citationsThisMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Citaciones este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
 
                     <div class="card-body">
                         <?php if (empty($citations)): ?>
@@ -273,24 +305,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar la citación con ID: <strong id="citationId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción es permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -303,20 +318,44 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteCitationId = null;
-
 function confirmDelete(id) {
-    deleteCitationId = id;
-    document.getElementById('citationId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: 'Vas a eliminar la citación #' + id + '. Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php'; 
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteCitationId) {
-        window.location.href = 'index.php?delete_id=' + deleteCitationId; 
-    }
-});
 
 $(document).ready(function() {
     // 1. Obtener los valores de filtro de la URL (PHP los cargó en el HTML)

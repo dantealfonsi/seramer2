@@ -179,6 +179,23 @@ include __DIR__ . '/../layouts/navigation.php';
 include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
+<?php if (isset($_SESSION['flash_message'])): ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+        title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true
+    });
+});
+</script>
+<?php unset($_SESSION['flash_message']); ?>
+<?php endif; ?>
+
 <div class="main-content">
     <div class="container-fluid">
         <div class="row">
@@ -323,12 +340,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                     <?php endif; ?>
                                                 </p>
                                                 
+                                                <?php if (!$is_final): ?>
                                                 <div class="mt-2 text-end">
                                                     <button type="button" class="btn btn-sm btn-outline-danger" 
                                                         onclick="confirmDeleteTracking(<?php echo $record['tracking_id']; ?>)">
                                                         <i class="ri-delete-bin-line"></i> Eliminar
                                                     </button>
                                                 </div>
+                                                <?php endif; ?>
                                                 
                                             </div>
                                         </div>
@@ -396,48 +415,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación de Reporte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el reporte con ID: <strong id="reportId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción no se puede deshacer y eliminará el registro de forma permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="deleteTrackingModal" tabindex="-1" aria-labelledby="deleteTrackingModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteTrackingModalLabel">Confirmar Eliminación de Seguimiento</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="deleteTrackingForm" action="view.php?id=<?php echo htmlspecialchars($id); ?>" method="POST">
-                <input type="hidden" name="_method" value="DELETE">
-                <input type="hidden" name="tracking_id" id="trackingIdInput">
-                <input type="hidden" name="report_id" value="<?php echo htmlspecialchars($id); ?>">
-                <div class="modal-body">
-                    <p>¿Está seguro que desea eliminar el registro de seguimiento?</p>
-                    <p class="text-danger"><small>Esta acción es permanente y no afecta el estado de la inspección.</small></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Formulario oculto para eliminar seguimiento -->
+<form id="deleteTrackingForm" action="view.php?id=<?php echo htmlspecialchars($id); ?>" method="POST" style="display:none;">
+    <input type="hidden" name="_method" value="DELETE">
+    <input type="hidden" name="tracking_id" id="trackingIdInput">
+    <input type="hidden" name="report_id" value="<?php echo htmlspecialchars($id); ?>">
+</form>
 
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
@@ -491,47 +474,59 @@ include __DIR__ . '/../layouts/navigation-top.php';
 </style>
 
 <script>
-let deleteReportId = null;
-
-// Lógica para eliminar Reporte Principal 
+// Eliminar Reporte Principal
 function confirmDelete(id) {
-    deleteReportId = id;
-    document.getElementById('reportId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+    Swal.fire({
+        title: '¿Eliminar Reporte #' + id + '?',
+        html: 'Esta acción <strong>no se puede deshacer</strong> y eliminará el reporte de forma permanente.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="ri-delete-bin-line"></i> Sí, eliminar',
+        cancelButtonText: '<i class="ri-close-line"></i> Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'delete.php';
+
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteReportId) {
-        // Lógica para enviar el formulario DELETE del reporte principal
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'delete.php'; 
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteReportId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
-
-
-// Lógica para eliminar Registro de Seguimiento
+// Eliminar Registro de Seguimiento
 function confirmDeleteTracking(id) {
-    // Seteamos el ID en el campo oculto del formulario dentro del modal
-    document.getElementById('trackingIdInput').value = id; 
-    
-    const modal = new bootstrap.Modal(document.getElementById('deleteTrackingModal'));
-    modal.show();
+    Swal.fire({
+        title: '¿Eliminar seguimiento?',
+        html: 'Esta acción es <strong>permanente</strong> y no afecta el estado de la inspección.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="ri-delete-bin-line"></i> Sí, eliminar',
+        cancelButtonText: '<i class="ri-close-line"></i> Cancelar',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('trackingIdInput').value = id;
+            document.getElementById('deleteTrackingForm').submit();
+        }
+    });
 }
 </script>

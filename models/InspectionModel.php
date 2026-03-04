@@ -161,7 +161,6 @@ class InspectionModel {
      * Get a single inspection report by its ID.
      */
     public function getById($id) {
-        // ... (Lógica original, se mantiene) ...
         $sql = "SELECT 
                         ir.*, 
                         si.scheduled_date, 
@@ -182,7 +181,7 @@ class InspectionModel {
                         awardees aw ON ir.awardee_id = aw.id  
                     INNER JOIN 
                         inspectors ip ON ir.main_inspector_id = ip.inspector_id  
-                    INNER JOIN 
+                    LEFT JOIN 
                         inspectors au ON ir.assistant_inspector_id = au.inspector_id        
                     WHERE 
                         ir.report_id = ?";
@@ -323,21 +322,30 @@ class InspectionModel {
         return $this->db->fetchAll($sql);
     }
 
-    /**
-     * Obtiene un mapeo de todos los puestos con su adjudicatario asignado.
-     * @return array
-     */
     public function getStallAwardeeMapping() {
         $sql = "SELECT 
                     s.id as stall_id, 
-                    a.id as awardee_id, 
-                    CONCAT(a.first_name, ' ', a.last_name) as awardee_name
+                    COALESCE(
+                        (SELECT c.awardee_id FROM contracts c 
+                         INNER JOIN contract_locations cl ON c.id = cl.contract_id 
+                         WHERE cl.stall_id = s.id AND c.status IN ('active', 'renewed') 
+                         AND c.end_date >= CURDATE() ORDER BY c.id DESC LIMIT 1),
+                        s.awardee_id
+                    ) as awardee_id, 
+                    COALESCE(
+                        (SELECT CONCAT(ca.first_name, ' ', ca.last_name) FROM contracts c 
+                         INNER JOIN contract_locations cl ON c.id = cl.contract_id 
+                         INNER JOIN awardees ca ON c.awardee_id = ca.id 
+                         WHERE cl.stall_id = s.id AND c.status IN ('active', 'renewed') 
+                         AND c.end_date >= CURDATE() ORDER BY c.id DESC LIMIT 1),
+                        CONCAT(a.first_name, ' ', a.last_name)
+                    ) as awardee_name
                 FROM 
                     market_stalls s
                 LEFT JOIN 
                     awardees a ON s.awardee_id = a.id
-                WHERE 
-                    s.awardee_id IS NOT NULL";
+                HAVING 
+                    awardee_id IS NOT NULL";
         
         $results = $this->db->fetchAll($sql);
         $mapping = [];

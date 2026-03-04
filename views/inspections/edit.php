@@ -27,17 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = $inspectionReportsController->update($data['report_id'], $data);
 
     if (isset($result['success']) && $result['success']) {
-        $_SESSION['flash_message'] = [
-            'type' => 'success',
-            'message' => $result['message']
-        ];
         header('Location: ' . $result['redirect']);
         exit;
     } else {
-        $_SESSION['flash_message'] = [
-            'type' => 'danger',
-            'message' => $result['message']
-        ];
         header("Location: edit.php?id=" . urlencode($data['report_id']));
         exit;
     }
