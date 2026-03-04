@@ -246,8 +246,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                             <i class="ri-eye-line"></i>
                                                         </a>
                                                         <?php 
+                                                            $is_self = $user['id'] == $_SESSION['user_id'];
                                                             $is_target_admin = !empty($user['is_superadmin']) || (isset($user['role_names']) && strpos(strtolower($user['role_names']), 'admin') !== false);
-                                                            $can_modify = !empty($_SESSION['is_superadmin']) || $is_rrhh || !$is_target_admin;
+                                                            // Un usuario no puede modificarse a sí mismo desde el listado (seguridad)
+                                                            // Los administradores solo pueden ser modificados por superadmins
+                                                            $can_modify = (!$is_self) && (!empty($_SESSION['is_superadmin']) || $is_rrhh || !$is_target_admin);
                                                         ?>
                                                         
                                                         <a href="<?php echo $can_modify ? 'edit.php?id=' . $user['id'] : 'javascript:void(0);'; ?>" 

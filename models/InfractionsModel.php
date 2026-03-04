@@ -838,8 +838,7 @@ class InfractionsModel {
             FROM 
                 {$this->table} -- Usamos la propiedad $this->table
             WHERE 
-                status_logical = 'active'
-                AND DATE(infraction_datetime) BETWEEN :start_date AND :end_date
+                DATE(infraction_datetime) BETWEEN :start_date AND :end_date
             GROUP BY 
                 {$grouping}
             ORDER BY 

@@ -15,7 +15,6 @@ class StatisticalReportModel extends Model {
                     COUNT(*) as total
                 FROM infractions
                 WHERE infraction_datetime >= DATE_SUB(NOW(), INTERVAL :months MONTH)
-                AND status_logical = 'active'
                 GROUP BY month_key
                 ORDER BY month_key ASC";
         
@@ -26,7 +25,7 @@ class StatisticalReportModel extends Model {
         $labels = [];
         $counts = [];
         
-        for ($i = $months - 1; $i >= 0; $i--) {
+        for ($i = $months; $i >= 0; $i--) {
             $date = date('Y-m', strtotime("-$i months"));
             $label = date('M', strtotime("-$i months")); // Short month name
             

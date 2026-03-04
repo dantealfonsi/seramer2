@@ -116,12 +116,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 value="<?php echo htmlspecialchars($inspector['inspector_id']); ?>">
 
                             <div class="mb-3">
-                                <label for="inspector_code" class="form-label">Código de Inspector <span
-                                        class="text-danger">*</span></label>
-                                <input onKeyup="validarLocation('inspector_code', 3)" type="text" class="form-control"
-                                    id="inspector_code" name="inspector_code"
-                                    value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" required>
-                                <div id="errorTextLocation" style="color: red;"></div>
+                                <label for="inspector_code_display" class="form-label">Código de Inspector</label>
+                                <input type="text" class="form-control" id="inspector_code_display" 
+                                    value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>" disabled>
+                                <input type="hidden" name="inspector_code" value="<?php echo htmlspecialchars($inspector['inspector_code']); ?>">
+                                <small class="text-muted">El código de inspector no puede ser modificado.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="full_name" class="form-label">Nombre Completo <span

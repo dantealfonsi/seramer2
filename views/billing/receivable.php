@@ -72,36 +72,47 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     
                     <div class="card-body pt-0">
                         <!-- Redesigned Search Form -->
-                        <div class="bg-transparent border p-4 rounded-3 mb-4">
-                            <form method="GET" action="" id="searchForm">
-                                <div class="row g-4">
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold text-muted small text-uppercase mb-2">Método de Búsqueda</label>
-                                        <select name="search_type" id="search_type" class="form-select form-select-lg border-0 shadow-sm">
-                                            <option value="id_number" <?php echo $searchType === 'id_number' ? 'selected' : ''; ?>>Cédula / RIF</option>
-                                            <option value="name" <?php echo $searchType === 'name' ? 'selected' : ''; ?>>Nombre del Moroso</option>
-                                            <option value="stall" <?php echo $searchType === 'stall' ? 'selected' : ''; ?>>Número de Puesto</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <label class="form-label fw-bold text-muted small text-uppercase mb-2">Dato a Ingresar</label>
-                                        <div class="input-group input-group-lg shadow-sm">
-                                            <select name="id_prefix" id="id_prefix" class="form-select border-0 bg-transparent" style="max-width: 80px; <?php echo $searchType !== 'id_number' ? 'display: none;' : ''; ?>">
-                                                <option value="V" <?php echo $idPrefix === 'V' ? 'selected' : ''; ?>>V</option>
-                                                <option value="E" <?php echo $idPrefix === 'E' ? 'selected' : ''; ?>>E</option>
-                                                <option value="J" <?php echo $idPrefix === 'J' ? 'selected' : ''; ?>>J</option>
-                                            </select>
-                                            <input type="text" name="search_term" id="search_term" class="form-control border-0" 
-                                                   placeholder="Ingrese el dato..." 
-                                                   value="<?php echo htmlspecialchars($searchTerm); ?>" required>
-                                            <button class="btn btn-primary px-4" type="submit" id="btnSearch">
-                                                <i class="ri-search-line me-1"></i> Buscar
+                        <div class="filter-card">
+                            <div class="filter-card-title">
+                                <i class="ri-search-eye-line"></i> Parámetros de Búsqueda de Contribuyente
+                            </div>
+                            <div class="filter-card-body">
+                                <form method="GET" action="" id="searchForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-uppercase">Método de Búsqueda</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="ri-list-settings-line text-muted"></i></span>
+                                                <select name="search_type" id="search_type" class="form-select">
+                                                    <option value="id_number" <?php echo $searchType === 'id_number' ? 'selected' : ''; ?>>Cédula / RIF</option>
+                                                    <option value="name" <?php echo $searchType === 'name' ? 'selected' : ''; ?>>Nombre del Moroso</option>
+                                                    <option value="stall" <?php echo $searchType === 'stall' ? 'selected' : ''; ?>>Número de Puesto</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small fw-bold text-uppercase">Dato a Ingresar</label>
+                                            <div class="input-group">
+                                                <select name="id_prefix" id="id_prefix" class="form-select" style="max-width: 70px; <?php echo $searchType !== 'id_number' ? 'display: none;' : ''; ?>">
+                                                    <option value="V" <?php echo $idPrefix === 'V' ? 'selected' : ''; ?>>V</option>
+                                                    <option value="E" <?php echo $idPrefix === 'E' ? 'selected' : ''; ?>>E</option>
+                                                    <option value="J" <?php echo $idPrefix === 'J' ? 'selected' : ''; ?>>J</option>
+                                                </select>
+                                                <input type="text" name="search_term" id="search_term" class="form-control" 
+                                                       placeholder="Ingrese el dato..." 
+                                                       value="<?php echo htmlspecialchars($searchTerm); ?>" required>
+                                            </div>
+                                            <div id="search_validation_msg" class="search-error-msg"></div>
+                                        </div>
+                                        <div class="col-12 filter-card-actions">
+                                            <a href="receivable.php" class="btn btn-filter-clear"><i class="ri-refresh-line me-1"></i> Limpiar</a>
+                                            <button type="submit" class="btn btn-filter-apply" id="btnSearch">
+                                                <i class="ri-search-line me-1"></i> Buscar Contribuyente
                                             </button>
                                         </div>
-                                        <div id="search_validation_msg" class="search-error-msg"></div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
                         <?php if ($error): ?>

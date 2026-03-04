@@ -25,83 +25,106 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
                 <?php endif; ?>
 
-
-                  <!-- Summary Cards Metro UI -->
-                <div class="row mb-4 g-3">
-                    <div class="col-md-4">
-                        <div class="card card-status-primary h-100">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;">
-                                    <i class="ri-skip-back-line"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Primeros Pagos (Total)</p>
-                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-primary);">Bs. <?php echo number_format($summary['total_initial'], 2, ',', '.'); ?></h4>
-                                </div>
+                <!-- 1. Header & Title -->
+                <div class="card mb-4 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="p-3 rounded-3 me-4 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background-color: #e7e7ff !important;">
+                                <i class="ri-history-line" style="color: #696cff; font-size: 2rem;"></i>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-status-success h-100">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;background-color:var(--metro-success-light);color:var(--metro-success);">
-                                    <i class="ri-money-dollar-circle-line"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Total Recaudado</p>
-                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-success);">Bs. <?php echo number_format($summary['total_final'], 2, ',', '.'); ?></h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card card-status-warning h-100">
-                            <div class="card-body d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:50px;height:50px;font-size:1.5rem;background-color:var(--metro-warning-light);color:var(--metro-warning);">
-                                    <i class="ri-funds-line"></i>
-                                </div>
-                                <div>
-                                    <p class="mb-1" style="font-size:0.72rem;font-weight:700;text-transform:uppercase;color:var(--metro-text-muted);">Pago más Alto</p>
-                                    <h4 class="mb-0 fw-bold" style="color:var(--metro-warning);">Bs. <?php echo number_format($summary['total_max'], 2, ',', '.'); ?></h4>
-                                </div>
+                            <div>
+                                <h3 class="mb-1 fw-bold text-dark"><?php echo htmlspecialchars($page_title); ?></h3>
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb mb-0">
+                                        <li class="breadcrumb-item"><a href="../dashboard/index.php">Inicio</a></li>
+                                        <li class="breadcrumb-item"><a href="../billing/index.php">Facturación</a></li>
+                                        <li class="breadcrumb-item active"><?php echo htmlspecialchars($page_title); ?></li>
+                                    </ol>
+                                </nav>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Filters -->
-                <div class="card mb-4 filter-section">
-                    <div class="card-body">
-                        <form method="GET" class="row g-3 align-items-end">
+                <!-- 2. Filters (below title) -->
+                <div class="filter-card mb-4 mt-0">
+                    <div class="filter-card-title">
+                        <i class="ri-filter-2-line"></i> Opciones de Filtrado de Actividad
+                    </div>
+                    <div class="filter-card-body">
+                        <form method="GET" class="row g-3">
                             <div class="col-md-3">
-                                <label class="form-label">Desde</label>
+                                <label class="form-label fw-bold small text-uppercase">Desde</label>
                                 <input type="date" name="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Hasta</label>
+                                <label class="form-label fw-bold small text-uppercase">Hasta</label>
                                 <input type="date" name="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Estatus Caja</label>
+                                <label class="form-label fw-bold small text-uppercase">Estatus Caja</label>
                                 <select name="status" class="form-select">
-                                    <option value="">Todas</option>
-                                    <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Activas</option>
-                                    <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Inactivas</option>
+                                    <option value="">Todas las Cajas</option>
+                                    <option value="active" <?php echo $filters['status'] === 'active' ? 'selected' : ''; ?>>Solo Activas</option>
+                                    <option value="inactive" <?php echo $filters['status'] === 'inactive' ? 'selected' : ''; ?>>Solo Inactivas</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 d-flex gap-2">
-                                <button type="submit" class="btn btn-filter-apply flex-grow-1">
-                                    <i class="ri-search-line"></i> Filtrar
-                                </button>
-                                <a href="index.php" class="btn btn-filter-clear">
-                                    <i class="ri-refresh-line"></i> Limpiar
+                            <div class="col-md-3 filter-card-actions mt-auto d-flex gap-2">
+                                <a href="index.php" class="btn btn-filter-clear flex-grow-1">
+                                    <i class="ri-refresh-line me-1"></i> Limpiar
                                 </a>
+                                <button type="submit" class="btn btn-filter-apply flex-grow-1">
+                                    <i class="ri-search-line me-1"></i> Filtrar
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <!-- Report Table -->
+                <!-- 3. Summary Cards (below filters) -->
+                <div class="row mb-4 g-3">
+                    <div class="col-md-4">
+                        <div class="card card-status-primary h-100 shadow-sm border-0" style="border-left: 4px solid #696cff !important;">
+                            <div class="card-body d-flex align-items-center p-4">
+                                <div class="p-3 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #e7e7ff !important;">
+                                    <i class="ri-skip-back-line" style="color: #696cff; font-size: 1.6rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-muted fw-semibold small text-uppercase">Primeros Pagos (Total)</p>
+                                    <h3 class="mb-0 fw-bold" style="color: #696cff;">Bs. <?php echo number_format($summary['total_initial'], 2, ',', '.'); ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-status-success h-100 shadow-sm border-0" style="border-left: 4px solid #71dd37 !important;">
+                            <div class="card-body d-flex align-items-center p-4">
+                                <div class="p-3 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #e8fadf !important;">
+                                    <i class="ri-money-dollar-circle-line" style="color: #71dd37; font-size: 1.6rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-muted fw-semibold small text-uppercase">Total Recaudado</p>
+                                    <h3 class="mb-0 fw-bold" style="color: #71dd37;">Bs. <?php echo number_format($summary['total_final'], 2, ',', '.'); ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card card-status-warning h-100 shadow-sm border-0" style="border-left: 4px solid #ffab00 !important;">
+                            <div class="card-body d-flex align-items-center p-4">
+                                <div class="p-3 rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #fff2d6 !important;">
+                                    <i class="ri-funds-line" style="color: #ffab00; font-size: 1.6rem;"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-1 text-muted fw-semibold small text-uppercase">Pago más Alto</p>
+                                    <h3 class="mb-0 fw-bold" style="color: #ffab00;">Bs. <?php echo number_format($summary['total_max'], 2, ',', '.'); ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Report Table -->
                 <div class="card">
                     <div class="card-header d-flex align-items-center">
                         <div class="page-icon me-3">

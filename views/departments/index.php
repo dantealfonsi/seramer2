@@ -145,12 +145,6 @@ include __DIR__ . '/../../views/layouts/navigation-top.php';
                                                 <a href="edit.php?id=<?php echo $dept['id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                     <i class="ri-edit-line"></i>
                                                 </a>
-                                                <button type="button" 
-                                                        class="btn btn-sm btn-outline-danger" 
-                                                        title="Eliminar"
-                                                        onclick="confirmDelete(<?php echo $dept['id']; ?>, '<?php echo addslashes($dept['name']); ?>')">
-                                                    <i class="ri-delete-bin-line"></i>
-                                                </button>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -165,27 +159,7 @@ include __DIR__ . '/../../views/layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el departamento <strong id="deleteDeptName"></strong>?</p>
-                <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <form action="delete.php" method="POST" id="deleteForm">
-                    <input type="hidden" name="id" id="deleteDeptId">
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -198,11 +172,7 @@ include __DIR__ . '/../../views/layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-function confirmDelete(id, name) {
-    document.getElementById('deleteDeptId').value = id;
-    document.getElementById('deleteDeptName').textContent = name;
-    new bootstrap.Modal(document.getElementById('deleteModal')).show();
-}
+
 
 $(document).ready(function() {
     if ($.fn.DataTable) {

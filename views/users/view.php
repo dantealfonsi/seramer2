@@ -77,7 +77,9 @@ $has_staff_data = !empty($user['first_name']) && !empty($user['last_name']);
                     </nav>
                 </div>
                 <div class="btn-group">
-                    <?php if ($is_rrhh || ($is_manager && ($user['department_id'] ?? null) == $is_manager['id'])): ?>
+                    <?php 
+                    $is_self = $user['id'] == $_SESSION['user_id'];
+                    if (!$is_self && ($is_rrhh || ($is_manager && ($user['department_id'] ?? null) == $is_manager['id']))): ?>
                         <a href="edit.php?id=<?php echo $user['id']; ?>" class="btn btn-warning">
                             <i class="ri-edit-2-line me-1"></i> Editar
                         </a>

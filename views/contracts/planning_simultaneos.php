@@ -192,7 +192,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($contracts)): ?>
+                             <?php if (!empty($contracts)): ?>
                                 <?php foreach ($contracts as $contract): 
                                     $statusClass = [
                                         'Pendiente' => 'bg-label-warning',
@@ -242,15 +242,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </td>
                                 </tr>
                                 <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="8" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="ri-information-line ri-48px mb-2"></i>
-                                            <p>No se encontraron contratos para la planificación seleccionada.</p>
-                                        </div>
-                                    </td>
-                                </tr>
                             <?php endif; ?>
                         </tbody>
                     </table>

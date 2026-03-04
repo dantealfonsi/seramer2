@@ -80,12 +80,25 @@ class BillingController {
                 break;
             
             case 'stall':
+                // Search stall by number
                 $stall = $this->stallModel->searchByStallNumber($searchTerm);
                 if ($stall) {
-                    // Get contract for this stall
-                    $contract = $this->contractModel->getByStall($stall['id']);
+                    // Find the contract associated with this stall
+                    $sqlContract = "SELECT c.* FROM contracts c 
+                                    JOIN contract_locations cl ON c.id = cl.contract_id 
+                                    WHERE cl.stall_id = :stall_id 
+                                    AND c.status = 'active' 
+                                    LIMIT 1";
+                    $contract = $this->contractModel->queryOne($sqlContract, ['stall_id' => $stall['id']]);
+                    
                     if ($contract) {
                         $awardee = $this->awardeeModel->getById($contract['awardee_id']);
+                    } else {
+                        // If no active contract, maybe it's linked directly to awardee in some systems?
+                        // But usually it's via contract. Let's try awardee_id in stall if exists.
+                        if (!empty($stall['awardee_id'])) {
+                            $awardee = $this->awardeeModel->getById($stall['awardee_id']);
+                        }
                     }
                 }
                 break;

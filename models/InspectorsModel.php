@@ -116,8 +116,8 @@ public function getAll($filters = []) {
         return $this->db->execute();
     }
 
-    // Métodos adicionales útiles
-    public function getByUserId($inspector_code) {
+    // Obtener un inspector por su código (para validaciones de duplicados)
+    public function getByCode($inspector_code) {
         $query = "SELECT * FROM {$this->table} WHERE inspector_code = :inspector_code";
         $this->db->query($query);
         $this->db->bind(':inspector_code', $inspector_code);

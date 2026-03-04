@@ -59,6 +59,15 @@ class InspectorsController {
             ];
         }
 
+        // Verificar si el código ya existe
+        $existing = $this->inspectorsModel->getByCode($data['inspector_code']);
+        if ($existing) {
+            return [
+                'success' => false,
+                'message' => "El código de inspector '{$data['inspector_code']}' ya está registrado con el usuario '{$existing['full_name']}'."
+            ];
+        }
+
         if ($this->inspectorsModel->create($data)) {
             return [
                 'success' => true,
@@ -127,6 +136,18 @@ class InspectorsController {
                 'message' => 'Error de validación.',
                 'errors' => $errors
             ];
+        }
+
+        // Obtener el inspector actual para ver si el código cambió (aunque en la vista se bloqueará)
+        $current = $this->inspectorsModel->getById($id);
+        if ($current && $current['inspector_code'] !== $data['inspector_code']) {
+            $existing = $this->inspectorsModel->getByCode($data['inspector_code']);
+            if ($existing) {
+                return [
+                    'success' => false,
+                    'message' => "El código de inspector '{$data['inspector_code']}' ya está en uso."
+                ];
+            }
         }
 
         if ($this->inspectorsModel->update($id, $data)) {

@@ -187,7 +187,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 <table id="inspectorsTable" class="table table-striped table-hover align-middle w-100">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Código</th>
                                             <th>Nombre Completo</th>
                                             <th>Email</th>
@@ -199,7 +198,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($inspectors as $inspector): ?>
                                             <tr>
-                                                <td><strong><?php echo htmlspecialchars($inspector['inspector_id']); ?></strong></td>
                                                 <td><span class="badge bg-light text-primary border border-primary"><?php echo htmlspecialchars($inspector['inspector_code']); ?></span></td>
                                                 <td><span class="fw-semibold"><?php echo htmlspecialchars($inspector['full_name']); ?></span></td>
                                                 <td>
@@ -232,9 +230,9 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <a href="edit.php?id=<?php echo htmlspecialchars($inspector['inspector_id']); ?>" class="btn btn-sm btn-outline-warning" title="Editar">
                                                             <i class="ri-edit-line"></i>
                                                         </a>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>)">
-                                                            <i class="ri-delete-bin-line"></i>
-                                                        </button>
+                                                         <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar" onclick="confirmDelete(<?php echo htmlspecialchars($inspector['inspector_id']); ?>, '<?php echo addslashes($inspector['full_name']); ?>', '<?php echo addslashes($inspector['inspector_code']); ?>')">
+                                                             <i class="ri-delete-bin-line"></i>
+                                                         </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -263,10 +261,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <script>
 // Función para desactivación con SweetAlert2
-function confirmDelete(id) {
+function confirmDelete(id, name, code) {
     Swal.fire({
         title: '¿Está seguro?',
-        text: "El inspector con ID #" + id + " será desactivado y no podrá ser asignado a nuevas tareas.",
+        text: `El inspector "${name}" (Código: ${code}) será desactivado y no podrá ser asignado a nuevas tareas.`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ff3e1d',
@@ -315,9 +313,9 @@ $(document).ready(function() {
     `;
     
     // Columnas a exportar
-    // Columnas: ID (0), Código (1), Nombre Completo (2), Email (3), Teléfono (4), Estado (5)
-    // Se excluye la Columna 6 (Acciones)
-    const exportColumns = [0, 1, 2, 3, 4, 5]; 
+    // Columnas: Código (0), Nombre Completo (1), Email (2), Teléfono (3), Estado (4)
+    // Se excluye la Columna 5 (Acciones)
+    const exportColumns = [0, 1, 2, 3, 4]; 
     
     if ($.fn.DataTable) {
         $('#inspectorsTable').DataTable({ 
@@ -427,10 +425,10 @@ $(document).ready(function() {
                 } 
             },
             // Orden por defecto
-            order: [[0, 'desc']], 
+            order: [[0, 'asc']], 
              // Deshabilitar el ordenamiento en la columna de Acciones
             "columnDefs": [
-                { "orderable": false, "targets": 6 } 
+                { "orderable": false, "targets": 5 } 
             ]
         });
     } else {

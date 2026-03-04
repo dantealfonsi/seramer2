@@ -25,14 +25,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <nav aria-label="breadcrumb" class="mb-3">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="../dashboard/index.php">Inicio</a></li>
-                        <li class="breadcrumb-item"><a href="index.php">Gestión de Cajas</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Nueva Caja</li>
-                    </ol>
-                </nav>
-            </div>
             
             <div class="col-12">
                 <div class="card">

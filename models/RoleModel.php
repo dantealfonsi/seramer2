@@ -90,10 +90,10 @@ class RoleModel {
      */
     public function update($id, $data) {
         try {
-            // Prevent changing permissions of 'admin'
+            // Prevent changing properties of 'admin' or default role (ID 8)
             $currentRole = $this->getById($id);
-            if ($currentRole && $currentRole['name'] === 'admin') {
-                return false; // Cannot update admin
+            if ($currentRole && ($currentRole['name'] === 'admin' || $id == 8)) {
+                return false; // Cannot update admin or default role 
             }
 
             $query = "UPDATE {$this->table} 
@@ -124,9 +124,9 @@ class RoleModel {
      */
     public function updatePermissions($id, $can_read, $can_write, $can_modify, $can_delete, $menu_json = null) {
         try {
-            // Prevent changing admin properties
+            // Prevent changing admin or default role properties
             $currentRole = $this->getById($id);
-            if ($currentRole && $currentRole['name'] === 'admin') {
+            if ($currentRole && ($currentRole['name'] === 'admin' || $id == 8)) {
                 return false;
             }
 
@@ -154,11 +154,18 @@ class RoleModel {
      */
     public function delete($id) {
         try {
-            // Prevent deleting 'admin'
+            // Prevent deleting 'admin' or the default role 'POR DEFECTO' (ID 8)
             $currentRole = $this->getById($id);
-            if ($currentRole && $currentRole['name'] === 'admin') {
+            if ($currentRole && ($currentRole['name'] === 'admin' || $id == 8)) {
                 return false;
             }
+
+            // Before deleting, re-assign users who are using this role to the default "POR DEFECTO" role (ID 8)
+            // This ensures users aren't left without a defined role.
+            $reassignQuery = "UPDATE user_departments SET role_id = 8 WHERE role_id = :id";
+            $reassignStmt = $this->conn->prepare($reassignQuery);
+            $reassignStmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $reassignStmt->execute();
 
             $query = "DELETE FROM {$this->table} WHERE id = :id";
             $stmt = $this->conn->prepare($query);

@@ -17,14 +17,23 @@ $statsModel = new StatisticalReportModel();
 $dashboardStats = $statsModel->getDashboardStats();
 $totalAwardees = $dashboardStats['awardees'] ?? 0;
 
-// Configurar filtros
+// Configurar filtros - ensamblar cedula desde prefijo + numero enviados por separado
+$id_prefix_val = strtoupper($_GET['id_prefix'] ?? 'V');
+$id_number_val = trim($_GET['id_number_raw'] ?? '');
+
+// Construir el valor de cedula para filtrar
+$id_number_filter = '';
+if (!empty($id_number_val)) {
+    $id_number_filter = $id_prefix_val . '-' . $id_number_val;
+}
+
 $filters = [
-    'search' => $_GET['search'] ?? null,
-    'id_number' => $_GET['id_number'] ?? null,
-    'name' => $_GET['name'] ?? null,
-    'phone' => $_GET['phone'] ?? null,
-    'email' => $_GET['email'] ?? null,
-    'address' => $_GET['address'] ?? null,
+    'search'    => $_GET['search'] ?? null,
+    'id_number' => $id_number_filter ?: null,
+    'name'      => $_GET['name'] ?? null,
+    'phone'     => $_GET['phone'] ?? null,
+    'email'     => $_GET['email'] ?? null,
+    'address'   => $_GET['address'] ?? null,
 ];
 
 // Limpiar el arreglo eliminando valores nulos o vacíos
@@ -32,7 +41,7 @@ $activeFilters = array_filter($filters);
 
 $params = [
     'filters' => $activeFilters,
-    'search' => $_GET['search'] ?? '' 
+    'search'  => $_GET['search'] ?? ''
 ];
 
 // Obtener datos del controlador
@@ -101,8 +110,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <input type="text" class="form-control" name="search" placeholder="BUSCAR..." value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>">
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label">Cédula</label>
-                                            <input type="text" class="form-control" name="id_number" placeholder="CéDULA" value="<?php echo htmlspecialchars($_GET['id_number'] ?? ''); ?>">
+                                            <label class="form-label" id="id-label"><?= $id_prefix_val === 'J' ? 'RIF' : 'Cédula' ?></label>
+                                            <div class="input-group">
+                                                <select class="form-select" name="id_prefix" id="id_prefix" style="max-width: 80px;" onchange="updateIdLabel()">
+                                                    <option value="V" <?= $id_prefix_val === 'V' ? 'selected' : '' ?>>V-</option>
+                                                    <option value="E" <?= $id_prefix_val === 'E' ? 'selected' : '' ?>>E-</option>
+                                                    <option value="J" <?= $id_prefix_val === 'J' ? 'selected' : '' ?>>J-</option>
+                                                </select>
+                                                <input type="text" class="form-control" id="id_number_raw" name="id_number_raw"
+                                                    placeholder="55667788"
+                                                    value="<?= htmlspecialchars($id_number_val) ?>"
+                                                    oninput="this.value=this.value.replace(/\D/g,'')">
+                                            </div>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label">Nombre</label>
@@ -238,20 +257,15 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
-<!-- DataTables Dependencies (CDN for full Buttons support) -->
+<!-- DataTables Dependencies (local files) -->
 <script type="text/javascript" src="../../public/assets/js/pdf_logo.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css"/>
+<script type="text/javascript" src="../../public/datatables/jszip.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/buttons.html5.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
+<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
@@ -364,7 +378,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     }
                 ],
                 language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                    "decimal": "",
+                    "emptyTable": "No hay datos disponibles en la tabla",
+                    "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                    "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                    "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                    "thousands": ",",
+                    "lengthMenu": "Mostrar _MENU_ entradas",
+                    "loadingRecords": "Cargando...",
+                    "processing": "Procesando...",
+                    "search": "Buscar:",
+                    "zeroRecords": "No se encontraron registros coincidentes",
+                    "paginate": {
+                        "first": "Primero",
+                        "last": "Último",
+                        "next": "Siguiente",
+                        "previous": "Anterior"
+                    }
                 },
                 order: [[1, 'asc']],
                 columnDefs: [
@@ -378,4 +408,34 @@ include __DIR__ . '/../layouts/navigation-top.php';
             }
         }
     });
+</script>
+
+<script>
+// --- Lógica prefijo Cédula/RIF en Adjudicatarios ---
+function updateIdLabel() {
+    const prefix = document.getElementById('id_prefix')?.value;
+    const label  = document.getElementById('id-label');
+    if (!label) return;
+    label.textContent = prefix === 'J' ? 'RIF' : 'Cédula';
+}
+
+function formatIdNumber(input) {
+    // Solo dígitos, sin puntos (formato venezolano: V-55667788)
+    input.value = input.value.replace(/\D/g, '');
+}
+
+function buildIdNumber() {
+    const prefix = document.getElementById('id_prefix')?.value || 'V';
+    const raw    = document.getElementById('id_number_raw')?.value || '';
+    const hidden = document.getElementById('id_number_hidden');
+    if (hidden) {
+        hidden.value = raw ? (prefix + '-' + raw) : '';
+    }
+    // Disable the raw input so it doesn't also get posted
+    const rawInput = document.getElementById('id_number_raw');
+    if (rawInput) rawInput.disabled = true;
+}
+
+// Inicializar etiqueta al cargar
+document.addEventListener('DOMContentLoaded', updateIdLabel);
 </script>

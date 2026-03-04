@@ -1,6 +1,19 @@
 <?php
 require_once __DIR__ . '/../../controllers/ContractController.php';
 
+// Ensamblar cédula desde prefijo + numero separados
+$awardee_id_prefix = strtoupper($_GET['id_prefix'] ?? 'V');
+$awardee_id_number = trim($_GET['id_number_raw'] ?? '');
+$awardee_filter = '';
+if (!empty($awardee_id_number)) {
+    $awardee_filter = $awardee_id_prefix . '-' . $awardee_id_number;
+}
+
+// Si viene del filtro de nombre (campo libre) se usa directamente
+$awardee_text = $_GET['awardee_text'] ?? '';
+// El filtro final: cedula tiene prioridad, si no, usar texto libre
+$_GET['awardee'] = $awardee_filter ?: $awardee_text;
+
 $controller = new ContractController();
 $data = $controller->index();
 $contracts = $data['contracts'];
@@ -9,6 +22,16 @@ $page_title = $data['page_title'];
 $filters = $data['filters'];
 $fiscalYears = $data['fiscalYears'];
 $totalContracts = count($contracts);
+
+// Parsear para re-mostrar en el formulario
+if (!empty($filters['awardee'])) {
+    if (preg_match('/^([VEJvej])-(.+)$/', $filters['awardee'], $m)) {
+        $awardee_id_prefix = strtoupper($m[1]);
+        $awardee_id_number = $m[2];
+    } else {
+        $awardee_id_number = $filters['awardee'];
+    }
+}
 
 require_once __DIR__ . '/../layouts/header.php';
 include __DIR__ . '/../layouts/navigation.php';
@@ -81,10 +104,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="filter-card-body">
                                 <form method="GET" action="index.php" class="row g-3">
                                     <div class="col-md-3">
-                                        <label class="form-label fw-bold small text-uppercase">Adjudicatario / ID</label>
+                                        <label class="form-label fw-bold small text-uppercase" id="contracts-id-label"><?= $awardee_id_prefix === 'J' ? 'Adjudicatario / RIF' : 'Adjudicatario / Cédula' ?></label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="ri-user-search-line text-muted"></i></span>
-                                            <input type="text" name="awardee" class="form-control" placeholder="Nombre o Cédula..." value="<?php echo htmlspecialchars($filters['awardee']); ?>">
+                                            <select class="form-select" name="id_prefix" id="contracts_id_prefix" style="max-width: 75px;" onchange="updateContractsLabel()">
+                                                <option value="V" <?= $awardee_id_prefix === 'V' ? 'selected' : '' ?>>V-</option>
+                                                <option value="E" <?= $awardee_id_prefix === 'E' ? 'selected' : '' ?>>E-</option>
+                                                <option value="J" <?= $awardee_id_prefix === 'J' ? 'selected' : '' ?>>J-</option>
+                                            </select>
+                                            <input type="text" name="id_number_raw" id="contracts_id_raw" class="form-control"
+                                                placeholder="55667788"
+                                                value="<?= htmlspecialchars($awardee_id_number) ?>"
+                                                oninput="this.value=this.value.replace(/\D/g,'')">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -563,4 +593,32 @@ function singleChangePaymentStatus(id, status) {
     $.post('bulk_actions.php?action=update_payment_status', JSON.stringify({ ids: [id], status_payment: status }))
       .done(() => location.reload());
 }
+</script>
+
+<script>
+// --- Lógica prefijo Cédula/RIF en Contratos ---
+function updateContractsLabel() {
+    const prefix = document.getElementById('contracts_id_prefix')?.value;
+    const label  = document.getElementById('contracts-id-label');
+    if (!label) return;
+    label.textContent = prefix === 'J' ? 'Adjudicatario / RIF' : 'Adjudicatario / Cédula';
+}
+
+function formatContractsId(input) {
+    // Solo dígitos, sin puntos (formato venezolano: V-55667788)
+    input.value = input.value.replace(/\D/g, '');
+}
+
+function buildContractsAwardee() {
+    const prefix = document.getElementById('contracts_id_prefix')?.value || 'V';
+    const raw    = document.getElementById('contracts_id_raw')?.value || '';
+    const hidden = document.getElementById('contracts_awardee_hidden');
+    if (hidden) {
+        hidden.value = raw ? (prefix + '-' + raw) : '';
+    }
+    const rawInput = document.getElementById('contracts_id_raw');
+    if (rawInput) rawInput.disabled = true;
+}
+
+document.addEventListener('DOMContentLoaded', updateContractsLabel);
 </script>

@@ -33,10 +33,21 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
 ?>
 <?php if (isset($_SESSION['flash_message'])): ?>
-    <div class="alert alert-<?php echo $_SESSION['flash_message']['type']; ?> mt-2" role="alert">
-        <?php echo htmlspecialchars($_SESSION['flash_message']['message']); ?>
-    </div>
-    <?php unset($_SESSION['flash_message']); ?>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+        title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+        showConfirmButton: false,
+        timer: 4000,
+        timerProgressBar: true,
+        width: '450px'
+    });
+});
+</script>
+<?php unset($_SESSION['flash_message']); ?>
 <?php endif; ?>
 
 <div class="main-content">
@@ -98,9 +109,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                             <td><?php echo htmlspecialchars($infractionType['description']); ?></td>
                                             <td><?php echo htmlspecialchars($infractionType['violated_article']); ?></td>
                                             <td>
-                                                <div class="btn-group" role="group">
                                                     <a href="edit.php?id=<?php echo $infractionType['infraction_type_id']; ?>" class="btn btn-sm btn-outline-warning" title="Editar"><i class="ri-edit-line"></i></a>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(<?php echo $infractionType['infraction_type_id']; ?>)" title="Eliminar"><i class="ri-delete-bin-line"></i></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -117,24 +126,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar el tipo de infracción con ID: <strong id="infractionTypeId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción es permanente y puede afectar a otros registros que hagan referencia a este tipo de infracción.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -147,20 +139,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteInfractionTypeId = null;
 
-function confirmDelete(id) {
-    deleteInfractionTypeId = id;
-    document.getElementById('infractionTypeId').textContent = id;
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
-}
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteInfractionTypeId) {
-        window.location.href = 'index.php?delete_id=' + deleteInfractionTypeId; 
-    }
-});
 
 // DataTables Initialization
 $(document).ready(function() {

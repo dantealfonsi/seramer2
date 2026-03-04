@@ -70,7 +70,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </a>
                             <button type="button" 
                                     class="btn btn-outline-danger" 
-                                    onclick="confirmDelete(<?php echo $inspector['inspector_id']; ?>)">
+                                    onclick="confirmDelete(<?php echo $inspector['inspector_id']; ?>, '<?php echo addslashes($inspector['full_name']); ?>', '<?php echo addslashes($inspector['inspector_code']); ?>')">
                                 <i class="ri-delete-bin-line"></i> Eliminar
                             </button>
                         </div>
@@ -81,10 +81,6 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             <div class="col-md-12">
                                 <table class="table table-borderless">
                                     <tbody>
-                                        <tr>
-                                            <th width="20%">ID del Inspector:</th>
-                                            <td><?php echo htmlspecialchars($inspector['inspector_id']); ?></td>
-                                        </tr>
                                         <tr>
                                             <th>Código:</th>
                                             <td>
@@ -131,59 +127,45 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación de Inspector</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea eliminar al inspector con ID: <strong id="inspectorId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción no se puede deshacer y lo eliminará de forma permanente.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
 <script>
-let deleteInspectorId = null;
-
-function confirmDelete(id) {
-    deleteInspectorId = id;
-    document.getElementById('inspectorId').textContent = id;
-    
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+function confirmDelete(id, name, code) {
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: `¿Estás seguro que deseas eliminar al inspector "${name}" (Código: ${code})? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-outline-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'delete.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            form.appendChild(idInput);
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteInspectorId) {
-        // Crear formulario para enviar la solicitud de eliminación
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'delete.php';
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteInspectorId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
 </script>

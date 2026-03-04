@@ -165,7 +165,7 @@ class UserModel {
                              r.can_modify, r.can_delete, r.id as role_id, r.menu_json
                       FROM departments d 
                       INNER JOIN user_departments ud ON d.id = ud.department_id 
-                      LEFT JOIN roles r ON ud.role_id = r.id 
+                      LEFT JOIN roles r ON COALESCE(ud.role_id, 8) = r.id 
                       WHERE ud.user_id = :user_id AND ud.status = 'active'
                       ORDER BY d.name";
             
