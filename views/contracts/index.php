@@ -140,14 +140,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <div class="row g-4 mb-4">
                             <!-- Contratos Activos -->
                             <div class="col-md-4">
-                                <div class="card card-status-success h-100" style="background-color: var(--metro-success-light);">
+                                <div class="card card-status-success h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-success) !important; background-color: transparent !important;">
-                                            <i class="ri-checkbox-circle-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e8fadf !important; color: #71dd37;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-success);"><?php echo number_format($metrics['active']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Activos</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #71dd37;"><?php echo number_format($metrics['active']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Activos</p>
                                         </div>
                                     </div>
                                 </div>
@@ -155,14 +155,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             
                             <!-- Contratos Simultáneos -->
                             <div class="col-md-4">
-                                <div class="card card-status-primary h-100" style="background-color: var(--metro-primary-light);">
+                                <div class="card card-status-primary h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-primary) !important; background-color: transparent !important;">
-                                            <i class="ri-refresh-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-refresh-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($metrics['simultaneous']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Simultáneos</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($metrics['simultaneous']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Simultáneos</p>
                                         </div>
                                     </div>
                                 </div>
@@ -170,14 +170,14 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                             <!-- Contratos Anticipados -->
                             <div class="col-md-4">
-                                <div class="card card-status-warning h-100" style="background-color: var(--metro-warning-light);">
+                                <div class="card card-status-warning h-100" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important; background-color: transparent !important;">
-                                            <i class="ri-history-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #fff2e2 !important; color: #fdac41;">
+                                            <i class="ri-history-line" style="font-size: 1.6rem;"></i>
                                         </div>
                                         <div>
-                                            <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($metrics['advance']); ?></h3>
-                                            <p class="mb-0 text-muted fw-semibold small text-uppercase">Contratos Anticipados</p>
+                                            <h4 class="mb-0 fw-bold" style="color: #fdac41;"><?php echo number_format($metrics['advance']); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold small text-uppercase" style="font-size: 0.7rem;">Contratos Anticipados</p>
                                         </div>
                                     </div>
                                 </div>
@@ -186,10 +186,20 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Mensajes Flash -->
                         <?php if (isset($_SESSION['flash_message'])): ?>
-                        <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mb-4" role="alert">
-                            <i class="ri-info-line me-2"></i><?php echo $_SESSION['flash_message']['message']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
                         <?php unset($_SESSION['flash_message']); ?>
                         <?php endif; ?>
 

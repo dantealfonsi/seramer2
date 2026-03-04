@@ -134,14 +134,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- 3. Tarjeta de Métrica (Total) -->
-                        <div class="card card-status-success mb-4" style="background-color: var(--metro-primary-light);">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem;">
-                                    <i class="ri-group-line"></i>
-                                </div>
-                                <div>
-                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-primary);"><?php echo number_format($totalAwardees); ?></h3>
-                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">ADJUDICATARIOS REGISTRADOS</p>
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-group-line" style="font-size: 1.6rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($totalAwardees); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">ADJUDICATARIOS REGISTRADOS</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

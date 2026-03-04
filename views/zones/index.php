@@ -71,24 +71,38 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Métrica Rápida Estilo Metro -->
-                        <div class="card card-status-warning mb-4" style="background-color: var(--metro-warning-light);">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; color: var(--metro-warning) !important;">
-                                    <i class="ri-map-2-line"></i>
-                                </div>
-                                <div>
-                                    <h3 class="mb-0 fw-bold" style="color: var(--metro-warning);"><?php echo number_format($totalZones); ?></h3>
-                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem;">ZONAS REGISTRADAS</p>
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-warning" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #fff2e2 !important; color: #fdac41;">
+                                            <i class="ri-map-2-line" style="font-size: 1.6rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #fdac41;"><?php echo number_format($totalZones); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">ZONAS REGISTRADAS</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Mensajes Flash -->
                         <?php if (isset($_SESSION['flash_message'])): ?>
-                        <div class="alert alert-<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger'; ?> alert-dismissible fade show mb-4" role="alert">
-                            <?php echo $_SESSION['flash_message']['message']; ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
+                        <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true,
+                                width: '450px'
+                            });
+                        });
+                        </script>
                         <?php unset($_SESSION['flash_message']); ?>
                         <?php endif; ?>
 

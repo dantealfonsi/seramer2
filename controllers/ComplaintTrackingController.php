@@ -49,7 +49,7 @@ class ComplaintTrackingController {
         $result = $this->model->create($data);
         if ($result['success']) {
             $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Registro de seguimiento creado exitosamente.'];
-            return ['success' => true, 'redirect' => 'view.php?id=' . $data['complaint_id']];
+            return ['success' => true, 'redirect' => '../complaints/view.php?id=' . $data['complaint_id']];
         } else {
             return ['success' => false, 'message' => 'Error al crear el registro.'];
         }
@@ -91,7 +91,7 @@ class ComplaintTrackingController {
         $result = $this->model->update($id, $data);
         if ($result['success']) {
             $_SESSION['flash_message'] = ['type' => 'success', 'message' => 'Registro de seguimiento actualizado exitosamente.'];
-            return ['success' => true, 'redirect' => 'view.php?id=' . $data['complaint_id']];
+            return ['success' => true, 'redirect' => '../complaints/view.php?id=' . $data['complaint_id']];
         } else {
             return ['success' => false, 'message' => 'Error al actualizar el registro.'];
         }

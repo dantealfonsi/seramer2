@@ -278,10 +278,14 @@ class StatisticalReportModel extends Model {
         $inspectionsThisMonth = $this->queryOne("SELECT COUNT(*) as total FROM inspection_reports WHERE MONTH(creation_date) = MONTH(CURRENT_DATE()) AND YEAR(creation_date) = YEAR(CURRENT_DATE())");
         $infractionsThisMonth = $this->queryOne("SELECT COUNT(*) as total FROM infractions WHERE MONTH(infraction_datetime) = MONTH(CURRENT_DATE()) AND YEAR(infraction_datetime) = YEAR(CURRENT_DATE()) AND status_logical = 'active'");
         
-        $sanctionsImposedMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Imposed' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE()) AND status_logical = 'active'");
-        $sanctionsPaidMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Paid' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE()) AND status_logical = 'active'");
-        $sanctionsPendingMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Pending' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE()) AND status_logical = 'active'");
+        $sanctionsImposedMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Imposed' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE())");
+        $sanctionsPaidMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Paid' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE())");
+        $sanctionsPendingMonth = $this->queryOne("SELECT COUNT(*) as total FROM sanctions WHERE sanction_status = 'Pending' AND MONTH(imposition_date) = MONTH(CURRENT_DATE()) AND YEAR(imposition_date) = YEAR(CURRENT_DATE())");
         $citationsThisMonth = $this->queryOne("SELECT COUNT(*) as total FROM citations WHERE MONTH(citation_datetime) = MONTH(CURRENT_DATE()) AND YEAR(citation_datetime) = YEAR(CURRENT_DATE())");
+        $citationsScheduledMonth = $this->queryOne("SELECT COUNT(*) as total FROM citations WHERE citation_status = 'Scheduled' AND MONTH(citation_datetime) = MONTH(CURRENT_DATE()) AND YEAR(citation_datetime) = YEAR(CURRENT_DATE())");
+        $citationsCompletedMonth = $this->queryOne("SELECT COUNT(*) as total FROM citations WHERE citation_status = 'Completed' AND MONTH(citation_datetime) = MONTH(CURRENT_DATE()) AND YEAR(citation_datetime) = YEAR(CURRENT_DATE())");
+        $complaintsThisMonth = $this->queryOne("SELECT COUNT(*) as total FROM complaints WHERE MONTH(complaint_datetime) = MONTH(CURRENT_DATE()) AND YEAR(complaint_datetime) = YEAR(CURRENT_DATE())");
+        $inspectorsCount = $this->queryOne("SELECT COUNT(*) as total FROM inspectors");
 
         return [
             'active_infractions' => (int)($activeInfractions['total'] ?? 0),
@@ -293,7 +297,11 @@ class StatisticalReportModel extends Model {
             'sanctions_imposed_month' => (int)($sanctionsImposedMonth['total'] ?? 0),
             'sanctions_paid_month' => (int)($sanctionsPaidMonth['total'] ?? 0),
             'sanctions_pending_month' => (int)($sanctionsPendingMonth['total'] ?? 0),
-            'citations_this_month' => (int)($citationsThisMonth['total'] ?? 0)
+            'citations_this_month' => (int)($citationsThisMonth['total'] ?? 0),
+            'citations_scheduled_month' => (int)($citationsScheduledMonth['total'] ?? 0),
+            'citations_completed_month' => (int)($citationsCompletedMonth['total'] ?? 0),
+            'complaints_this_month' => (int)($complaintsThisMonth['total'] ?? 0),
+            'total_inspectors' => (int)($inspectorsCount['total'] ?? 0)
         ];
     }
 }

@@ -23,14 +23,16 @@ $allowed_sanction_status = [
     'Imposed' => 'Impuesta',
     'Paid' => 'Pagada',
     'Pending' => 'Pendiente',
-    'Canceled' => 'Cancelada'
+    'Canceled' => 'Cancelada',
+    'Waived' => 'Cancelada'
 ];
 
 $status_colors = [
     'Imposed' => 'warning',
     'Paid' => 'success',
     'Pending' => 'secondary',
-    'Canceled' => 'danger'
+    'Canceled' => 'danger',
+    'Waived' => 'danger'
 ];
 
 // --- LÓGICA DE ELIMINACIÓN (Manejo de POST para DELETE) ---
@@ -190,10 +192,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <div class="row g-3 mt-4 mb-2">
                             <!-- Impuestas -->
                             <div class="col-md-4">
-                                <div class="card card-status-warning" style="background-color: #fff4e1; border: none; border-radius: 12px;">
+                                <div class="card card-status-warning" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; background-color: #ffab00; color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
-                                            <i class="ri-file-warning-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #fff4e1 !important; color: #ffab00;">
+                                            <i class="ri-file-warning-line" style="font-size: 1.4rem;"></i>
                                         </div>
                                         <div>
                                             <h4 class="mb-0 fw-bold" style="color: #ffab00;"><?php echo number_format($sanctionsImposed); ?></h4>
@@ -204,10 +206,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                             <!-- Pagadas -->
                             <div class="col-md-4">
-                                <div class="card card-status-success" style="background-color: #e8fadf; border: none; border-radius: 12px;">
+                                <div class="card card-status-success" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; background-color: #71dd37; color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
-                                            <i class="ri-checkbox-circle-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8fadf !important; color: #71dd37;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.4rem;"></i>
                                         </div>
                                         <div>
                                             <h4 class="mb-0 fw-bold" style="color: #71dd37;"><?php echo number_format($sanctionsPaid); ?></h4>
@@ -218,10 +220,10 @@ include __DIR__ . '/../layouts/navigation-top.php';
                             </div>
                             <!-- Pendientes -->
                             <div class="col-md-4">
-                                <div class="card card-status-secondary" style="background-color: #ebeef1; border: none; border-radius: 12px;">
+                                <div class="card card-status-secondary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; background-color: #8592a3; color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
-                                            <i class="ri-time-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #ebeef1 !important; color: #8592a3;">
+                                            <i class="ri-time-line" style="font-size: 1.4rem;"></i>
                                         </div>
                                         <div>
                                             <h4 class="mb-0 fw-bold" style="color: #8592a3;"><?php echo number_format($sanctionsPending); ?></h4>
@@ -290,12 +292,12 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                                         <i class="ri-eye-line"></i>
                                                     </a>
                                                     <?php endif; ?>
-                                                    <?php if ($rol->hasPermission('INFRACTIONS', 'w') && $sanction['sanction_status'] !== 'Paid'): ?>
+                                                    <?php /* if ($rol->hasPermission('INFRACTIONS', 'w') && $sanction['sanction_status'] !== 'Paid'): ?>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar/Cancelar" 
                                                             onclick="confirmDelete(<?php echo $sanction['sanction_id']; ?>, '<?php echo htmlspecialchars($sanction['stall_number']); ?>')">
                                                         <i class="ri-delete-bin-line"></i>
                                                     </button>
-                                                    <?php endif; ?>
+                                                    <?php endif; */ ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

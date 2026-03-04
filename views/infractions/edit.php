@@ -352,7 +352,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                         <input type="date" class="form-control" id="effect_end_date" name="effect_end_date" min="<?php echo date('Y-m-d'); ?>">
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                            </div>
                             
                             <hr class="my-4">
 

@@ -227,7 +227,17 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         <!-- Historial de Seguimiento -->
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="mb-0">Historial de Seguimiento</h6>
-                            <?php if ($_SESSION['selected_department'] === 'Recursos Humanos' || $_SESSION['selected_department'] === 'Fiscalizacion'): ?>
+                            <?php 
+                            // Verificar si ya existe una resolución
+                            $has_resolution = false;
+                            foreach ($tracking_records as $record) {
+                                if ($record['action_type'] === 'Resolution') {
+                                    $has_resolution = true;
+                                    break;
+                                }
+                            }
+                            
+                            if (!$has_resolution && ($_SESSION['selected_department'] === 'Recursos Humanos' || $_SESSION['selected_department'] === 'Fiscalizacion')): ?>
                             <a href="../complaint_tracking/create.php?complaint_id=<?php echo htmlspecialchars($complaint['complaint_id']); ?>" class="btn btn-primary">
                                 <i class="ri-add-line"></i> Añadir Registro
                             </a>

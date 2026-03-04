@@ -200,14 +200,18 @@ include __DIR__ . '/../layouts/navigation-top.php';
                         </div>
 
                         <!-- Tarjeta de Métrica (Infracciones del Mes) -->
-                        <div class="card card-status-danger mt-4 mb-2" style="background-color: #ffe5e5; border: none; border-radius: 12px;">
-                            <div class="card-body p-3 d-flex align-items-center">
-                                <div class="page-icon me-3" style="width:52px;height:52px;font-size:1.6rem; background-color: #ff3e1d; color: white; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
-                                    <i class="ri-alert-line"></i>
-                                </div>
-                                <div>
-                                    <h3 class="mb-0 fw-bold" style="color: #ff3e1d;"><?php echo number_format($infractionsThisMonth); ?></h3>
-                                    <p class="mb-0 text-muted fw-semibold" style="font-size:0.8rem; text-transform: uppercase;">Infracciones reportadas este mes</p>
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-danger" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; background-color: #ffe5e5 !important; color: #ff3e1d;">
+                                            <i class="ri-alert-line" style="font-size: 1.6rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #ff3e1d;"><?php echo number_format($infractionsThisMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Infracciones reportadas este mes</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

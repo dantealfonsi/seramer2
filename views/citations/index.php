@@ -11,6 +11,8 @@ require_once __DIR__ . '/../../models/StatisticalReportModel.php';
 $statsModel = new StatisticalReportModel();
 $dashboardStats = $statsModel->getDashboardStats();
 $citationsThisMonth = $dashboardStats['citations_this_month'] ?? 0;
+$citationsScheduledMonth = $dashboardStats['citations_scheduled_month'] ?? 0;
+$citationsCompletedMonth = $dashboardStats['citations_completed_month'] ?? 0;
 
 // 1. OBTENER PARÁMETROS DE FILTRADO DEL GET
 // Ahora obtenemos los parámetros de filtro del URL (método GET), que se establecen al hacer clic en "Aplicar Filtros"
@@ -176,11 +178,11 @@ include __DIR__ . '/../layouts/navigation-top.php';
 
                         <!-- Tarjetas de Métricas -->
                         <div class="row g-3 mt-4 mb-2">
-                            <div class="col-md-4">
-                                <div class="card card-status-primary" style="background-color: #e7e7ff; border: none; border-radius: 12px;">
+                             <div class="col-md-4">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
                                     <div class="card-body p-3 d-flex align-items-center">
-                                        <div class="page-icon me-3" style="width:48px;height:48px;font-size:1.4rem; background-color: #696cff; color: white; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
-                                            <i class="ri-calendar-event-line"></i>
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important; color: #696cff;">
+                                            <i class="ri-calendar-event-line" style="font-size: 1.4rem;"></i>
                                         </div>
                                         <div>
                                             <h4 class="mb-0 fw-bold" style="color: #696cff;"><?php echo number_format($citationsThisMonth); ?></h4>
@@ -189,7 +191,37 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     </div>
                                 </div>
                             </div>
-                    </div>
+                            
+                            <!-- Tarjeta: Programadas -->
+                             <div class="col-md-4">
+                                <div class="card card-status-info" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e1f5fe !important; color: #03a9f4;">
+                                            <i class="ri-time-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #03a9f4;"><?php echo number_format($citationsScheduledMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Programadas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tarjeta: Resueltas (Completadas) -->
+                             <div class="col-md-4">
+                                <div class="card card-status-success" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e8f5e9 !important; color: #4caf50;">
+                                            <i class="ri-checkbox-circle-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #4caf50;"><?php echo number_format($citationsCompletedMonth); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Resueltas este mes</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     <div class="card-body">
                         <?php if (empty($citations)): ?>
@@ -511,28 +543,41 @@ $(document).ready(function() {
         function(settings, data, dataIndex) {
             // Obtener los valores de filtro de los campos de entrada
             const statusFilter = $('#filterStatus').val();
-            // const locationFilter = $('#filterLocation').val().toLowerCase(); // Eliminado
             const dateFilter = $('#filterDate').val();
+            const stallFilter = $('#filterStall').val().toLowerCase().trim();
+            const awardeeFilter = $('#filterAwardee').val().toLowerCase().trim();
+            const idPrefixFilter = $('#filterIdPrefix').val();
+            const idNumberFilter = $('#filterIdNumber').val().trim();
 
             // Columnas de la tabla (índices basados en 0):
-            // 0: ID (Oculto)
+            // 0: ID Citación
             // 1: Fecha (DD/MM/YYYY)
             // 2: Hora (hh:mm A)
-            // 3: Puesto
-            // 4: Adjudicatario
-            // 5: Infracción (Icono)
+            // 3: Puesto (HTML badge)
+            // 4: Adjudicatario (Nombre + ID small)
+            // 5: Infracción (Icono popover)
             // 6: Mediador
             // 7: Estado (HTML del badge)
             // 8: Acciones
 
-            // Obtener datos de la fila actual
+            // 1. Obtener Estado
             const statusMatch = data[7].match(/data-status-key="([^"]+)"/);
             const rowStatus = statusMatch ? statusMatch[1] : ''; 
 
+            // 2. Obtener Fecha
             const rowDateStr = data[1]; // Formato: DD/MM/YYYY
+
+            // 3. Obtener Puesto (limpiar del badge)
+            const rowStall = data[3].replace(/<[^>]*>?/gm, '').toLowerCase().trim();
+
+            // 4. Obtener Adjudicatario
+            const rowAwardee = data[4].toLowerCase().trim();
 
             let passStatus = true;
             let passDate = true;
+            let passStall = true;
+            let passAwardee = true;
+            let passId = true;
 
             // 1. Filtrar por Estado
             if (statusFilter !== '' && statusFilter.toLowerCase() !== rowStatus) {
@@ -541,11 +586,8 @@ $(document).ready(function() {
 
             // 2. Filtrar por Fecha exacta
             if (dateFilter) {
-                // Convertir DD/MM/YYYY a YYYY-MM-DD para comparar con el input date (YYYY-MM-DD)
                 const parts = rowDateStr.split('/');
                 if (parts.length === 3) {
-                    // parts[0] = DD, parts[1] = MM, parts[2] = YYYY
-                    // Input date format: YYYY-MM-DD
                     const rowDateISO = `${parts[2]}-${parts[1]}-${parts[0]}`;
                     if (rowDateISO !== dateFilter) {
                         passDate = false;
@@ -553,14 +595,32 @@ $(document).ready(function() {
                 }
             }
 
-            // La fila solo pasa si cumple con los criterios
-            return passStatus && passDate;
+            // 3. Filtrar por Puesto (parcial)
+            if (stallFilter && !rowStall.includes(stallFilter)) {
+                passStall = false;
+            }
+
+            // 4. Filtrar por Adjudicatario (parcial)
+            if (awardeeFilter && !rowAwardee.includes(awardeeFilter)) {
+                passAwardee = false;
+            }
+
+            // 5. Filtrar por Cédula (Prefijo y/o Número)
+            if (idPrefixFilter || idNumberFilter) {
+                const fullIdSearch = (idPrefixFilter + idNumberFilter).toLowerCase();
+                if (!rowAwardee.includes(fullIdSearch)) {
+                    passId = false;
+                }
+            }
+
+            // La fila solo pasa si cumple con TODOS los criterios
+            return passStatus && passDate && passStall && passAwardee && passId;
         }
     );
     
     // **APLICACIÓN INICIAL DEL FILTRO:**
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('filterStatus') || urlParams.get('filterDate')) {
+    if (urlParams.get('filterStatus') || urlParams.get('filterDate') || urlParams.get('filterStall') || urlParams.get('filterAwardee') || urlParams.get('filterIdNumber')) {
         table.draw();
     }
 });

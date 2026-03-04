@@ -8,6 +8,11 @@ require_once __DIR__ . '/../../controllers/InspectorsController.php';
 
 $inspectorsController = new InspectorsController();
 
+require_once __DIR__ . '/../../models/StatisticalReportModel.php';
+$statsModel = new StatisticalReportModel();
+$dashboardStats = $statsModel->getDashboardStats();
+$totalInspectors = $dashboardStats['total_inspectors'] ?? 0;
+
 // --- LÓGICA DE ELIMINACIÓN (Manejo de POST para DELETE) ---
 // La lógica de delete ya estaba en el código original, se mantiene.
 if ( $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
@@ -124,26 +129,50 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                 </form>
                             </div>
                         </div>
+
+                        <!-- Tarjeta de Métricas (Ancho Completo) -->
+                        <div class="row g-3 mt-4 mb-2">
+                            <div class="col-12">
+                                <div class="card card-status-primary" style="background-color: #ffffff; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);">
+                                    <div class="card-body p-3 d-flex align-items-center">
+                                        <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e0faff !important; color: #03c3ec;">
+                                            <i class="ri-user-star-line" style="font-size: 1.4rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="mb-0 fw-bold" style="color: #03c3ec;"><?php echo number_format($totalInspectors); ?></h4>
+                                            <p class="mb-0 text-muted fw-semibold" style="font-size:0.75rem; text-transform: uppercase;">Total de Inspectores Registrados</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <?php if ($has_filters): ?>
-                        <div class="mt-2">
+                        <div class="mt-2 text-end">
                             <small class="text-muted">
-                                Resultados filtrados del servidor: (<?php echo count($inspectors); ?> registro<?php echo count($inspectors) != 1 ? 's' : ''; ?>). Use la caja de búsqueda para filtrar localmente.
+                                <i class="ri-information-line me-1"></i> Resultados filtrados (<?php echo count($inspectors); ?> registros).
                             </small>
                         </div>
                         <?php endif; ?>
                     </div>
 
-                    <?php 
-                    // Muestra el flash message
-                    if (isset($_SESSION['flash_message'])) {
-                        $alert_type = $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger';
-                        echo '<div class="alert alert-' . $alert_type . ' alert-dismissible fade show mx-3 mt-3" role="alert">';
-                        echo htmlspecialchars($_SESSION['flash_message']['message']);
-                        echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                        echo '</div>';
-                        unset($_SESSION['flash_message']);
-                    }
-                    ?>
+                <?php if (isset($_SESSION['flash_message'])): ?>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                            title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true,
+                            width: '450px'
+                        });
+                    });
+                    </script>
+                    <?php unset($_SESSION['flash_message']); ?>
+                <?php endif; ?>
 
                     <div class="card-body">
                         <?php if (empty($inspectors)): ?>
@@ -170,19 +199,28 @@ include __DIR__ . '/../layouts/navigation-top.php';
                                     <tbody>
                                         <?php foreach ($inspectors as $inspector): ?>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($inspector['inspector_id']); ?></td>
-                                                <td><span class="badge bg-secondary"><?php echo htmlspecialchars($inspector['inspector_code']); ?></span></td>
-                                                <td><?php echo htmlspecialchars($inspector['full_name']); ?></td>
-                                                <td><?php echo htmlspecialchars($inspector['email'] ?? 'N/A'); ?></td>
-                                                <td><?php echo htmlspecialchars($inspector['phone_number'] ?? 'N/A'); ?></td>
+                                                <td><strong><?php echo htmlspecialchars($inspector['inspector_id']); ?></strong></td>
+                                                <td><span class="badge bg-light text-primary border border-primary"><?php echo htmlspecialchars($inspector['inspector_code']); ?></span></td>
+                                                <td><span class="fw-semibold"><?php echo htmlspecialchars($inspector['full_name']); ?></span></td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ri-mail-line me-1 text-muted"></i>
+                                                        <?php echo htmlspecialchars($inspector['email'] ?? 'N/A'); ?>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="ri-phone-line me-1 text-muted"></i>
+                                                        <?php echo htmlspecialchars($inspector['phone_number'] ?? 'N/A'); ?>
+                                                    </div>
+                                                </td>
                                                 <td>
                                                     <?php
-                                                    // Determinar el estado y color del badge
                                                     $is_active = $inspector['is_active'] == 1;
-                                                    $status_badge = $is_active ? 'success' : 'danger';
+                                                    $status_class = $is_active ? 'success' : 'danger';
                                                     $status_text = $is_active ? 'Activo' : 'Inactivo';
                                                     ?>
-                                                    <span class="badge bg-<?php echo $status_badge; ?>">
+                                                    <span class="badge bg-label-<?php echo $status_class; ?> bg-<?php echo $status_class; ?>">
                                                         <?php echo htmlspecialchars($status_text); ?>
                                                     </span>
                                                 </td>
@@ -212,24 +250,7 @@ include __DIR__ . '/../layouts/navigation-top.php';
     </div>
 </div>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirmar Desactivación de Inspector</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>¿Está seguro que desea **desactivar** al inspector con ID: <strong id="inspectorId"></strong>?</p>
-                <p class="text-danger"><small>Esta acción lo marcará como inactivo y no podrá ser asignado a nuevas tareas.</small></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Desactivar</button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- El modal de Bootstrap se ha eliminado ya que usamos SweetAlert2 -->
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
 
@@ -241,40 +262,46 @@ include __DIR__ . '/../layouts/navigation-top.php';
 <link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
 
 <script>
-let deleteInspectorId = null;
-
+// Función para desactivación con SweetAlert2
 function confirmDelete(id) {
-    deleteInspectorId = id;
-    document.getElementById('inspectorId').textContent = id;
-    
-    // Inicializar y mostrar el modal de Bootstrap
-    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    modal.show();
+    Swal.fire({
+        title: '¿Está seguro?',
+        text: "El inspector con ID #" + id + " será desactivado y no podrá ser asignado a nuevas tareas.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ff3e1d',
+        cancelButtonColor: '#8592a3',
+        confirmButtonText: 'Sí, desactivar',
+        cancelButtonText: 'Cancelar',
+        customClass: {
+            confirmButton: 'btn btn-danger me-3',
+            cancelButton: 'btn btn-outline-secondary'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Crear un formulario temporal para enviar el DELETE
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'index.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            form.appendChild(idInput);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    if (deleteInspectorId) {
-        // Crear un formulario para enviar la solicitud de eliminación (desactivación)
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'index.php'; // Apunta a sí mismo
-        
-        const idInput = document.createElement('input');
-        idInput.type = 'hidden';
-        idInput.name = 'id';
-        idInput.value = deleteInspectorId;
-        form.appendChild(idInput);
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-});
 
 // Inicialización de DataTables 🚀
 $(document).ready(function() {

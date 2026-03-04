@@ -93,16 +93,23 @@ include __DIR__ . '/../layouts/navigation-top.php';
                     </div>
 
                     <div class="card-body">
-                        <?php
-                        if (isset($_SESSION['flash_message'])) {
-                            $alert_type = $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'danger';
-                            echo '<div class="alert alert-' . $alert_type . ' alert-dismissible fade show" role="alert">';
-                            echo htmlspecialchars($_SESSION['flash_message']['message']);
-                            echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-                            echo '</div>';
-                            unset($_SESSION['flash_message']);
-                        }
-                        ?>
+                        <?php if (isset($_SESSION['flash_message'])): ?>
+                            <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: '<?php echo $_SESSION['flash_message']['type'] === 'success' ? 'success' : 'error'; ?>',
+                                    title: '<?php echo addslashes($_SESSION['flash_message']['message']); ?>',
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true,
+                                    width: '450px'
+                                });
+                            });
+                            </script>
+                            <?php unset($_SESSION['flash_message']); ?>
+                        <?php endif; ?>
 
                         <form method="POST" action="edit.php">
                             <input type="hidden" name="inspector_id"
