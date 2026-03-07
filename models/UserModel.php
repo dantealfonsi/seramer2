@@ -694,74 +694,126 @@ class UserModel {
                 [
                     'title' => 'Reportes',
                     'icon' => 'ri-file-chart-line',
-                    'url' => 'views/liquidacion_reports/index.php'
+                    'submenu' => [
+                        ['title' => 'Centro de Reportes', 'url' => 'views/liquidacion_reports/index.php'],
+                        ['title' => 'Caja', 'url' => 'views/liquidacion_reports/cash_report.php', 'hidden_in_menu' => true],
+                        ['title' => 'Caja por Método Pago', 'url' => 'views/liquidacion_reports/cash_report_by_payment_method.php', 'hidden_in_menu' => true],
+                        ['title' => 'Contratos Morosos', 'url' => 'views/liquidacion_reports/delinquent_contracts.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Rubro', 'url' => 'views/liquidacion_reports/income_by_category.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Zona', 'url' => 'views/liquidacion_reports/income_by_zone.php', 'hidden_in_menu' => true],
+                        ['title' => 'Resumen de Ingresos', 'url' => 'views/liquidacion_reports/income_summary.php', 'hidden_in_menu' => true],
+                        ['title' => 'Resumen por Rubro', 'url' => 'views/liquidacion_reports/income_summary_by_category.php', 'hidden_in_menu' => true],
+                        ['title' => 'Acumulado por Zona', 'url' => 'views/liquidacion_reports/zone_accumulated.php', 'hidden_in_menu' => true],
+                    ]
                 ],
             ],
             'Fiscalizacion' => [
                 [
-                    'title' => 'Inspecciones',
-                    'icon' => 'ri-search-eye-line',
-                    'submenu' => [
-                        ['title' => ' Ver Inspecciones', 'url' => 'views/inspections/index.php'],
-                        ['title' => ' Listado de Inspectores', 'url' => 'views/inspectors/index.php']
-                    ]
+                    'title' => 'Control de Multas',
+                    'icon' => 'ri-bill-line',
+                    'url' => 'views/sanctions/index.php'
                 ],
                 [
-                    'title' => 'Infracciones',
-                    'icon' => 'ri-alert-line',
-                    'submenu' => [
-                        ['title' => 'Historial de Infracciones', 'url' => 'views/infractions/index.php'],
-                        ['title' => 'Tipos de Infracciones', 'url' => 'views/infractions-type/index.php'],                        
-                        ['title' => 'Gestinar Tasas UT/EURO', 'url' => 'views/infractions/tasas.php'],
-                    ]
+                    'title' => 'Expedientes de Infracción',
+                    'icon' => 'ri-folder-warning-line',
+                    'url' => 'views/infractions/index.php'
                 ],
                 [
-                    'title' => 'Sanciones',
-                    'icon' => 'ri-hammer-line',
-                    'submenu' => [
-                        ['title' => 'Seguimiento de Sanciones', 'url' => 'views/sanctions/index.php'],
-                        ['title' => 'Tipos de Sanciones', 'url' => 'views/sanctionsType/index.php']
-                    ]
+                    'title' => 'Gestión de Personal',
+                    'icon' => 'ri-user-star-line',
+                    'url' => 'views/inspectors/index.php'
                 ],
                 [
-                    'title' => 'Conciliación',
-                    'icon' => 'ri-discuss-line',
-                    'url' => 'views/citations/index.php'
+                    'title' => 'Planificación',
+                    'icon' => 'ri-calendar-todo-line',
+                    'url' => 'views/planning/index.php'
                 ],
                 [
-                    'title' => 'Historial de Quejas',
-                    'icon' => 'ri-chat-history-line',
-                    'url' => 'views/complaints/index.php'
+                    'title' => 'Supervisión en Campo',
+                    'icon' => 'ri-walk-line',
+                    'url' => 'views/inspections/index.php'
                 ],
                 [
-                    'title' => 'Reportes Estadísticos',
+                    'title' => 'Reportes de Fiscalización',
                     'icon' => 'ri-bar-chart-box-line',
-                    'url' => 'views/statistical-reports/index.php'
+                    'submenu' => [
+                        ['title' => 'Reportes de Fiscalización', 'url' => 'views/statistical-reports/index.php'],
+                        ['title' => 'Actividad de Inspectores', 'url' => 'views/statistical-reports/view_report.php?report_type=activity_history', 'hidden_in_menu' => true],
+                        ['title' => 'Personal por Departamento', 'url' => 'views/statistical-reports/view_report.php?report_type=employees_by_department', 'hidden_in_menu' => true],
+                        ['title' => 'Conteo de Infracciones', 'url' => 'views/statistical-reports/view_report.php?report_type=infraction_count', 'hidden_in_menu' => true],
+                        ['title' => 'Infracciones por Mes', 'url' => 'views/statistical-reports/view_report.php?report_type=infractions_by_month', 'hidden_in_menu' => true],
+                        ['title' => 'Productividad de Inspecciones', 'url' => 'views/statistical-reports/view_report.php?report_type=inspection_productivity', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Tipo de Infracción', 'url' => 'views/statistical-reports/view_report.php?report_type=revenue_by_type', 'hidden_in_menu' => true],
+                    ]
                 ]
             ],
             'Cobranza' => [
-                 [
-                    'title' => 'Gestión de Cobros',
-                    'icon' => 'ri-money-cny-circle-line',
-                    'submenu' => [
-                        ['title' => 'Cuentas por Cobrar', 'url' => 'views/billing/receivable.php'],
-                        ['title' => 'Gestión de Multas', 'url' => 'views/billing/fines.php'],
-                        ['title' => 'Control de Morosidad', 'url' => 'views/billing/delinquency.php'],
-                        ['title' => 'Pagos Recibidos', 'url' => 'views/billing/payments.php'],
-                    ]
+                [
+                    'title' => 'Gestión de Cuenta',
+                    'icon' => 'ri-bank-card-line',
+                    'url' => 'views/accounts/index.php'
                 ],
                 [
-                    'title' => 'Cajas',
-                    'icon' => 'ri-money-dollar-circle-line',
-                    'submenu' => [
-                        ['title' => 'Cierre de Caja', 'url' => 'views/daily_cash/index.php'],
-                        ['title' => 'Administrar Cajas', 'url' => 'views/cash_registers/index.php']
-                    ]
+                    'title' => 'Cobros de Canón',
+                    'icon' => 'ri-money-dollar-box-line',
+                    'url' => 'views/collections/fee_payments.php'
+                ],
+                [
+                    'title' => 'Cobros de Multas',
+                    'icon' => 'ri-file-damage-line',
+                    'url' => 'views/collections/fine_payments.php'
                 ],
                 [
                     'title' => 'Reportes de Cobranza',
                     'icon' => 'ri-bar-chart-box-line',
-                    'url' => 'views/collection-reports/index.php'
+                    'submenu' => [
+                        ['title' => 'Centro de Reportes', 'url' => 'views/collection-reports/index.php'],
+                        ['title' => 'Historial de Actividad', 'url' => 'views/collection-reports/activity_history_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ganancias por Fecha', 'url' => 'views/collection-reports/revenue_by_date_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Mayores Pagadores', 'url' => 'views/collection-reports/top_payers_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Recaudación por Zona', 'url' => 'views/collection-reports/revenue_by_zone_page.php', 'hidden_in_menu' => true],
+                    ]
+                ]
+            ],
+            'Auditoria' => [
+                [
+                    'title' => 'Reportes de Liquidación',
+                    'icon' => 'ri-file-chart-line',
+                    'submenu' => [
+                        ['title' => 'Centro de Reportes', 'url' => 'views/liquidacion_reports/index.php'],
+                        ['title' => 'Caja', 'url' => 'views/liquidacion_reports/cash_report.php', 'hidden_in_menu' => true],
+                        ['title' => 'Caja por Método Pago', 'url' => 'views/liquidacion_reports/cash_report_by_payment_method.php', 'hidden_in_menu' => true],
+                        ['title' => 'Contratos Morosos', 'url' => 'views/liquidacion_reports/delinquent_contracts.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Rubro', 'url' => 'views/liquidacion_reports/income_by_category.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Zona', 'url' => 'views/liquidacion_reports/income_by_zone.php', 'hidden_in_menu' => true],
+                        ['title' => 'Resumen de Ingresos', 'url' => 'views/liquidacion_reports/income_summary.php', 'hidden_in_menu' => true],
+                        ['title' => 'Resumen por Rubro', 'url' => 'views/liquidacion_reports/income_summary_by_category.php', 'hidden_in_menu' => true],
+                        ['title' => 'Acumulado por Zona', 'url' => 'views/liquidacion_reports/zone_accumulated.php', 'hidden_in_menu' => true],
+                    ]
+                ],
+                [
+                    'title' => 'Reportes de Fiscalización',
+                    'icon' => 'ri-pie-chart-line',
+                    'submenu' => [
+                        ['title' => 'Reportes de Fiscalización', 'url' => 'views/statistical-reports/index.php'],
+                        ['title' => 'Actividad de Inspectores', 'url' => 'views/statistical-reports/view_report.php?report_type=activity_history', 'hidden_in_menu' => true],
+                        ['title' => 'Personal por Departamento', 'url' => 'views/statistical-reports/view_report.php?report_type=employees_by_department', 'hidden_in_menu' => true],
+                        ['title' => 'Conteo de Infracciones', 'url' => 'views/statistical-reports/view_report.php?report_type=infraction_count', 'hidden_in_menu' => true],
+                        ['title' => 'Infracciones por Mes', 'url' => 'views/statistical-reports/view_report.php?report_type=infractions_by_month', 'hidden_in_menu' => true],
+                        ['title' => 'Productividad de Inspecciones', 'url' => 'views/statistical-reports/view_report.php?report_type=inspection_productivity', 'hidden_in_menu' => true],
+                        ['title' => 'Ingresos por Tipo de Infracción', 'url' => 'views/statistical-reports/view_report.php?report_type=revenue_by_type', 'hidden_in_menu' => true],
+                    ]
+                ],
+                [
+                    'title' => 'Reportes de Cobranza',
+                    'icon' => 'ri-money-dollar-circle-line',
+                    'submenu' => [
+                        ['title' => 'Centro de Reportes', 'url' => 'views/collection-reports/index.php'],
+                        ['title' => 'Historial de Actividad', 'url' => 'views/collection-reports/activity_history_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Ganancias por Fecha', 'url' => 'views/collection-reports/revenue_by_date_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Mayores Pagadores', 'url' => 'views/collection-reports/top_payers_page.php', 'hidden_in_menu' => true],
+                        ['title' => 'Recaudación por Zona', 'url' => 'views/collection-reports/revenue_by_zone_page.php', 'hidden_in_menu' => true],
+                    ]
                 ]
             ]
         ];

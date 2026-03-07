@@ -1,448 +1,167 @@
 <?php
-// views/reports/statistical_reports.php - CÓDIGO FINAL CON TODOS LOS CAMBIOS Y CORRECCIONES DE LÓGICA
-session_start();
+/**
+ * Vista: Menú principal de Centro de Estadísticas (Tarjetas)
+ */
+require_once __DIR__ . '/../../config/app.php';
 
-$page_title = "Centro de Reportes y Estadísticas";
-// Variable para detectar si hay un reporte que cargar (report_type) y su modo (report_mode)
-$selected_report = $_GET['report_type'] ?? null;
-$selected_mode_param = $_GET['report_mode'] ?? null; 
-
-// Incluir layouts (Asegúrate que estas rutas sean correctas)
-require_once __DIR__ . '/../layouts/header.php'; 
-include __DIR__ . '/../layouts/navigation.php'; // Navbar lateral
-include __DIR__ . '/../layouts/navigation-top.php'; // Navbar superior
+// Incluir header y layouts
+include __DIR__ . '/../layouts/header.php';
+include __DIR__ . '/../layouts/navigation.php';
+include __DIR__ . '/../layouts/navigation-top.php';
 ?>
 
 <style>
-/* Por defecto, el encabezado SERAMER está oculto en la pantalla */
-.print-header {
-    display: none;
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-}
-
-@media print {
-    /* 1. Ocultar todos los elementos de la interfaz (navbars, formulario, botones) */
-    body * {
-        visibility: hidden;
+    .main-container {
+        padding: 1.5rem;
+        background-color: #f5f5f9;
+        min-height: calc(100vh - 100px);
     }
-
-    /* 2. Mostrar solo el contenedor del reporte (#reportContainer) y su contenido */
-    #reportContainer, #reportContainer * {
-        visibility: visible;
+    .report-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 12px;
     }
-
-    /* 3. Posicionar el reporte en la esquina superior de la página impresa */
-    #reportContainer {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-        border: none;
-        box-shadow: none;
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
-    
-    /* 4. Mostrar y estilizar el encabezado de impresión */
-    .print-header {
-        display: block; 
-        color: #343a40; /* Color oscuro para impresión */
-        border-bottom: 2px solid #343a40; 
-        padding-top: 20px;
+    .avatar-bg-light {
+        background-color: #f3f4f6;
     }
-
-    /* 5. Ocultar los botones de "Imprimir" y "Generar Reporte" dentro del contenedor de resultados */
-    #reportContainer .btn {
-        display: none !important;
-    }
-}
 </style>
 
-<div class="main-content">
+<div class="main-content main-container">
     <div class="container-fluid">
-        <div class="row">
+        <!-- Header con Icono y Breadcrumb -->
+        <div class="row mb-5">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title d-flex align-items-center" style="font-size: 1.4rem;font-weight: 600;">
-                            <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background-color: #e7e7ff !important;"><i class="ri-bar-chart-line" style="color: #696cff; font-size: 1.5rem;"></i></div>
-                            <?php echo htmlspecialchars($page_title); ?>
-                        </h5>
+                <div class="d-flex align-items-center">
+                    <div class="p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; background-color: #e7e7ff !important;">
+                        <i class="ri-bar-chart-box-line" style="color: #696cff; font-size: 2rem;"></i>
                     </div>
-                    
-                    <div class="card-body border-bottom">
-                        <form id="reportForm" action="" method="GET" class="card p-3 mb-4 shadow-sm">
-                            <h6 class="card-title mb-3"><i class="ri-settings-4-line me-1"></i> Configuración de Reporte</h6>
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-6">
-                                    <label for="report_type" class="form-label small">1. Seleccione el Tipo de Reporte</label>
-                                    <select class="form-select" id="report_type" name="report_type">
-                                        <option value="">-- Elija un Reporte --</option>
-                                        <option value="activity_history" <?php echo ($selected_report == 'activity_history') ? 'selected' : ''; ?>>Historial de Actividad (Tabla)</option>
-
-                                        <option value="infractions_by_month" <?php echo ($selected_report == 'infractions_by_month') ? 'selected' : ''; ?>>Infracciones por Mes (Gráfico)</option>
-                                        <option value="employees_by_department" <?php echo ($selected_report == 'employees_by_department') ? 'selected' : ''; ?>>Empleados por Departamento (Gráfico)</option>
-                                        <option value="inspection_productivity" <?php echo ($selected_report == 'inspection_productivity') ? 'selected' : ''; ?>>Productividad de la Inspección (Gráfico)</option>
-                                        <option value="inspector_performance" <?php echo ($selected_report == 'inspector_performance') ? 'selected' : ''; ?>>Desempeño de Inspectores (Estadístico)</option>
-                                        <option value="revenue_by_type" <?php echo ($selected_report == 'revenue_by_type') ? 'selected' : ''; ?>>Ingresos por Tipo de Infracción (Gráfico)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="report_mode" class="form-label small">2. Seleccione el Modo o Alcance</label>
-                                    <select class="form-select" id="report_mode" name="report_mode" disabled>
-                                        <option value="">-- Seleccione primero un Reporte --</option>
-                                        </select>
-                                </div>
-                            </div>
-                            
-                            <?php 
-                            // Fetch inspectors list for JS injection
-                            require_once __DIR__ . '/../../models/StatisticalReportModel.php';
-                            $statsModelForFilter = new StatisticalReportModel();
-                            $inspectorsList = $statsModelForFilter->getInspectorsList();
-                            ?>
-                            
-                            <div id="dynamicFiltersArea" class="row g-3 mt-3 p-3 border rounded" style="display: none; background-color: #f8f9fa;">
-                                <div class="col-12">
-                                    <h6 class="mb-3 text-primary"><i class="ri-filter-line me-1"></i> Filtros Específicos para el Reporte Seleccionado:</h6>
-                                    <div class="row g-3" id="filtersContent">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row mt-4">
-                                <div class="col-12 text-end">
-                                    <button type="submit" class="btn btn-primary" id="generateReportBtn" disabled>
-                                        <i class="ri-arrow-right-circle-line"></i> Generar Reporte
-                                    </button>
-                                    
-                                    <?php if ($selected_report): ?>
-                                    <button type="button" class="btn btn-secondary ms-2" onclick="window.print()">
-                                        <i class="ri-printer-line"></i> Imprimir/Exportar PDF
-                                    </button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </form>
+                    <div>
+                        <h2 class="mb-0 fw-bold" style="color: #43495b;">Reportes de Fiscalización</h2>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="#">Fiscalización</a></li>
+                                <li class="breadcrumb-item active">Reportes de Fiscalización</li>
+                            </ol>
+                        </nav>
                     </div>
-                    
-                    <?php if ($selected_report): ?>
-                        <div class="card-footer p-4" id="reportContainer">
-                            
-                            <div class="print-header">
-                                <h1 style="margin: 0; color: #000080; font-size: 24pt;">SERAMER</h1>
-                                <p style="margin: 5px 0 0; font-size: 12pt;">Reporte Estadístico Generado</p>
-                            </div>
-                            
-                            <div class="card-header border-bottom">
-                                <h5 class="card-title text-primary d-flex align-items-center" style="font-size: 1.2rem;"><i class="ri-file-chart-line me-1" style="color: #696cff;"></i> Resultados del Reporte Seleccionado</h5>
-                            </div>
-                            <?php
-                            $report_content_map = [
-                                'activity_history' => 'activityHistory.php', 
-                                'infraction_count' => 'infraction_count_chart.php',
-                                'infractions_by_month' => 'infractions_by_month.php',
-                                'employees_by_department' => 'employees_by_department.php',
-                                'inspection_productivity' => 'inspection_productivity.php',
-                                'inspector_performance' => 'performance_content.php',
-                                'revenue_by_type' => 'revenue_by_infraction_type.php',
-                                'detailed_inspections' => 'detailed_inspections_content.php',
-                                'payment_status' => 'payment_status_content.php',
-                                'market_summary' => 'market_summary_content.php',
-                            ];
-
-                            if (isset($report_content_map[$selected_report]) && file_exists(__DIR__ . '/' . $report_content_map[$selected_report])) {
-                                include __DIR__ . '/' . $report_content_map[$selected_report];
-                            } else {
-                                echo '<div class="card-body"><p class="text-danger">Error: Tipo de reporte no válido o el archivo de contenido (' . htmlspecialchars($report_content_map[$selected_report] ?? 'N/A') . ') no se encontró.</p></div>';
-                            }
-                            ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="card-body">
-                            <h5 class="mb-3 text-muted"><i class="ri-information-line me-2"></i> Instrucciones</h5>
-                            <p class="text-muted">Seleccione las opciones y pulse "Generar Reporte". El resultado aparecerá a continuación.</p>
-                        </div>
-                    <?php endif; ?>
-                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Infracciones por Mes -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-danger">
+                                <i class="ri-line-chart-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Infracciones por Mes</h5>
+                        <p class="card-text text-muted small px-2">Análisis gráfico del historial de infracciones durante un período.</p>
+                        <a href="view_report.php?report_type=infractions_by_month&report_mode=last_6_months" class="btn btn-outline-danger w-100 mt-2">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productividad de la Inspección -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-success">
+                                <i class="ri-pie-chart-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Productividad</h5>
+                        <p class="card-text text-muted small px-2">Métricas de desempeño y volumen de tareas y procesos inspeccionados.</p>
+                        <a href="view_report.php?report_type=inspection_productivity&report_mode=last_12" class="btn btn-outline-success w-100 mt-2">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ingresos por Tipo de Infracción -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-warning">
+                                <i class="ri-money-dollar-circle-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Ingresos/Tipos Multa</h5>
+                        <p class="card-text text-muted small px-2">Desglose de la recaudación dividida por cada tipo de sanción.</p>
+                        <a href="view_report.php?report_type=revenue_by_type&report_mode=all" class="btn btn-outline-warning w-100 mt-2 text-dark">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empleados por Departamento -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                <i class="ri-group-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Personal Operativo</h5>
+                        <p class="card-text text-muted small px-2">Distribución visual del grupo de trabajo por departamento.</p>
+                        <a href="view_report.php?report_type=employees_by_department&report_mode=all" class="btn btn-outline-primary w-100 mt-2">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de Actividad (Auditoria solo para roles) -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-secondary">
+                                <i class="ri-history-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Historial Actividad</h5>
+                        <p class="card-text text-muted small px-2">Listado exhaustivo de todas las operaciones de usuarios en el sistema.</p>
+                        <a href="view_report.php?report_type=activity_history&report_mode=all" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desempeño de Inspectores -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card h-100 report-card shadow-sm border-0">
+                    <div class="card-body text-center py-4">
+                        <div class="avatar avatar-xl mx-auto mb-3">
+                            <span class="avatar-initial rounded-circle bg-label-info">
+                                <i class="ri-user-star-line ri-32px"></i>
+                            </span>
+                        </div>
+                        <h5 class="card-title fw-bold">Desempeño Inspector</h5>
+                        <p class="card-text text-muted small px-2">Evaluación individual de tareas o general para los inspectores durante períodos de evaluación.</p>
+                        <a href="view_report.php?report_type=inspector_performance&report_mode=period" class="btn btn-outline-info w-100 mt-2">
+                            <i class="ri-eye-line me-1"></i> Ver Reporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
 </div>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>
-
-<script type="text/javascript" src="../../public/datatables/datatables.min.js"></script>
-<script type="text/javascript" src="../../public/datatables/pdfmake.min.js"></script>
-<script type="text/javascript" src="../../public/datatables/vfs_fonts.js"></script>
-<link rel="stylesheet" type="text/css" href="../../public/datatables/datatables.min.css"/> 
-<link rel="stylesheet" type="text/css" href="../../public/datatables/buttons.bootstrap5.min.css"/>
-<link rel="stylesheet" type="text/css" href="../../public/assets/css/dani-styles.css"/>
-<script>
-$(document).ready(function() {
-    const reportTypeSelect = $('#report_type');
-    const reportModeSelect = $('#report_mode');
-    const dynamicFiltersArea = $('#dynamicFiltersArea');
-    const filtersContent = $('#filtersContent');
-    const generateReportBtn = $('#generateReportBtn');
-    
-    // Inject Inspectors Data from PHP
-    const inspectorsData = <?php echo json_encode($inspectorsList); ?>;
-    let inspectorOptions = '<option value="">-- Seleccione un Inspector --</option>';
-    if (inspectorsData) {
-        inspectorsData.forEach(function(inspector) {
-            inspectorOptions += `<option value="${inspector.inspector_id}">${inspector.full_name}</option>`;
-        });
-    }
-
-    // 1. Opciones de Modos (Filtro Principal)
-    const reportModes = {
-        activity_history: { 
-            'date_range': 'Por Rango de Fechas',
-            'user': 'Por Usuario Específico', // Keep generic user filter for audit
-            'all': 'Ver todos los registros'
-        },
-
-        infractions_by_month: {
-            'last_6_months': 'Últimos 6 Meses',
-            'annual': 'Últimos 12 Meses (Anual)',
-        },
-        employees_by_department: {
-            'all': 'Ver Distribución Actual',
-        },
-        inspection_productivity: {
-            'last_12': 'Últimos 12 Meses',
-        },
-        revenue_by_type: {
-             'all': 'Ver Distribución Global',
-        },
-        inspector_performance: {
-            'period': 'Por Período (Año/Mes)',
-            'inspector': 'Por Inspector Específico',
-        },
-    };
-    
-    // 2. Definición de Plantillas de Filtros Secundarios
-    const filterTemplates = {
-        date_range: `
-            <div class="col-md-6">
-                <label for="start_date" class="form-label small">Fecha de Inicio</label>
-                <input type="date" class="form-control" id="start_date" name="start_date">
-            </div>
-            <div class="col-md-6">
-                <label for="end_date" class="form-label small">Fecha de Fin</label>
-                <input type="date" class="form-control" id="end_date" name="end_date">
-            </div>
-        `,
-        user: `
-            <div class="col-md-12">
-                <label for="filter_inspector" class="form-label small">Seleccione Inspector</label>
-                <select class="form-select" id="filter_inspector" name="filter_inspector">
-                    ${inspectorOptions}
-                </select>
-            </div>
-        `,
-        period: `
-            <div class="col-md-6">
-                <label for="filter_year" class="form-label small">Año</label>
-                <select class="form-select" id="filter_year" name="filter_year">
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-            </div>
-            <div class="col-md-6">
-                <label for="filter_month" class="form-label small">Mes</label>
-                <select class="form-select" id="filter_month" name="filter_month">
-                    <option value="">Todos los Meses</option>
-                    <option value="1">Enero</option>
-                    <option value="2">Febrero</option>
-                </select>
-            </div>
-        `,
-        year: `
-            <div class="col-md-4">
-                <label for="filter_year" class="form-label small">Seleccione el Año</label>
-                <select class="form-select" id="filter_year" name="filter_year">
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-            </div>
-        `,
-        none: `<div class="col-12"><p class="text-muted mb-0">No se requieren filtros adicionales para este modo.</p></div>`
-    };
-
-    // FUNCIÓN PRINCIPAL: MANEJA EL CAMBIO EN EL TIPO DE REPORTE
-    reportTypeSelect.on('change', function() {
-        const selectedReport = $(this).val();
-        
-        reportModeSelect.empty().append('<option value="">-- Seleccione el Modo --</option>').prop('disabled', true);
-        dynamicFiltersArea.slideUp();
-        filtersContent.empty();
-        generateReportBtn.prop('disabled', true);
-        
-        if (selectedReport && reportModes[selectedReport]) {
-            $.each(reportModes[selectedReport], function(modeKey, modeValue) {
-                reportModeSelect.append(`<option value="${modeKey}">${modeValue}</option>`);
-            });
-            reportModeSelect.prop('disabled', false);
-        }
-    });
-
-    // FUNCIÓN SECUNDARIA: MANEJA EL CAMBIO EN EL MODO (FILTRO PRINCIPAL)
-    reportModeSelect.on('change', function() {
-        const selectedMode = $(this).val();
-        const selectedReport = reportTypeSelect.val();
-
-        filtersContent.empty();
-        generateReportBtn.prop('disabled', true);
-        
-        if (selectedMode) {
-            generateReportBtn.prop('disabled', false);
-
-            let filterHtml = filterTemplates.none; 
-            
-            // Lógica de aparición de filtros (USANDO SWITCH)
-            switch (selectedReport) {
-                case 'activity_history':
-                    if (selectedMode === 'date_range') {
-                        filterHtml = filterTemplates.date_range;
-                    } else if (selectedMode === 'user') {
-                        filterHtml = filterTemplates.user;
-                    }
-                    break;
-
-                case 'infractions_by_month':
-                case 'employees_by_department':
-                case 'inspection_productivity':
-                case 'revenue_by_type':
-                    // Estos reportes no usan filtros adicionales por ahora (o usan valores por defecto)
-                    filterHtml = filterTemplates.none; 
-                    break;
-                case 'inspector_performance':
-                    if (selectedMode === 'period') {
-                        filterHtml = filterTemplates.period;
-                    } else if (selectedMode === 'inspector') {
-                        filterHtml = filterTemplates.user; 
-                    }
-                    break;
-                case 'detailed_inspections':
-                    if (selectedMode === 'period') {
-                        filterHtml = filterTemplates.period;
-                    }
-                    // 'all' usa filterTemplates.none
-                    break;
-                case 'payment_status':
-                    if (selectedMode === 'year') {
-                        filterHtml = filterTemplates.year; 
-                    } else if (selectedMode === 'quarter') {
-                        filterHtml = filterTemplates.year; // O period, dependiendo de lo que requiera tu lógica de backend.
-                    }
-                    break;
-                case 'market_summary':
-                    if (selectedMode === 'period') {
-                        filterHtml = filterTemplates.period;
-                    }
-                    // 'market' usa filterTemplates.none
-                    break;
-            }
-            
-            filtersContent.html(filterHtml);
-            
-            // Mostrar u ocultar el área de filtros dinámicos
-            const needsFilters = (filterHtml !== filterTemplates.none);
-            if (needsFilters) {
-                dynamicFiltersArea.slideDown();
-            } else {
-                dynamicFiltersArea.slideUp();
-            }
-        } else {
-            dynamicFiltersArea.slideUp();
-        }
-    });
-    
-    // *** LÓGICA DE PRECARGA Y ESTADO INICIAL (CRUCIAL PARA LA REDIRECCIÓN GET) ***
-    
-    function preloadFilters() {
-        const params = new URLSearchParams(window.location.search);
-        const selectedReport = params.get('report_type');
-        const selectedMode = params.get('report_mode');
-        
-        if (selectedReport) {
-            if (reportModes[selectedReport]) {
-                // 1. Habilitar y poblar el selector de Modo
-                $.each(reportModes[selectedReport], function(modeKey, modeValue) {
-                    reportModeSelect.append(`<option value="${modeKey}">${modeValue}</option>`);
-                });
-                reportModeSelect.prop('disabled', false);
-                
-                // 2. Seleccionar el modo que viene en la URL
-                if (selectedMode) {
-                    reportModeSelect.val(selectedMode);
-                    generateReportBtn.prop('disabled', false); // Habilitar el botón
-                    
-                    // 3. Mostrar y precargar filtros dinámicos (Lógica de precarga completa)
-                    let filterHtml = filterTemplates.none; 
-                    
-                    switch (selectedReport) {
-                        case 'activity_history':
-                            if (selectedMode === 'date_range') {
-                                filterHtml = filterTemplates.date_range;
-                            } else if (selectedMode === 'user') {
-                                filterHtml = filterTemplates.user;
-                            }
-                            break;
-
-                        case 'inspector_performance':
-                            if (selectedMode === 'period') {
-                                filterHtml = filterTemplates.period;
-                            } else if (selectedMode === 'inspector') {
-                                filterHtml = filterTemplates.user; 
-                            }
-                            break;
-                        case 'detailed_inspections':
-                            if (selectedMode === 'period') {
-                                filterHtml = filterTemplates.period;
-                            }
-                            break;
-                        case 'payment_status':
-                            if (selectedMode === 'year') {
-                                filterHtml = filterTemplates.year; 
-                            } else if (selectedMode === 'quarter') {
-                                filterHtml = filterTemplates.year; 
-                            }
-                            break;
-                        case 'market_summary':
-                            if (selectedMode === 'period') {
-                                filterHtml = filterTemplates.period;
-                            }
-                            break;
-                    }
-                    
-                    filtersContent.html(filterHtml);
-
-                    // Precargar los valores específicos de los filtros
-                    params.forEach((value, key) => {
-                        const element = $(`#${key}`);
-                        if (element.length) {
-                            element.val(value);
-                        }
-                    });
-                    
-                    // Mostrar área de filtros si es necesario
-                    const needsFilters = (filterHtml !== filterTemplates.none);
-                    if (needsFilters) {
-                        dynamicFiltersArea.slideDown();
-                    } else {
-                        dynamicFiltersArea.hide();
-                    }
-                }
-            }
-        }
-    }
-
-    // Llamar a la función al cargar la página
-    preloadFilters();
-});
-</script>

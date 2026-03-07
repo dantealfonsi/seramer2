@@ -172,25 +172,44 @@ if (!empty($_SESSION['is_superadmin'])) {
                                     }
                                 }
                             }
+                            
+                            // Verificar qué elementos del submenú son visibles
+                            $visibleSubmenus = [];
+                            foreach ($menu['submenu'] as $sub) {
+                                if (empty($sub['hidden_in_menu'])) {
+                                    $visibleSubmenus[] = $sub;
+                                }
+                            }
                             ?>
-                            <!-- Menú con submenús -->
-                            <li class="menu-item <?php echo $isMenuOpen ? 'active open' : ''; ?>" style="color:black">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle"  style="color:black">
-                                    <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
-                                    <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
-                                </a>
-                                <ul class="menu-sub">
-                                    <?php foreach ($menu['submenu'] as $submenu): ?>
-                                        <li class="menu-item <?php echo isMenuItemActive($submenu['url']) ? 'active' : ''; ?>">
-                                            <a href="<?php echo url($submenu['url']); ?>" class="menu-link"  style="color:black">
-                                                <div data-i18n="<?php echo $submenu['title']; ?>"><?php echo htmlspecialchars($submenu['title']); ?></div>
-                                            </a>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </li>
+                            
+                            <?php if (count($visibleSubmenus) === 1): ?>
+                                <!-- Si solo hay un submenu visible, lo mostramos como un menú principal -->
+                                <li class="menu-item <?php echo isMenuItemActive($visibleSubmenus[0]['url']) ? 'active' : ''; ?>">
+                                    <a href="<?php echo url($visibleSubmenus[0]['url']); ?>" class="menu-link"  style="color:black">
+                                        <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
+                                        <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
+                                    </a>
+                                </li>
+                            <?php elseif (count($visibleSubmenus) > 1): ?>
+                                <!-- Menú con submenús completo -->
+                                <li class="menu-item <?php echo $isMenuOpen ? 'active open' : ''; ?>" style="color:black">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle"  style="color:black">
+                                        <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
+                                        <div data-i18n="<?php echo $menu['title']; ?>"><?php echo htmlspecialchars($menu['title']); ?></div>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        <?php foreach ($visibleSubmenus as $submenu): ?>
+                                            <li class="menu-item <?php echo isMenuItemActive($submenu['url']) ? 'active' : ''; ?>">
+                                                <a href="<?php echo url($submenu['url']); ?>" class="menu-link"  style="color:black">
+                                                    <div data-i18n="<?php echo $submenu['title']; ?>"><?php echo htmlspecialchars($submenu['title']); ?></div>
+                                                </a>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </li>
+                            <?php endif; ?>
                         <?php else: ?>
-                            <!-- Menú simple -->
+                            <!-- Menú simple sin submenus -->
                             <li class="menu-item <?php echo isMenuItemActive($menu['url'] ?? '') ? 'active' : ''; ?>">
                                 <a href="<?php echo url($menu['url'] ?? '#'); ?>" class="menu-link"  style="color:black">
                                     <i class="menu-icon icon-base <?php echo $menu['icon']; ?>"></i>
